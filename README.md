@@ -9,6 +9,9 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
 ```
 https://smiskol.com/fork/reopenpilot/dp-beta3-20240713-1044
 ```
+```
+https://smiskol.com/fork/reopenpilot/dp-beta3-20240716-0855
+```
 ### FrogPilot FrogPilot
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240628-0734
