@@ -4,7 +4,7 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
 ## Branch Naming Conventions
 `fork_shortname`-`branch`-`datetime`
 
-## Install URL Lists
+## URL Lists
 ### Dragonpilot beta3
 ```
 https://smiskol.com/fork/reopenpilot/dp-beta3-20240713-1044
