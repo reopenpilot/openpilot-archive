@@ -35,6 +35,9 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240717-0612
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240718-0524
 ```
+```
+https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240719-0559
+```
 ### Sunnypilot dev-c3
 ```
 https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240713-1614
