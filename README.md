@@ -66,6 +66,9 @@ https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240721-0101
 ```
 https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240721-0124
 ```
+```
+https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240721-0248
+```
 ### Sunnypilot staging-c3
 ```
 https://smiskol.com/fork/reopenpilot/sp-staging-c3-20240712-0431
