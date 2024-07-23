@@ -19,6 +19,9 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240719-1609
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240720-0119
 ```
+```
+https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240723-2120
+```
 ### FrogPilot FrogPilot-Staging
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240716-2002
