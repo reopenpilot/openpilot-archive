@@ -10,7 +10,7 @@ BRANCH_NAME=$1
 
 # Check if /data/openpilot directory exists
 if [ ! -d "/data/openpilot" ]; then
-  read -p "/data/openpilot directory does not exist. This system does not appear to be an openpilot system. Do you want to force installation in the local directory? (y/n): " force_install
+  read -p "/data/openpilot directory does not exist. This system does not appear to be an openpilot system. Do you want to force installation in the local directory? (y/n): " force_install < /dev/tty
   if [[ $force_install != [yY] ]]; then
     echo "Installation aborted."
     exit 1
@@ -44,7 +44,7 @@ cd openpilot
 git submodule update --init
 
 # Prompt user for reboot confirmation
-read -p "Are you sure you want to reboot the system? (y/n): " confirm
+read -p "Are you sure you want to reboot the system? (y/n): " confirm < /dev/tty
 if [[ $confirm == [yY] ]]; then
   sudo reboot
 else
