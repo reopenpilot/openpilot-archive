@@ -4,6 +4,20 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
 ## Branch Naming Conventions
 `fork_shortname`-`branch`-`datetime`
 
+## Installation Methods
+### Method 1: Install via UI
+1. Reset your c3 or c3x device to its factory settings.
+2. Open a web browser on the device.
+3. Enter the following URL: https://smiskol.com/fork/reopenpilot/`BRANCH_NAME` and follow the on-screen instructions.
+
+### Method 2: Install via SSH
+1. Log in to your c3 or c3x device using SSH or a terminal application.
+2. Execute the following command:
+   ```
+   curl -sSL https://bit.ly/reopenpilot | bash -s `BRANCH_NAME`
+   ```
+3. Follow the on-screen instructions to complete the installation.
+
 ## Install URL Lists
 
 ### [Dragonpilot beta3](https://github.com/reopenpilot/openpilot-archive/commits/dp-beta3-20240724-0804/)
