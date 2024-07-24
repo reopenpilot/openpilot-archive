@@ -6,7 +6,7 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
 
 ## Install URL Lists
 
-### [Dragonpilot master3](https://github.com/reopenpilot/openpilot-archive/commits/dp-beta3-20240724-0804/)
+### [Dragonpilot beta3](https://github.com/reopenpilot/openpilot-archive/commits/dp-beta3-20240724-0804/)
 ```
 https://smiskol.com/fork/reopenpilot/dp-beta3-20240717-1201
 ```
@@ -17,17 +17,17 @@ https://smiskol.com/fork/reopenpilot/dp-beta3-20240717-2240
 https://smiskol.com/fork/reopenpilot/dp-beta3-20240724-0804
 ```
 
-### [Dragonpilot master3-sgo](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-20240724-0801/)
+### [Dragonpilot master3](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-20240724-0801/)
 ```
 https://smiskol.com/fork/reopenpilot/dp-master3-20240724-0801
 ```
 
-### [FrogPilot FrogPilot](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-sgo-20240724-0821/)
+### [Dragonpilot master3-sgo](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-sgo-20240724-0821/)
 ```
 https://smiskol.com/fork/reopenpilot/dp-master3-sgo-20240724-0821
 ```
 
-### [FrogPilot FrogPilot-Staging](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-20240723-2120/)
+### [FrogPilot FrogPilot](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-20240723-2120/)
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240719-1609
 ```
@@ -38,7 +38,7 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240720-0119
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240723-2120
 ```
 
-### [Sunnypilot dev-c3](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240724-1742/)
+### [FrogPilot FrogPilot-Staging](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240724-1742/)
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240716-2002
 ```
@@ -100,7 +100,7 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240724-0456
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240724-1742
 ```
 
-### [Sunnypilot staging-c3](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240721-2124/)
+### [Sunnypilot dev-c3](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240721-2124/)
 ```
 https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240717-1546
 ```
