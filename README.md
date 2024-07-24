@@ -12,6 +12,9 @@ https://smiskol.com/fork/reopenpilot/dp-beta3-20240717-1201
 ```
 https://smiskol.com/fork/reopenpilot/dp-beta3-20240717-2240
 ```
+```
+https://smiskol.com/fork/reopenpilot/dp-beta3-20240724-0804
+```
 ### FrogPilot FrogPilot
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240719-1609
