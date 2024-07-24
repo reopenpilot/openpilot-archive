@@ -38,7 +38,7 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240720-0119
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20240723-2120
 ```
 
-### [FrogPilot FrogPilot-Staging](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240724-1742/)
+### [FrogPilot FrogPilot-Staging](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240724-1946/)
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240716-2002
 ```
@@ -98,6 +98,9 @@ https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240724-0456
 ```
 ```
 https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240724-1742
+```
+```
+https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240724-1946
 ```
 
 ### [Sunnypilot dev-c3](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240721-2124/)
