@@ -16,7 +16,7 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
    curl -fsSL https://bit.ly/reopenpilot | bash -s "BRANCH_NAME"
    ```
 
-## Install URL Lists
+## Install URL / Command Lists
 
 ### [Dragonpilot beta3](https://github.com/reopenpilot/openpilot-archive/commits/dp-beta3-20240724-0804/)
 <details><summary>20240717-1201</summary>
