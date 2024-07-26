@@ -7,7 +7,7 @@ A repository to archive popular forks of openpilot (including dragonpilot, frogp
 ## Installation Methods
 ### Method 1: Install via UI
 1. Reset your c3 or c3x device to its factory settings.
-2. Enter the URL: https://smiskol.com/fork/reopenpilot/<BRANCH_NAME> to install the archive version.
+2. Enter the URL: https://smiskol.com/fork/reopenpilot/ `BRANCH_NAME` to install the archive version.
 
 ### Method 2: Install via SSH
 1. Log in to your c3 or c3x device using SSH.
