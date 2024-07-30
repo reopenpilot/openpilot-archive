@@ -234,10 +234,11 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
 
     for (int i = 0; i < max_len; ++i) {
       // Some points are out of frame
-      if (scene.track_vertices[i].y() < 0 || scene.track_vertices[i].y() > height()) continue;
+      int track_idx = (scene.track_vertices.length() / 2) - i;  // flip idx to start from top
+      if (scene.track_vertices[track_idx].y() < 0 || scene.track_vertices[track_idx].y() > height()) continue;
 
       // Flip so 0 is bottom of frame
-      float lin_grad_point = (height() - scene.track_vertices[i].y()) / height();
+      float lin_grad_point = (height() - scene.track_vertices[track_idx].y()) / height();
 
       // speed up: 120, slow down: 0
       float path_hue = fmax(fmin(60 + acceleration[i] * 35, 120), 0);
@@ -408,8 +409,8 @@ void AnnotatedCameraWidget::paintGL() {
     update_model(s, model);
 
     #ifdef DP
-    tt_indicator->paint_road_name(painter, rect().left(), rect().bottom(), rect().width());
     flight_panel->paint(painter, width(), height());
+    tt_indicator->paint_road_name(painter, rect().left(), rect().bottom(), rect().width());
     #endif
 
     drawLaneLines(painter, s);

@@ -2,8 +2,7 @@ from cereal import car
 from opendbc.can.packer import CANPacker
 from openpilot.common.numpy_fast import clip
 from openpilot.common.conversions import Conversions as CV
-from openpilot.common.realtime import DT_CTRL
-from openpilot.selfdrive.car import apply_driver_steer_torque_limits
+from openpilot.selfdrive.car import DT_CTRL, apply_driver_steer_torque_limits
 from openpilot.selfdrive.car.interfaces import CarControllerBase
 from openpilot.selfdrive.car.volkswagen import mqbcan, pqcan
 from openpilot.selfdrive.car.volkswagen.values import CANBUS, CarControllerParams, VolkswagenFlags
@@ -32,12 +31,12 @@ class CarController(CarControllerBase):
     params = Params()
     try:
       self.dp_vag_sng = params.get_bool("dp_vag_sng")
-    except:
+    except (ValueError, TypeError):
       self.dp_vag_sng = False
     # this is not used in MQB, only PQ, checking status is 7 instead of 5
     try:
       self.dp_vag_pq_steering_patch = 7 if Params().get_bool("dp_vag_pq_steering_patch") else 5
-    except:
+    except (ValueError, TypeError):
       self.dp_vag_pq_steering_patch = 5
 
   def update(self, CC, CS, now_nanos):

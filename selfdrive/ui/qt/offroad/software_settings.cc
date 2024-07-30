@@ -84,6 +84,20 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
     addItem(targetBranchBtn);
   }
 
+  // dp update disable toggle
+  disableUpdateToggle = new ParamControl("DisableUpdates", "Disable Auto Update", "", "");
+  addItem(disableUpdateToggle);
+  connect(disableUpdateToggle, &ToggleControl::toggleFlipped, [=]() {
+    bool val = params.getBool("DisableUpdates");
+     downloadBtn->setVisible(!val);
+     installBtn->setVisible(!val);
+     targetBranchBtn->setVisible(!val);
+  });
+  bool val = params.getBool("DisableUpdates");
+  downloadBtn->setVisible(!val);
+  installBtn->setVisible(!val);
+  targetBranchBtn->setVisible(!val);
+
   // uninstall button
   auto uninstallBtn = new ButtonControl(tr("Uninstall %1").arg(getBrand()), tr("UNINSTALL"));
   connect(uninstallBtn, &ButtonControl::clicked, [&]() {
