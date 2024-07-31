@@ -130,6 +130,7 @@ whitelist = [
   "opendbc/toyota_zss.dbc",
   "opendbc/toyota_brake_hold.dbc",
   "opendbc/toyota_bsm.dbc",
+  "opendbc/toyota_sdsu.dbc",
 ]
 
 
