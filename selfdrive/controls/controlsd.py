@@ -209,7 +209,7 @@ class Controls:
     self.speed_limit_changed = False
     self.stopped_for_light = False
     self.update_toggles = False
-    self.use_old_long = self.CP.carName == "hyundai" and not self.params.get_bool("NewLongAPI")
+    self.use_old_long = self.CP.carName in {"gm", "hyundai"} and not self.params.get_bool("NewLongAPI")
 
     self.display_timer = 0
     self.drive_distance = 0
