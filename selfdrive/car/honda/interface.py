@@ -266,7 +266,6 @@ class CarInterface(CarInterfaceBase):
   # returns a car.CarState
   def _update(self, c):
     ret = self.CS.update(self.cp, self.cp_cam, self.cp_body)
-    self.sp_update_params()
 
     self.CS.button_events = [
       *create_button_events(self.CS.cruise_buttons, self.CS.prev_cruise_buttons, BUTTONS_DICT),
@@ -288,25 +287,26 @@ class CarInterface(CarInterfaceBase):
     else:
       self.CS.madsEnabled = False
 
-    min_enable_speed_pcm = self.CP.pcmCruise and self.CP.minEnableSpeed > 0
+    min_enable_speed_pcm = self.CP.pcmCruise and self.CP.minEnableSpeed > 0 and self.CP.pcmCruiseSpeed
 
     if not self.CP.pcmCruise or min_enable_speed_pcm or not self.CP.pcmCruiseSpeed:
       if any(b.type == ButtonType.cancel for b in self.CS.button_events):
         self.CS.madsEnabled, self.CS.accEnabled = self.get_sp_cancel_cruise_state(self.CS.madsEnabled)
     if self.get_sp_pedal_disengage(ret):
       self.CS.madsEnabled, self.CS.accEnabled = self.get_sp_cancel_cruise_state(self.CS.madsEnabled)
-      ret.cruiseState.enabled = ret.cruiseState.enabled if not self.enable_mads or (min_enable_speed_pcm and self.CP.pcmCruiseSpeed) \
+      ret.cruiseState.enabled = ret.cruiseState.enabled if not self.enable_mads or min_enable_speed_pcm \
                                                         else False if self.CP.pcmCruise \
                                                         else self.CS.accEnabled
 
-    if min_enable_speed_pcm and self.CP.pcmCruiseSpeed:
+    if min_enable_speed_pcm:
       if ret.gasPressed and not ret.cruiseState.enabled:
         self.CS.accEnabled = False
-      self.CS.accEnabled = ret.cruiseState.enabled or self.CS.accEnabled
+      if ret.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
+        self.CS.accEnabled = True
+      elif not ret.cruiseState.enabled:
+        self.CS.accEnabled = False
 
-    ret, self.CS = self.get_sp_common_state(ret, self.CS,
-                                            min_enable_speed_pcm=(min_enable_speed_pcm and self.CP.pcmCruiseSpeed),
-                                            gap_button=(self.CS.cruise_setting == 3))
+    ret, self.CS = self.get_sp_common_state(ret, self.CS, gap_button=(self.CS.cruise_setting == 3))
 
     ret.buttonEvents = [
       *self.CS.button_events,
