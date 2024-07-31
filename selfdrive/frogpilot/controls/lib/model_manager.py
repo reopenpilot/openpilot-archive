@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import requests
@@ -17,10 +18,6 @@ GITLAB_REPOSITORY_URL = "https://gitlab.com/FrogAi/FrogPilot-Resources/-/raw/"
 
 DEFAULT_MODEL = "north-dakota-v2"
 DEFAULT_MODEL_NAME = "North Dakota V2 (Default)"
-
-NAVIGATION_MODELS = {"certified-herbalist", "duck-amigo", "los-angeles", "recertified-herbalist"}
-RADARLESS_MODELS = {"radical-turtle"}
-STAGING_MODELS = {"radical-turtle", "secret-good-openpilot"}
 
 def get_repository_url():
   if is_url_pingable("https://github.com"):
@@ -129,7 +126,7 @@ def download_model(model_to_download, params_memory):
 def fetch_models(url):
   try:
     with urllib.request.urlopen(url) as response:
-      return [line.decode('utf-8').strip().split(' - ') for line in response.readlines()]
+      return json.loads(response.read().decode('utf-8'))['models']
   except Exception as e:
     print(f"Failed to update models list. Error: {e}")
     return None
@@ -170,18 +167,28 @@ def are_all_models_downloaded(available_models, available_model_names, repo_url,
 
   return all_models_downloaded
 
-def update_model_params(model_info, is_release, repo_url, params, params_memory):
+def update_model_params(model_info, repo_url, params, params_memory):
   available_models = []
   available_model_names = []
+  experimental_models = []
+  navigation_models = []
+  radarless_models = []
 
   for model in model_info:
-    model_name = model[0]
-    if not (is_release and model_name in STAGING_MODELS):
-      available_models.append(model_name)
-      available_model_names.append(model[1])
+    available_models.append(model['id'])
+    available_model_names.append(model['name'])
+    if model.get("experimental", False):
+      experimental_models.append(model['id'])
+    if "🗺️" in model['name']:
+      navigation_models.append(model['id'])
+    if "📡" not in model['name']:
+      radarless_models.append(model['id'])
 
   params.put_nonblocking("AvailableModels", ','.join(available_models))
   params.put_nonblocking("AvailableModelsNames", ','.join(available_model_names))
+  params.put_nonblocking("ExperimentalModels", ','.join(experimental_models))
+  params.put_nonblocking("NavigationModels", ','.join(navigation_models))
+  params.put_nonblocking("RadarlessModels", ','.join(radarless_models))
   print("Models list updated successfully.")
 
   if available_models is not None:
@@ -215,7 +222,7 @@ def copy_default_model():
     else:
       print(f"Source default model not found at {source_path}. Exiting...")
 
-def update_models(is_release, params, params_memory, boot_run=True):
+def update_models(params, params_memory, boot_run=True):
   try:
     if boot_run:
       copy_default_model()
@@ -225,11 +232,11 @@ def update_models(is_release, params, params_memory, boot_run=True):
     if repo_url is None:
       return
 
-    model_info = fetch_models(f"{repo_url}Versions/model_names_{VERSION}.txt")
+    model_info = fetch_models(f"{repo_url}Versions/model_names_{VERSION}.json")
     if model_info is None:
       return
 
-    update_model_params(model_info, is_release, repo_url, params, params_memory)
+    update_model_params(model_info, repo_url, params, params_memory)
   except subprocess.CalledProcessError as e:
     print(f"Failed to update models. Error: {e}")
 

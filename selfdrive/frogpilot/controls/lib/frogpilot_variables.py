@@ -10,7 +10,7 @@ from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from openpilot.system.version import get_build_metadata
 
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import MODELS_PATH
-from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, NAVIGATION_MODELS, RADARLESS_MODELS, STAGING_MODELS, process_model_name
+from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, process_model_name
 
 CITY_SPEED_LIMIT = 25  # 55mph is typically the minimum speed for highways
 CRUISING_SPEED = 5     # Roughly the speed cars go when not touching the gas while in drive
@@ -194,8 +194,6 @@ class FrogPilotVariables:
         toggle.model = random.choice(existing_models) if existing_models else DEFAULT_MODEL
       else:
         toggle.model = self.params.get("Model", block=True, encoding='utf-8')
-      if self.release and toggle.model in STAGING_MODELS:
-        toggle.model = DEFAULT_MODEL
     else:
       toggle.model = current_model
     if not os.path.exists(os.path.join(MODELS_PATH, f"{toggle.model}.thneed")):
@@ -208,8 +206,16 @@ class FrogPilotVariables:
     else:
       current_model_name = available_model_names.split(',')[available_models.split(',').index(toggle.model)]
       toggle.part_model_param = process_model_name(current_model_name)
-    toggle.navigationless_model = toggle.model not in NAVIGATION_MODELS
-    toggle.radarless_model = toggle.model in RADARLESS_MODELS
+    navigation_models = self.params.get("NavigationModels", encoding='utf-8')
+    if navigation_models is not None:
+      toggle.navigationless_model = toggle.model not in navigation_models.split(',')
+    else:
+      toggle.navigationless_model = False
+    radarless_model = self.params.get("RadarlessModels", encoding='utf-8')
+    if radarless_model is not None:
+      toggle.radarless_model = toggle.model in radarless_model.split(',')
+    else:
+      toggle.radarless_model = False
     toggle.secretgoodopenpilot_model = toggle.model == "secret-good-openpilot"
     self.params_memory.put("CurrentModel", toggle.model)
     self.params_memory.put("CurrentModelName", current_model_name)

@@ -39,7 +39,7 @@ def automatic_update_check(started, params):
   elif update_state_idle:
     os.system("pkill -SIGUSR1 -f system.updated.updated")
 
-def time_checks(automatic_updates, deviceState, is_release, now, started, params, params_memory):
+def time_checks(automatic_updates, deviceState, now, started, params, params_memory):
   if deviceState.networkType == OFFLINE:
     return
 
@@ -53,7 +53,7 @@ def time_checks(automatic_updates, deviceState, is_release, now, started, params
   update_maps(now, params, params_memory)
 
   with locks["update_models"]:
-    update_models(is_release, params, params_memory, False)
+    update_models(params, params_memory, False)
 
 def update_maps(now, params, params_memory):
   maps_selected = params.get("MapsSelected", encoding='utf8')
@@ -98,7 +98,6 @@ def frogpilot_thread():
   frogpilot_planner = FrogPilotPlanner()
   theme_manager = ThemeManager()
 
-  is_release = FrogPilotVariables.release
   run_time_checks = False
   started_previously = False
   time_validated = system_time_valid()
@@ -150,14 +149,14 @@ def frogpilot_thread():
     if now.second == 0:
       run_time_checks = True
     elif run_time_checks or not time_validated:
-      run_thread_with_lock("time_checks", locks["time_checks"], time_checks, (frogpilot_toggles.automatic_updates, deviceState, is_release, now, started, params, params_memory))
+      run_thread_with_lock("time_checks", locks["time_checks"], time_checks, (frogpilot_toggles.automatic_updates, deviceState, now, started, params, params_memory))
       run_time_checks = False
 
       if not time_validated:
         time_validated = system_time_valid()
         if not time_validated:
           continue
-        run_thread_with_lock("update_models", locks["update_models"], update_models, (is_release, params, params_memory))
+        run_thread_with_lock("update_models", locks["update_models"], update_models, (params, params_memory))
 
       theme_manager.update_holiday()
 
