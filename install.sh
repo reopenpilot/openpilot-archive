@@ -34,8 +34,32 @@ if [ -d "openpilot" ]; then
   mv openpilot openpilot.bak
 fi
 
+declare -A REPO_SHORT_NAMES=(
+    ["sp"]="sunnypilot/sunnypilot"
+    ["dp"]="dragonpilot-community/dragonpilot"
+    ["fp"]="FrogAi/FrogPilot"
+)
+
+# Check if BRANCH_NAME contains a slash
+if [[ "$BRANCH_NAME" == */* ]]; then
+  # Extract the short name and the actual branch name
+  SHORT_NAME=${BRANCH_NAME%%/*}
+  BRANCH_NAME=${BRANCH_NAME#*/}
+
+  # Replace reopenpilot with the corresponding GitHub account name
+  if [[ -n "${REPO_SHORT_NAMES[$SHORT_NAME]}" ]]; then
+    GITHUB_REPO_URL=${REPO_SHORT_NAMES[$SHORT_NAME]}
+    REPO_URL="https://github.com/$GITHUB_REPO_URL.git"
+  else
+    echo "Unknown short name: $SHORT_NAME. Installation aborted."
+    exit 1
+  fi
+else
+  REPO_URL="https://github.com/reopenpilot/openpilot.git"
+fi
+
 # Clone the repository
-if ! git clone --single-branch https://github.com/reopenpilot/openpilot-archive.git openpilot -b $BRANCH_NAME; then
+if ! git clone --single-branch $REPO_URL openpilot -b $BRANCH_NAME; then
   echo "Failed to clone the repository. Installation aborted."
   exit 1
 fi
