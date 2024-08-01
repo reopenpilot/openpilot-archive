@@ -3791,7 +3791,7 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
  *         return __pyx_enum.DEVELOPMENT_ONLY
  *     elif c_val == ParamKeyType.FROGPILOT_CONTROLS:             # <<<<<<<<<<<<<<
  *         return __pyx_enum.FROGPILOT_CONTROLS
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
  */
   __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_CONTROLS);
   if (__pyx_t_2) {
@@ -3800,8 +3800,8 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
  *         return __pyx_enum.DEVELOPMENT_ONLY
  *     elif c_val == ParamKeyType.FROGPILOT_CONTROLS:
  *         return __pyx_enum.FROGPILOT_CONTROLS             # <<<<<<<<<<<<<<
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
- *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
+ *         return __pyx_enum.FROGPILOT_OTHER
  */
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_CONTROLS); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 152, __pyx_L1_error)
@@ -3815,29 +3815,29 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
  *         return __pyx_enum.DEVELOPMENT_ONLY
  *     elif c_val == ParamKeyType.FROGPILOT_CONTROLS:             # <<<<<<<<<<<<<<
  *         return __pyx_enum.FROGPILOT_CONTROLS
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
  */
   }
 
   /* "EnumTypeToPy":153
  *     elif c_val == ParamKeyType.FROGPILOT_CONTROLS:
  *         return __pyx_enum.FROGPILOT_CONTROLS
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_VEHICLES
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_OTHER
+ *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
  */
-  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_VEHICLES);
+  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_OTHER);
   if (__pyx_t_2) {
 
     /* "EnumTypeToPy":154
  *         return __pyx_enum.FROGPILOT_CONTROLS
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
- *         return __pyx_enum.FROGPILOT_VEHICLES             # <<<<<<<<<<<<<<
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
- *         return __pyx_enum.FROGPILOT_VISUALS
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
+ *         return __pyx_enum.FROGPILOT_OTHER             # <<<<<<<<<<<<<<
+ *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
+ *         return __pyx_enum.FROGPILOT_STORAGE
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 154, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_OTHER); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 154, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
@@ -3846,79 +3846,13 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
     /* "EnumTypeToPy":153
  *     elif c_val == ParamKeyType.FROGPILOT_CONTROLS:
  *         return __pyx_enum.FROGPILOT_CONTROLS
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_VEHICLES
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *     elif c_val == ParamKeyType.FROGPILOT_OTHER:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_OTHER
+ *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
  */
   }
 
   /* "EnumTypeToPy":155
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
- *         return __pyx_enum.FROGPILOT_VEHICLES
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_VISUALS
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
- */
-  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_VISUALS);
-  if (__pyx_t_2) {
-
-    /* "EnumTypeToPy":156
- *         return __pyx_enum.FROGPILOT_VEHICLES
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
- *         return __pyx_enum.FROGPILOT_VISUALS             # <<<<<<<<<<<<<<
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
- *         return __pyx_enum.FROGPILOT_OTHER
- */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_VISUALS); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 156, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_r = __pyx_t_1;
-    __pyx_t_1 = 0;
-    goto __pyx_L0;
-
-    /* "EnumTypeToPy":155
- *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
- *         return __pyx_enum.FROGPILOT_VEHICLES
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_VISUALS
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
- */
-  }
-
-  /* "EnumTypeToPy":157
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
- *         return __pyx_enum.FROGPILOT_VISUALS
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_OTHER
- *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
- */
-  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_OTHER);
-  if (__pyx_t_2) {
-
-    /* "EnumTypeToPy":158
- *         return __pyx_enum.FROGPILOT_VISUALS
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
- *         return __pyx_enum.FROGPILOT_OTHER             # <<<<<<<<<<<<<<
- *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
- *         return __pyx_enum.FROGPILOT_STORAGE
- */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_OTHER); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_r = __pyx_t_1;
-    __pyx_t_1 = 0;
-    goto __pyx_L0;
-
-    /* "EnumTypeToPy":157
- *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
- *         return __pyx_enum.FROGPILOT_VISUALS
- *     elif c_val == ParamKeyType.FROGPILOT_OTHER:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_OTHER
- *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
- */
-  }
-
-  /* "EnumTypeToPy":159
  *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
  *         return __pyx_enum.FROGPILOT_OTHER
  *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:             # <<<<<<<<<<<<<<
@@ -3928,7 +3862,7 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
   __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_STORAGE);
   if (__pyx_t_2) {
 
-    /* "EnumTypeToPy":160
+    /* "EnumTypeToPy":156
  *         return __pyx_enum.FROGPILOT_OTHER
  *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
  *         return __pyx_enum.FROGPILOT_STORAGE             # <<<<<<<<<<<<<<
@@ -3936,13 +3870,13 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
  *         return __pyx_enum.FROGPILOT_TRACKING
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_STORAGE); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 160, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_STORAGE); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 156, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "EnumTypeToPy":159
+    /* "EnumTypeToPy":155
  *     elif c_val == ParamKeyType.FROGPILOT_OTHER:
  *         return __pyx_enum.FROGPILOT_OTHER
  *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:             # <<<<<<<<<<<<<<
@@ -3951,42 +3885,108 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
  */
   }
 
-  /* "EnumTypeToPy":161
+  /* "EnumTypeToPy":157
  *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
  *         return __pyx_enum.FROGPILOT_STORAGE
  *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:             # <<<<<<<<<<<<<<
  *         return __pyx_enum.FROGPILOT_TRACKING
- *     elif c_val == ParamKeyType.ALL:
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
  */
   __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_TRACKING);
   if (__pyx_t_2) {
 
-    /* "EnumTypeToPy":162
+    /* "EnumTypeToPy":158
  *         return __pyx_enum.FROGPILOT_STORAGE
  *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:
  *         return __pyx_enum.FROGPILOT_TRACKING             # <<<<<<<<<<<<<<
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_TRACKING); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_r = __pyx_t_1;
+    __pyx_t_1 = 0;
+    goto __pyx_L0;
+
+    /* "EnumTypeToPy":157
+ *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
+ *         return __pyx_enum.FROGPILOT_STORAGE
+ *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ */
+  }
+
+  /* "EnumTypeToPy":159
+ *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:
+ *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ */
+  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_VEHICLES);
+  if (__pyx_t_2) {
+
+    /* "EnumTypeToPy":160
+ *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *         return __pyx_enum.FROGPILOT_VEHICLES             # <<<<<<<<<<<<<<
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *         return __pyx_enum.FROGPILOT_VISUALS
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_r = __pyx_t_1;
+    __pyx_t_1 = 0;
+    goto __pyx_L0;
+
+    /* "EnumTypeToPy":159
+ *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:
+ *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ */
+  }
+
+  /* "EnumTypeToPy":161
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_VISUALS
+ *     elif c_val == ParamKeyType.ALL:
+ */
+  __pyx_t_2 = (__pyx_v_c_val == FROGPILOT_VISUALS);
+  if (__pyx_t_2) {
+
+    /* "EnumTypeToPy":162
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *         return __pyx_enum.FROGPILOT_VISUALS             # <<<<<<<<<<<<<<
  *     elif c_val == ParamKeyType.ALL:
  *         return __pyx_enum.ALL
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_TRACKING); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 162, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v___pyx_enum, __pyx_n_s_FROGPILOT_VISUALS); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
     /* "EnumTypeToPy":161
- *     elif c_val == ParamKeyType.FROGPILOT_STORAGE:
- *         return __pyx_enum.FROGPILOT_STORAGE
- *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:             # <<<<<<<<<<<<<<
- *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VEHICLES:
+ *         return __pyx_enum.FROGPILOT_VEHICLES
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:             # <<<<<<<<<<<<<<
+ *         return __pyx_enum.FROGPILOT_VISUALS
  *     elif c_val == ParamKeyType.ALL:
  */
   }
 
   /* "EnumTypeToPy":163
- *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:
- *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *         return __pyx_enum.FROGPILOT_VISUALS
  *     elif c_val == ParamKeyType.ALL:             # <<<<<<<<<<<<<<
  *         return __pyx_enum.ALL
  *     else:
@@ -3995,7 +3995,7 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
   if (__pyx_t_2) {
 
     /* "EnumTypeToPy":164
- *         return __pyx_enum.FROGPILOT_TRACKING
+ *         return __pyx_enum.FROGPILOT_VISUALS
  *     elif c_val == ParamKeyType.ALL:
  *         return __pyx_enum.ALL             # <<<<<<<<<<<<<<
  *     else:
@@ -4009,8 +4009,8 @@ static PyObject *__Pyx_Enum_enum__space_ParamKeyType_to_py(enum ParamKeyType __p
     goto __pyx_L0;
 
     /* "EnumTypeToPy":163
- *     elif c_val == ParamKeyType.FROGPILOT_TRACKING:
- *         return __pyx_enum.FROGPILOT_TRACKING
+ *     elif c_val == ParamKeyType.FROGPILOT_VISUALS:
+ *         return __pyx_enum.FROGPILOT_VISUALS
  *     elif c_val == ParamKeyType.ALL:             # <<<<<<<<<<<<<<
  *         return __pyx_enum.ALL
  *     else:
@@ -13751,7 +13751,7 @@ if (!__Pyx_RefNanny) {
  *         ('CLEAR_ON_OFFROAD_TRANSITION', __Pyx_PyInt_From_enum__ParamKeyType(CLEAR_ON_OFFROAD_TRANSITION)),
  *         ('DEVELOPMENT_ONLY', __Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY)),             # <<<<<<<<<<<<<<
  *         ('FROGPILOT_CONTROLS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS)),
- *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
+ *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
  */
     __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 85, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
@@ -13768,8 +13768,8 @@ if (!__Pyx_RefNanny) {
  *         ('CLEAR_ON_OFFROAD_TRANSITION', __Pyx_PyInt_From_enum__ParamKeyType(CLEAR_ON_OFFROAD_TRANSITION)),
  *         ('DEVELOPMENT_ONLY', __Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY)),
  *         ('FROGPILOT_CONTROLS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS)),             # <<<<<<<<<<<<<<
- *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
- *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
+ *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
+ *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
  */
     __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 86, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
@@ -13785,96 +13785,96 @@ if (!__Pyx_RefNanny) {
     /* "EnumType":87
  *         ('DEVELOPMENT_ONLY', __Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY)),
  *         ('FROGPILOT_CONTROLS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS)),
- *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),             # <<<<<<<<<<<<<<
- *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
- *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
+ *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),             # <<<<<<<<<<<<<<
+ *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
+ *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
  */
-    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 87, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 87, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_10 = PyTuple_New(2); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 87, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VEHICLES);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VEHICLES);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_n_s_FROGPILOT_VEHICLES)) __PYX_ERR(1, 87, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_OTHER);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_OTHER);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_n_s_FROGPILOT_OTHER)) __PYX_ERR(1, 87, __pyx_L1_error);
     __Pyx_GIVEREF(__pyx_t_6);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_6)) __PYX_ERR(1, 87, __pyx_L1_error);
     __pyx_t_6 = 0;
 
     /* "EnumType":88
  *         ('FROGPILOT_CONTROLS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS)),
- *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
- *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),             # <<<<<<<<<<<<<<
  *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
- *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
+ *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),             # <<<<<<<<<<<<<<
+ *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
+ *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
  */
-    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 88, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 88, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_11 = PyTuple_New(2); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 88, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VISUALS);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VISUALS);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_n_s_FROGPILOT_VISUALS)) __PYX_ERR(1, 88, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_STORAGE);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_STORAGE);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_n_s_FROGPILOT_STORAGE)) __PYX_ERR(1, 88, __pyx_L1_error);
     __Pyx_GIVEREF(__pyx_t_6);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_11, 1, __pyx_t_6)) __PYX_ERR(1, 88, __pyx_L1_error);
     __pyx_t_6 = 0;
 
     /* "EnumType":89
+ *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
+ *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
+ *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),             # <<<<<<<<<<<<<<
  *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
  *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
- *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),             # <<<<<<<<<<<<<<
- *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
- *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
  */
-    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 89, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_12 = PyTuple_New(2); if (unlikely(!__pyx_t_12)) __PYX_ERR(1, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_OTHER);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_OTHER);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_n_s_FROGPILOT_OTHER)) __PYX_ERR(1, 89, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_TRACKING);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_TRACKING);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_n_s_FROGPILOT_TRACKING)) __PYX_ERR(1, 89, __pyx_L1_error);
     __Pyx_GIVEREF(__pyx_t_6);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_12, 1, __pyx_t_6)) __PYX_ERR(1, 89, __pyx_L1_error);
     __pyx_t_6 = 0;
 
     /* "EnumType":90
- *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
- *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
- *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),             # <<<<<<<<<<<<<<
+ *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
  *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
+ *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),             # <<<<<<<<<<<<<<
+ *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
  *         ('ALL', __Pyx_PyInt_From_enum__ParamKeyType(ALL)),
  */
-    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 90, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_13 = PyTuple_New(2); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_STORAGE);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_STORAGE);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_n_s_FROGPILOT_STORAGE)) __PYX_ERR(1, 90, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VEHICLES);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VEHICLES);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_n_s_FROGPILOT_VEHICLES)) __PYX_ERR(1, 90, __pyx_L1_error);
     __Pyx_GIVEREF(__pyx_t_6);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_t_6)) __PYX_ERR(1, 90, __pyx_L1_error);
     __pyx_t_6 = 0;
 
     /* "EnumType":91
- *         ('FROGPILOT_OTHER', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER)),
- *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
- *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),             # <<<<<<<<<<<<<<
+ *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
+ *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
+ *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),             # <<<<<<<<<<<<<<
  *         ('ALL', __Pyx_PyInt_From_enum__ParamKeyType(ALL)),
  * 
  */
-    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 91, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 91, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_14 = PyTuple_New(2); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 91, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_TRACKING);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_TRACKING);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_n_s_FROGPILOT_TRACKING)) __PYX_ERR(1, 91, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VISUALS);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VISUALS);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_n_s_FROGPILOT_VISUALS)) __PYX_ERR(1, 91, __pyx_L1_error);
     __Pyx_GIVEREF(__pyx_t_6);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 1, __pyx_t_6)) __PYX_ERR(1, 91, __pyx_L1_error);
     __pyx_t_6 = 0;
 
     /* "EnumType":92
- *         ('FROGPILOT_STORAGE', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE)),
- *         ('FROGPILOT_TRACKING', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING)),
+ *         ('FROGPILOT_VEHICLES', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES)),
+ *         ('FROGPILOT_VISUALS', __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS)),
  *         ('ALL', __Pyx_PyInt_From_enum__ParamKeyType(ALL)),             # <<<<<<<<<<<<<<
  * 
  *     ], module=__Pyx_globals.get("__module__", 'common.params_pyx'))
@@ -14097,7 +14097,7 @@ if (!__Pyx_RefNanny) {
  *     __Pyx_globals['CLEAR_ON_OFFROAD_TRANSITION'] = ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType.DEVELOPMENT_ONLY             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType.FROGPILOT_CONTROLS
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 107, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
@@ -14115,8 +14115,8 @@ if (!__Pyx_RefNanny) {
  *     __Pyx_globals['CLEAR_ON_OFFROAD_TRANSITION'] = ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType.DEVELOPMENT_ONLY
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType.FROGPILOT_CONTROLS             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
  */
     __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 108, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
@@ -14133,101 +14133,101 @@ if (!__Pyx_RefNanny) {
     /* "EnumType":109
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType.DEVELOPMENT_ONLY
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType.FROGPILOT_CONTROLS
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 109, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 109, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_OTHER); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 109, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(__Pyx_globals == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 109, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VEHICLES, __pyx_t_14) < 0))) __PYX_ERR(1, 109, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_OTHER, __pyx_t_14) < 0))) __PYX_ERR(1, 109, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
     /* "EnumType":110
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType.FROGPILOT_CONTROLS
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
  */
     __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_FROGPILOT_VISUALS); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 110, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_FROGPILOT_STORAGE); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     if (unlikely(__Pyx_globals == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 110, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VISUALS, __pyx_t_6) < 0))) __PYX_ERR(1, 110, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_STORAGE, __pyx_t_6) < 0))) __PYX_ERR(1, 110, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
     /* "EnumType":111
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
  *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 111, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_OTHER); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 111, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_TRACKING); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 111, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(__Pyx_globals == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 111, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_OTHER, __pyx_t_14) < 0))) __PYX_ERR(1, 111, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_TRACKING, __pyx_t_14) < 0))) __PYX_ERR(1, 111, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
     /* "EnumType":112
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
  *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
  *     __Pyx_globals['ALL'] = ParamKeyType.ALL
  */
     __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 112, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_FROGPILOT_STORAGE); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 112, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 112, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     if (unlikely(__Pyx_globals == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 112, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_STORAGE, __pyx_t_6) < 0))) __PYX_ERR(1, 112, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VEHICLES, __pyx_t_6) < 0))) __PYX_ERR(1, 112, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
     /* "EnumType":113
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType.FROGPILOT_OTHER
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS             # <<<<<<<<<<<<<<
  *     __Pyx_globals['ALL'] = ParamKeyType.ALL
  * else:
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 113, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_TRACKING); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 113, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_FROGPILOT_VISUALS); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 113, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(__Pyx_globals == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 113, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_TRACKING, __pyx_t_14) < 0))) __PYX_ERR(1, 113, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VISUALS, __pyx_t_14) < 0))) __PYX_ERR(1, 113, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
     /* "EnumType":114
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType.FROGPILOT_STORAGE
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType.FROGPILOT_TRACKING
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType.FROGPILOT_VEHICLES
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType.FROGPILOT_VISUALS
  *     __Pyx_globals['ALL'] = ParamKeyType.ALL             # <<<<<<<<<<<<<<
  * else:
  *     class ParamKeyType(__Pyx_FlagBase):
@@ -14410,7 +14410,7 @@ if (!__Pyx_RefNanny) {
  *     __Pyx_globals['CLEAR_ON_OFFROAD_TRANSITION'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(CLEAR_ON_OFFROAD_TRANSITION), 'CLEAR_ON_OFFROAD_TRANSITION')
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY), 'DEVELOPMENT_ONLY')             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS), 'FROGPILOT_CONTROLS')
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_15, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 122, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
@@ -14439,8 +14439,8 @@ if (!__Pyx_RefNanny) {
  *     __Pyx_globals['CLEAR_ON_OFFROAD_TRANSITION'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(CLEAR_ON_OFFROAD_TRANSITION), 'CLEAR_ON_OFFROAD_TRANSITION')
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY), 'DEVELOPMENT_ONLY')
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS), 'FROGPILOT_CONTROLS')             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 123, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
@@ -14468,21 +14468,21 @@ if (!__Pyx_RefNanny) {
     /* "EnumType":124
  *     __Pyx_globals['DEVELOPMENT_ONLY'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(DEVELOPMENT_ONLY), 'DEVELOPMENT_ONLY')
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS), 'FROGPILOT_CONTROLS')
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 124, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
-    __pyx_t_15 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 124, __pyx_L1_error)
+    __pyx_t_15 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 124, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
     __pyx_t_13 = PyTuple_New(2); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 124, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_GIVEREF(__pyx_t_15);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_15)) __PYX_ERR(1, 124, __pyx_L1_error);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VEHICLES);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VEHICLES);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_n_s_FROGPILOT_VEHICLES)) __PYX_ERR(1, 124, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_OTHER);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_OTHER);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_n_s_FROGPILOT_OTHER)) __PYX_ERR(1, 124, __pyx_L1_error);
     __pyx_t_15 = 0;
     __pyx_t_15 = __Pyx_PyObject_Call(__pyx_t_14, __pyx_t_13, NULL); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 124, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
@@ -14492,27 +14492,27 @@ if (!__Pyx_RefNanny) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 124, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VEHICLES, __pyx_t_15) < 0))) __PYX_ERR(1, 124, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_OTHER, __pyx_t_15) < 0))) __PYX_ERR(1, 124, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
     /* "EnumType":125
  *     __Pyx_globals['FROGPILOT_CONTROLS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_CONTROLS), 'FROGPILOT_CONTROLS')
- *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_15, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
-    __pyx_t_13 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 125, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __pyx_t_14 = PyTuple_New(2); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_GIVEREF(__pyx_t_13);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_t_13)) __PYX_ERR(1, 125, __pyx_L1_error);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VISUALS);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VISUALS);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 1, __pyx_n_s_FROGPILOT_VISUALS)) __PYX_ERR(1, 125, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_STORAGE);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_STORAGE);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 1, __pyx_n_s_FROGPILOT_STORAGE)) __PYX_ERR(1, 125, __pyx_L1_error);
     __pyx_t_13 = 0;
     __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_14, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
@@ -14522,27 +14522,27 @@ if (!__Pyx_RefNanny) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 125, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VISUALS, __pyx_t_13) < 0))) __PYX_ERR(1, 125, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_STORAGE, __pyx_t_13) < 0))) __PYX_ERR(1, 125, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
     /* "EnumType":126
+ *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')             # <<<<<<<<<<<<<<
  *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
  *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')             # <<<<<<<<<<<<<<
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 126, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
-    __pyx_t_14 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 126, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 126, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __pyx_t_15 = PyTuple_New(2); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 126, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
     __Pyx_GIVEREF(__pyx_t_14);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_15, 0, __pyx_t_14)) __PYX_ERR(1, 126, __pyx_L1_error);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_OTHER);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_OTHER);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_15, 1, __pyx_n_s_FROGPILOT_OTHER)) __PYX_ERR(1, 126, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_TRACKING);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_TRACKING);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_15, 1, __pyx_n_s_FROGPILOT_TRACKING)) __PYX_ERR(1, 126, __pyx_L1_error);
     __pyx_t_14 = 0;
     __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_15, NULL); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 126, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
@@ -14552,27 +14552,27 @@ if (!__Pyx_RefNanny) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 126, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_OTHER, __pyx_t_14) < 0))) __PYX_ERR(1, 126, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_TRACKING, __pyx_t_14) < 0))) __PYX_ERR(1, 126, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
     /* "EnumType":127
- *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
  *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
  *     __Pyx_globals['ALL'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(ALL), 'ALL')
  */
     __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
-    __pyx_t_15 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 127, __pyx_L1_error)
+    __pyx_t_15 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
     __pyx_t_13 = PyTuple_New(2); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_GIVEREF(__pyx_t_15);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_15)) __PYX_ERR(1, 127, __pyx_L1_error);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_STORAGE);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_STORAGE);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_n_s_FROGPILOT_STORAGE)) __PYX_ERR(1, 127, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VEHICLES);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VEHICLES);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_n_s_FROGPILOT_VEHICLES)) __PYX_ERR(1, 127, __pyx_L1_error);
     __pyx_t_15 = 0;
     __pyx_t_15 = __Pyx_PyObject_Call(__pyx_t_14, __pyx_t_13, NULL); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
@@ -14582,27 +14582,27 @@ if (!__Pyx_RefNanny) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 127, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_STORAGE, __pyx_t_15) < 0))) __PYX_ERR(1, 127, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VEHICLES, __pyx_t_15) < 0))) __PYX_ERR(1, 127, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
     /* "EnumType":128
- *     __Pyx_globals['FROGPILOT_OTHER'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_OTHER), 'FROGPILOT_OTHER')
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')             # <<<<<<<<<<<<<<
+ *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')             # <<<<<<<<<<<<<<
  *     __Pyx_globals['ALL'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(ALL), 'ALL')
  * 
  */
     __Pyx_GetModuleGlobalName(__pyx_t_15, __pyx_n_s_ParamKeyType); if (unlikely(!__pyx_t_15)) __PYX_ERR(1, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
-    __pyx_t_13 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 128, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __pyx_t_14 = PyTuple_New(2); if (unlikely(!__pyx_t_14)) __PYX_ERR(1, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_GIVEREF(__pyx_t_13);
     if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_t_13)) __PYX_ERR(1, 128, __pyx_L1_error);
-    __Pyx_INCREF(__pyx_n_s_FROGPILOT_TRACKING);
-    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_TRACKING);
-    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 1, __pyx_n_s_FROGPILOT_TRACKING)) __PYX_ERR(1, 128, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_n_s_FROGPILOT_VISUALS);
+    __Pyx_GIVEREF(__pyx_n_s_FROGPILOT_VISUALS);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_14, 1, __pyx_n_s_FROGPILOT_VISUALS)) __PYX_ERR(1, 128, __pyx_L1_error);
     __pyx_t_13 = 0;
     __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_14, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
@@ -14612,12 +14612,12 @@ if (!__Pyx_RefNanny) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 128, __pyx_L1_error)
     }
-    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_TRACKING, __pyx_t_13) < 0))) __PYX_ERR(1, 128, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__Pyx_globals, __pyx_n_s_FROGPILOT_VISUALS, __pyx_t_13) < 0))) __PYX_ERR(1, 128, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
     /* "EnumType":129
- *     __Pyx_globals['FROGPILOT_STORAGE'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_STORAGE), 'FROGPILOT_STORAGE')
- *     __Pyx_globals['FROGPILOT_TRACKING'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_TRACKING), 'FROGPILOT_TRACKING')
+ *     __Pyx_globals['FROGPILOT_VEHICLES'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VEHICLES), 'FROGPILOT_VEHICLES')
+ *     __Pyx_globals['FROGPILOT_VISUALS'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(FROGPILOT_VISUALS), 'FROGPILOT_VISUALS')
  *     __Pyx_globals['ALL'] = ParamKeyType(__Pyx_PyInt_From_enum__ParamKeyType(ALL), 'ALL')             # <<<<<<<<<<<<<<
  * 
  */

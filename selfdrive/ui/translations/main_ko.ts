@@ -130,7 +130,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> m/s²</source>
+        <source>m/s²</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -232,11 +232,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental Mode activated for slower lead</source>
+        <source>Experimental Mode activated for stopped lead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental Mode activated for stopped lead</source>
+        <source>Experimental Mode activated for slower lead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -245,6 +245,10 @@
     </message>
     <message>
         <source> or stop sign</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Experimental Mode forced on for stop light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -264,7 +268,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>. Double press the &quot;LKAS&quot; button to revert</source>
+        <source>. Click the &quot;LKAS&quot; button to revert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -468,7 +472,19 @@
         <translation>동기화</translation>
     </message>
     <message>
-        <source>Backup</source>
+        <source>Delete Driving Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DELETE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This button provides a swift and secure way to permanently delete all stored driving footage and data from your device. Ideal for maintaining privacy or freeing up space.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to permanently delete all of your driving footage and data?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -476,7 +492,67 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore</source>
+        <source>Deleting footage...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deleted!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RENAME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Recordings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete or rename your screen recordings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a recording to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete this recording?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deleting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a recording to rename</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a new name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rename Recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Renaming...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Renamed!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BACKUP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RESTORE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -500,23 +576,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a backup to delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Are you sure you want to delete this backup?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deleting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deleted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -528,7 +592,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Restoring...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restored!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rebooting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -541,50 +617,6 @@
     </message>
     <message>
         <source>Are you sure you want to restore this toggle backup?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Driving Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DELETE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This button provides a swift and secure way to permanently delete all stored driving footage and data from your device. Ideal for maintaining privacy or freeing up space.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete all of your driving footage and data?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deleting footage...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset Toggles To Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset your toggle settings back to their default settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset all of your toggle settings?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resetting toggles...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rebooting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -611,35 +643,56 @@
         <source>Flashing...</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>DriveStats</name>
     <message>
-        <source>Drives</source>
+        <source>Recovery Failed...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hours</source>
+        <source>Flash Failed...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ALL TIME</source>
+        <source>Flashed!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PAST WEEK</source>
+        <source>Reset Toggles To Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FROGPILOT</source>
+        <source>Reset your toggle settings back to their default settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>KM</source>
+        <source>Are you sure you want to completely reset all of your toggle settings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Miles</source>
+        <source>Resetting toggles...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OFFROAD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ONROAD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OFF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force Started State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force openpilot either offroad or onroad.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

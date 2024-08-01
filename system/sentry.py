@@ -1,13 +1,8 @@
 """Install exception handler for process crash."""
-import http.client
 import os
 import sentry_sdk
-import socket
-import subprocess
 import time
 import traceback
-import urllib.request
-import urllib.error
 
 from datetime import datetime
 from enum import Enum
@@ -19,6 +14,8 @@ from openpilot.system.hardware import HARDWARE, PC
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.version import get_build_metadata, get_version
 
+from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import is_url_pingable
+
 CRASHES_DIR = "/data/crashes/"
 
 class SentryProject(Enum):
@@ -26,14 +23,6 @@ class SentryProject(Enum):
   SELFDRIVE = "https://5ad1714d27324c74a30f9c538bff3b8d@o4505034923769856.ingest.sentry.io/4505034930651136"
   # native project
   SELFDRIVE_NATIVE = "https://5ad1714d27324c74a30f9c538bff3b8d@o4505034923769856.ingest.sentry.io/4505034930651136"
-
-
-def sentry_pinged(url="https://sentry.io", timeout=5):
-  try:
-    urllib.request.urlopen(url, timeout=timeout)
-    return True
-  except (urllib.error.URLError, socket.timeout, http.client.RemoteDisconnected):
-    return False
 
 
 def bind_user() -> None:
@@ -47,7 +36,7 @@ def report_tombstone(fn: str, message: str, contents: str) -> None:
 
   no_internet = 0
   while True:
-    if sentry_pinged():
+    if is_url_pingable("https://sentry.io"):
       cloudlog.error({'tombstone': message})
 
       with sentry_sdk.configure_scope() as scope:
@@ -105,7 +94,7 @@ def capture_fingerprint(candidate, params, blocked=False):
 
   no_internet = 0
   while True:
-    if sentry_pinged():
+    if is_url_pingable("https://sentry.io"):
       with sentry_sdk.configure_scope() as scope:
         scope.fingerprint = [candidate, HARDWARE.get_serial()]
         for label, key_values in matched_params.items():
@@ -115,7 +104,7 @@ def capture_fingerprint(candidate, params, blocked=False):
         sentry_sdk.capture_message("Blocked user from using the development branch", level='error')
       else:
         sentry_sdk.capture_message(f"Fingerprinted {candidate}", level='info')
-        params.put_bool("FingerprintLogged", True)
+        params.put_bool_nonblocking("FingerprintLogged", True)
 
       sentry_sdk.flush()
       break
@@ -188,9 +177,9 @@ def init(project: SentryProject) -> bool:
 
   if short_branch == "FrogPilot-Development":
     env = "Development"
-  elif short_branch in {"FrogPilot-Staging", "FrogPilot-Testing"}:
+  elif build_metadata.tested_channel:
     env = "Staging"
-  elif short_branch == "FrogPilot":
+  elif build_metadata.release_channel:
     env = "Release"
   else:
     env = short_branch
@@ -204,7 +193,7 @@ def init(project: SentryProject) -> bool:
                   release=get_version(),
                   integrations=integrations,
                   traces_sample_rate=1.0,
-                  max_value_length=98304,
+                  max_value_length=8192,
                   environment=env)
 
   build_metadata = get_build_metadata()

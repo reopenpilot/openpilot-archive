@@ -1,10 +1,6 @@
 import datetime
-import http.client
 import os
-import socket
 import threading
-import urllib.error
-import urllib.request
 
 from cereal import log, messaging
 from openpilot.common.params import Params
@@ -13,19 +9,30 @@ from openpilot.common.time import system_time_valid
 from openpilot.system.hardware import HARDWARE
 
 from openpilot.selfdrive.frogpilot.controls.frogpilot_planner import FrogPilotPlanner
-from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import FrogPilotFunctions
+from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import backup_toggles, is_url_pingable
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_variables import FrogPilotVariables
-from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, download_model, populate_models
+from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, download_all_models, download_model, update_models
 from openpilot.selfdrive.frogpilot.controls.lib.theme_manager import ThemeManager
 
 OFFLINE = log.DeviceState.NetworkType.none
 
-def github_pinged(url="https://github.com", timeout=5):
-  try:
-    urllib.request.urlopen(url, timeout=timeout)
-    return True
-  except (urllib.error.URLError, socket.timeout, http.client.RemoteDisconnected):
-    return False
+locks = {
+  "backup_toggles": threading.Lock(),
+  "download_all_models": threading.Lock(),
+  "download_model": threading.Lock(),
+  "time_checks": threading.Lock(),
+  "update_frogpilot_params": threading.Lock(),
+  "update_models": threading.Lock()
+}
+
+running_threads = {}
+
+def run_thread_with_lock(name, lock, target, args):
+  if name not in running_threads or not running_threads[name].is_alive():
+    with lock:
+      thread = threading.Thread(target=target, args=args)
+      thread.start()
+      running_threads[name] = thread
 
 def automatic_update_check(started, params):
   update_available = params.get_bool("UpdaterFetchAvailable")
@@ -43,15 +50,17 @@ def time_checks(automatic_updates, deviceState, now, started, params, params_mem
   if deviceState.networkType == OFFLINE:
     return
 
-  if not github_pinged():
+  if not is_url_pingable("https://github.com"):
     return
 
   screen_off = deviceState.screenBrightnessPercent == 0
   if automatic_updates and screen_off:
     automatic_update_check(started, params)
 
-  populate_models()
   update_maps(now, params, params_memory)
+
+  with locks["update_models"]:
+    update_models(params, params_memory, False)
 
 def update_maps(now, params, params_memory):
   maps_selected = params.get("MapsSelected", encoding='utf8')
@@ -84,13 +93,13 @@ def frogpilot_thread():
 
   params = Params()
   params_memory = Params("/dev/shm/params")
+  params_storage = Params("/persist/params")
 
-  frogpilot_functions = FrogPilotFunctions()
   frogpilot_planner = FrogPilotPlanner()
   theme_manager = ThemeManager()
 
-  downloading_model = False
   run_time_checks = False
+  started_previously = False
   time_validated = system_time_valid()
   update_toggles = False
 
@@ -106,43 +115,48 @@ def frogpilot_thread():
     deviceState = sm['deviceState']
     started = deviceState.started
 
+    if not started and started_previously:
+      frogpilot_planner = FrogPilotPlanner()
+
     if started and sm.updated['modelV2']:
       frogpilot_planner.update(sm['carState'], sm['controlsState'], sm['frogpilotCarControl'], sm['frogpilotCarState'],
                                sm['frogpilotNavigation'], sm['modelV2'], sm['radarState'], frogpilot_toggles)
       frogpilot_planner.publish(sm, pm, frogpilot_toggles)
 
     model_to_download = params_memory.get("ModelToDownload", encoding='utf-8')
-    if model_to_download is not None:
-      if not downloading_model:
-        threading.Thread(target=download_model).start()
-        downloading_model = True
-    else:
-      downloading_model = False
+    if model_to_download:
+      run_thread_with_lock("download_model", locks["download_model"], download_model, (model_to_download, params_memory))
+
+    if params_memory.get_bool("DownloadAllModels"):
+      run_thread_with_lock("download_all_models", locks["download_all_models"], download_all_models, (params, params_memory))
 
     if FrogPilotVariables.toggles_updated:
       update_toggles = True
     elif update_toggles:
-      threading.Thread(target=FrogPilotVariables.update_frogpilot_params, args=(started,)).start()
+      run_thread_with_lock("update_frogpilot_params", locks["update_frogpilot_params"], FrogPilotVariables.update_frogpilot_params, (started,))
 
-      if not frogpilot_toggles.model_selector:
+      if not frogpilot_toggles.model_manager:
         params.put_nonblocking("Model", DEFAULT_MODEL)
         params.put_nonblocking("ModelName", DEFAULT_MODEL_NAME)
 
       if time_validated and not started:
-        threading.Thread(target=frogpilot_functions.backup_toggles).start()
+        run_thread_with_lock("backup_toggles", locks["backup_toggles"], backup_toggles, (params, params_storage))
 
       update_toggles = False
+
+    started_previously = started
 
     if now.second == 0:
       run_time_checks = True
     elif run_time_checks or not time_validated:
-      threading.Thread(target=time_checks, args=(frogpilot_toggles.automatic_updates, deviceState, now, started, params, params_memory,)).start()
+      run_thread_with_lock("time_checks", locks["time_checks"], time_checks, (frogpilot_toggles.automatic_updates, deviceState, now, started, params, params_memory))
       run_time_checks = False
 
       if not time_validated:
         time_validated = system_time_valid()
         if not time_validated:
           continue
+        run_thread_with_lock("update_models", locks["update_models"], update_models, (params, params_memory))
 
       theme_manager.update_holiday()
 
