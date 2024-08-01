@@ -22,3 +22,6 @@
 [submodule "dp_priv"]
   path = dp_priv
   url = https://github.com/dragonpilot-community/dp_priv.git
+[submodule "third_party/libspatialindex"]
+	path = third_party/libspatialindex
+	url = https://github.com/dragonpilot-community/libspatialindex.git
