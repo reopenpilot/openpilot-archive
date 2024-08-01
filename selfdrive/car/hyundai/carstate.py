@@ -66,8 +66,8 @@ class CarState(CarStateBase):
     else:
       if "SpeedLim_Nav_Clu" in cp.vl["Navi_HU"]:
         speed_limit = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"]
-      elif "CF_Lkas_TsrSpeed_Display_Clu" in cp.vl["LKAS12"]:
-        speed_limit = cp.vl["LKAS12"]["CF_Lkas_TsrSpeed_Display_Clu"]
+      elif "CF_Lkas_TsrSpeed_Display_Clu" in cp_cam.vl["LKAS12"]:
+        speed_limit = cp_cam.vl["LKAS12"]["CF_Lkas_TsrSpeed_Display_Clu"]
       else:
         return 0
       return speed_limit if speed_limit not in (0, 255) else 0
