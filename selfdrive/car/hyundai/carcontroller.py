@@ -116,6 +116,7 @@ class CarController(CarControllerBase):
     self.accel_raw = 0
     self.accel_val = 0
     self.accel_last_jerk = 0
+    self.hkg_custom_long_tuning = self.param_s.get_bool("HkgCustomLongTuning")
 
   def calculate_lead_distance(self, hud_control: car.CarControl.HUDControl) -> float:
     lead_one = self.sm["radarState"].leadOne
@@ -233,6 +234,9 @@ class CarController(CarControllerBase):
       if self.CP.flags & HyundaiFlags.ENABLE_BLINKERS:
         can_sends.append([0x7b1, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", self.CAN.ECAN])
 
+    if self.CP.openpilotLongitudinalControl:
+      self.make_jerk(CS, accel, actuators)
+
     # CAN-FD platforms
     if self.CP.carFingerprint in CANFD_CAR:
       hda2 = self.CP.flags & HyundaiFlags.CANFD_HDA2
@@ -263,7 +267,7 @@ class CarController(CarControllerBase):
           can_sends.extend(hyundaicanfd.create_fca_warning_light(self.packer, self.CAN, self.frame))
         if self.frame % 2 == 0:
           can_sends.append(hyundaicanfd.create_acc_control(self.packer, self.CAN, CC.enabled and CS.out.cruiseState.enabled, self.accel_last, accel, stopping, CC.cruiseControl.override,
-                                                           set_speed_in_units, hud_control))
+                                                           set_speed_in_units, hud_control, self.jerk_u, self.jerk_l))
           self.accel_last = accel
       else:
         # button presses
@@ -301,8 +305,6 @@ class CarController(CarControllerBase):
                   self.last_button_frame = self.frame
             elif self.frame % 2 == 0:
               can_sends.extend([hyundaican.create_clu11(self.packer, (self.frame // 2) + 1, CS.clu11, self.cruise_button, self.CP)] * 25)
-      else:
-        self.make_jerk(CS, accel, actuators)
 
       # Parse lead distance from radarState and display the corresponding distance in the car's cluster
       if self.CP.openpilotLongitudinalControl and self.sm.updated['radarState'] and self.frame % 5 == 0:
@@ -514,7 +516,10 @@ class CarController(CarControllerBase):
     a_error = accel - CS.out.aEgo
     jerk = jerk + (a_error * 2.0)
 
-    if self.CP.carFingerprint in CANFD_CAR or self.CP.carFingerprint == CAR.HYUNDAI_KONA_EV_2022:
+    if not self.hkg_custom_long_tuning:
+      self.jerk_u = 3.0 if actuators.longControlState == LongCtrlState.pid else 1.0
+      self.jerk_l = 5.0
+    elif self.CP.carFingerprint in CANFD_CAR or self.CP.carFingerprint == CAR.HYUNDAI_KONA_EV_2022:
       startingJerk = 0.5
       jerkLimit = 5.0
       self.jerk_count += DT_CTRL
@@ -553,3 +558,4 @@ class CarController(CarControllerBase):
       #self.accel_val = clip(self.accel_raw, self.accel_last - rate_down, self.accel_last + rate_up)
       self.accel_val = self.accel_raw
     self.accel_last = self.accel_val
+    self.accel_last_jerk = self.accel_val

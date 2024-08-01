@@ -1450,14 +1450,6 @@ Isso pode levar até um minuto.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>HKG CAN: Smoother Stopping Performance (Beta)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoother stopping behind a stopped car or desired stopping event. This is only applicable to HKG CAN platforms using openpilot longitudinal control.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Subaru</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1565,6 +1557,10 @@ Reboot Required.</source>
     </message>
     <message>
         <source>Tested on RAV4 TSS1, Lexus LSS1, Toyota TSS1/1.5, and Prius TSS2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HKG: Custom Tuning for New Longitudinal API</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
