@@ -98,7 +98,7 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def _get_params(ret, candidate, fingerprint, car_fw, disable_openpilot_long, experimental_long, docs, params):
-    use_new_api = params.get_bool("NewLongAPI")
+    use_new_api = params.get_bool("NewLongAPIGM")
 
     ret.carName = "gm"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.gm)]
@@ -139,9 +139,10 @@ class CarInterface(CarInterfaceBase):
       else:
         ret.longitudinalTuning.kpV = [2.0, 1.5]
         ret.longitudinalTuning.kiV = [0.72]
-        ret.stoppingDecelRate = 2.0  # reach brake quickly after enabling
-        ret.vEgoStopping = 0.25
-        ret.vEgoStarting = 0.25
+
+      ret.stoppingDecelRate = 2.0  # reach brake quickly after enabling
+      ret.vEgoStopping = 0.25
+      ret.vEgoStarting = 0.25
 
       if experimental_long:
         ret.pcmCruise = False
@@ -318,19 +319,20 @@ class CarInterface(CarInterfaceBase):
       ret.openpilotLongitudinalControl = not disable_openpilot_long
       ret.pcmCruise = False
 
-      if not use_new_api:
-        ret.longitudinalTuning.deadzoneBP = [0.]
-        ret.longitudinalTuning.deadzoneV = [0.56]  # == 2 km/h/s, 1.25 mph/s
-      ret.stoppingDecelRate = 11.18  # == 25 mph/s (.04 rate)
-
       if use_new_api:
         ret.longitudinalTuning.kiBP = [10.7, 10.8, 28.]
         ret.longitudinalTuning.kiV = [0., 20., 20.]  # set lower end to 0 since we can't drive below that speed
       else:
+        ret.longitudinalTuning.deadzoneBP = [0.]
+        ret.longitudinalTuning.deadzoneV = [0.56]  # == 2 km/h/s, 1.25 mph/s
+        ret.longitudinalActuatorDelay = 1.  # TODO: measure this
+
         ret.longitudinalTuning.kpBP = [10.7, 10.8, 28.]  # 10.7 m/s == 24 mph
         ret.longitudinalTuning.kpV = [0., 20., 20.]  # set lower end to 0 since we can't drive below that speed
         ret.longitudinalTuning.kiBP = [0.]
         ret.longitudinalTuning.kiV = [0.1]
+
+      ret.stoppingDecelRate = 11.18  # == 25 mph/s (.04 rate)
 
     if candidate in CC_ONLY_CAR:
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_GM_NO_ACC
