@@ -7,6 +7,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -69,7 +70,7 @@ def calculate_road_curvature(modelData, v_ego):
   orientation_rate = np.abs(modelData.orientationRate.z)
   velocity = modelData.velocity.x
   max_pred_lat_acc = np.amax(orientation_rate * velocity)
-  return abs(float(max_pred_lat_acc / v_ego**2))
+  return abs(float(max(max_pred_lat_acc / v_ego**2, sys.float_info.min)))
 
 def backup_directory(backup, destination, success_msg, fail_msg):
   os.makedirs(destination, exist_ok=True)

@@ -214,6 +214,7 @@ def manager_init() -> None:
     ("MTSCEnabled", "1"),
     ("NavigationModels", ""),
     ("NewLongAPI", "0"),
+    ("NewLongAPIGM", "1"),
     ("NNFF", "1"),
     ("NNFFLite", "1"),
     ("NoLogging", "0"),

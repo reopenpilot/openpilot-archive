@@ -142,7 +142,11 @@ def are_all_models_downloaded(available_models, available_model_names, repo_url,
     if os.path.exists(model_path):
       if automatically_update_models:
         remote_file_size = get_remote_file_size(model_url)
-        local_file_size = os.path.getsize(model_path)
+        try:
+          local_file_size = os.path.getsize(model_path)
+        except FileNotFoundError:
+          print(f"File not found: {model_path}. It may have been moved or deleted.")
+          local_file_size = 0
 
         if remote_file_size is not None and remote_file_size != local_file_size:
           print(f"Model {model} is outdated. Local size: {local_file_size}, Remote size: {remote_file_size}. Re-downloading...")

@@ -27,6 +27,13 @@ locks = {
 
 running_threads = {}
 
+def run_thread_with_lock(name, lock, target, args):
+  if name not in running_threads or not running_threads[name].is_alive():
+    with lock:
+      thread = threading.Thread(target=target, args=args)
+      thread.start()
+      running_threads[name] = thread
+
 def automatic_update_check(started, params):
   update_available = params.get_bool("UpdaterFetchAvailable")
   update_ready = params.get_bool("UpdateAvailable")
@@ -78,13 +85,6 @@ def update_maps(now, params, params_memory):
   if params.get("OSMDownloadProgress", encoding='utf-8') is None:
     params_memory.put_nonblocking("OSMDownloadLocations", maps_selected)
     params.put_nonblocking("LastMapsUpdate", todays_date)
-
-def run_thread_with_lock(name, lock, target, args):
-  if name not in running_threads or not running_threads[name].is_alive():
-    with lock:
-      thread = threading.Thread(target=target, args=args)
-      thread.start()
-      running_threads[name] = thread
 
 def frogpilot_thread():
   config_realtime_process(5, Priority.CTRL_LOW)
