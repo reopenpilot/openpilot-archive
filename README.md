@@ -49,7 +49,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/beta3'
 
 
 
-### [< Dragonpilot master3 >](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-20240802-0949/)
+### [< Dragonpilot master3 >](https://github.com/reopenpilot/openpilot-archive/commits/dp-master3-20240802-1300/)
 ```
 https://smiskol.com/fork/dp/master3
 ```
@@ -211,6 +211,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/master3'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s dp-master3-20240802-0949
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20240802-1300</summary>
+> >
+> > #### dp-master3-20240802-1300
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/dp-master3-20240802-1300
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s dp-master3-20240802-1300
 > > ```
 > >
 > > </details>
