@@ -26,7 +26,7 @@ https://smiskol.com/fork/dp/beta3
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/beta3'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -57,7 +57,7 @@ https://smiskol.com/fork/dp/master3
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/master3'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -214,7 +214,7 @@ https://smiskol.com/fork/dp/master3-sgo
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/master3-sgo'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -245,7 +245,7 @@ https://smiskol.com/fork/fp/FrogPilot
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -318,7 +318,7 @@ https://smiskol.com/fork/fp/FrogPilot-Staging
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -439,7 +439,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 
 
 
-### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240801-1823/)
+### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240801-2358/)
 ```
 https://smiskol.com/fork/sp/dev-c3
 ```
@@ -447,7 +447,7 @@ https://smiskol.com/fork/sp/dev-c3
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
@@ -619,6 +619,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
 > >
 > > </details>
 > >
+> 
+> > <details><summary>20240801-2358</summary>
+> >
+> > #### sp-dev-c3-20240801-2358
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240801-2358
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240801-2358
+> > ```
+> >
+> > </details>
+> >
 >
 > </details>
 
@@ -631,7 +645,7 @@ https://smiskol.com/fork/sp/staging-c3
 curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/staging-c3'
 ```
 
-> <details><summary>show older versions</summary>
+> <details><summary>Show older versions</summary>
 >
 > <br>
 > 
