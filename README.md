@@ -509,7 +509,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 
 
 
-### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240802-1535/)
+### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240801-1512/)
 ```
 https://smiskol.com/fork/sp/dev-c3
 ```
@@ -671,76 +671,6 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240801-1512
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20240801-1823</summary>
-> >
-> > #### sp-dev-c3-20240801-1823
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240801-1823
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240801-1823
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20240801-2358</summary>
-> >
-> > #### sp-dev-c3-20240801-2358
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240801-2358
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240801-2358
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20240802-1416</summary>
-> >
-> > #### sp-dev-c3-20240802-1416
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240802-1416
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240802-1416
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20240802-1508</summary>
-> >
-> > #### sp-dev-c3-20240802-1508
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240802-1508
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240802-1508
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20240802-1535</summary>
-> >
-> > #### sp-dev-c3-20240802-1535
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20240802-1535
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240802-1535
 > > ```
 > >
 > > </details>
