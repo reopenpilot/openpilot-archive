@@ -64,7 +64,7 @@ class FrogPilotPlanner:
     self.model_length = 0
     self.mtsc_target = 0
     self.overridden_speed = 0
-    self.road_curvature = 0
+    self.road_curvature = 1
     self.slc_target = 0
     self.speed_jerk = 0
     self.tracked_model_length = 0
