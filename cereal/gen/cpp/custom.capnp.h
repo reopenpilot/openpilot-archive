@@ -25,6 +25,7 @@ enum class LongitudinalPersonalitySP_d92113aa7c18cdf6: uint16_t {
   MODERATE,
   STANDARD,
   RELAXED,
+  OVERTAKE,
 };
 CAPNP_DECLARE_ENUM(LongitudinalPersonalitySP, d92113aa7c18cdf6);
 CAPNP_DECLARE_SCHEMA(f40bf11ea3a7a163);
@@ -448,6 +449,8 @@ public:
 
   inline  ::cereal::AccelerationPersonality getAccelPersonality() const;
 
+  inline bool getOvertakingAccelerationAssist() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -494,6 +497,9 @@ public:
 
   inline  ::cereal::AccelerationPersonality getAccelPersonality();
   inline void setAccelPersonality( ::cereal::AccelerationPersonality value);
+
+  inline bool getOvertakingAccelerationAssist();
+  inline void setOvertakingAccelerationAssist(bool value);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -2284,6 +2290,20 @@ inline  ::cereal::AccelerationPersonality ControlsStateSP::Builder::getAccelPers
 inline void ControlsStateSP::Builder::setAccelPersonality( ::cereal::AccelerationPersonality value) {
   _builder.setDataField< ::cereal::AccelerationPersonality>(
       ::capnp::bounded<3>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool ControlsStateSP::Reader::getOvertakingAccelerationAssist() const {
+  return _reader.getDataField<bool>(
+      ::capnp::bounded<33>() * ::capnp::ELEMENTS);
+}
+
+inline bool ControlsStateSP::Builder::getOvertakingAccelerationAssist() {
+  return _builder.getDataField<bool>(
+      ::capnp::bounded<33>() * ::capnp::ELEMENTS);
+}
+inline void ControlsStateSP::Builder::setOvertakingAccelerationAssist(bool value) {
+  _builder.setDataField<bool>(
+      ::capnp::bounded<33>() * ::capnp::ELEMENTS, value);
 }
 
 inline bool ControlsStateSP::LateralTorqueState::Reader::hasNnLog() const {

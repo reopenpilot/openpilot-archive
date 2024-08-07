@@ -2694,6 +2694,14 @@ Reboot Required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Overtaking Acceleration Assist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Overtaking Acceleration Assist will operate when the turn signal indicator is turned on to the left (left-hand drive) or turned on to the right (right-hand drive) while Smart Cruise Control is operating.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>NNLC: Remove Lateral Jerk Response (Alpha)</source>
         <translation type="unfinished"></translation>
     </message>
