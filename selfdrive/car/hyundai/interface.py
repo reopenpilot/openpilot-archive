@@ -104,13 +104,14 @@ class CarInterface(CarInterfaceBase):
     ret.stoppingControl = True
     ret.vEgoStarting = 0.1
     ret.startAccel = 1.6
-    ret.stopAccel = -1.0
     ret.longitudinalActuatorDelay = 0.5
 
     if ret.flags & (HyundaiFlags.HYBRID | HyundaiFlags.EV):
       ret.startingState = False
+      ret.stopAccel = -2.0
     else:
       ret.startingState = True
+      ret.stopAccel = -1.0
 
     if DBC[ret.carFingerprint]["radar"] is None:
       if ret.spFlags & (HyundaiFlagsSP.SP_ENHANCED_SCC | HyundaiFlagsSP.SP_CAMERA_SCC_LEAD):
@@ -186,9 +187,6 @@ class CarInterface(CarInterfaceBase):
     # Detect smartMDPS, which bypasses EPS low speed lockout, allowing sunnypilot to send steering commands down to 0
     if 0x2AA in fingerprint[0]:
       ret.minSteerSpeed = 0.
-
-    if Params().get_bool("HkgSmoothStop"):
-      ret.vEgoStopping = 0.1
 
     return ret
 
