@@ -45,326 +45,326 @@ const static double MAHA_THRESH_31 = 3.8414588206941227;
  *                                                                            *
  *                         This file is part of 'ekf'                         *
  ******************************************************************************/
-void err_fun(double *nom_x, double *delta_x, double *out_7601140416182293853) {
-   out_7601140416182293853[0] = delta_x[0] + nom_x[0];
-   out_7601140416182293853[1] = delta_x[1] + nom_x[1];
-   out_7601140416182293853[2] = delta_x[2] + nom_x[2];
-   out_7601140416182293853[3] = delta_x[3] + nom_x[3];
-   out_7601140416182293853[4] = delta_x[4] + nom_x[4];
-   out_7601140416182293853[5] = delta_x[5] + nom_x[5];
-   out_7601140416182293853[6] = delta_x[6] + nom_x[6];
-   out_7601140416182293853[7] = delta_x[7] + nom_x[7];
-   out_7601140416182293853[8] = delta_x[8] + nom_x[8];
+void err_fun(double *nom_x, double *delta_x, double *out_7323774311990484810) {
+   out_7323774311990484810[0] = delta_x[0] + nom_x[0];
+   out_7323774311990484810[1] = delta_x[1] + nom_x[1];
+   out_7323774311990484810[2] = delta_x[2] + nom_x[2];
+   out_7323774311990484810[3] = delta_x[3] + nom_x[3];
+   out_7323774311990484810[4] = delta_x[4] + nom_x[4];
+   out_7323774311990484810[5] = delta_x[5] + nom_x[5];
+   out_7323774311990484810[6] = delta_x[6] + nom_x[6];
+   out_7323774311990484810[7] = delta_x[7] + nom_x[7];
+   out_7323774311990484810[8] = delta_x[8] + nom_x[8];
 }
-void inv_err_fun(double *nom_x, double *true_x, double *out_8515902340586860735) {
-   out_8515902340586860735[0] = -nom_x[0] + true_x[0];
-   out_8515902340586860735[1] = -nom_x[1] + true_x[1];
-   out_8515902340586860735[2] = -nom_x[2] + true_x[2];
-   out_8515902340586860735[3] = -nom_x[3] + true_x[3];
-   out_8515902340586860735[4] = -nom_x[4] + true_x[4];
-   out_8515902340586860735[5] = -nom_x[5] + true_x[5];
-   out_8515902340586860735[6] = -nom_x[6] + true_x[6];
-   out_8515902340586860735[7] = -nom_x[7] + true_x[7];
-   out_8515902340586860735[8] = -nom_x[8] + true_x[8];
+void inv_err_fun(double *nom_x, double *true_x, double *out_3361913979724621566) {
+   out_3361913979724621566[0] = -nom_x[0] + true_x[0];
+   out_3361913979724621566[1] = -nom_x[1] + true_x[1];
+   out_3361913979724621566[2] = -nom_x[2] + true_x[2];
+   out_3361913979724621566[3] = -nom_x[3] + true_x[3];
+   out_3361913979724621566[4] = -nom_x[4] + true_x[4];
+   out_3361913979724621566[5] = -nom_x[5] + true_x[5];
+   out_3361913979724621566[6] = -nom_x[6] + true_x[6];
+   out_3361913979724621566[7] = -nom_x[7] + true_x[7];
+   out_3361913979724621566[8] = -nom_x[8] + true_x[8];
 }
-void H_mod_fun(double *state, double *out_2217032637436483966) {
-   out_2217032637436483966[0] = 1.0;
-   out_2217032637436483966[1] = 0;
-   out_2217032637436483966[2] = 0;
-   out_2217032637436483966[3] = 0;
-   out_2217032637436483966[4] = 0;
-   out_2217032637436483966[5] = 0;
-   out_2217032637436483966[6] = 0;
-   out_2217032637436483966[7] = 0;
-   out_2217032637436483966[8] = 0;
-   out_2217032637436483966[9] = 0;
-   out_2217032637436483966[10] = 1.0;
-   out_2217032637436483966[11] = 0;
-   out_2217032637436483966[12] = 0;
-   out_2217032637436483966[13] = 0;
-   out_2217032637436483966[14] = 0;
-   out_2217032637436483966[15] = 0;
-   out_2217032637436483966[16] = 0;
-   out_2217032637436483966[17] = 0;
-   out_2217032637436483966[18] = 0;
-   out_2217032637436483966[19] = 0;
-   out_2217032637436483966[20] = 1.0;
-   out_2217032637436483966[21] = 0;
-   out_2217032637436483966[22] = 0;
-   out_2217032637436483966[23] = 0;
-   out_2217032637436483966[24] = 0;
-   out_2217032637436483966[25] = 0;
-   out_2217032637436483966[26] = 0;
-   out_2217032637436483966[27] = 0;
-   out_2217032637436483966[28] = 0;
-   out_2217032637436483966[29] = 0;
-   out_2217032637436483966[30] = 1.0;
-   out_2217032637436483966[31] = 0;
-   out_2217032637436483966[32] = 0;
-   out_2217032637436483966[33] = 0;
-   out_2217032637436483966[34] = 0;
-   out_2217032637436483966[35] = 0;
-   out_2217032637436483966[36] = 0;
-   out_2217032637436483966[37] = 0;
-   out_2217032637436483966[38] = 0;
-   out_2217032637436483966[39] = 0;
-   out_2217032637436483966[40] = 1.0;
-   out_2217032637436483966[41] = 0;
-   out_2217032637436483966[42] = 0;
-   out_2217032637436483966[43] = 0;
-   out_2217032637436483966[44] = 0;
-   out_2217032637436483966[45] = 0;
-   out_2217032637436483966[46] = 0;
-   out_2217032637436483966[47] = 0;
-   out_2217032637436483966[48] = 0;
-   out_2217032637436483966[49] = 0;
-   out_2217032637436483966[50] = 1.0;
-   out_2217032637436483966[51] = 0;
-   out_2217032637436483966[52] = 0;
-   out_2217032637436483966[53] = 0;
-   out_2217032637436483966[54] = 0;
-   out_2217032637436483966[55] = 0;
-   out_2217032637436483966[56] = 0;
-   out_2217032637436483966[57] = 0;
-   out_2217032637436483966[58] = 0;
-   out_2217032637436483966[59] = 0;
-   out_2217032637436483966[60] = 1.0;
-   out_2217032637436483966[61] = 0;
-   out_2217032637436483966[62] = 0;
-   out_2217032637436483966[63] = 0;
-   out_2217032637436483966[64] = 0;
-   out_2217032637436483966[65] = 0;
-   out_2217032637436483966[66] = 0;
-   out_2217032637436483966[67] = 0;
-   out_2217032637436483966[68] = 0;
-   out_2217032637436483966[69] = 0;
-   out_2217032637436483966[70] = 1.0;
-   out_2217032637436483966[71] = 0;
-   out_2217032637436483966[72] = 0;
-   out_2217032637436483966[73] = 0;
-   out_2217032637436483966[74] = 0;
-   out_2217032637436483966[75] = 0;
-   out_2217032637436483966[76] = 0;
-   out_2217032637436483966[77] = 0;
-   out_2217032637436483966[78] = 0;
-   out_2217032637436483966[79] = 0;
-   out_2217032637436483966[80] = 1.0;
+void H_mod_fun(double *state, double *out_7670763674896342596) {
+   out_7670763674896342596[0] = 1.0;
+   out_7670763674896342596[1] = 0;
+   out_7670763674896342596[2] = 0;
+   out_7670763674896342596[3] = 0;
+   out_7670763674896342596[4] = 0;
+   out_7670763674896342596[5] = 0;
+   out_7670763674896342596[6] = 0;
+   out_7670763674896342596[7] = 0;
+   out_7670763674896342596[8] = 0;
+   out_7670763674896342596[9] = 0;
+   out_7670763674896342596[10] = 1.0;
+   out_7670763674896342596[11] = 0;
+   out_7670763674896342596[12] = 0;
+   out_7670763674896342596[13] = 0;
+   out_7670763674896342596[14] = 0;
+   out_7670763674896342596[15] = 0;
+   out_7670763674896342596[16] = 0;
+   out_7670763674896342596[17] = 0;
+   out_7670763674896342596[18] = 0;
+   out_7670763674896342596[19] = 0;
+   out_7670763674896342596[20] = 1.0;
+   out_7670763674896342596[21] = 0;
+   out_7670763674896342596[22] = 0;
+   out_7670763674896342596[23] = 0;
+   out_7670763674896342596[24] = 0;
+   out_7670763674896342596[25] = 0;
+   out_7670763674896342596[26] = 0;
+   out_7670763674896342596[27] = 0;
+   out_7670763674896342596[28] = 0;
+   out_7670763674896342596[29] = 0;
+   out_7670763674896342596[30] = 1.0;
+   out_7670763674896342596[31] = 0;
+   out_7670763674896342596[32] = 0;
+   out_7670763674896342596[33] = 0;
+   out_7670763674896342596[34] = 0;
+   out_7670763674896342596[35] = 0;
+   out_7670763674896342596[36] = 0;
+   out_7670763674896342596[37] = 0;
+   out_7670763674896342596[38] = 0;
+   out_7670763674896342596[39] = 0;
+   out_7670763674896342596[40] = 1.0;
+   out_7670763674896342596[41] = 0;
+   out_7670763674896342596[42] = 0;
+   out_7670763674896342596[43] = 0;
+   out_7670763674896342596[44] = 0;
+   out_7670763674896342596[45] = 0;
+   out_7670763674896342596[46] = 0;
+   out_7670763674896342596[47] = 0;
+   out_7670763674896342596[48] = 0;
+   out_7670763674896342596[49] = 0;
+   out_7670763674896342596[50] = 1.0;
+   out_7670763674896342596[51] = 0;
+   out_7670763674896342596[52] = 0;
+   out_7670763674896342596[53] = 0;
+   out_7670763674896342596[54] = 0;
+   out_7670763674896342596[55] = 0;
+   out_7670763674896342596[56] = 0;
+   out_7670763674896342596[57] = 0;
+   out_7670763674896342596[58] = 0;
+   out_7670763674896342596[59] = 0;
+   out_7670763674896342596[60] = 1.0;
+   out_7670763674896342596[61] = 0;
+   out_7670763674896342596[62] = 0;
+   out_7670763674896342596[63] = 0;
+   out_7670763674896342596[64] = 0;
+   out_7670763674896342596[65] = 0;
+   out_7670763674896342596[66] = 0;
+   out_7670763674896342596[67] = 0;
+   out_7670763674896342596[68] = 0;
+   out_7670763674896342596[69] = 0;
+   out_7670763674896342596[70] = 1.0;
+   out_7670763674896342596[71] = 0;
+   out_7670763674896342596[72] = 0;
+   out_7670763674896342596[73] = 0;
+   out_7670763674896342596[74] = 0;
+   out_7670763674896342596[75] = 0;
+   out_7670763674896342596[76] = 0;
+   out_7670763674896342596[77] = 0;
+   out_7670763674896342596[78] = 0;
+   out_7670763674896342596[79] = 0;
+   out_7670763674896342596[80] = 1.0;
 }
-void f_fun(double *state, double dt, double *out_3186535248829676437) {
-   out_3186535248829676437[0] = state[0];
-   out_3186535248829676437[1] = state[1];
-   out_3186535248829676437[2] = state[2];
-   out_3186535248829676437[3] = state[3];
-   out_3186535248829676437[4] = state[4];
-   out_3186535248829676437[5] = dt*((-state[4] + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*state[4]))*state[6] - 9.8000000000000007*state[8] + stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(mass*state[1]) + (-stiffness_front*state[0] - stiffness_rear*state[0])*state[5]/(mass*state[4])) + state[5];
-   out_3186535248829676437[6] = dt*(center_to_front*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(rotational_inertia*state[1]) + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])*state[5]/(rotational_inertia*state[4]) + (-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])*state[6]/(rotational_inertia*state[4])) + state[6];
-   out_3186535248829676437[7] = state[7];
-   out_3186535248829676437[8] = state[8];
+void f_fun(double *state, double dt, double *out_4442205562604345935) {
+   out_4442205562604345935[0] = state[0];
+   out_4442205562604345935[1] = state[1];
+   out_4442205562604345935[2] = state[2];
+   out_4442205562604345935[3] = state[3];
+   out_4442205562604345935[4] = state[4];
+   out_4442205562604345935[5] = dt*((-state[4] + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*state[4]))*state[6] - 9.8000000000000007*state[8] + stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(mass*state[1]) + (-stiffness_front*state[0] - stiffness_rear*state[0])*state[5]/(mass*state[4])) + state[5];
+   out_4442205562604345935[6] = dt*(center_to_front*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(rotational_inertia*state[1]) + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])*state[5]/(rotational_inertia*state[4]) + (-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])*state[6]/(rotational_inertia*state[4])) + state[6];
+   out_4442205562604345935[7] = state[7];
+   out_4442205562604345935[8] = state[8];
 }
-void F_fun(double *state, double dt, double *out_4268212592728321604) {
-   out_4268212592728321604[0] = 1;
-   out_4268212592728321604[1] = 0;
-   out_4268212592728321604[2] = 0;
-   out_4268212592728321604[3] = 0;
-   out_4268212592728321604[4] = 0;
-   out_4268212592728321604[5] = 0;
-   out_4268212592728321604[6] = 0;
-   out_4268212592728321604[7] = 0;
-   out_4268212592728321604[8] = 0;
-   out_4268212592728321604[9] = 0;
-   out_4268212592728321604[10] = 1;
-   out_4268212592728321604[11] = 0;
-   out_4268212592728321604[12] = 0;
-   out_4268212592728321604[13] = 0;
-   out_4268212592728321604[14] = 0;
-   out_4268212592728321604[15] = 0;
-   out_4268212592728321604[16] = 0;
-   out_4268212592728321604[17] = 0;
-   out_4268212592728321604[18] = 0;
-   out_4268212592728321604[19] = 0;
-   out_4268212592728321604[20] = 1;
-   out_4268212592728321604[21] = 0;
-   out_4268212592728321604[22] = 0;
-   out_4268212592728321604[23] = 0;
-   out_4268212592728321604[24] = 0;
-   out_4268212592728321604[25] = 0;
-   out_4268212592728321604[26] = 0;
-   out_4268212592728321604[27] = 0;
-   out_4268212592728321604[28] = 0;
-   out_4268212592728321604[29] = 0;
-   out_4268212592728321604[30] = 1;
-   out_4268212592728321604[31] = 0;
-   out_4268212592728321604[32] = 0;
-   out_4268212592728321604[33] = 0;
-   out_4268212592728321604[34] = 0;
-   out_4268212592728321604[35] = 0;
-   out_4268212592728321604[36] = 0;
-   out_4268212592728321604[37] = 0;
-   out_4268212592728321604[38] = 0;
-   out_4268212592728321604[39] = 0;
-   out_4268212592728321604[40] = 1;
-   out_4268212592728321604[41] = 0;
-   out_4268212592728321604[42] = 0;
-   out_4268212592728321604[43] = 0;
-   out_4268212592728321604[44] = 0;
-   out_4268212592728321604[45] = dt*(stiffness_front*(-state[2] - state[3] + state[7])/(mass*state[1]) + (-stiffness_front - stiffness_rear)*state[5]/(mass*state[4]) + (-center_to_front*stiffness_front + center_to_rear*stiffness_rear)*state[6]/(mass*state[4]));
-   out_4268212592728321604[46] = -dt*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(mass*pow(state[1], 2));
-   out_4268212592728321604[47] = -dt*stiffness_front*state[0]/(mass*state[1]);
-   out_4268212592728321604[48] = -dt*stiffness_front*state[0]/(mass*state[1]);
-   out_4268212592728321604[49] = dt*((-1 - (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*pow(state[4], 2)))*state[6] - (-stiffness_front*state[0] - stiffness_rear*state[0])*state[5]/(mass*pow(state[4], 2)));
-   out_4268212592728321604[50] = dt*(-stiffness_front*state[0] - stiffness_rear*state[0])/(mass*state[4]) + 1;
-   out_4268212592728321604[51] = dt*(-state[4] + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*state[4]));
-   out_4268212592728321604[52] = dt*stiffness_front*state[0]/(mass*state[1]);
-   out_4268212592728321604[53] = -9.8000000000000007*dt;
-   out_4268212592728321604[54] = dt*(center_to_front*stiffness_front*(-state[2] - state[3] + state[7])/(rotational_inertia*state[1]) + (-center_to_front*stiffness_front + center_to_rear*stiffness_rear)*state[5]/(rotational_inertia*state[4]) + (-pow(center_to_front, 2)*stiffness_front - pow(center_to_rear, 2)*stiffness_rear)*state[6]/(rotational_inertia*state[4]));
-   out_4268212592728321604[55] = -center_to_front*dt*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(rotational_inertia*pow(state[1], 2));
-   out_4268212592728321604[56] = -center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
-   out_4268212592728321604[57] = -center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
-   out_4268212592728321604[58] = dt*(-(-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])*state[5]/(rotational_inertia*pow(state[4], 2)) - (-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])*state[6]/(rotational_inertia*pow(state[4], 2)));
-   out_4268212592728321604[59] = dt*(-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(rotational_inertia*state[4]);
-   out_4268212592728321604[60] = dt*(-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])/(rotational_inertia*state[4]) + 1;
-   out_4268212592728321604[61] = center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
-   out_4268212592728321604[62] = 0;
-   out_4268212592728321604[63] = 0;
-   out_4268212592728321604[64] = 0;
-   out_4268212592728321604[65] = 0;
-   out_4268212592728321604[66] = 0;
-   out_4268212592728321604[67] = 0;
-   out_4268212592728321604[68] = 0;
-   out_4268212592728321604[69] = 0;
-   out_4268212592728321604[70] = 1;
-   out_4268212592728321604[71] = 0;
-   out_4268212592728321604[72] = 0;
-   out_4268212592728321604[73] = 0;
-   out_4268212592728321604[74] = 0;
-   out_4268212592728321604[75] = 0;
-   out_4268212592728321604[76] = 0;
-   out_4268212592728321604[77] = 0;
-   out_4268212592728321604[78] = 0;
-   out_4268212592728321604[79] = 0;
-   out_4268212592728321604[80] = 1;
+void F_fun(double *state, double dt, double *out_3741498127708014361) {
+   out_3741498127708014361[0] = 1;
+   out_3741498127708014361[1] = 0;
+   out_3741498127708014361[2] = 0;
+   out_3741498127708014361[3] = 0;
+   out_3741498127708014361[4] = 0;
+   out_3741498127708014361[5] = 0;
+   out_3741498127708014361[6] = 0;
+   out_3741498127708014361[7] = 0;
+   out_3741498127708014361[8] = 0;
+   out_3741498127708014361[9] = 0;
+   out_3741498127708014361[10] = 1;
+   out_3741498127708014361[11] = 0;
+   out_3741498127708014361[12] = 0;
+   out_3741498127708014361[13] = 0;
+   out_3741498127708014361[14] = 0;
+   out_3741498127708014361[15] = 0;
+   out_3741498127708014361[16] = 0;
+   out_3741498127708014361[17] = 0;
+   out_3741498127708014361[18] = 0;
+   out_3741498127708014361[19] = 0;
+   out_3741498127708014361[20] = 1;
+   out_3741498127708014361[21] = 0;
+   out_3741498127708014361[22] = 0;
+   out_3741498127708014361[23] = 0;
+   out_3741498127708014361[24] = 0;
+   out_3741498127708014361[25] = 0;
+   out_3741498127708014361[26] = 0;
+   out_3741498127708014361[27] = 0;
+   out_3741498127708014361[28] = 0;
+   out_3741498127708014361[29] = 0;
+   out_3741498127708014361[30] = 1;
+   out_3741498127708014361[31] = 0;
+   out_3741498127708014361[32] = 0;
+   out_3741498127708014361[33] = 0;
+   out_3741498127708014361[34] = 0;
+   out_3741498127708014361[35] = 0;
+   out_3741498127708014361[36] = 0;
+   out_3741498127708014361[37] = 0;
+   out_3741498127708014361[38] = 0;
+   out_3741498127708014361[39] = 0;
+   out_3741498127708014361[40] = 1;
+   out_3741498127708014361[41] = 0;
+   out_3741498127708014361[42] = 0;
+   out_3741498127708014361[43] = 0;
+   out_3741498127708014361[44] = 0;
+   out_3741498127708014361[45] = dt*(stiffness_front*(-state[2] - state[3] + state[7])/(mass*state[1]) + (-stiffness_front - stiffness_rear)*state[5]/(mass*state[4]) + (-center_to_front*stiffness_front + center_to_rear*stiffness_rear)*state[6]/(mass*state[4]));
+   out_3741498127708014361[46] = -dt*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(mass*pow(state[1], 2));
+   out_3741498127708014361[47] = -dt*stiffness_front*state[0]/(mass*state[1]);
+   out_3741498127708014361[48] = -dt*stiffness_front*state[0]/(mass*state[1]);
+   out_3741498127708014361[49] = dt*((-1 - (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*pow(state[4], 2)))*state[6] - (-stiffness_front*state[0] - stiffness_rear*state[0])*state[5]/(mass*pow(state[4], 2)));
+   out_3741498127708014361[50] = dt*(-stiffness_front*state[0] - stiffness_rear*state[0])/(mass*state[4]) + 1;
+   out_3741498127708014361[51] = dt*(-state[4] + (-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(mass*state[4]));
+   out_3741498127708014361[52] = dt*stiffness_front*state[0]/(mass*state[1]);
+   out_3741498127708014361[53] = -9.8000000000000007*dt;
+   out_3741498127708014361[54] = dt*(center_to_front*stiffness_front*(-state[2] - state[3] + state[7])/(rotational_inertia*state[1]) + (-center_to_front*stiffness_front + center_to_rear*stiffness_rear)*state[5]/(rotational_inertia*state[4]) + (-pow(center_to_front, 2)*stiffness_front - pow(center_to_rear, 2)*stiffness_rear)*state[6]/(rotational_inertia*state[4]));
+   out_3741498127708014361[55] = -center_to_front*dt*stiffness_front*(-state[2] - state[3] + state[7])*state[0]/(rotational_inertia*pow(state[1], 2));
+   out_3741498127708014361[56] = -center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
+   out_3741498127708014361[57] = -center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
+   out_3741498127708014361[58] = dt*(-(-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])*state[5]/(rotational_inertia*pow(state[4], 2)) - (-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])*state[6]/(rotational_inertia*pow(state[4], 2)));
+   out_3741498127708014361[59] = dt*(-center_to_front*stiffness_front*state[0] + center_to_rear*stiffness_rear*state[0])/(rotational_inertia*state[4]);
+   out_3741498127708014361[60] = dt*(-pow(center_to_front, 2)*stiffness_front*state[0] - pow(center_to_rear, 2)*stiffness_rear*state[0])/(rotational_inertia*state[4]) + 1;
+   out_3741498127708014361[61] = center_to_front*dt*stiffness_front*state[0]/(rotational_inertia*state[1]);
+   out_3741498127708014361[62] = 0;
+   out_3741498127708014361[63] = 0;
+   out_3741498127708014361[64] = 0;
+   out_3741498127708014361[65] = 0;
+   out_3741498127708014361[66] = 0;
+   out_3741498127708014361[67] = 0;
+   out_3741498127708014361[68] = 0;
+   out_3741498127708014361[69] = 0;
+   out_3741498127708014361[70] = 1;
+   out_3741498127708014361[71] = 0;
+   out_3741498127708014361[72] = 0;
+   out_3741498127708014361[73] = 0;
+   out_3741498127708014361[74] = 0;
+   out_3741498127708014361[75] = 0;
+   out_3741498127708014361[76] = 0;
+   out_3741498127708014361[77] = 0;
+   out_3741498127708014361[78] = 0;
+   out_3741498127708014361[79] = 0;
+   out_3741498127708014361[80] = 1;
 }
-void h_25(double *state, double *unused, double *out_5623648446326736274) {
-   out_5623648446326736274[0] = state[6];
+void h_25(double *state, double *unused, double *out_8739001293148261377) {
+   out_8739001293148261377[0] = state[6];
 }
-void H_25(double *state, double *unused, double *out_4979319111069112730) {
-   out_4979319111069112730[0] = 0;
-   out_4979319111069112730[1] = 0;
-   out_4979319111069112730[2] = 0;
-   out_4979319111069112730[3] = 0;
-   out_4979319111069112730[4] = 0;
-   out_4979319111069112730[5] = 0;
-   out_4979319111069112730[6] = 1;
-   out_4979319111069112730[7] = 0;
-   out_4979319111069112730[8] = 0;
+void H_25(double *state, double *unused, double *out_8219246077433628171) {
+   out_8219246077433628171[0] = 0;
+   out_8219246077433628171[1] = 0;
+   out_8219246077433628171[2] = 0;
+   out_8219246077433628171[3] = 0;
+   out_8219246077433628171[4] = 0;
+   out_8219246077433628171[5] = 0;
+   out_8219246077433628171[6] = 1;
+   out_8219246077433628171[7] = 0;
+   out_8219246077433628171[8] = 0;
 }
-void h_24(double *state, double *unused, double *out_5657381027351914870) {
-   out_5657381027351914870[0] = state[4];
-   out_5657381027351914870[1] = state[5];
+void h_24(double *state, double *unused, double *out_3866938681010227057) {
+   out_3866938681010227057[0] = state[4];
+   out_3866938681010227057[1] = state[5];
 }
-void H_24(double *state, double *unused, double *out_7156533534676262703) {
-   out_7156533534676262703[0] = 0;
-   out_7156533534676262703[1] = 0;
-   out_7156533534676262703[2] = 0;
-   out_7156533534676262703[3] = 0;
-   out_7156533534676262703[4] = 1;
-   out_7156533534676262703[5] = 0;
-   out_7156533534676262703[6] = 0;
-   out_7156533534676262703[7] = 0;
-   out_7156533534676262703[8] = 0;
-   out_7156533534676262703[9] = 0;
-   out_7156533534676262703[10] = 0;
-   out_7156533534676262703[11] = 0;
-   out_7156533534676262703[12] = 0;
-   out_7156533534676262703[13] = 0;
-   out_7156533534676262703[14] = 1;
-   out_7156533534676262703[15] = 0;
-   out_7156533534676262703[16] = 0;
-   out_7156533534676262703[17] = 0;
+void H_24(double *state, double *unused, double *out_4661320478631305035) {
+   out_4661320478631305035[0] = 0;
+   out_4661320478631305035[1] = 0;
+   out_4661320478631305035[2] = 0;
+   out_4661320478631305035[3] = 0;
+   out_4661320478631305035[4] = 1;
+   out_4661320478631305035[5] = 0;
+   out_4661320478631305035[6] = 0;
+   out_4661320478631305035[7] = 0;
+   out_4661320478631305035[8] = 0;
+   out_4661320478631305035[9] = 0;
+   out_4661320478631305035[10] = 0;
+   out_4661320478631305035[11] = 0;
+   out_4661320478631305035[12] = 0;
+   out_4661320478631305035[13] = 0;
+   out_4661320478631305035[14] = 1;
+   out_4661320478631305035[15] = 0;
+   out_4661320478631305035[16] = 0;
+   out_4661320478631305035[17] = 0;
 }
-void h_30(double *state, double *unused, double *out_1986198918072713924) {
-   out_1986198918072713924[0] = state[4];
+void h_30(double *state, double *unused, double *out_8463807230863755488) {
+   out_8463807230863755488[0] = state[4];
 }
-void H_30(double *state, double *unused, double *out_7497652069576361357) {
-   out_7497652069576361357[0] = 0;
-   out_7497652069576361357[1] = 0;
-   out_7497652069576361357[2] = 0;
-   out_7497652069576361357[3] = 0;
-   out_7497652069576361357[4] = 1;
-   out_7497652069576361357[5] = 0;
-   out_7497652069576361357[6] = 0;
-   out_7497652069576361357[7] = 0;
-   out_7497652069576361357[8] = 0;
+void H_30(double *state, double *unused, double *out_1302555735942011416) {
+   out_1302555735942011416[0] = 0;
+   out_1302555735942011416[1] = 0;
+   out_1302555735942011416[2] = 0;
+   out_1302555735942011416[3] = 0;
+   out_1302555735942011416[4] = 1;
+   out_1302555735942011416[5] = 0;
+   out_1302555735942011416[6] = 0;
+   out_1302555735942011416[7] = 0;
+   out_1302555735942011416[8] = 0;
 }
-void h_26(double *state, double *unused, double *out_7664235691370840552) {
-   out_7664235691370840552[0] = state[7];
+void h_26(double *state, double *unused, double *out_4981263575184950483) {
+   out_4981263575184950483[0] = state[7];
 }
-void H_26(double *state, double *unused, double *out_1237815792195056506) {
-   out_1237815792195056506[0] = 0;
-   out_1237815792195056506[1] = 0;
-   out_1237815792195056506[2] = 0;
-   out_1237815792195056506[3] = 0;
-   out_1237815792195056506[4] = 0;
-   out_1237815792195056506[5] = 0;
-   out_1237815792195056506[6] = 0;
-   out_1237815792195056506[7] = 1;
-   out_1237815792195056506[8] = 0;
+void H_26(double *state, double *unused, double *out_4914720107672827570) {
+   out_4914720107672827570[0] = 0;
+   out_4914720107672827570[1] = 0;
+   out_4914720107672827570[2] = 0;
+   out_4914720107672827570[3] = 0;
+   out_4914720107672827570[4] = 0;
+   out_4914720107672827570[5] = 0;
+   out_4914720107672827570[6] = 0;
+   out_4914720107672827570[7] = 1;
+   out_4914720107672827570[8] = 0;
 }
-void h_27(double *state, double *unused, double *out_8660434497771068959) {
-   out_8660434497771068959[0] = state[3];
+void h_27(double *state, double *unused, double *out_1946758319516529598) {
+   out_1946758319516529598[0] = state[3];
 }
-void H_27(double *state, double *unused, double *out_5322888757775936446) {
-   out_5322888757775936446[0] = 0;
-   out_5322888757775936446[1] = 0;
-   out_5322888757775936446[2] = 0;
-   out_5322888757775936446[3] = 1;
-   out_5322888757775936446[4] = 0;
-   out_5322888757775936446[5] = 0;
-   out_5322888757775936446[6] = 0;
-   out_5322888757775936446[7] = 0;
-   out_5322888757775936446[8] = 0;
+void H_27(double *state, double *unused, double *out_3477319047742436327) {
+   out_3477319047742436327[0] = 0;
+   out_3477319047742436327[1] = 0;
+   out_3477319047742436327[2] = 0;
+   out_3477319047742436327[3] = 1;
+   out_3477319047742436327[4] = 0;
+   out_3477319047742436327[5] = 0;
+   out_3477319047742436327[6] = 0;
+   out_3477319047742436327[7] = 0;
+   out_3477319047742436327[8] = 0;
 }
-void h_29(double *state, double *unused, double *out_8385240435486563070) {
-   out_8385240435486563070[0] = state[1];
+void h_29(double *state, double *unused, double *out_9039426989944133693) {
+   out_9039426989944133693[0] = state[1];
 }
-void H_29(double *state, double *unused, double *out_8007883413890753541) {
-   out_8007883413890753541[0] = 0;
-   out_8007883413890753541[1] = 1;
-   out_8007883413890753541[2] = 0;
-   out_8007883413890753541[3] = 0;
-   out_8007883413890753541[4] = 0;
-   out_8007883413890753541[5] = 0;
-   out_8007883413890753541[6] = 0;
-   out_8007883413890753541[7] = 0;
-   out_8007883413890753541[8] = 0;
+void H_29(double *state, double *unused, double *out_792324391627619232) {
+   out_792324391627619232[0] = 0;
+   out_792324391627619232[1] = 1;
+   out_792324391627619232[2] = 0;
+   out_792324391627619232[3] = 0;
+   out_792324391627619232[4] = 0;
+   out_792324391627619232[5] = 0;
+   out_792324391627619232[6] = 0;
+   out_792324391627619232[7] = 0;
+   out_792324391627619232[8] = 0;
 }
-void h_28(double *state, double *unused, double *out_8842799723036820222) {
-   out_8842799723036820222[0] = state[0];
+void h_28(double *state, double *unused, double *out_4551163640325227249) {
+   out_4551163640325227249[0] = state[0];
 }
-void H_28(double *state, double *unused, double *out_2925484396821222967) {
-   out_2925484396821222967[0] = 1;
-   out_2925484396821222967[1] = 0;
-   out_2925484396821222967[2] = 0;
-   out_2925484396821222967[3] = 0;
-   out_2925484396821222967[4] = 0;
-   out_2925484396821222967[5] = 0;
-   out_2925484396821222967[6] = 0;
-   out_2925484396821222967[7] = 0;
-   out_2925484396821222967[8] = 0;
+void H_28(double *state, double *unused, double *out_5874723408697149806) {
+   out_5874723408697149806[0] = 1;
+   out_5874723408697149806[1] = 0;
+   out_5874723408697149806[2] = 0;
+   out_5874723408697149806[3] = 0;
+   out_5874723408697149806[4] = 0;
+   out_5874723408697149806[5] = 0;
+   out_5874723408697149806[6] = 0;
+   out_5874723408697149806[7] = 0;
+   out_5874723408697149806[8] = 0;
 }
-void h_31(double *state, double *unused, double *out_5898842508611242163) {
-   out_5898842508611242163[0] = state[8];
+void h_31(double *state, double *unused, double *out_7860862958278154023) {
+   out_7860862958278154023[0] = state[8];
 }
-void H_31(double *state, double *unused, double *out_611607689961705030) {
-   out_611607689961705030[0] = 0;
-   out_611607689961705030[1] = 0;
-   out_611607689961705030[2] = 0;
-   out_611607689961705030[3] = 0;
-   out_611607689961705030[4] = 0;
-   out_611607689961705030[5] = 0;
-   out_611607689961705030[6] = 0;
-   out_611607689961705030[7] = 0;
-   out_611607689961705030[8] = 1;
+void H_31(double *state, double *unused, double *out_8188600115556667743) {
+   out_8188600115556667743[0] = 0;
+   out_8188600115556667743[1] = 0;
+   out_8188600115556667743[2] = 0;
+   out_8188600115556667743[3] = 0;
+   out_8188600115556667743[4] = 0;
+   out_8188600115556667743[5] = 0;
+   out_8188600115556667743[6] = 0;
+   out_8188600115556667743[7] = 0;
+   out_8188600115556667743[8] = 1;
 }
 #include <eigen3/Eigen/Dense>
 #include <iostream>
@@ -518,68 +518,68 @@ void car_update_28(double *in_x, double *in_P, double *in_z, double *in_R, doubl
 void car_update_31(double *in_x, double *in_P, double *in_z, double *in_R, double *in_ea) {
   update<1, 3, 0>(in_x, in_P, h_31, H_31, NULL, in_z, in_R, in_ea, MAHA_THRESH_31);
 }
-void car_err_fun(double *nom_x, double *delta_x, double *out_7601140416182293853) {
-  err_fun(nom_x, delta_x, out_7601140416182293853);
+void car_err_fun(double *nom_x, double *delta_x, double *out_7323774311990484810) {
+  err_fun(nom_x, delta_x, out_7323774311990484810);
 }
-void car_inv_err_fun(double *nom_x, double *true_x, double *out_8515902340586860735) {
-  inv_err_fun(nom_x, true_x, out_8515902340586860735);
+void car_inv_err_fun(double *nom_x, double *true_x, double *out_3361913979724621566) {
+  inv_err_fun(nom_x, true_x, out_3361913979724621566);
 }
-void car_H_mod_fun(double *state, double *out_2217032637436483966) {
-  H_mod_fun(state, out_2217032637436483966);
+void car_H_mod_fun(double *state, double *out_7670763674896342596) {
+  H_mod_fun(state, out_7670763674896342596);
 }
-void car_f_fun(double *state, double dt, double *out_3186535248829676437) {
-  f_fun(state,  dt, out_3186535248829676437);
+void car_f_fun(double *state, double dt, double *out_4442205562604345935) {
+  f_fun(state,  dt, out_4442205562604345935);
 }
-void car_F_fun(double *state, double dt, double *out_4268212592728321604) {
-  F_fun(state,  dt, out_4268212592728321604);
+void car_F_fun(double *state, double dt, double *out_3741498127708014361) {
+  F_fun(state,  dt, out_3741498127708014361);
 }
-void car_h_25(double *state, double *unused, double *out_5623648446326736274) {
-  h_25(state, unused, out_5623648446326736274);
+void car_h_25(double *state, double *unused, double *out_8739001293148261377) {
+  h_25(state, unused, out_8739001293148261377);
 }
-void car_H_25(double *state, double *unused, double *out_4979319111069112730) {
-  H_25(state, unused, out_4979319111069112730);
+void car_H_25(double *state, double *unused, double *out_8219246077433628171) {
+  H_25(state, unused, out_8219246077433628171);
 }
-void car_h_24(double *state, double *unused, double *out_5657381027351914870) {
-  h_24(state, unused, out_5657381027351914870);
+void car_h_24(double *state, double *unused, double *out_3866938681010227057) {
+  h_24(state, unused, out_3866938681010227057);
 }
-void car_H_24(double *state, double *unused, double *out_7156533534676262703) {
-  H_24(state, unused, out_7156533534676262703);
+void car_H_24(double *state, double *unused, double *out_4661320478631305035) {
+  H_24(state, unused, out_4661320478631305035);
 }
-void car_h_30(double *state, double *unused, double *out_1986198918072713924) {
-  h_30(state, unused, out_1986198918072713924);
+void car_h_30(double *state, double *unused, double *out_8463807230863755488) {
+  h_30(state, unused, out_8463807230863755488);
 }
-void car_H_30(double *state, double *unused, double *out_7497652069576361357) {
-  H_30(state, unused, out_7497652069576361357);
+void car_H_30(double *state, double *unused, double *out_1302555735942011416) {
+  H_30(state, unused, out_1302555735942011416);
 }
-void car_h_26(double *state, double *unused, double *out_7664235691370840552) {
-  h_26(state, unused, out_7664235691370840552);
+void car_h_26(double *state, double *unused, double *out_4981263575184950483) {
+  h_26(state, unused, out_4981263575184950483);
 }
-void car_H_26(double *state, double *unused, double *out_1237815792195056506) {
-  H_26(state, unused, out_1237815792195056506);
+void car_H_26(double *state, double *unused, double *out_4914720107672827570) {
+  H_26(state, unused, out_4914720107672827570);
 }
-void car_h_27(double *state, double *unused, double *out_8660434497771068959) {
-  h_27(state, unused, out_8660434497771068959);
+void car_h_27(double *state, double *unused, double *out_1946758319516529598) {
+  h_27(state, unused, out_1946758319516529598);
 }
-void car_H_27(double *state, double *unused, double *out_5322888757775936446) {
-  H_27(state, unused, out_5322888757775936446);
+void car_H_27(double *state, double *unused, double *out_3477319047742436327) {
+  H_27(state, unused, out_3477319047742436327);
 }
-void car_h_29(double *state, double *unused, double *out_8385240435486563070) {
-  h_29(state, unused, out_8385240435486563070);
+void car_h_29(double *state, double *unused, double *out_9039426989944133693) {
+  h_29(state, unused, out_9039426989944133693);
 }
-void car_H_29(double *state, double *unused, double *out_8007883413890753541) {
-  H_29(state, unused, out_8007883413890753541);
+void car_H_29(double *state, double *unused, double *out_792324391627619232) {
+  H_29(state, unused, out_792324391627619232);
 }
-void car_h_28(double *state, double *unused, double *out_8842799723036820222) {
-  h_28(state, unused, out_8842799723036820222);
+void car_h_28(double *state, double *unused, double *out_4551163640325227249) {
+  h_28(state, unused, out_4551163640325227249);
 }
-void car_H_28(double *state, double *unused, double *out_2925484396821222967) {
-  H_28(state, unused, out_2925484396821222967);
+void car_H_28(double *state, double *unused, double *out_5874723408697149806) {
+  H_28(state, unused, out_5874723408697149806);
 }
-void car_h_31(double *state, double *unused, double *out_5898842508611242163) {
-  h_31(state, unused, out_5898842508611242163);
+void car_h_31(double *state, double *unused, double *out_7860862958278154023) {
+  h_31(state, unused, out_7860862958278154023);
 }
-void car_H_31(double *state, double *unused, double *out_611607689961705030) {
-  H_31(state, unused, out_611607689961705030);
+void car_H_31(double *state, double *unused, double *out_8188600115556667743) {
+  H_31(state, unused, out_8188600115556667743);
 }
 void car_predict(double *in_x, double *in_P, double *in_Q, double dt) {
   predict(in_x, in_P, in_Q, dt);
