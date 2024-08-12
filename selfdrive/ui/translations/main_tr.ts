@@ -1565,6 +1565,18 @@ Reboot Required.</source>
         <source>HKG: Custom Tuning for New Longitudinal API</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>HKG CAN: Enable Cruise Main by Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WARNING: This feature only applies when &quot;openpilot Longitudinal Control (Alpha)&quot; is enabled under &quot;Toggles&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling this toggle sets CRUISE MAIN to ON by default when the car starts, without engaging MADS. The user still needs to manually engage MADS.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsWindow</name>
