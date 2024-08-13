@@ -1325,7 +1325,7 @@ public:
 
   inline float getFinalSpeedKph() const;
 
-  inline float getVCruiseKphPrev() const;
+  inline float getVCruiseKphPrevDEPRECATED() const;
 
   inline float getTargetSpeed() const;
 
@@ -1369,8 +1369,8 @@ public:
   inline float getFinalSpeedKph();
   inline void setFinalSpeedKph(float value);
 
-  inline float getVCruiseKphPrev();
-  inline void setVCruiseKphPrev(float value);
+  inline float getVCruiseKphPrevDEPRECATED();
+  inline void setVCruiseKphPrevDEPRECATED(float value);
 
   inline float getTargetSpeed();
   inline void setTargetSpeed(float value);
@@ -5399,16 +5399,16 @@ inline void CarState::CustomStockLong::Builder::setFinalSpeedKph(float value) {
       ::capnp::bounded<1>() * ::capnp::ELEMENTS, value);
 }
 
-inline float CarState::CustomStockLong::Reader::getVCruiseKphPrev() const {
+inline float CarState::CustomStockLong::Reader::getVCruiseKphPrevDEPRECATED() const {
   return _reader.getDataField<float>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS);
 }
 
-inline float CarState::CustomStockLong::Builder::getVCruiseKphPrev() {
+inline float CarState::CustomStockLong::Builder::getVCruiseKphPrevDEPRECATED() {
   return _builder.getDataField<float>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS);
 }
-inline void CarState::CustomStockLong::Builder::setVCruiseKphPrev(float value) {
+inline void CarState::CustomStockLong::Builder::setVCruiseKphPrevDEPRECATED(float value) {
   _builder.setDataField<float>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
 }
