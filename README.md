@@ -1421,7 +1421,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
 > </details>
 
 
-### [< Sunnypilot staging-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-staging-c3-20240813-2008/)
+### [< Sunnypilot staging-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-staging-c3-20240813-2024/)
 ```
 https://smiskol.com/fork/sp/staging-c3
 ```
@@ -1709,6 +1709,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/staging-c3'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-staging-c3-20240813-2008
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20240813-2024</summary>
+> >
+> > #### sp-staging-c3-20240813-2024
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/sp-staging-c3-20240813-2024
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-staging-c3-20240813-2024
 > > ```
 > >
 > > </details>
