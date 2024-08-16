@@ -156,7 +156,8 @@ def frogpilot_thread():
         time_validated = system_time_valid()
         if not time_validated:
           continue
-        run_thread_with_lock("update_models", locks["update_models"], update_models, (params, params_memory))
+        if not (deviceState.networkType == OFFLINE or deviceState.networkMetered):
+          run_thread_with_lock("update_models", locks["update_models"], update_models, (params, params_memory))
 
       theme_manager.update_holiday()
 
