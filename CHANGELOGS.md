@@ -1,6 +1,6 @@
 dragonpilot [branch] [latest]
 =======================
-* Up to comma.ai openpilot master branch commit 71ad5a8deef595d3e0cb01d3e8a4d8ced1ae5085 (2024-07-25)
+* Up to comma.ai openpilot master branch commit 7ee9d2d1b93abb3ccba53f9552b716d3a11c2b6d (2024-07-31)
 * DP HIGHLIGHT:
   * [NEW] Disable Auto Update Toggle (Software Panel)
   * [UPDATE] Flight Panel
@@ -17,6 +17,8 @@ dragonpilot [branch] [latest]
   * [UPDATE] Personalized Accel Learner (PAL)
     * Adjusted learning freq
     * Save learnt values every minute
+  * [UPDATE] Dynamic End-to-End Controller
+    * DANGEOROUS_TTC reduce to 1.2s to rely on ACC mode more.
 　　
 　　
 ===============
