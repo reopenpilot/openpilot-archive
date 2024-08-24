@@ -240,15 +240,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>model requesting stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode forced on %1</source>
+        <source>Experimental Mode activated %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>to stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Experimental Mode forced on %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
