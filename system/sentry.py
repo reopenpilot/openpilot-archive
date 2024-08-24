@@ -1,6 +1,7 @@
 """Install exception handler for process crash."""
 import os
 import sentry_sdk
+import subprocess
 import time
 import traceback
 
@@ -29,11 +30,29 @@ def bind_user() -> None:
   sentry_sdk.set_user({"id": HARDWARE.get_serial()})
 
 
-def report_tombstone(fn: str, message: str, contents: str) -> None:
-  FrogPilot = "frogai" in get_build_metadata().openpilot.git_origin.lower()
-  if not FrogPilot or PC:
-    return
+def capture_tmux(params) -> None:
+  updated = params.get("Updated", encoding='utf-8')
 
+  try:
+    result = subprocess.run(['tmux', 'capture-pane', '-p', '-S', '-250'], stdout=subprocess.PIPE)
+    lines = result.stdout.decode('utf-8').splitlines()
+
+    if lines:
+      while True:
+        if sentry_pinged():
+          with sentry_sdk.configure_scope() as scope:
+            bind_user()
+            scope.set_extra("tmux_log", "\n".join(lines))
+            sentry_sdk.capture_message(f"User's UI crashed ({updated})", level='error')
+            sentry_sdk.flush()
+          break
+        time.sleep(60)
+
+  except Exception:
+    cloudlog.exception("Failed to capture tmux log")
+
+
+def report_tombstone(fn: str, message: str, contents: str) -> None:
   no_internet = 0
   while True:
     if is_url_pingable("https://sentry.io"):
@@ -128,10 +147,6 @@ def capture_exception(*args, **kwargs) -> None:
   save_exception(exc_text)
   cloudlog.error("crash", exc_info=kwargs.get('exc_info', 1))
 
-  FrogPilot = "frogai" in get_build_metadata().openpilot.git_origin.lower()
-  if not FrogPilot or PC:
-    return
-
   try:
     bind_user()
     sentry_sdk.capture_exception(*args, **kwargs)
@@ -166,7 +181,8 @@ def set_tag(key: str, value: str) -> None:
 
 def init(project: SentryProject) -> bool:
   build_metadata = get_build_metadata()
-  if PC:
+  FrogPilot = "FrogAi" in build_metadata.openpilot.git_origin
+  if not FrogPilot or PC:
     return False
 
   params = Params()
@@ -193,7 +209,7 @@ def init(project: SentryProject) -> bool:
                   release=get_version(),
                   integrations=integrations,
                   traces_sample_rate=1.0,
-                  max_value_length=8192,
+                  max_value_length=98304,
                   environment=env)
 
   build_metadata = get_build_metadata()

@@ -44,7 +44,12 @@ MODEL_PATHS = {
   ModelRunner.THNEED: Path(__file__).parent / ('models/supercombo.thneed' if MODEL_NAME == DEFAULT_MODEL else f'{MODELS_PATH}/{MODEL_NAME}.thneed'),
   ModelRunner.ONNX: Path(__file__).parent / 'models/supercombo.onnx'}
 
-METADATA_PATH = Path(__file__).parent / ('models/supercombo_metadata.pkl' if not SECRET_GOOD_OPENPILOT else 'models/secret-good-openpilot_metadata.pkl')
+metadata_file = (
+  'secret-good-openpilot_metadata.pkl' if SECRET_GOOD_OPENPILOT else
+  'clairvoyant-driver_metadata.pkl' if CLAIRVOYANT_MODEL else
+  'supercombo_metadata.pkl'
+)
+METADATA_PATH = Path(__file__).parent / f'models/{metadata_file}'
 
 MODEL_WIDTH = 512
 MODEL_HEIGHT = 256
@@ -77,7 +82,7 @@ class ModelState:
       'desire': np.zeros(ModelConstants.DESIRE_LEN * (ModelConstants.HISTORY_BUFFER_LEN_SECRET+1 if SECRET_GOOD_OPENPILOT else ModelConstants.HISTORY_BUFFER_LEN+1), dtype=np.float32),
       'traffic_convention': np.zeros(ModelConstants.TRAFFIC_CONVENTION_LEN, dtype=np.float32),
       'lateral_control_params': np.zeros(ModelConstants.LATERAL_CONTROL_PARAMS_LEN, dtype=np.float32),
-      'prev_desired_curv': np.zeros(ModelConstants.PREV_DESIRED_CURV_LEN * (ModelConstants.HISTORY_BUFFER_LEN_SECRET+1 if SECRET_GOOD_OPENPILOT else ModelConstants.HISTORY_BUFFER_LEN+1), dtype=np.float32),
+      'prev_desired_curv': np.zeros(ModelConstants.PREV_DESIRED_CURV_LEN * (ModelConstants.HISTORY_BUFFER_LEN+1), dtype=np.float32),
       **({'nav_features': np.zeros(ModelConstants.NAV_FEATURE_LEN, dtype=np.float32),
           'nav_instructions': np.zeros(ModelConstants.NAV_INSTRUCTION_LEN, dtype=np.float32)} if not DISABLE_NAV else {}),
       'features_buffer': np.zeros((ModelConstants.HISTORY_BUFFER_LEN_SECRET if SECRET_GOOD_OPENPILOT else ModelConstants.HISTORY_BUFFER_LEN) * ModelConstants.FEATURE_LEN, dtype=np.float32),
@@ -127,9 +132,11 @@ class ModelState:
 
     self.inputs['traffic_convention'][:] = inputs['traffic_convention']
     self.inputs['lateral_control_params'][:] = inputs['lateral_control_params']
+
     if not DISABLE_NAV:
       self.inputs['nav_features'][:] = inputs['nav_features']
       self.inputs['nav_instructions'][:] = inputs['nav_instructions']
+
     if DISABLE_RADAR:
       self.inputs['radar_tracks'][:] = inputs['radar_tracks']
 
@@ -362,7 +369,7 @@ def main(demo=False):
       modelv2_send = messaging.new_message('modelV2')
       posenet_send = messaging.new_message('cameraOdometry')
       fill_model_msg(modelv2_send, model_output, publish_state, meta_main.frame_id, meta_extra.frame_id, frame_id, frame_drop_ratio,
-                     meta_main.timestamp_eof, timestamp_llk, model_execution_time, sm["carState"].vEgo, steer_delay, nav_enabled, live_calib_seen,
+                     meta_main.timestamp_eof, timestamp_llk, model_execution_time, live_calib_seen, nav_enabled,
                      CLAIRVOYANT_MODEL, SECRET_GOOD_OPENPILOT)
 
       desire_state = modelv2_send.modelV2.meta.desireState
