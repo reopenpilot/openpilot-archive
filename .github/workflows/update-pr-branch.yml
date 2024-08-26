@@ -36,6 +36,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Switch to ${{ env.SOURCE_BRANCH }} branch
         run: git checkout ${{ env.SOURCE_BRANCH }}
 
