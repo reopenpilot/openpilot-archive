@@ -1,36 +1,48 @@
-name: Update MAKE-PRS-HERE Branch
+name: Update ${{ env.DESTINATION_BRANCH }} Branch
+
+env:
+  SOURCE_BRANCH: FrogPilot-Staging
+  TZ: America/Phoenix
 
 on:
   push:
     branches:
-      - FrogPilot-Staging
+      - ${{ env.SOURCE_BRANCH }}
   workflow_dispatch:
+    inputs:
+      DESTINATION_BRANCH:
+        description: 'Destination branch to update'
+        required: true
+        default: MAKE-PRS-HERE
 
 jobs:
   update-branch:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Set up environment
+        run: echo "DESTINATION_BRANCH=${{ github.event.inputs.DESTINATION_BRANCH }}" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Switch to FrogPilot-Staging branch
-        run: git checkout FrogPilot-Staging
+      - name: Switch to ${{ env.SOURCE_BRANCH }} branch
+        run: git checkout ${{ env.SOURCE_BRANCH }}
 
-      - name: Revert last commit on FrogPilot-Staging branch
+      - name: Revert last commit on ${{ env.SOURCE_BRANCH }} branch
         run: git reset --hard HEAD~1
 
-      - name: Merge FrogPilot-Staging branch into MAKE-PRS-HERE branch
+      - name: Merge ${{ env.SOURCE_BRANCH }} branch into ${{ env.DESTINATION_BRANCH }} branch
         run: |
-          git checkout MAKE-PRS-HERE
-          git merge --strategy=ours FrogPilot-Staging --no-commit
+          git checkout ${{ env.DESTINATION_BRANCH }}
+          git merge --strategy=ours --allow-unrelated-histories ${{ env.SOURCE_BRANCH }} --no-commit
 
       - name: Commit the changes
         run: |
-          TZ="America/Phoenix"
-          date=$(date +"%B %dth, %Y")
+          date=$(TZ=$TZ date +"%B %dth, %Y")
           git commit -m "$date Update"
 
-      - name: Push changes to MAKE-PRS-HERE branch
-        run: git push origin MAKE-PRS-HERE --force
+      - name: Push changes to ${{ env.DESTINATION_BRANCH }} branch
+        run: git push origin ${{ env.DESTINATION_BRANCH }} --force
