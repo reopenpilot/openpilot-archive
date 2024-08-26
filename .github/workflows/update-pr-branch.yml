@@ -40,9 +40,10 @@ jobs:
         run: |
           git checkout ${{ env.DESTINATION_BRANCH }}
 
-      - name: Merge changes from temp branch, preferring source branch's changes
+      - name: Merge changes from temp branch, allowing unrelated histories with conflict resolution
         run: |
-          git merge temp-branch -X theirs --no-commit
+          git merge temp-branch --allow-unrelated-histories --strategy-option theirs --no-commit || true
+          git merge --continue || true
 
       - name: Squash and commit changes with date suffix
         run: |
