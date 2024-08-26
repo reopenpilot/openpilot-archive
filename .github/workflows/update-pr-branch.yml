@@ -1,4 +1,4 @@
-name: Squash Commits and Cherry-Pick to MAKE-PRS-HERE
+name: Update MAKE-PRS-HERE
 
 on:
   push:
@@ -12,6 +12,7 @@ env:
 jobs:
   squash-and-cherry-pick:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
