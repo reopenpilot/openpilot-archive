@@ -25,10 +25,7 @@ jobs:
 
       - run: |
           git checkout -b ${{ env.TEMP_BRANCH }} origin/${{ env.SOURCE_BRANCH }}
-          git reset --hard HEAD~1
-          git reset $(git rev-list --max-parents=0 HEAD)
-          git add .
-          git commit -m "${{ env.COMMIT_MESSAGE_PREFIX }}"
+          git reset --hard HEAD~1  # Ignore the last commit
 
       - run: git checkout ${{ env.TARGET_BRANCH }}
 
@@ -43,14 +40,22 @@ jobs:
             echo "exists=false" >> $GITHUB_ENV
           fi
 
-      - if: failure()
+      - if: env.exists == 'true'
         run: |
           git checkout --theirs .
           git add .
-          git cherry-pick --continue
+          git cherry-pick --continue || echo "unresolved" > unresolved.txt
 
-      - if: success()
+      - id: check_unresolved
+        run: |
+          if [ -f unresolved.txt ]; then
+            echo "unresolved=true" >> $GITHUB_ENV
+          else
+            echo "unresolved=false" >> $GITHUB_ENV
+          fi
+
+      - if: env.unresolved == 'true'
+        run: echo "Cherry-pick resulted in conflicts that could not be resolved automatically."
+
+      - if: success() && env.exists == 'false'
         run: git push origin ${{ env.TARGET_BRANCH }}
-
-      - if: failure() && env.exists == 'true'
-        run: echo "Cherry-pick resulted in conflicts and could not be resolved automatically."
