@@ -1,19 +1,25 @@
-name: Update ${{ env.DESTINATION_BRANCH }} Branch
+name: Update Branch
 
 env:
   SOURCE_BRANCH: FrogPilot-Staging
+  IGNORE_COMMITS: 1
   TZ: America/Phoenix
 
 on:
   push:
     branches:
-      - ${{ env.SOURCE_BRANCH }}
+      - FrogPilot-Staging
+
   workflow_dispatch:
     inputs:
       DESTINATION_BRANCH:
         description: 'Destination branch to update'
         required: true
         default: MAKE-PRS-HERE
+      IGNORE_COMMITS:
+        description: 'Number of commits to ignore'
+        required: false
+        default: 0
 
 jobs:
   update-branch:
@@ -21,7 +27,9 @@ jobs:
 
     steps:
       - name: Set up environment
-        run: echo "DESTINATION_BRANCH=${{ github.event.inputs.DESTINATION_BRANCH }}" >> $GITHUB_ENV
+        run: |
+          echo "DESTINATION_BRANCH=${{ github.event.inputs.DESTINATION_BRANCH }}" >> $GITHUB_ENV
+          echo "IGNORE_COMMITS=${{ github.event.inputs.IGNORE_COMMITS }}" >> $GITHUB_ENV
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -31,8 +39,8 @@ jobs:
       - name: Switch to ${{ env.SOURCE_BRANCH }} branch
         run: git checkout ${{ env.SOURCE_BRANCH }}
 
-      - name: Revert last commit on ${{ env.SOURCE_BRANCH }} branch
-        run: git reset --hard HEAD~1
+      - name: Revert last ${{ env.IGNORE_COMMITS }} commits on ${{ env.SOURCE_BRANCH }} branch
+        run: git reset --hard HEAD~${{ env.IGNORE_COMMITS }}
 
       - name: Merge ${{ env.SOURCE_BRANCH }} branch into ${{ env.DESTINATION_BRANCH }} branch
         run: |
