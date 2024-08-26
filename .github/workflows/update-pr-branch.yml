@@ -29,6 +29,6 @@ jobs:
       - name: Sync changes from ${{ env.SOURCE_BRANCH }} to ${{ env.DESTINATION_BRANCH }}
         run: |
           git fetch origin
-          git checkout -B temp-branch origin/${{ env.SOURCE_BRANCH }}
-          git reset --hard HEAD~1
-          git push --force origin HEAD:${{ env.DESTINATION_BRANCH }}
+          git checkout ${{ env.DESTINATION_BRANCH }}
+          git merge --no-ff --allow-unrelated-histories origin/${{ env.SOURCE_BRANCH }}
+          git push origin ${{ env.DESTINATION_BRANCH }}
