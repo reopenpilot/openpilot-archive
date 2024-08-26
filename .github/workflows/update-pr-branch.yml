@@ -26,24 +26,19 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Checkout destination branch
+      - name: Fetch and checkout destination branch
         run: |
-          git fetch origin
+          git fetch origin ${{ env.DESTINATION_BRANCH }}:${{ env.DESTINATION_BRANCH }}
           git checkout ${{ env.DESTINATION_BRANCH }}
 
-      - name: Merge changes from source branch with conflicts resolved in favor of source
+      - name: Merge changes from source branch
         run: |
-          git merge --allow-unrelated-histories -X theirs origin/${{ env.SOURCE_BRANCH }}
+          git merge -X theirs origin/${{ env.SOURCE_BRANCH }} --allow-unrelated-histories
 
-      - name: Generate commit message with correct date suffix
+      - name: Generate commit message with date suffix and push
         run: |
           DAY=$(TZ=${{ env.TZ }} date +"%-d")
-          case $DAY in
-            1|21|31) SUFFIX="st" ;;
-            2|22) SUFFIX="nd" ;;
-            3|23) SUFFIX="rd" ;;
-            *) SUFFIX="th" ;;
-          esac
+          SUFFIX=$(case $DAY in 1|21|31) echo "st" ;; 2|22) echo "nd" ;; 3|23) echo "rd" ;; *) echo "th" ;; esac)
           CURRENT_DATE=$(TZ=${{ env.TZ }} date +"%B ${DAY}${SUFFIX}, %Y Update")
           git commit --allow-empty -m "$CURRENT_DATE"
           git push origin ${{ env.DESTINATION_BRANCH }}
