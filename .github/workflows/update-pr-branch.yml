@@ -10,10 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMMIT_MESSAGE_PREFIX: "$(TZ='America/Phoenix' date +'%B %dth, %Y') Update"
-
       SOURCE_BRANCH: "FrogPilot-Staging"
       TARGET_BRANCH: "MAKE-PRS-HERE"
-
       TEMP_BRANCH: "temp-branch"
 
     steps:
@@ -46,14 +44,21 @@ jobs:
         run: git checkout ${{ env.TARGET_BRANCH }}
 
       - name: Cherry-pick the squashed commit
-        run: git cherry-pick ${{ env.TEMP_BRANCH }} || echo "Cherry-pick resulted in conflicts"
+        id: cherry_pick
+        run: |
+          git cherry-pick ${{ env.TEMP_BRANCH }} || (echo "conflict" > conflict.txt; exit 1)
 
       - name: Resolve conflicts using source branch code
-        if: failure()
+        if: steps.cherry_pick.outcome == 'failure'
         run: |
           git checkout --theirs .
           git add .
           git cherry-pick --continue
 
       - name: Push changes to target branch
+        if: success()
         run: git push origin ${{ env.TARGET_BRANCH }}
+
+      - name: Handle cherry-pick conflict
+        if: failure()
+        run: echo "Cherry-pick resulted in conflicts and could not be resolved automatically."
