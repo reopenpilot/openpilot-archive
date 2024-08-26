@@ -8,6 +8,14 @@ on:
 jobs:
   cherry-pick:
     runs-on: ubuntu-latest
+    env:
+      COMMIT_MESSAGE_PREFIX: "$(TZ='America/Phoenix' date +'%B %dth, %Y') Update"
+
+      SOURCE_BRANCH: "MAKE-PRS-HERE"
+      TARGET_BRANCH: "MAKE-PRS-HERE"
+
+      TEMP_BRANCH: "temp-branch"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,36 +27,33 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Get the 2nd to newest commit hash on FrogPilot-Staging
+      - name: Get the 2nd to newest commit hash
         id: second_commit
         run: |
-          git checkout FrogPilot-Staging
-          second_commit=$(git rev-parse HEAD~1)
-          echo "SECOND_COMMIT=$second_commit" >> $GITHUB_ENV
+          git fetch origin ${{ env.SOURCE_BRANCH }}
+          echo "SECOND_COMMIT=$(git rev-parse origin/${{ env.SOURCE_BRANCH }}~1)" >> $GITHUB_ENV
 
       - name: Create and checkout new branch from 2nd to newest commit
         run: |
-          git checkout -b new-branch-based-on-2nd-commit ${{ env.SECOND_COMMIT }}
+          git checkout -b ${{ env.TEMP_BRANCH }} ${{ env.SECOND_COMMIT }}
 
       - name: Squash commits into one
         run: |
-          TZ="America/Phoenix" date_today=$(date +"%B %dth, %Y Update")
           git reset --soft ${{ env.SECOND_COMMIT }}^
-          git commit --amend -m "$date_today"
+          git commit --amend -m "${{ env.COMMIT_MESSAGE_PREFIX }}"
 
-      - name: Checkout MAKE-PRS-HERE branch
-        run: |
-          git checkout MAKE-PRS-HERE
+      - name: Checkout target branch
+        run: git checkout ${{ env.TARGET_BRANCH }}
 
       - name: Cherry-pick the squashed commit
-        run: |
-          git cherry-pick new-branch-based-on-2nd-commit
+        run: git cherry-pick ${{ env.TEMP_BRANCH }} || echo "Cherry-pick resulted in conflicts"
 
-      - name: Resolve any conflicts by using code from FrogPilot-Staging
+      - name: Resolve conflicts using source branch code
+        if: failure()
         run: |
           git checkout --theirs .
+          git add .
           git cherry-pick --continue
 
-      - name: Push changes to MAKE-PRS-HERE
-        run: |
-          git push origin MAKE-PRS-HERE
+      - name: Push changes to target branch
+        run: git push origin ${{ env.TARGET_BRANCH }}
