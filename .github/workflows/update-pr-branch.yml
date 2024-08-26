@@ -15,50 +15,33 @@ jobs:
       TEMP_BRANCH: "temp-branch"
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Set up Git user
-        run: |
+      - run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Get the 2nd to newest commit hash
-        id: second_commit
-        run: |
+      - run: |
           git fetch origin ${{ env.SOURCE_BRANCH }}
-          echo "SECOND_COMMIT=$(git rev-parse origin/${{ env.SOURCE_BRANCH }}~1)" >> $GITHUB_ENV
-
-      - name: Create and checkout new branch from 2nd to newest commit
-        run: |
-          git checkout -b ${{ env.TEMP_BRANCH }} ${{ env.SECOND_COMMIT }}
-
-      - name: Squash commits into one
-        run: |
-          git reset --soft ${{ env.SECOND_COMMIT }}^
+          git checkout -b ${{ env.TEMP_BRANCH }} $(git rev-parse origin/${{ env.SOURCE_BRANCH }}~1)
+          git reset --soft HEAD^
           git commit --amend -m "${{ env.COMMIT_MESSAGE_PREFIX }}"
 
-      - name: Checkout target branch
-        run: git checkout ${{ env.TARGET_BRANCH }}
+      - run: git checkout ${{ env.TARGET_BRANCH }}
 
-      - name: Cherry-pick the squashed commit
-        id: cherry_pick
-        run: |
-          git cherry-pick ${{ env.TEMP_BRANCH }} || (echo "conflict" > conflict.txt; exit 1)
+      - run: |
+          git cherry-pick ${{ env.TEMP_BRANCH }} || echo "conflict" > conflict.txt
 
-      - name: Resolve conflicts using source branch code
-        if: steps.cherry_pick.outcome == 'failure'
+      - if: failure()
         run: |
           git checkout --theirs .
           git add .
           git cherry-pick --continue
 
-      - name: Push changes to target branch
-        if: success()
+      - if: success()
         run: git push origin ${{ env.TARGET_BRANCH }}
 
-      - name: Handle cherry-pick conflict
-        if: failure()
+      - if: failure() && exists(conflict.txt)
         run: echo "Cherry-pick resulted in conflicts and could not be resolved automatically."
