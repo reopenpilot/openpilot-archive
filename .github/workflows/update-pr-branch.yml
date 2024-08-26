@@ -1,4 +1,4 @@
-name: Cherry-pick and Squash Commit
+name: Squash Commits and Cherry-Pick to MAKE-PRS-HERE
 
 on:
   push:
@@ -6,56 +6,46 @@ on:
       - FrogPilot-Staging
 
 jobs:
-  cherry-pick:
+  squash-and-cherry-pick:
     runs-on: ubuntu-latest
-    env:
-      COMMIT_MESSAGE_PREFIX: "$(TZ='America/Phoenix' date +'%B %dth, %Y') Update"
-      SOURCE_BRANCH: "FrogPilot-Staging"
-      TARGET_BRANCH: "MAKE-PRS-HERE"
-      TEMP_BRANCH: "temp-branch"
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: FrogPilot-Staging
 
-      - run: |
+      - name: Set Git user name and email
+        run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - run: |
-          git checkout -b ${{ env.TEMP_BRANCH }} origin/${{ env.SOURCE_BRANCH }}
-          git reset --hard HEAD~1  # Ignore the last commit
-
-      - run: git checkout ${{ env.TARGET_BRANCH }}
-
-      - run: |
-          git cherry-pick ${{ env.TEMP_BRANCH }} || echo "conflict" > conflict.txt
-
-      - id: check_conflict
+      - name: Get the second to last commit hash
+        id: get-commit
         run: |
-          if [ -f conflict.txt ]; then
-            echo "exists=true" >> $GITHUB_ENV
-          else
-            echo "exists=false" >> $GITHUB_ENV
-          fi
+          commit_hash=$(git rev-parse HEAD~1)
+          echo "commit_hash=$commit_hash" >> $GITHUB_ENV
 
-      - if: env.exists == 'true'
+      - name: Create temporary branch starting from the second to last commit
         run: |
-          git checkout --theirs .
-          git add .
-          git cherry-pick --continue || echo "unresolved" > unresolved.txt
+          git checkout -b temp-branch ${{ env.commit_hash }}
 
-      - id: check_unresolved
+      - name: Squash all commits into one with today's date in Phoenix time zone
         run: |
-          if [ -f unresolved.txt ]; then
-            echo "unresolved=true" >> $GITHUB_ENV
-          else
-            echo "unresolved=false" >> $GITHUB_ENV
-          fi
+          day=$(TZ='America/Phoenix' date '+%-d')
+          suffix="th"
+          if [ "$((day % 10))" -eq 1 ] && [ "$day" -ne 11 ]; then suffix="st"; fi
+          if [ "$((day % 10))" -eq 2 ] && [ "$day" -ne 12 ]; then suffix="nd"; fi
+          if [ "$((day % 10))" -eq 3 ] && [ "$day" -ne 13 ]; then suffix="rd"; fi
+          commit_message="$(TZ='America/Phoenix' date '+%B ')$day$suffix, $(TZ='America/Phoenix' date '+%Y') Update"
+          git reset --soft $(git rev-list --max-parents=0 HEAD)
+          git commit -m "$commit_message"
 
-      - if: env.unresolved == 'true'
-        run: echo "Cherry-pick resulted in conflicts that could not be resolved automatically."
+      - name: Checkout MAKE-PRS-HERE branch
+        run: |
+          git fetch origin
+          git checkout MAKE-PRS-HERE
 
-      - if: success() && env.exists == 'false'
-        run: git push origin ${{ env.TARGET_BRANCH }}
+      - name: Cherry-pick the squashed commit to MAKE-PRS-HERE branch
+        run: |
+          git cherry-pick $(git rev-parse temp-branch) -X theirs
+          git push origin MAKE-PRS-HERE
