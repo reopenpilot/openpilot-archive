@@ -1,66 +1,54 @@
-name: Sync Code Between Branches (Ignoring Latest Commit)
-
-env:
-  SOURCE_BRANCH: FrogPilot-Staging
-  IGNORE_COMMITS: 1
-  TZ: America/Phoenix
+name: Cherry-pick and Squash Commit
 
 on:
   push:
     branches:
       - FrogPilot-Staging
 
-  workflow_dispatch:
-    inputs:
-      DESTINATION_BRANCH:
-        description: 'Destination branch to update'
-        required: true
-        default: MAKE-PRS-HERE
-      IGNORE_COMMITS:
-        description: 'Number of commits to ignore from the source branch'
-        required: false
-        default: 0
-
 jobs:
-  sync-code:
+  cherry-pick:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Set up environment
-        run: |
-          echo "DESTINATION_BRANCH=${{ github.event.inputs.DESTINATION_BRANCH }}" >> $GITHUB_ENV
-          echo "IGNORE_COMMITS=${{ github.event.inputs.IGNORE_COMMITS }}" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Configure Git
+      - name: Set up Git user
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Checkout the second-to-last commit from the source branch
+      - name: Get the 2nd to newest commit hash on FrogPilot-Staging
+        id: second_commit
         run: |
-          git checkout ${{ env.SOURCE_BRANCH }}
-          git reset --hard HEAD~${{ env.IGNORE_COMMITS }}  # Checkout to the state before the ignored commits
+          git checkout FrogPilot-Staging
+          second_commit=$(git rev-parse HEAD~1)
+          echo "SECOND_COMMIT=$second_commit" >> $GITHUB_ENV
 
-      - name: Checkout the destination branch
-        run: git checkout ${{ env.DESTINATION_BRANCH }}
-
-      - name: Copy code differences to the destination branch
+      - name: Create and checkout new branch from 2nd to newest commit
         run: |
-          git checkout ${{ env.SOURCE_BRANCH }} -- .  # This copies the code from the source branch (without the latest commits) to the destination branch
-          git reset HEAD  # Unstages the changes to avoid committing unrelated changes
+          git checkout -b new-branch-based-on-2nd-commit ${{ env.SECOND_COMMIT }}
 
-      - name: Commit and push changes if there are any
+      - name: Squash commits into one
         run: |
-          if ! git diff --quiet; then
-            date=$(TZ=$TZ date +"%B %dth, %Y")
-            git add .
-            git commit -m "$date Update"
-            git push origin ${{ env.DESTINATION_BRANCH }} --force
-          else
-            echo "No code changes to commit"
-          fi
+          TZ="America/Phoenix" date_today=$(date +"%B %dth, %Y Update")
+          git reset --soft ${{ env.SECOND_COMMIT }}^
+          git commit --amend -m "$date_today"
+
+      - name: Checkout MAKE-PRS-HERE branch
+        run: |
+          git checkout MAKE-PRS-HERE
+
+      - name: Cherry-pick the squashed commit
+        run: |
+          git cherry-pick new-branch-based-on-2nd-commit
+
+      - name: Resolve any conflicts by using code from FrogPilot-Staging
+        run: |
+          git checkout --theirs .
+          git cherry-pick --continue
+
+      - name: Push changes to MAKE-PRS-HERE
+        run: |
+          git push origin MAKE-PRS-HERE
