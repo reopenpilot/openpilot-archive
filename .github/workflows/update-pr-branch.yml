@@ -11,7 +11,7 @@ jobs:
     env:
       COMMIT_MESSAGE_PREFIX: "$(TZ='America/Phoenix' date +'%B %dth, %Y') Update"
 
-      SOURCE_BRANCH: "MAKE-PRS-HERE"
+      SOURCE_BRANCH: "FrogPilot-Staging"
       TARGET_BRANCH: "MAKE-PRS-HERE"
 
       TEMP_BRANCH: "temp-branch"
