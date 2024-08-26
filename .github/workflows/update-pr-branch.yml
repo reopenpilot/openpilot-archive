@@ -5,6 +5,10 @@ on:
     branches:
       - FrogPilot-Staging
 
+env:
+  SOURCE_BRANCH: FrogPilot-Staging
+  TARGET_BRANCH: MAKE-PRS-HERE
+
 jobs:
   squash-and-cherry-pick:
     runs-on: ubuntu-latest
@@ -12,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: FrogPilot-Staging
+          ref: ${{ env.SOURCE_BRANCH }}
           fetch-depth: 0
 
       - name: Set Git user name and email
@@ -20,40 +24,27 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Display current branch and commit
-        run: |
-          echo "Current branch:"
-          git branch --show-current
-          echo "Last 5 commits:"
-          git log -n 5 --oneline
-
-      - name: Get the second to last commit hash
-        id: get-commit
+      - name: Get the second to last commit hash and create a temporary branch
         run: |
           commit_hash=$(git rev-parse HEAD~1)
-          echo "commit_hash=$commit_hash" >> $GITHUB_ENV
-
-      - name: Create temporary branch starting from the resolved commit
-        run: |
-          git checkout -b temp-branch ${{ env.commit_hash }}
+          git checkout -b temp-branch $commit_hash
 
       - name: Squash all commits into one with today's date in Phoenix time zone
         run: |
           day=$(TZ='America/Phoenix' date '+%-d')
           suffix="th"
-          if [ "$((day % 10))" -eq 1 ] && [ "$day" -ne 11 ]; then suffix="st"; fi
-          if [ "$((day % 10))" -eq 2 ] && [ "$day" -ne 12 ]; then suffix="nd"; fi
-          if [ "$((day % 10))" -eq 3 ] && [ "$day" -ne 13 ]; then suffix="rd"; fi
+          case $day in
+            1|21|31) suffix="st" ;;
+            2|22) suffix="nd" ;;
+            3|23) suffix="rd" ;;
+          esac
           commit_message="$(TZ='America/Phoenix' date '+%B ')$day$suffix, $(TZ='America/Phoenix' date '+%Y') Update"
           git reset --soft $(git rev-list --max-parents=0 HEAD)
           git commit -m "$commit_message"
 
-      - name: Checkout MAKE-PRS-HERE branch
+      - name: Cherry-pick the squashed commit to target branch and push
         run: |
           git fetch origin
-          git checkout MAKE-PRS-HERE
-
-      - name: Cherry-pick the squashed commit to MAKE-PRS-HERE branch
-        run: |
-          git cherry-pick $(git rev-parse temp-branch) -X theirs
-          git push origin MAKE-PRS-HERE
+          git checkout ${{ env.TARGET_BRANCH }}
+          git cherry-pick temp-branch -X theirs
+          git push origin ${{ env.TARGET_BRANCH }}
