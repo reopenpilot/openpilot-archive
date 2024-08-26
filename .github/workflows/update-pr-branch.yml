@@ -1,4 +1,4 @@
-name: Update Branch
+name: Sync Code Between Branches (Ignoring Latest Commit)
 
 env:
   SOURCE_BRANCH: FrogPilot-Staging
@@ -17,12 +17,12 @@ on:
         required: true
         default: MAKE-PRS-HERE
       IGNORE_COMMITS:
-        description: 'Number of commits to ignore'
+        description: 'Number of commits to ignore from the source branch'
         required: false
         default: 0
 
 jobs:
-  update-branch:
+  sync-code:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,21 +41,26 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Switch to ${{ env.SOURCE_BRANCH }} branch
-        run: git checkout ${{ env.SOURCE_BRANCH }}
-
-      - name: Revert last ${{ env.IGNORE_COMMITS }} commits on ${{ env.SOURCE_BRANCH }} branch
-        run: git reset --hard HEAD~${{ env.IGNORE_COMMITS }}
-
-      - name: Merge ${{ env.SOURCE_BRANCH }} branch into ${{ env.DESTINATION_BRANCH }} branch
+      - name: Checkout the second-to-last commit from the source branch
         run: |
-          git checkout ${{ env.DESTINATION_BRANCH }}
-          git merge --strategy=ours --allow-unrelated-histories ${{ env.SOURCE_BRANCH }} --no-commit
+          git checkout ${{ env.SOURCE_BRANCH }}
+          git reset --hard HEAD~${{ env.IGNORE_COMMITS }}  # Checkout to the state before the ignored commits
 
-      - name: Commit the changes
+      - name: Checkout the destination branch
+        run: git checkout ${{ env.DESTINATION_BRANCH }}
+
+      - name: Copy code differences to the destination branch
         run: |
-          date=$(TZ=$TZ date +"%B %dth, %Y")
-          git commit -m "$date Update"
+          git checkout ${{ env.SOURCE_BRANCH }} -- .  # This copies the code from the source branch (without the latest commits) to the destination branch
+          git reset HEAD  # Unstages the changes to avoid committing unrelated changes
 
-      - name: Push changes to ${{ env.DESTINATION_BRANCH }} branch
-        run: git push origin ${{ env.DESTINATION_BRANCH }} --force
+      - name: Commit and push changes if there are any
+        run: |
+          if ! git diff --quiet; then
+            date=$(TZ=$TZ date +"%B %dth, %Y")
+            git add .
+            git commit -m "$date Update"
+            git push origin ${{ env.DESTINATION_BRANCH }} --force
+          else
+            echo "No code changes to commit"
+          fi
