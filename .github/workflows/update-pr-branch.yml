@@ -36,10 +36,13 @@ jobs:
           git checkout -b temp-branch
           git reset --hard HEAD~1
 
-      - name: Checkout destination branch and merge changes
+      - name: Checkout destination branch
         run: |
           git checkout ${{ env.DESTINATION_BRANCH }}
-          git merge --strategy-option ours temp-branch --no-commit
+
+      - name: Merge changes from temp branch, preferring source branch's changes
+        run: |
+          git merge temp-branch -X theirs --no-commit
 
       - name: Squash and commit changes with date suffix
         run: |
