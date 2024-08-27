@@ -215,6 +215,14 @@
         <source>LIMIT</source>
         <translation type="unfinished">速限</translation>
     </message>
+    <message>
+        <source>blended</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>acc</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AutoLaneChangeTimer</name>
