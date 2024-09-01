@@ -81,7 +81,7 @@ class Soundd:
     # FrogPilot variables
     self.frogpilot_toggles = FrogPilotVariables.toggles
 
-    self.previous_sound_pack = "stock"
+    self.previous_sound_pack = None
 
     self.random_events_directory = os.path.join(RANDOM_EVENTS_PATH, "sounds/")
 
