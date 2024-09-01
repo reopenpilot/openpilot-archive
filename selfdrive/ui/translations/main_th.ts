@@ -200,15 +200,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental Mode activated for</source>
+        <source>Experimental Mode activated for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> low speed</source>
+        <source>low speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> speed being less than </source>
+        <source>speed being less than %1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -240,15 +240,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental Mode activated for stop light</source>
+        <source>Experimental Mode activated %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> or stop sign</source>
+        <source>to stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental Mode forced on for stop light</source>
+        <source>Experimental Mode forced on %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -568,7 +568,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Do you want to compress this backup? The end file size will be 2.25x smaller, but can take 10+ minutes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Backing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compressing backup...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -597,6 +605,10 @@
     </message>
     <message>
         <source>Restoring...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extracting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -725,6 +737,10 @@
         <translation>
             <numerusform>ต้องการอย่างน้อย %n ตัวอักษร!</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Characters: %1/%2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1606,7 +1622,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>An alpha version of openpilot longitudinal control can be tested, along with Experimental mode, on non-release branches.</source>
-        <translation>ระบบควบคุมการเร่ง/เบรคโดย openpilot เวอร์ชัน alpha สามารถทดสอบได้พร้อมกับโหมดการทดลอง บน branch ที่กำลังพัฒนา</translation>
+        <translation type="vanished">ระบบควบคุมการเร่ง/เบรคโดย openpilot เวอร์ชัน alpha สามารถทดสอบได้พร้อมกับโหมดการทดลอง บน branch ที่กำลังพัฒนา</translation>
     </message>
     <message>
         <source>End-to-End Longitudinal Control</source>
