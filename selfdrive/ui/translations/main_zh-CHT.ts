@@ -28,7 +28,7 @@
     </message>
     <message>
         <source>Enable Tethering</source>
-        <translation type="vanished">啟用網路分享</translation>
+        <translation>啟用網路分享</translation>
     </message>
     <message>
         <source>Tethering Password</source>
@@ -95,11 +95,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Always</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Only Onroad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Always</source>
+        <source>Until Reboot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow tethering with your data SIM and keep it active either while driving or continuously.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -500,11 +508,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>RENAME</source>
+        <source>Screen Recordings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen Recordings</source>
+        <source>RENAME</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -548,15 +556,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>FrogPilot Backups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>BACKUP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>RESTORE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FrogPilot Backups</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -688,6 +696,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Force Started State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>OFFROAD</source>
         <translation type="unfinished"></translation>
     </message>
@@ -697,10 +709,6 @@
     </message>
     <message>
         <source>OFF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force Started State</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1113,7 +1121,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls</source>
+        <source>Driving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1126,6 +1134,10 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Visuals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controls</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
