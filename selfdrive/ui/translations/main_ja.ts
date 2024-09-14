@@ -1134,10 +1134,6 @@ This may take up to a minute.</source>
         <source>Visuals</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Controls</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Setup</name>
