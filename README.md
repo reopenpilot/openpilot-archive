@@ -968,7 +968,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot'
 
 
 
-### [< FrogPilot FrogPilot-Staging >](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240915-1924/)
+### [< FrogPilot FrogPilot-Staging >](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-Staging-20240916-0247/)
 ```
 https://smiskol.com/fork/fp/FrogPilot-Staging
 ```
@@ -2376,6 +2376,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20240915-1924
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20240916-0247</summary>
+> >
+> > #### fp-FrogPilot-Staging-20240916-0247
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20240916-0247
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20240916-0247
 > > ```
 > >
 > > </details>
