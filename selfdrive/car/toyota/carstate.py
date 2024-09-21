@@ -79,6 +79,7 @@ class CarState(CarStateBase):
     self.pcm_neutral_force = 0.0
     self.slope_angle = 0.0
     self.vsc_slope_angle = 0.0
+    self.zss_angle_offset = 0.0
     self.zss_threshold_count = 0.0
 
   def update(self, cp, cp_cam, CC, frogpilot_toggles):
