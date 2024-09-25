@@ -10,14 +10,14 @@ env:
   TARGET_BRANCH: MAKE-PRS-HERE
 
 jobs:
-  squash-and-cherry-pick:
+  update-target-branch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout target branch
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.SOURCE_BRANCH }}
+          ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
 
       - name: Set Git user name and email
@@ -25,13 +25,13 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Get the second to last commit hash and create a temporary branch
+      - name: Replace content with SOURCE_BRANCH minus last commit
         run: |
-          commit_hash=$(git rev-parse HEAD~1)
-          git checkout -b temp-branch $commit_hash
-
-      - name: Squash all commits into one with today's date in Phoenix time zone
-        run: |
+          git rm -rf .
+          git fetch origin ${{ env.SOURCE_BRANCH }}
+          COMMIT_HASH=$(git rev-parse origin/${{ env.SOURCE_BRANCH }}~1)
+          git archive $COMMIT_HASH | tar -x
+          git add .
           day=$(TZ='America/Phoenix' date '+%-d')
           suffix="th"
           case $day in
@@ -40,20 +40,5 @@ jobs:
             3|23) suffix="rd" ;;
           esac
           commit_message="$(TZ='America/Phoenix' date '+%B ')$day$suffix, $(TZ='America/Phoenix' date '+%Y') Update"
-          git reset --soft $(git rev-list --max-parents=0 HEAD)
           git commit -m "$commit_message"
-
-      - name: Cherry-pick the squashed commit to target branch and push
-        run: |
-          git fetch origin
-          git checkout ${{ env.TARGET_BRANCH }}
-          git cherry-pick temp-branch -X theirs || {
-            if git status | grep -q "nothing to commit, working tree clean"; then
-              echo "Empty commit detected, skipping cherry-pick."
-              git cherry-pick --skip
-            else
-              echo "Continuing with cherry-pick."
-              git cherry-pick --continue
-            fi
-          }
           git push origin ${{ env.TARGET_BRANCH }}
