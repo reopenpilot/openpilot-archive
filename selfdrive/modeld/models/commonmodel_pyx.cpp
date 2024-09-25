@@ -1993,7 +1993,7 @@ struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem {
 };
 
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":28
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":26
  *     return mem
  * 
  * cdef class ModelFrame:             # <<<<<<<<<<<<<<
@@ -2097,7 +2097,7 @@ struct __pyx_vtabstruct_4msgq_9visionipc_13visionipc_pyx_VisionBuf {
 static struct __pyx_vtabstruct_4msgq_9visionipc_13visionipc_pyx_VisionBuf *__pyx_vtabptr_4msgq_9visionipc_13visionipc_pyx_VisionBuf;
 
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":21
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":19
  *     self.context = cl_create_context(self.device_id)
  * 
  * cdef class CLMem:             # <<<<<<<<<<<<<<
@@ -3396,7 +3396,6 @@ static const char __pyx_k_[] = ": ";
 static const char __pyx_k_O[] = "O";
 static const char __pyx_k_T[] = "T{";
   static const char __pyx_k_c[] = "c";
-  static const char __pyx_k_x[] = "x";
   static const char __pyx_k__2[] = ".";
   static const char __pyx_k__3[] = "*";
   static const char __pyx_k__6[] = "'";
@@ -3410,7 +3409,7 @@ static const char __pyx_k_T[] = "T{";
 static const char __pyx_k__12[] = "}";
 static const char __pyx_k__13[] = "(";
 static const char __pyx_k__14[] = ",";
-static const char __pyx_k__41[] = "?";
+static const char __pyx_k__39[] = "?";
 static const char __pyx_k_abc[] = "abc";
 static const char __pyx_k_and[] = " and ";
 static const char __pyx_k_buf[] = "buf";
@@ -3464,7 +3463,6 @@ static const char __pyx_k_disable[] = "disable";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_prepare[] = "prepare";
-static const char __pyx_k_sigmoid[] = "sigmoid";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
 static const char __pyx_k_Sequence[] = "Sequence";
 static const char __pyx_k_getstate[] = "__getstate__";
@@ -3547,9 +3545,9 @@ static const char __pyx_k_Unable_to_convert_item_to_object[] = "Unable to conver
 static const char __pyx_k_got_differing_extents_in_dimensi[] = "got differing extents in dimension ";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath failed to import";
-static const char __pyx_k_selfdrive_modeld_models_commonmo[] = "selfdrive/modeld/models/commonmodel_pyx.pyx";
+static const char __pyx_k_selfdrive_modeld_models_commonmo[] = "selfdrive.modeld.models.commonmodel_pyx";
 static const char __pyx_k_unable_to_allocate_shape_and_str[] = "unable to allocate shape and strides.";
-static const char __pyx_k_selfdrive_modeld_models_commonmo_2[] = "selfdrive.modeld.models.commonmodel_pyx";
+static const char __pyx_k_selfdrive_modeld_models_commonmo_2[] = "selfdrive/modeld/models/commonmodel_pyx.pyx";
 /* #### Code section: decls ### */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
@@ -3592,7 +3590,6 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_sigmoid(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_x); /* proto */
 static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext___cinit__(struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
@@ -3759,7 +3756,7 @@ typedef struct {
   PyObject *__pyx_kp_u__14;
   PyObject *__pyx_kp_u__2;
   PyObject *__pyx_n_s__3;
-  PyObject *__pyx_n_s__41;
+  PyObject *__pyx_n_s__39;
   PyObject *__pyx_kp_u__6;
   PyObject *__pyx_kp_u__7;
   PyObject *__pyx_kp_b__9;
@@ -3841,12 +3838,11 @@ typedef struct {
   PyObject *__pyx_n_s_register;
   PyObject *__pyx_n_s_self;
   PyObject *__pyx_kp_s_self_mem_cannot_be_converted_to;
-  PyObject *__pyx_kp_s_selfdrive_modeld_models_commonmo;
-  PyObject *__pyx_n_s_selfdrive_modeld_models_commonmo_2;
+  PyObject *__pyx_n_s_selfdrive_modeld_models_commonmo;
+  PyObject *__pyx_kp_s_selfdrive_modeld_models_commonmo_2;
   PyObject *__pyx_n_s_setstate;
   PyObject *__pyx_n_s_setstate_cython;
   PyObject *__pyx_n_s_shape;
-  PyObject *__pyx_n_s_sigmoid;
   PyObject *__pyx_n_s_size;
   PyObject *__pyx_n_s_spec;
   PyObject *__pyx_n_s_start;
@@ -3867,7 +3863,6 @@ typedef struct {
   PyObject *__pyx_n_s_uv_offset;
   PyObject *__pyx_n_s_version_info;
   PyObject *__pyx_n_s_width;
-  PyObject *__pyx_n_s_x;
   PyObject *__pyx_int_0;
   PyObject *__pyx_int_1;
   PyObject *__pyx_int_3;
@@ -3892,18 +3887,16 @@ typedef struct {
   PyObject *__pyx_tuple__26;
   PyObject *__pyx_tuple__28;
   PyObject *__pyx_tuple__30;
-  PyObject *__pyx_tuple__32;
-  PyObject *__pyx_tuple__36;
+  PyObject *__pyx_tuple__34;
   PyObject *__pyx_codeobj__27;
   PyObject *__pyx_codeobj__29;
   PyObject *__pyx_codeobj__31;
+  PyObject *__pyx_codeobj__32;
   PyObject *__pyx_codeobj__33;
-  PyObject *__pyx_codeobj__34;
   PyObject *__pyx_codeobj__35;
+  PyObject *__pyx_codeobj__36;
   PyObject *__pyx_codeobj__37;
   PyObject *__pyx_codeobj__38;
-  PyObject *__pyx_codeobj__39;
-  PyObject *__pyx_codeobj__40;
 } __pyx_mstate;
 
 #if CYTHON_USE_MODULE_STATE
@@ -4029,7 +4022,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_kp_u__14);
   Py_CLEAR(clear_module_state->__pyx_kp_u__2);
   Py_CLEAR(clear_module_state->__pyx_n_s__3);
-  Py_CLEAR(clear_module_state->__pyx_n_s__41);
+  Py_CLEAR(clear_module_state->__pyx_n_s__39);
   Py_CLEAR(clear_module_state->__pyx_kp_u__6);
   Py_CLEAR(clear_module_state->__pyx_kp_u__7);
   Py_CLEAR(clear_module_state->__pyx_kp_b__9);
@@ -4111,12 +4104,11 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_register);
   Py_CLEAR(clear_module_state->__pyx_n_s_self);
   Py_CLEAR(clear_module_state->__pyx_kp_s_self_mem_cannot_be_converted_to);
-  Py_CLEAR(clear_module_state->__pyx_kp_s_selfdrive_modeld_models_commonmo);
-  Py_CLEAR(clear_module_state->__pyx_n_s_selfdrive_modeld_models_commonmo_2);
+  Py_CLEAR(clear_module_state->__pyx_n_s_selfdrive_modeld_models_commonmo);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_selfdrive_modeld_models_commonmo_2);
   Py_CLEAR(clear_module_state->__pyx_n_s_setstate);
   Py_CLEAR(clear_module_state->__pyx_n_s_setstate_cython);
   Py_CLEAR(clear_module_state->__pyx_n_s_shape);
-  Py_CLEAR(clear_module_state->__pyx_n_s_sigmoid);
   Py_CLEAR(clear_module_state->__pyx_n_s_size);
   Py_CLEAR(clear_module_state->__pyx_n_s_spec);
   Py_CLEAR(clear_module_state->__pyx_n_s_start);
@@ -4137,7 +4129,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_uv_offset);
   Py_CLEAR(clear_module_state->__pyx_n_s_version_info);
   Py_CLEAR(clear_module_state->__pyx_n_s_width);
-  Py_CLEAR(clear_module_state->__pyx_n_s_x);
   Py_CLEAR(clear_module_state->__pyx_int_0);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_int_3);
@@ -4162,18 +4153,16 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_tuple__26);
   Py_CLEAR(clear_module_state->__pyx_tuple__28);
   Py_CLEAR(clear_module_state->__pyx_tuple__30);
-  Py_CLEAR(clear_module_state->__pyx_tuple__32);
-  Py_CLEAR(clear_module_state->__pyx_tuple__36);
+  Py_CLEAR(clear_module_state->__pyx_tuple__34);
   Py_CLEAR(clear_module_state->__pyx_codeobj__27);
   Py_CLEAR(clear_module_state->__pyx_codeobj__29);
   Py_CLEAR(clear_module_state->__pyx_codeobj__31);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__32);
   Py_CLEAR(clear_module_state->__pyx_codeobj__33);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__34);
   Py_CLEAR(clear_module_state->__pyx_codeobj__35);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__36);
   Py_CLEAR(clear_module_state->__pyx_codeobj__37);
   Py_CLEAR(clear_module_state->__pyx_codeobj__38);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__39);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__40);
   return 0;
 }
 #endif
@@ -4277,7 +4266,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_kp_u__14);
   Py_VISIT(traverse_module_state->__pyx_kp_u__2);
   Py_VISIT(traverse_module_state->__pyx_n_s__3);
-  Py_VISIT(traverse_module_state->__pyx_n_s__41);
+  Py_VISIT(traverse_module_state->__pyx_n_s__39);
   Py_VISIT(traverse_module_state->__pyx_kp_u__6);
   Py_VISIT(traverse_module_state->__pyx_kp_u__7);
   Py_VISIT(traverse_module_state->__pyx_kp_b__9);
@@ -4359,12 +4348,11 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_register);
   Py_VISIT(traverse_module_state->__pyx_n_s_self);
   Py_VISIT(traverse_module_state->__pyx_kp_s_self_mem_cannot_be_converted_to);
-  Py_VISIT(traverse_module_state->__pyx_kp_s_selfdrive_modeld_models_commonmo);
-  Py_VISIT(traverse_module_state->__pyx_n_s_selfdrive_modeld_models_commonmo_2);
+  Py_VISIT(traverse_module_state->__pyx_n_s_selfdrive_modeld_models_commonmo);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_selfdrive_modeld_models_commonmo_2);
   Py_VISIT(traverse_module_state->__pyx_n_s_setstate);
   Py_VISIT(traverse_module_state->__pyx_n_s_setstate_cython);
   Py_VISIT(traverse_module_state->__pyx_n_s_shape);
-  Py_VISIT(traverse_module_state->__pyx_n_s_sigmoid);
   Py_VISIT(traverse_module_state->__pyx_n_s_size);
   Py_VISIT(traverse_module_state->__pyx_n_s_spec);
   Py_VISIT(traverse_module_state->__pyx_n_s_start);
@@ -4385,7 +4373,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_uv_offset);
   Py_VISIT(traverse_module_state->__pyx_n_s_version_info);
   Py_VISIT(traverse_module_state->__pyx_n_s_width);
-  Py_VISIT(traverse_module_state->__pyx_n_s_x);
   Py_VISIT(traverse_module_state->__pyx_int_0);
   Py_VISIT(traverse_module_state->__pyx_int_1);
   Py_VISIT(traverse_module_state->__pyx_int_3);
@@ -4410,18 +4397,16 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_tuple__26);
   Py_VISIT(traverse_module_state->__pyx_tuple__28);
   Py_VISIT(traverse_module_state->__pyx_tuple__30);
-  Py_VISIT(traverse_module_state->__pyx_tuple__32);
-  Py_VISIT(traverse_module_state->__pyx_tuple__36);
+  Py_VISIT(traverse_module_state->__pyx_tuple__34);
   Py_VISIT(traverse_module_state->__pyx_codeobj__27);
   Py_VISIT(traverse_module_state->__pyx_codeobj__29);
   Py_VISIT(traverse_module_state->__pyx_codeobj__31);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__32);
   Py_VISIT(traverse_module_state->__pyx_codeobj__33);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__34);
   Py_VISIT(traverse_module_state->__pyx_codeobj__35);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__36);
   Py_VISIT(traverse_module_state->__pyx_codeobj__37);
   Py_VISIT(traverse_module_state->__pyx_codeobj__38);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__39);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__40);
   return 0;
 }
 #endif
@@ -4571,7 +4556,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_kp_u__14 __pyx_mstate_global->__pyx_kp_u__14
 #define __pyx_kp_u__2 __pyx_mstate_global->__pyx_kp_u__2
 #define __pyx_n_s__3 __pyx_mstate_global->__pyx_n_s__3
-#define __pyx_n_s__41 __pyx_mstate_global->__pyx_n_s__41
+#define __pyx_n_s__39 __pyx_mstate_global->__pyx_n_s__39
 #define __pyx_kp_u__6 __pyx_mstate_global->__pyx_kp_u__6
 #define __pyx_kp_u__7 __pyx_mstate_global->__pyx_kp_u__7
 #define __pyx_kp_b__9 __pyx_mstate_global->__pyx_kp_b__9
@@ -4653,12 +4638,11 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_register __pyx_mstate_global->__pyx_n_s_register
 #define __pyx_n_s_self __pyx_mstate_global->__pyx_n_s_self
 #define __pyx_kp_s_self_mem_cannot_be_converted_to __pyx_mstate_global->__pyx_kp_s_self_mem_cannot_be_converted_to
-#define __pyx_kp_s_selfdrive_modeld_models_commonmo __pyx_mstate_global->__pyx_kp_s_selfdrive_modeld_models_commonmo
-#define __pyx_n_s_selfdrive_modeld_models_commonmo_2 __pyx_mstate_global->__pyx_n_s_selfdrive_modeld_models_commonmo_2
+#define __pyx_n_s_selfdrive_modeld_models_commonmo __pyx_mstate_global->__pyx_n_s_selfdrive_modeld_models_commonmo
+#define __pyx_kp_s_selfdrive_modeld_models_commonmo_2 __pyx_mstate_global->__pyx_kp_s_selfdrive_modeld_models_commonmo_2
 #define __pyx_n_s_setstate __pyx_mstate_global->__pyx_n_s_setstate
 #define __pyx_n_s_setstate_cython __pyx_mstate_global->__pyx_n_s_setstate_cython
 #define __pyx_n_s_shape __pyx_mstate_global->__pyx_n_s_shape
-#define __pyx_n_s_sigmoid __pyx_mstate_global->__pyx_n_s_sigmoid
 #define __pyx_n_s_size __pyx_mstate_global->__pyx_n_s_size
 #define __pyx_n_s_spec __pyx_mstate_global->__pyx_n_s_spec
 #define __pyx_n_s_start __pyx_mstate_global->__pyx_n_s_start
@@ -4679,7 +4663,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_uv_offset __pyx_mstate_global->__pyx_n_s_uv_offset
 #define __pyx_n_s_version_info __pyx_mstate_global->__pyx_n_s_version_info
 #define __pyx_n_s_width __pyx_mstate_global->__pyx_n_s_width
-#define __pyx_n_s_x __pyx_mstate_global->__pyx_n_s_x
 #define __pyx_int_0 __pyx_mstate_global->__pyx_int_0
 #define __pyx_int_1 __pyx_mstate_global->__pyx_int_1
 #define __pyx_int_3 __pyx_mstate_global->__pyx_int_3
@@ -4704,18 +4687,16 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_tuple__26 __pyx_mstate_global->__pyx_tuple__26
 #define __pyx_tuple__28 __pyx_mstate_global->__pyx_tuple__28
 #define __pyx_tuple__30 __pyx_mstate_global->__pyx_tuple__30
-#define __pyx_tuple__32 __pyx_mstate_global->__pyx_tuple__32
-#define __pyx_tuple__36 __pyx_mstate_global->__pyx_tuple__36
+#define __pyx_tuple__34 __pyx_mstate_global->__pyx_tuple__34
 #define __pyx_codeobj__27 __pyx_mstate_global->__pyx_codeobj__27
 #define __pyx_codeobj__29 __pyx_mstate_global->__pyx_codeobj__29
 #define __pyx_codeobj__31 __pyx_mstate_global->__pyx_codeobj__31
+#define __pyx_codeobj__32 __pyx_mstate_global->__pyx_codeobj__32
 #define __pyx_codeobj__33 __pyx_mstate_global->__pyx_codeobj__33
-#define __pyx_codeobj__34 __pyx_mstate_global->__pyx_codeobj__34
 #define __pyx_codeobj__35 __pyx_mstate_global->__pyx_codeobj__35
+#define __pyx_codeobj__36 __pyx_mstate_global->__pyx_codeobj__36
 #define __pyx_codeobj__37 __pyx_mstate_global->__pyx_codeobj__37
 #define __pyx_codeobj__38 __pyx_mstate_global->__pyx_codeobj__38
-#define __pyx_codeobj__39 __pyx_mstate_global->__pyx_codeobj__39
-#define __pyx_codeobj__40 __pyx_mstate_global->__pyx_codeobj__40
 /* #### Code section: module_code ### */
 
 /* "View.MemoryView":131
@@ -19977,155 +19958,7 @@ static CYTHON_INLINE NPY_DATETIMEUNIT __pyx_f_5numpy_get_datetime64_unit(PyObjec
   return __pyx_r;
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":13
- * from .commonmodel cimport mat3, sigmoid as cppSigmoid, ModelFrame as cppModelFrame
- * 
- * def sigmoid(x):             # <<<<<<<<<<<<<<
- *   return cppSigmoid(x)
- * 
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_1sigmoid(PyObject *__pyx_self, 
-#if CYTHON_METH_FASTCALL
-PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
-#else
-PyObject *__pyx_args, PyObject *__pyx_kwds
-#endif
-); /*proto*/
-static PyMethodDef __pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_1sigmoid = {"sigmoid", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_1sigmoid, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_1sigmoid(PyObject *__pyx_self, 
-#if CYTHON_METH_FASTCALL
-PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
-#else
-PyObject *__pyx_args, PyObject *__pyx_kwds
-#endif
-) {
-  PyObject *__pyx_v_x = 0;
-  #if !CYTHON_METH_FASTCALL
-  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
-  #endif
-  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
-  PyObject* values[1] = {0};
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("sigmoid (wrapper)", 0);
-  #if !CYTHON_METH_FASTCALL
-  #if CYTHON_ASSUME_SAFE_MACROS
-  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
-  #else
-  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
-  #endif
-  #endif
-  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
-  {
-    PyObject **__pyx_pyargnames[] = {&__pyx_n_s_x,0};
-    if (__pyx_kwds) {
-      Py_ssize_t kw_args;
-      switch (__pyx_nargs) {
-        case  1: values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = __Pyx_NumKwargs_FASTCALL(__pyx_kwds);
-      switch (__pyx_nargs) {
-        case  0:
-        if (likely((values[0] = __Pyx_GetKwValue_FASTCALL(__pyx_kwds, __pyx_kwvalues, __pyx_n_s_x)) != 0)) {
-          (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
-          kw_args--;
-        }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 13, __pyx_L3_error)
-        else goto __pyx_L5_argtuple_error;
-      }
-      if (unlikely(kw_args > 0)) {
-        const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "sigmoid") < 0)) __PYX_ERR(1, 13, __pyx_L3_error)
-      }
-    } else if (unlikely(__pyx_nargs != 1)) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
-    }
-    __pyx_v_x = values[0];
-  }
-  goto __pyx_L6_skip;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("sigmoid", 1, 1, 1, __pyx_nargs); __PYX_ERR(1, 13, __pyx_L3_error)
-  __pyx_L6_skip:;
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L3_error:;
-  {
-    Py_ssize_t __pyx_temp;
-    for (__pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
-      __Pyx_Arg_XDECREF_FASTCALL(values[__pyx_temp]);
-    }
-  }
-  __Pyx_AddTraceback("selfdrive.modeld.models.commonmodel_pyx.sigmoid", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_sigmoid(__pyx_self, __pyx_v_x);
-
-  /* function exit code */
-  {
-    Py_ssize_t __pyx_temp;
-    for (__pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
-      __Pyx_Arg_XDECREF_FASTCALL(values[__pyx_temp]);
-    }
-  }
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_sigmoid(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_x) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  float __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("sigmoid", 1);
-
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":14
- * 
- * def sigmoid(x):
- *   return cppSigmoid(x)             # <<<<<<<<<<<<<<
- * 
- * cdef class CLContext(BaseCLContext):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_PyFloat_AsFloat(__pyx_v_x); if (unlikely((__pyx_t_1 == (float)-1) && PyErr_Occurred())) __PYX_ERR(1, 14, __pyx_L1_error)
-  __pyx_t_2 = PyFloat_FromDouble(sigmoid(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 14, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
-  goto __pyx_L0;
-
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":13
- * from .commonmodel cimport mat3, sigmoid as cppSigmoid, ModelFrame as cppModelFrame
- * 
- * def sigmoid(x):             # <<<<<<<<<<<<<<
- *   return cppSigmoid(x)
- * 
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("selfdrive.modeld.models.commonmodel_pyx.sigmoid", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":17
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":15
  * 
  * cdef class CLContext(BaseCLContext):
  *   def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -20160,7 +19993,7 @@ static int __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_1__c
 static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext___cinit__(struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext *__pyx_v_self) {
   int __pyx_r;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":18
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":16
  * cdef class CLContext(BaseCLContext):
  *   def __cinit__(self):
  *     self.device_id = cl_get_device_id(CL_DEVICE_TYPE_DEFAULT)             # <<<<<<<<<<<<<<
@@ -20169,7 +20002,7 @@ static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext___ci
  */
   __pyx_v_self->__pyx_base.device_id = cl_get_device_id(CL_DEVICE_TYPE_DEFAULT);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":19
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":17
  *   def __cinit__(self):
  *     self.device_id = cl_get_device_id(CL_DEVICE_TYPE_DEFAULT)
  *     self.context = cl_create_context(self.device_id)             # <<<<<<<<<<<<<<
@@ -20178,7 +20011,7 @@ static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext___ci
  */
   __pyx_v_self->__pyx_base.context = cl_create_context(__pyx_v_self->__pyx_base.device_id);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":17
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":15
  * 
  * cdef class CLContext(BaseCLContext):
  *   def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -20405,7 +20238,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContex
   return __pyx_r;
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":23
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":21
  * cdef class CLMem:
  *   @staticmethod
  *   cdef create(void * cmem):             # <<<<<<<<<<<<<<
@@ -20423,19 +20256,19 @@ static PyObject *__pyx_f_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_cre
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("create", 1);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":24
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":22
  *   @staticmethod
  *   cdef create(void * cmem):
  *     mem = CLMem()             # <<<<<<<<<<<<<<
  *     mem.mem = <cl_mem*> cmem
  *     return mem
  */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 24, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_mem = ((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":25
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":23
  *   cdef create(void * cmem):
  *     mem = CLMem()
  *     mem.mem = <cl_mem*> cmem             # <<<<<<<<<<<<<<
@@ -20444,7 +20277,7 @@ static PyObject *__pyx_f_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_cre
  */
   __pyx_v_mem->mem = ((cl_mem *)__pyx_v_cmem);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":26
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":24
  *     mem = CLMem()
  *     mem.mem = <cl_mem*> cmem
  *     return mem             # <<<<<<<<<<<<<<
@@ -20456,7 +20289,7 @@ static PyObject *__pyx_f_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_cre
   __pyx_r = ((PyObject *)__pyx_v_mem);
   goto __pyx_L0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":23
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":21
  * cdef class CLMem:
  *   @staticmethod
  *   cdef create(void * cmem):             # <<<<<<<<<<<<<<
@@ -20690,7 +20523,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_2_
   return __pyx_r;
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":31
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":29
  *   cdef cppModelFrame * frame
  * 
  *   def __cinit__(self, CLContext context):             # <<<<<<<<<<<<<<
@@ -20734,12 +20567,12 @@ static int __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_1_
           (void)__Pyx_Arg_NewRef_VARARGS(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 31, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 29, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "__cinit__") < 0)) __PYX_ERR(1, 31, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "__cinit__") < 0)) __PYX_ERR(1, 29, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
@@ -20750,7 +20583,7 @@ static int __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_1_
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, __pyx_nargs); __PYX_ERR(1, 31, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, __pyx_nargs); __PYX_ERR(1, 29, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20764,7 +20597,7 @@ static int __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_1_
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_context), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext, 1, "context", 0))) __PYX_ERR(1, 31, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_context), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext, 1, "context", 0))) __PYX_ERR(1, 29, __pyx_L1_error)
   __pyx_r = __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame___cinit__(((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame *)__pyx_v_self), __pyx_v_context);
 
   /* function exit code */
@@ -20785,7 +20618,7 @@ static int __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_1_
 static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame___cinit__(struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame *__pyx_v_self, struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext *__pyx_v_context) {
   int __pyx_r;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":32
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":30
  * 
  *   def __cinit__(self, CLContext context):
  *     self.frame = new cppModelFrame(context.device_id, context.context)             # <<<<<<<<<<<<<<
@@ -20794,7 +20627,7 @@ static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame___
  */
   __pyx_v_self->frame = new ModelFrame(__pyx_v_context->__pyx_base.device_id, __pyx_v_context->__pyx_base.context);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":31
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":29
  *   cdef cppModelFrame * frame
  * 
  *   def __cinit__(self, CLContext context):             # <<<<<<<<<<<<<<
@@ -20807,7 +20640,7 @@ static int __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame___
   return __pyx_r;
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":34
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":32
  *     self.frame = new cppModelFrame(context.device_id, context.context)
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -20830,7 +20663,7 @@ static void __pyx_pw_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_3
 
 static void __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_2__dealloc__(struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame *__pyx_v_self) {
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":35
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":33
  * 
  *   def __dealloc__(self):
  *     del self.frame             # <<<<<<<<<<<<<<
@@ -20839,7 +20672,7 @@ static void __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_2
  */
   delete __pyx_v_self->frame;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":34
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":32
  *     self.frame = new cppModelFrame(context.device_id, context.context)
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -20850,7 +20683,7 @@ static void __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_2
   /* function exit code */
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":37
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":35
  *     del self.frame
  * 
  *   def prepare(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
@@ -20917,7 +20750,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 37, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 35, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -20925,9 +20758,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 37, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 35, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, 1); __PYX_ERR(1, 37, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, 1); __PYX_ERR(1, 35, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -20935,14 +20768,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[2]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 37, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 35, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, 2); __PYX_ERR(1, 37, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, 2); __PYX_ERR(1, 35, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "prepare") < 0)) __PYX_ERR(1, 37, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "prepare") < 0)) __PYX_ERR(1, 35, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
@@ -20952,12 +20785,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[2] = __Pyx_Arg_FASTCALL(__pyx_args, 2);
     }
     __pyx_v_buf = ((struct __pyx_obj_4msgq_9visionipc_13visionipc_pyx_VisionBuf *)values[0]);
-    __pyx_v_projection = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_projection.memview)) __PYX_ERR(1, 37, __pyx_L3_error)
+    __pyx_v_projection = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_projection.memview)) __PYX_ERR(1, 35, __pyx_L3_error)
     __pyx_v_output = ((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem *)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, __pyx_nargs); __PYX_ERR(1, 37, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("prepare", 1, 3, 3, __pyx_nargs); __PYX_ERR(1, 35, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20972,8 +20805,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_buf), __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_VisionBuf, 1, "buf", 0))) __PYX_ERR(1, 37, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_output), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, 1, "output", 0))) __PYX_ERR(1, 37, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_buf), __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_VisionBuf, 1, "buf", 0))) __PYX_ERR(1, 35, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_output), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, 1, "output", 0))) __PYX_ERR(1, 35, __pyx_L1_error)
   __pyx_r = __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_4prepare(((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame *)__pyx_v_self), __pyx_v_buf, __pyx_v_projection, __pyx_v_output);
 
   /* function exit code */
@@ -21013,7 +20846,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("prepare", 1);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":39
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":37
  *   def prepare(self, VisionBuf buf, float[:] projection, CLMem output):
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))             # <<<<<<<<<<<<<<
@@ -21028,11 +20861,11 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   } else if (unlikely(__pyx_t_1 >= __pyx_v_projection.shape[0])) __pyx_t_2 = 0;
   if (unlikely(__pyx_t_2 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_2);
-    __PYX_ERR(1, 39, __pyx_L1_error)
+    __PYX_ERR(1, 37, __pyx_L1_error)
   }
   (void)(memcpy(__pyx_v_cprojection.v, (&(*((float *) ( /* dim=0 */ (__pyx_v_projection.data + __pyx_t_1 * __pyx_v_projection.strides[0]) )))), (9 * (sizeof(float)))));
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":41
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":39
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  *     cdef float * data
  *     if output is None:             # <<<<<<<<<<<<<<
@@ -21042,32 +20875,32 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_3 = (((PyObject *)__pyx_v_output) == Py_None);
   if (__pyx_t_3) {
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":42
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":40
  *     cdef float * data
  *     if output is None:
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, NULL)             # <<<<<<<<<<<<<<
  *     else:
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 40, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_data = __pyx_v_self->frame->prepare(__pyx_v_buf->buf->buf_cl, __pyx_t_2, __pyx_t_5, __pyx_t_6, __pyx_t_7, __pyx_v_cprojection, NULL);
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":41
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":39
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  *     cdef float * data
  *     if output is None:             # <<<<<<<<<<<<<<
@@ -21077,7 +20910,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     goto __pyx_L3;
   }
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":44
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":42
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, NULL)
  *     else:
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)             # <<<<<<<<<<<<<<
@@ -21085,27 +20918,27 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
  *       return None
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 44, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 42, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_data = __pyx_v_self->frame->prepare(__pyx_v_buf->buf->buf_cl, __pyx_t_7, __pyx_t_6, __pyx_t_5, __pyx_t_2, __pyx_v_cprojection, __pyx_v_output->mem);
   }
   __pyx_L3:;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":45
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":43
  *     else:
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:             # <<<<<<<<<<<<<<
@@ -21115,7 +20948,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_3 = (!(__pyx_v_data != 0));
   if (__pyx_t_3) {
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":46
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":44
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:
  *       return None             # <<<<<<<<<<<<<<
@@ -21126,7 +20959,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":45
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":43
  *     else:
  *       data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:             # <<<<<<<<<<<<<<
@@ -21135,7 +20968,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
  */
   }
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":47
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":45
  *     if not data:
  *       return None
  *     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)             # <<<<<<<<<<<<<<
@@ -21143,20 +20976,20 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 47, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 47, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   if (!__pyx_v_data) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(1, 47, __pyx_L1_error)
+    __PYX_ERR(1, 45, __pyx_L1_error)
   }
-  __pyx_t_11 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float32_t); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 47, __pyx_L1_error)
+  __pyx_t_11 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float32_t); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
-  __pyx_t_8 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_self->frame->buf_size)); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 47, __pyx_L1_error)
+  __pyx_t_8 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_self->frame->buf_size)); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_10 = __pyx_array_new(__pyx_t_8, sizeof(__pyx_t_5numpy_float32_t), PyBytes_AS_STRING(__pyx_t_11), (char *) "c", (char *) __pyx_v_data); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 47, __pyx_L1_error)
+  __pyx_t_10 = __pyx_array_new(__pyx_t_8, sizeof(__pyx_t_5numpy_float32_t), PyBytes_AS_STRING(__pyx_t_11), (char *) "c", (char *) __pyx_v_data); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 45, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_10);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
@@ -21179,7 +21012,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+1-__pyx_t_2, 1+__pyx_t_2);
     __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_10); __pyx_t_10 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 47, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
@@ -21187,7 +21020,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":37
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":35
  *     del self.frame
  * 
  *   def prepare(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
@@ -21210,7 +21043,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   return __pyx_r;
 }
 
-/* "selfdrive/modeld/models/commonmodel_pyx.pyx":49
+/* "selfdrive/modeld/models/commonmodel_pyx.pyx":47
  *     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)
  * 
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
@@ -21277,7 +21110,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 49, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 47, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -21285,9 +21118,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 49, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 47, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, 1); __PYX_ERR(1, 49, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, 1); __PYX_ERR(1, 47, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -21295,14 +21128,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[2]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 49, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 47, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, 2); __PYX_ERR(1, 49, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, 2); __PYX_ERR(1, 47, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "prepareSecret") < 0)) __PYX_ERR(1, 49, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "prepareSecret") < 0)) __PYX_ERR(1, 47, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
@@ -21312,12 +21145,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[2] = __Pyx_Arg_FASTCALL(__pyx_args, 2);
     }
     __pyx_v_buf = ((struct __pyx_obj_4msgq_9visionipc_13visionipc_pyx_VisionBuf *)values[0]);
-    __pyx_v_projection = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_projection.memview)) __PYX_ERR(1, 49, __pyx_L3_error)
+    __pyx_v_projection = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_projection.memview)) __PYX_ERR(1, 47, __pyx_L3_error)
     __pyx_v_output = ((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem *)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, __pyx_nargs); __PYX_ERR(1, 49, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("prepareSecret", 1, 3, 3, __pyx_nargs); __PYX_ERR(1, 47, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -21332,8 +21165,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_buf), __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_VisionBuf, 1, "buf", 0))) __PYX_ERR(1, 49, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_output), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, 1, "output", 0))) __PYX_ERR(1, 49, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_buf), __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_VisionBuf, 1, "buf", 0))) __PYX_ERR(1, 47, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_output), __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, 1, "output", 0))) __PYX_ERR(1, 47, __pyx_L1_error)
   __pyx_r = __pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_6prepareSecret(((struct __pyx_obj_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame *)__pyx_v_self), __pyx_v_buf, __pyx_v_projection, __pyx_v_output);
 
   /* function exit code */
@@ -21373,7 +21206,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("prepareSecret", 1);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":51
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":49
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))             # <<<<<<<<<<<<<<
@@ -21388,11 +21221,11 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   } else if (unlikely(__pyx_t_1 >= __pyx_v_projection.shape[0])) __pyx_t_2 = 0;
   if (unlikely(__pyx_t_2 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_2);
-    __PYX_ERR(1, 51, __pyx_L1_error)
+    __PYX_ERR(1, 49, __pyx_L1_error)
   }
   (void)(memcpy(__pyx_v_cprojection.v, (&(*((float *) ( /* dim=0 */ (__pyx_v_projection.data + __pyx_t_1 * __pyx_v_projection.strides[0]) )))), (9 * (sizeof(float)))));
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":53
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":51
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  *     cdef float * data
  *     if output is None:             # <<<<<<<<<<<<<<
@@ -21402,32 +21235,32 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_3 = (((PyObject *)__pyx_v_output) == Py_None);
   if (__pyx_t_3) {
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":54
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":52
  *     cdef float * data
  *     if output is None:
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, NULL)             # <<<<<<<<<<<<<<
  *     else:
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_data = __pyx_v_self->frame->prepareSecret(__pyx_v_buf->buf->buf_cl, __pyx_t_2, __pyx_t_5, __pyx_t_6, __pyx_t_7, __pyx_v_cprojection, NULL);
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":53
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":51
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  *     cdef float * data
  *     if output is None:             # <<<<<<<<<<<<<<
@@ -21437,7 +21270,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     goto __pyx_L3;
   }
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":56
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":54
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, NULL)
  *     else:
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)             # <<<<<<<<<<<<<<
@@ -21445,27 +21278,27 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
  *       return None
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_width); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_stride); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_buf), __pyx_n_s_uv_offset); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 56, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 54, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_data = __pyx_v_self->frame->prepareSecret(__pyx_v_buf->buf->buf_cl, __pyx_t_7, __pyx_t_6, __pyx_t_5, __pyx_t_2, __pyx_v_cprojection, __pyx_v_output->mem);
   }
   __pyx_L3:;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":57
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":55
  *     else:
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:             # <<<<<<<<<<<<<<
@@ -21475,7 +21308,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_3 = (!(__pyx_v_data != 0));
   if (__pyx_t_3) {
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":58
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":56
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:
  *       return None             # <<<<<<<<<<<<<<
@@ -21485,7 +21318,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":57
+    /* "selfdrive/modeld/models/commonmodel_pyx.pyx":55
  *     else:
  *       data = self.frame.prepareSecret(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection, output.mem)
  *     if not data:             # <<<<<<<<<<<<<<
@@ -21494,26 +21327,26 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
  */
   }
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":59
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":57
  *     if not data:
  *       return None
  *     return np.asarray(<cnp.float32_t[:self.frame.MODEL_FRAME_SIZE]> data)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 59, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 59, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_asarray); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   if (!__pyx_v_data) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(1, 59, __pyx_L1_error)
+    __PYX_ERR(1, 57, __pyx_L1_error)
   }
-  __pyx_t_11 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float32_t); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 59, __pyx_L1_error)
+  __pyx_t_11 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float32_t); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
-  __pyx_t_8 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_self->frame->MODEL_FRAME_SIZE)); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 59, __pyx_L1_error)
+  __pyx_t_8 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_self->frame->MODEL_FRAME_SIZE)); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_10 = __pyx_array_new(__pyx_t_8, sizeof(__pyx_t_5numpy_float32_t), PyBytes_AS_STRING(__pyx_t_11), (char *) "c", (char *) __pyx_v_data); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 59, __pyx_L1_error)
+  __pyx_t_10 = __pyx_array_new(__pyx_t_8, sizeof(__pyx_t_5numpy_float32_t), PyBytes_AS_STRING(__pyx_t_11), (char *) "c", (char *) __pyx_v_data); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 57, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_10);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
@@ -21536,7 +21369,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
     __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+1-__pyx_t_2, 1+__pyx_t_2);
     __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_10); __pyx_t_10 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 59, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 57, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
@@ -21544,7 +21377,7 @@ static PyObject *__pyx_pf_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFr
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":49
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":47
  *     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)
  * 
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
@@ -23200,7 +23033,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_kp_u__14, __pyx_k__14, sizeof(__pyx_k__14), 0, 1, 0, 0},
     {&__pyx_kp_u__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 1, 0, 0},
     {&__pyx_n_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
-    {&__pyx_n_s__41, __pyx_k__41, sizeof(__pyx_k__41), 0, 0, 1, 1},
+    {&__pyx_n_s__39, __pyx_k__39, sizeof(__pyx_k__39), 0, 0, 1, 1},
     {&__pyx_kp_u__6, __pyx_k__6, sizeof(__pyx_k__6), 0, 1, 0, 0},
     {&__pyx_kp_u__7, __pyx_k__7, sizeof(__pyx_k__7), 0, 1, 0, 0},
     {&__pyx_kp_b__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 0, 0, 0},
@@ -23282,12 +23115,11 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_register, __pyx_k_register, sizeof(__pyx_k_register), 0, 0, 1, 1},
     {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
     {&__pyx_kp_s_self_mem_cannot_be_converted_to, __pyx_k_self_mem_cannot_be_converted_to, sizeof(__pyx_k_self_mem_cannot_be_converted_to), 0, 0, 1, 0},
-    {&__pyx_kp_s_selfdrive_modeld_models_commonmo, __pyx_k_selfdrive_modeld_models_commonmo, sizeof(__pyx_k_selfdrive_modeld_models_commonmo), 0, 0, 1, 0},
-    {&__pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_k_selfdrive_modeld_models_commonmo_2, sizeof(__pyx_k_selfdrive_modeld_models_commonmo_2), 0, 0, 1, 1},
+    {&__pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_k_selfdrive_modeld_models_commonmo, sizeof(__pyx_k_selfdrive_modeld_models_commonmo), 0, 0, 1, 1},
+    {&__pyx_kp_s_selfdrive_modeld_models_commonmo_2, __pyx_k_selfdrive_modeld_models_commonmo_2, sizeof(__pyx_k_selfdrive_modeld_models_commonmo_2), 0, 0, 1, 0},
     {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
     {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
     {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
-    {&__pyx_n_s_sigmoid, __pyx_k_sigmoid, sizeof(__pyx_k_sigmoid), 0, 0, 1, 1},
     {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
     {&__pyx_n_s_spec, __pyx_k_spec, sizeof(__pyx_k_spec), 0, 0, 1, 1},
     {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
@@ -23308,7 +23140,6 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_uv_offset, __pyx_k_uv_offset, sizeof(__pyx_k_uv_offset), 0, 0, 1, 1},
     {&__pyx_n_s_version_info, __pyx_k_version_info, sizeof(__pyx_k_version_info), 0, 0, 1, 1},
     {&__pyx_n_s_width, __pyx_k_width, sizeof(__pyx_k_width), 0, 0, 1, 1},
-    {&__pyx_n_s_x, __pyx_k_x, sizeof(__pyx_k_x), 0, 0, 1, 1},
     {0, 0, 0, 0, 0, 0, 0}
   };
   return __Pyx_InitStrings(__pyx_string_tab);
@@ -23494,46 +23325,28 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__26);
   __Pyx_GIVEREF(__pyx_tuple__26);
   __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 1, __pyx_L1_error)
-
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":13
- * from .commonmodel cimport mat3, sigmoid as cppSigmoid, ModelFrame as cppModelFrame
- * 
- * def sigmoid(x):             # <<<<<<<<<<<<<<
- *   return cppSigmoid(x)
- * 
- */
-  __pyx_tuple__28 = PyTuple_Pack(1, __pyx_n_s_x); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(1, 13, __pyx_L1_error)
+  __pyx_tuple__28 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__28);
   __Pyx_GIVEREF(__pyx_tuple__28);
-  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_selfdrive_modeld_models_commonmo, __pyx_n_s_sigmoid, 13, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(1, 13, __pyx_L1_error)
+  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(0, 1, __pyx_L1_error)
 
-  /* "(tree fragment)":1
- * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
- * def __setstate_cython__(self, __pyx_state):
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  */
-  __pyx_tuple__30 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_tuple__30 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__30);
   __Pyx_GIVEREF(__pyx_tuple__30);
-  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 1, __pyx_L1_error)
-
-  /* "(tree fragment)":3
- * def __reduce_cython__(self):
- *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
- * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
- *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
- */
-  __pyx_tuple__32 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__32);
-  __Pyx_GIVEREF(__pyx_tuple__32);
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 3, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "self.mem cannot be converted to a Python object for pickling"
  * def __setstate_cython__(self, __pyx_state):
  */
-  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 1, __pyx_L1_error)
 
   /* "(tree fragment)":3
  * def __reduce_cython__(self):
@@ -23541,35 +23354,35 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "self.mem cannot be converted to a Python object for pickling"
  */
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 3, __pyx_L1_error)
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":37
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":35
  *     del self.frame
  * 
  *   def prepare(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  */
-  __pyx_tuple__36 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_buf, __pyx_n_s_projection, __pyx_n_s_output, __pyx_n_s_cprojection, __pyx_n_s_data); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 37, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
-  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_selfdrive_modeld_models_commonmo, __pyx_n_s_prepare, 37, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) __PYX_ERR(1, 37, __pyx_L1_error)
+  __pyx_tuple__34 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_buf, __pyx_n_s_projection, __pyx_n_s_output, __pyx_n_s_cprojection, __pyx_n_s_data); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
+  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_selfdrive_modeld_models_commonmo_2, __pyx_n_s_prepare, 35, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(1, 35, __pyx_L1_error)
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":49
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":47
  *     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)
  * 
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  */
-  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_selfdrive_modeld_models_commonmo, __pyx_n_s_prepareSecret, 49, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(1, 49, __pyx_L1_error)
+  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_selfdrive_modeld_models_commonmo_2, __pyx_n_s_prepareSecret, 47, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(1, 47, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  * def __setstate_cython__(self, __pyx_state):
  */
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) __PYX_ERR(0, 1, __pyx_L1_error)
 
   /* "(tree fragment)":3
  * def __reduce_cython__(self):
@@ -23577,7 +23390,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  */
-  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -23683,12 +23496,12 @@ static int __Pyx_modinit_type_init_code(void) {
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_CLContext = __Pyx_ImportType_3_0_8(__pyx_t_1, "msgq.visionipc.visionipc_pyx", "CLContext", sizeof(struct __pyx_obj_4msgq_9visionipc_13visionipc_pyx_CLContext), __PYX_GET_STRUCT_ALIGNMENT_3_0_8(struct __pyx_obj_4msgq_9visionipc_13visionipc_pyx_CLContext),__Pyx_ImportType_CheckSize_Warn_3_0_8); if (!__pyx_ptype_4msgq_9visionipc_13visionipc_pyx_CLContext) __PYX_ERR(1, 1, __pyx_L1_error)
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_t_2 = PyTuple_Pack(1, (PyObject *)__pyx_ptype_4msgq_9visionipc_13visionipc_pyx_CLContext); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 16, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_Pack(1, (PyObject *)__pyx_ptype_4msgq_9visionipc_13visionipc_pyx_CLContext); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext_spec, __pyx_t_2);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext)) __PYX_ERR(1, 16, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 16, __pyx_L1_error)
+  if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext)) __PYX_ERR(1, 14, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 14, __pyx_L1_error)
   #else
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext = &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext;
   #endif
@@ -23697,7 +23510,7 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext->tp_base = __pyx_ptype_4msgq_9visionipc_13visionipc_pyx_CLContext;
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 16, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 14, __pyx_L1_error)
   #endif
   #if PY_MAJOR_VERSION < 3
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext->tp_print = 0;
@@ -23707,22 +23520,22 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext->tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_CLContext, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 16, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_CLContext, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 14, __pyx_L1_error)
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 16, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLContext) < 0) __PYX_ERR(1, 14, __pyx_L1_error)
   #endif
   __pyx_vtabptr_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem = &__pyx_vtable_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem;
   __pyx_vtable_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem.create = (PyObject *(*)(void *))__pyx_f_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_create;
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem_spec, NULL); if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem)) __PYX_ERR(1, 21, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem_spec, NULL); if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem)) __PYX_ERR(1, 19, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #else
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem = &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #endif
   #if PY_MAJOR_VERSION < 3
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem->tp_print = 0;
@@ -23732,24 +23545,24 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem->tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
   #endif
-  if (__Pyx_SetVtable(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, __pyx_vtabptr_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem, __pyx_vtabptr_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if (__Pyx_MergeVtables(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  if (__Pyx_MergeVtables(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_CLMem, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_CLMem, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 21, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_CLMem) < 0) __PYX_ERR(1, 19, __pyx_L1_error)
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame_spec, NULL); if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame)) __PYX_ERR(1, 28, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 28, __pyx_L1_error)
+  __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame_spec, NULL); if (unlikely(!__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame)) __PYX_ERR(1, 26, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame_spec, __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 26, __pyx_L1_error)
   #else
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame = &__pyx_type_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 28, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 26, __pyx_L1_error)
   #endif
   #if PY_MAJOR_VERSION < 3
   __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame->tp_print = 0;
@@ -23759,9 +23572,9 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame->tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ModelFrame, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 28, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ModelFrame, (PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 26, __pyx_L1_error)
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 28, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame) < 0) __PYX_ERR(1, 26, __pyx_L1_error)
   #endif
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
@@ -24789,24 +24602,12 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_7) < 0) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":13
- * from .commonmodel cimport mat3, sigmoid as cppSigmoid, ModelFrame as cppModelFrame
- * 
- * def sigmoid(x):             # <<<<<<<<<<<<<<
- *   return cppSigmoid(x)
- * 
- */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_1sigmoid, 0, __pyx_n_s_sigmoid, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__29)); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 13, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sigmoid, __pyx_t_7) < 0) __PYX_ERR(1, 13, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  * def __setstate_cython__(self, __pyx_state):
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_3__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLContext___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_3__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLContext___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__29)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_cython, __pyx_t_7) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24817,7 +24618,7 @@ if (!__Pyx_RefNanny) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_5__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLContext___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_9CLContext_5__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLContext___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_setstate_cython, __pyx_t_7) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24827,7 +24628,7 @@ if (!__Pyx_RefNanny) {
  *     raise TypeError, "self.mem cannot be converted to a Python object for pickling"
  * def __setstate_cython__(self, __pyx_state):
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_1__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLMem___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__34)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_1__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLMem___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_cython, __pyx_t_7) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24838,34 +24639,34 @@ if (!__Pyx_RefNanny) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "self.mem cannot be converted to a Python object for pickling"
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_3__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLMem___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_5CLMem_3__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CLMem___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_setstate_cython, __pyx_t_7) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":37
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":35
  *     del self.frame
  * 
  *   def prepare(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_5prepare, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame_prepare, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__37)); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 37, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_5prepare, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame_prepare, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame, __pyx_n_s_prepare, __pyx_t_7) < 0) __PYX_ERR(1, 37, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame, __pyx_n_s_prepare, __pyx_t_7) < 0) __PYX_ERR(1, 35, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   PyType_Modified(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame);
 
-  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":49
+  /* "selfdrive/modeld/models/commonmodel_pyx.pyx":47
  *     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)
  * 
  *   def prepareSecret(self, VisionBuf buf, float[:] projection, CLMem output):             # <<<<<<<<<<<<<<
  *     cdef mat3 cprojection
  *     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_7prepareSecret, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame_prepareSecret, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__38)); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 49, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_7prepareSecret, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame_prepareSecret, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame, __pyx_n_s_prepareSecret, __pyx_t_7) < 0) __PYX_ERR(1, 49, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame, __pyx_n_s_prepareSecret, __pyx_t_7) < 0) __PYX_ERR(1, 47, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   PyType_Modified(__pyx_ptype_9selfdrive_6modeld_6models_15commonmodel_pyx_ModelFrame);
 
@@ -24874,7 +24675,7 @@ if (!__Pyx_RefNanny) {
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  * def __setstate_cython__(self, __pyx_state):
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_9__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_9__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame___reduce_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__37)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_cython, __pyx_t_7) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24885,7 +24686,7 @@ if (!__Pyx_RefNanny) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  */
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_11__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo_2, __pyx_d, ((PyObject *)__pyx_codeobj__40)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_9selfdrive_6modeld_6models_15commonmodel_pyx_10ModelFrame_11__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_ModelFrame___setstate_cython, NULL, __pyx_n_s_selfdrive_modeld_models_commonmo, __pyx_d, ((PyObject *)__pyx_codeobj__38)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_setstate_cython, __pyx_t_7) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -32099,7 +31900,7 @@ __Pyx_PyType_GetName(PyTypeObject* tp)
     if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) {
         PyErr_Clear();
         Py_XDECREF(name);
-        name = __Pyx_NewRef(__pyx_n_s__41);
+        name = __Pyx_NewRef(__pyx_n_s__39);
     }
     return name;
 }
