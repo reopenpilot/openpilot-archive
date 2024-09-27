@@ -530,7 +530,7 @@
     </message>
 </context>
 <context>
-    <name>FrogPilotAdvancedPanel</name>
+    <name>FrogPilotAdvancedDrivingPanel</name>
     <message>
         <source>Advanced Lateral Tuning</source>
         <translation type="unfinished"></translation>
@@ -588,6 +588,38 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Force Auto Tune</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Forces comma&apos;s auto lateral tuning for unsupported vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force Auto Tune Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Forces comma&apos;s auto lateral tuning off for supported vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Taco Tune Hack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use comma&apos;s &apos;Taco Tune&apos; hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Turn Desires Below Lane Change Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force the model to use turn desires when driving below the minimum lane change speed to help make left and right turns more precisely.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Advanced Longitudinal Tuning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -609,6 +641,30 @@
     </message>
     <message>
         <source>Set a cap on how fast openpilot can accelerate to prevent high acceleration at low speeds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced Quality of Life</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Miscellaneous quality of life changes to improve your overall openpilot experience.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force Standstill State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keeps openpilot in the &apos;standstill&apos; state until the gas pedal or &apos;resume&apos; button is pressed. The optional &apos;Only For Stop Lights/Stop Signs&apos; triggers whenever openpilot &apos;detects&apos; a potential stop light/stop sign and forces it to stop where it originally detected it to prevent running the potential red light/stop sign.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Speed Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how much higher or lower the set speed should be compared to your current set speed. For example, if you prefer to drive 5 mph above the speed limit, this setting will automatically add that difference when you engage cruise control.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -776,70 +832,6 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Developer UI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show detailed information about openpilot&apos;s internal operations.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Border Metrics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display performance metrics around the edge of the screen while driving.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FPS Counter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show the &apos;Frames Per Second&apos; (FPS) at the bottom of the screen while driving.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lateral Metrics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display metrics related to steering control at the top of the screen while driving.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Longitudinal Metrics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display metrics related to acceleration, speed, and desired following distance at the top of the screen while driving.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Numerical Temperature Gauge</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show exact temperature readings instead of general status labels like &apos;GOOD&apos;, &apos;OK&apos;, or &apos;HIGH&apos; in the sidebar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sidebar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display system information like CPU, GPU, RAM usage, IP address, and storage space in the sidebar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use International System of Units</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display measurements using the &apos;International System of Units&apos; (SI).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Model Management</source>
         <translation type="unfinished"></translation>
     </message>
@@ -928,84 +920,12 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Model UI</source>
+        <source>Only For Stop Lights/Stop Signs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the model visualizations on the screen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dynamic Path Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically adjust the width of the driving path display based on openpilot&apos;s engagement state.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide Lead Marker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do not display the marker for the vehicle ahead on the screen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lane Lines Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust how thick the lane lines appear on the display.
-
-Default matches the MUTCD standard of 4 inches.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Path Edges Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust the width of the edges of the driving path to represent different modes and statuses.
-
-Default is 20% of the total path width.
-
-Color Guide:
-- Blue: Navigation
-- Light Blue: &apos;Always On Lateral&apos;
-- Green: Default
-- Orange: &apos;Experimental Mode&apos;
-- Red: &apos;Traffic Mode&apos;
-- Yellow: &apos;Conditional Experimental Mode&apos; Overridden</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Path Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set how wide the driving path appears on your screen.
-
-Default (6.1 feet / 1.9 meters) matches the width of a 2019 Lexus ES 350.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Road Edges Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust how thick the road edges appear on the display.
-
-Default matches half of the MUTCD standard lane line width of 4 inches.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&apos;Unlimited&apos; Road UI Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend the display of the path, lane lines, and road edges as far as the model can see.</source>
-        <translation type="unfinished"></translation>
+        <source>mph</source>
+        <translation type="unfinished">mi/h</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -1013,58 +933,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source> seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Blind Spot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Steering Torque</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Turn Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Longitudinal Jerk</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fahrenheit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CPU</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>GPU</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>IP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>RAM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SSD Left</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SSD Used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1208,18 +1076,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> inches</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> feet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The &apos;Model Randomizer&apos; only works with downloaded models. Do you want to download all the driving models?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1240,35 +1096,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the lane line width.
-
-Default matches the Vienna average of 10 centimeters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize the road edges width.
-
-Default is 1/2 of the Vienna average lane line width of 10 centimeters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> centimeters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> meters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize the lane line width.
-
-Default matches the MUTCD average of 4 inches.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize the road edges width.
-
-Default is 1/2 of the MUTCD average lane line width of 4 inches.</source>
+        <source>kph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1298,6 +1126,299 @@ Default is 1/2 of the MUTCD average lane line width of 4 inches.</source>
     <message>
         <source>right</source>
         <translation type="unfinished">droite</translation>
+    </message>
+</context>
+<context>
+    <name>FrogPilotAdvancedVisualsPanel</name>
+    <message>
+        <source>Advanced Custom Onroad UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced user customizations for the Onroad UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your preferred camera view for the onroad UI. This is purely a visual change and doesn&apos;t impact how openpilot drives.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Lead Marker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide the marker for the vehicle ahead on the screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide the speed indicator in the onroad UI. Additional toggle allows it to be hidden/shown via tapping the speed itself.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Wheel Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the wheel speed instead of the cluster speed in the onroad UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show detailed information about openpilot&apos;s internal operations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Border Metrics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display performance metrics around the edge of the screen while driving.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FPS Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display the &apos;Frames Per Second&apos; (FPS) at the bottom of the screen while driving.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lateral Metrics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display metrics related to steering control at the top of the screen while driving.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longitudinal Metrics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display metrics related to acceleration, speed, and desired following distance at the top of the screen while driving.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Numerical Temperature Gauge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show exact temperature readings instead of general status labels like &apos;GOOD&apos;, &apos;OK&apos;, or &apos;HIGH&apos; in the sidebar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sidebar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display system information like CPU, GPU, RAM usage, IP address, and storage space in the sidebar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stopping Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use International System of Units</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display measurements using the &apos;International System of Units&apos; (SI).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Model UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize the model visualizations on the screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lane Lines Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how thick the lane lines appear on the display.
+
+Default matches the MUTCD standard of 4 inches.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path Edges Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust the width of the edges of the driving path to represent different modes and statuses.
+
+Default is 20% of the total path width.
+
+Color Guide:
+- Blue: Navigation
+- Light Blue: &apos;Always On Lateral&apos;
+- Green: Default
+- Orange: &apos;Experimental Mode&apos;
+- Red: &apos;Traffic Mode&apos;
+- Yellow: &apos;Conditional Experimental Mode&apos; Overridden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set how wide the driving path appears on your screen.
+
+Default (6.1 feet / 1.9 meters) matches the width of a 2019 Lexus ES 350.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Road Edges Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how thick the road edges appear on the display.
+
+Default matches half of the MUTCD standard lane line width of 4 inches.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&apos;Unlimited&apos; Road UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend the display of the path, lane lines, and road edges as far as the model can see.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Standard</source>
+        <translation type="unfinished">Standard</translation>
+    </message>
+    <message>
+        <source>Wide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control Via UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blind Spot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Steering Torque</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto Tune</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longitudinal Jerk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fahrenheit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CPU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GPU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RAM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SSD Left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SSD Used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> inches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> feet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how thick the lane lines appear on the display.
+
+Default matches the Vienna standard of 10 centimeters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how thick the road edges appear on the display.
+
+Default matches half of the Vienna standard of 10 centimeters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> centimeters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> meters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust how thick the road edges appear on the display.
+
+Default matches half of the MUTCD standard of 4 inches.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1533,6 +1654,54 @@ Default is 1/2 of the MUTCD average lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Screen Management</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage your screen&apos;s brightness, timeout settings, and hide onroad UI elements.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Brightness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize your screen brightness when offroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Brightness (Onroad)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize your screen brightness when onroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Recorder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable the ability to record the screen while onroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize how long it takes for your screen to turn off.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Timeout (Onroad)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize how long it takes for your screen to turn off when onroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>5 mins</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1554,6 +1723,14 @@ Default is 1/2 of the MUTCD average lane line width of 4 inches.</source>
     </message>
     <message>
         <source> volts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1618,7 +1795,7 @@ Deactivation occurs only through the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lane Change Customizations</source>
+        <source>Lane Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1674,22 +1851,6 @@ Deactivation occurs only through the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force Auto Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Forces comma&apos;s auto lateral tuning for unsupported vehicles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force Auto Tune Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Forces comma&apos;s auto lateral tuning off for supported vehicles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>NNFF</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1703,22 +1864,6 @@ Deactivation occurs only through the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Uses Twilsonco&apos;s steering torque tweak to provide smoother handling when entering and exiting curves.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Taco Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use comma&apos;s &apos;Taco Tune&apos; designed for handling left and right turns.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Turn Desires</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use turn desires for greater precision in turns below the minimum lane change speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1951,11 +2096,11 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Increase Stop Distance</source>
+        <source>Stopped Distance From Lead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Increase the stopping distance for a more comfortable stop from lead vehicles.</source>
+        <source>Control the stopped distance behind lead vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1983,14 +2128,6 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force Standstill State</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keeps openpilot in the &apos;standstill&apos; state until the gas pedal is pressed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Map Accel/Decel To Gears</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2004,14 +2141,6 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Reverses the &apos;long press&apos; functionality logic to increase the max set speed by 5 instead of 1. Useful to increase the max speed quickly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Speed Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set an offset for your desired set speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2227,10 +2356,6 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only For Stop Lights/Stop Signs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Acceleration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2434,6 +2559,14 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Configure settings specific to your vehicle&apos;s make and model.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DRIVING</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VISUALS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2830,6 +2963,14 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Dynamic Path Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically adjust the width of the driving path display based on openpilot&apos;s engagement state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Paths</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2862,14 +3003,6 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stopping Points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display the point where openpilot wants to stop for red lights/stop signs.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Quality of Life</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2886,59 +3019,11 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Camera View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose your preferred camera view for the onroad UI. This is purely a visual change and doesn&apos;t impact how openpilot drives.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Driver Camera On Reverse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show the driver camera feed when in reverse.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide the speed indicator in the onroad UI. Additional toggle allows it to be hidden/shown via tapping the speed itself.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Map Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a map style to use with navigation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stopped Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display a timer in the onroad UI that indicates how long you&apos;ve been stopped for.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Wheel Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use the wheel speed instead of the cluster speed in the onroad UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen Management</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Manage your screen&apos;s brightness, timeout settings, and hide onroad UI elements.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2950,43 +3035,11 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen Brightness</source>
+        <source>Map Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize your screen brightness when offroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen Brightness (Onroad)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize your screen brightness when onroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen Recorder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable the ability to record the screen while onroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen Timeout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize how long it takes for your screen to turn off.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen Timeout (Onroad)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize how long it takes for your screen to turn off when onroad.</source>
+        <source>Select a map style to use with navigation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2995,6 +3048,14 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
     </message>
     <message>
         <source>Turn the screen off after your screen times out when onroad, but wake it back up when engagement state changes or important alerts are triggered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stopped Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a timer in the onroad UI that indicates how long you&apos;ve been stopped for.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3146,31 +3207,19 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show Distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Standard</source>
-        <translation type="unfinished">Standard</translation>
-    </message>
-    <message>
-        <source>Wide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Full Map</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Control Via UI</source>
+        <source>Alerts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Map Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3219,22 +3268,6 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
     </message>
     <message>
         <source>Select a map style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alerts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Map Icon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
