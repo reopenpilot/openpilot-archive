@@ -149,9 +149,9 @@ def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, 
   disengage_predictions.brakeDisengageProbs = net_output_data['meta'][0,Meta.BRAKE_DISENGAGE_GB if gas_brake else Meta.BRAKE_DISENGAGE_SECRET if secret_good_openpilot else Meta.BRAKE_DISENGAGE].tolist()
   disengage_predictions.gasDisengageProbs = net_output_data['meta'][0,Meta.GAS_DISENGAGE_GB if gas_brake else Meta.GAS_DISENGAGE_SECRET if secret_good_openpilot else Meta.GAS_DISENGAGE].tolist()
   disengage_predictions.steerOverrideProbs = net_output_data['meta'][0,Meta.STEER_OVERRIDE].tolist()
-  disengage_predictions.brake3MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_3_GB if gas_brake else gas_brake Meta.HARD_BRAKE_3_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_3].tolist()
-  disengage_predictions.brake4MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_4_GB if gas_brake else gas_brake Meta.HARD_BRAKE_4_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_4].tolist()
-  disengage_predictions.brake5MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_5_GB if gas_brake else gas_brake Meta.HARD_BRAKE_5_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_5].tolist()
+  disengage_predictions.brake3MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_3_GB if gas_brake else Meta.HARD_BRAKE_3_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_3].tolist()
+  disengage_predictions.brake4MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_4_GB if gas_brake else Meta.HARD_BRAKE_4_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_4].tolist()
+  disengage_predictions.brake5MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_5_GB if gas_brake else Meta.HARD_BRAKE_5_SECRET if secret_good_openpilot else Meta.HARD_BRAKE_5].tolist()
   if not secret_good_openpilot:
     disengage_predictions.gasPressProbs = net_output_data['meta'][0,Meta.GAS_PRESS].tolist()
     disengage_predictions.brakePressProbs = net_output_data['meta'][0,Meta.BRAKE_PRESS].tolist()
