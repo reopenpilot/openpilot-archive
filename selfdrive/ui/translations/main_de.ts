@@ -483,14 +483,6 @@
 <context>
     <name>DriveStats</name>
     <message>
-        <source>Drives</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hours</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ALL TIME</source>
         <translation type="unfinished"></translation>
     </message>
@@ -500,6 +492,14 @@
     </message>
     <message>
         <source>FROGPILOT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Drives</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1227,14 +1227,6 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stopping Points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Use International System of Units</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1299,6 +1291,14 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Stopping Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&apos;Unlimited&apos; Road UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1324,6 +1324,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>Control Via UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1376,10 +1380,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>SSD Used</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
