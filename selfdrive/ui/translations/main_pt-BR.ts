@@ -548,7 +548,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjust the resistance in the steering system. Higher values provide more stable steering but can make it feel heavy, while lower values allow lighter steering but may feel too sensitive.</source>
+        <source>Adjust the resistance in steering. Higher values provide more stable steering but can make it feel heavy, while lower values allow lighter steering but may feel too sensitive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -584,7 +584,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Control how much the steering wheel must turn to make the car change direction. Higher values make steering less sensitive but more stable, while lower values increase sensitivity, making the car respond more quickly to smaller steering inputs.</source>
+        <source>Adjust how much openpilot needs to turn the wheel to steer. Higher values feel like driving a truck, more stable at high speeds, but harder to steer quickly at low speeds while lower values feel like a go-kart, easier to steer in tight spots, but more sensitive and less stable at high speeds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>comma&apos;s 2022 Taco Bell Turn Hack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use comma&apos;s hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -604,15 +612,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Taco Tune Hack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use comma&apos;s &apos;Taco Tune&apos; hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Turn Desires Below Lane Change Speed</source>
+        <source>Force Turn Desires Below Lane Change Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -628,7 +628,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lead Detection Threshold</source>
+        <source>Lead Detection Confidence</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -648,7 +648,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Miscellaneous quality of life changes to improve your overall openpilot experience.</source>
+        <source>Miscellaneous quality of life changes to improve your overall openpilot driving experience.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -656,7 +656,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Keeps openpilot in the &apos;standstill&apos; state until the gas pedal or &apos;resume&apos; button is pressed. The optional &apos;Only For Stop Lights/Stop Signs&apos; triggers whenever openpilot &apos;detects&apos; a potential stop light/stop sign and forces it to stop where it originally detected it to prevent running the potential red light/stop sign.</source>
+        <source>Keeps openpilot in the &apos;standstill&apos; state until the gas pedal or &apos;resume&apos; button is pressed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force Stop For Detected Stop Lights/Signs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Whenever openpilot &apos;detects&apos; a potential stop light/stop sign, force a stop where it originally detected it to prevent running the potential red light/stop sign.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -708,7 +716,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed Control Smoothness</source>
+        <source>Speed Change Smoothness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -892,7 +900,7 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Download the selected driving model.</source>
+        <source>Download a specific undownloaded driving model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -917,10 +925,6 @@ Default: 1.0.</source>
     </message>
     <message>
         <source>Reset calibration settings for the driving models.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only For Stop Lights/Stop Signs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1163,6 +1167,22 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Hide UI Elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide the selected UI elements from the onroad screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stopping Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Use Wheel Speed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1291,14 +1311,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stopping Points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&apos;Unlimited&apos; Road UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1327,6 +1339,18 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Alerts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Map Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Show Distance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1340,6 +1364,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>Turn Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjacent Path Metrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2514,10 +2542,6 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Display Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Driving Controls</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2530,19 +2554,19 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Theme and Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Vehicle Controls</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Advanced FrogPilot features for experienced users.</source>
+        <source>Advanced FrogPilot features for more experienced users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Control FrogPilot&apos;s sounds and alerts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Modify the appearance of FrogPilot.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2555,6 +2579,10 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Tools and system utilities for maintaining and troubleshooting FrogPilot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize the theme in FrogPilot and enable some unique onroad UI widgets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2591,6 +2619,14 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>UTILITIES</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>APPEARANCE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THEME</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2693,6 +2729,14 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Goat Scream Steering Saturated Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable the famed &apos;Goat Scream&apos; that has brought both joy and anger to FrogPilot users all around the world!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Green Light Alert</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2714,6 +2758,221 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
     </message>
     <message>
         <source>Enable a louder alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FrogPilotThemesPanel</name>
+    <message>
+        <source>Holiday Themes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The openpilot theme changes according to the current/upcoming holiday. Minor holidays last a day, while major holidays (Easter, Christmas, Halloween, etc.) last a week.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize openpilot to your personal tastes!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch out the standard openpilot color scheme with themed colors.
+
+Want to submit your own color scheme? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Icon Pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch out the standard openpilot icons with a set of themed icons.
+
+Want to submit your own icon pack? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sound Pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch out the standard openpilot sounds with a set of themed sounds.
+
+Want to submit your own sound pack? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Steering Wheel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replace the default steering wheel icon with a custom icon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn Signals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add themed animation for your turn signals.
+
+Want to submit your own turn signal animation? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Random Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enjoy a bit of unpredictability with random events that can occur during certain driving conditions. This is purely cosmetic and has no impact on driving controls!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Startup Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customize the &apos;Startup&apos; alert message that is shown when you go onroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DELETE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DOWNLOAD</source>
+        <translation type="unfinished">BAIXAR</translation>
+    </message>
+    <message>
+        <source>SELECT</source>
+        <translation type="unfinished">SELECIONE</translation>
+    </message>
+    <message>
+        <source>Select a color scheme to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; color scheme?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a color scheme to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a color scheme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an icon pack to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; icon pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an icon pack to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an icon pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal pack to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; signal pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal pack to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a sound pack to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; sound scheme?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a sound pack to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a sound scheme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a steering wheel to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel image?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a steering wheel to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a steering wheel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>STOCK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FROGPILOT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CUSTOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CLEAR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter your text for the top half</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Characters: 0/%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter your text for the bottom half</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2847,106 +3106,6 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
 <context>
     <name>FrogPilotVisualsPanel</name>
     <message>
-        <source>Bonus Content</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bonus FrogPilot features to make openpilot a bit more fun!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Goat Scream</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable the famed &apos;Goat Scream&apos; that has brought both joy and anger to FrogPilot users all around the world!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Holiday Themes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The openpilot theme changes according to the current/upcoming holiday. Minor holidays last a day, while major holidays (Easter, Christmas, Halloween, etc.) last a week.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Personalize openpilot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize openpilot to your personal tastes!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color Theme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Switch out the standard openpilot color scheme with themed colors.
-
-Want to submit your own color scheme? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Icon Pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Switch out the standard openpilot icons with a set of themed icons.
-
-Want to submit your own icon pack? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sound Pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Switch out the standard openpilot sounds with a set of themed sounds.
-
-Want to submit your own sound pack? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Turn Signals</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add themed animation for your turn signals.
-
-Want to submit your own turn signal animation? Post it in the &apos;feature-request&apos; channel in the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Steering Wheel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Replace the default steering wheel icon with a custom icon.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download Status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Startup Alert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customize the &apos;Startup&apos; alert that is shown when you go onroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Random Events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enjoy a bit of unpredictability with random events that can occur during certain driving conditions. This is purely cosmetic and has no impact on driving controls!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Custom Onroad UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2967,7 +3126,20 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatically adjust the width of the driving path display based on openpilot&apos;s engagement state.</source>
+        <source>Automatically adjust the width of the driving path display based on openpilot&apos;s current engagement state.
+
+Fully engaged = 100%
+Always On Lateral Active = 75%
+Fully disengaged = 50%
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gas/Brake Pedal Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display the gas and brake pedals on the onroad UI that change opacity in accordance to how much gas/brake pressure is applied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2979,19 +3151,11 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pedals Being Pressed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display the brake and gas pedals on the onroad UI below the steering wheel icon.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Road Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Display the current road&apos;s name at the bottom of the screen. Sourced from OpenStreetMap.</source>
+        <source>Display the current road&apos;s name at the bottom of the screen using data from &apos;OpenStreetMap&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3019,27 +3183,19 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Driver Camera On Reverse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show the driver camera feed when in reverse.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide UI Elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide the selected UI elements from the onroad screen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Map Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select a map style to use with navigation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Driver Camera When In Reverse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show the driver camera feed when in reverse.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3059,130 +3215,6 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>DELETE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DOWNLOAD</source>
-        <translation type="unfinished">BAIXAR</translation>
-    </message>
-    <message>
-        <source>SELECT</source>
-        <translation type="unfinished">SELECIONE</translation>
-    </message>
-    <message>
-        <source>Select a color scheme to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; color scheme?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a color scheme to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a color scheme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an icon pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; icon pack?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an icon pack to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an icon pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; signal pack?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a sound pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; sound scheme?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a sound pack to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a sound scheme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a steering wheel to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel image?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a steering wheel to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a steering wheel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>STOCK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FROGPILOT</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CUSTOM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CLEAR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter your text for the top half</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Characters: 0/%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter your text for the bottom half</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Acceleration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3195,10 +3227,6 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Metrics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Dynamic</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3208,18 +3236,6 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
     </message>
     <message>
         <source>Full Map</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alerts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Map Icon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3267,11 +3283,11 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a map style</source>
-        <translation type="unfinished"></translation>
+        <source>SELECT</source>
+        <translation type="unfinished">SELECIONE</translation>
     </message>
     <message>
-        <source>CANCEL</source>
+        <source>Select a map style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
