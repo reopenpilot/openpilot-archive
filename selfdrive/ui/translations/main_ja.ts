@@ -1577,6 +1577,15 @@ Reboot Required.</source>
         <source>Enabling this toggle sets CRUISE MAIN to ON by default when the car starts, without engaging MADS. The user still needs to manually engage MADS.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enable Toyota Drive Mode Button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sunnypilot will link the Acceleration Personality to the car&apos;s physical drive mode selector.
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsWindow</name>
