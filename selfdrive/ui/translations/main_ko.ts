@@ -680,7 +680,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the driving personality profiles.</source>
+        <source>Create and customize your own driving personality profiles to suit your preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -688,7 +688,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the &apos;Traffic&apos; personality profile.</source>
+        <source>Customize the &apos;Traffic&apos; personality profile, tailored for navigating through traffic.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -696,31 +696,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set the minimum following distance in &apos;Traffic Mode&apos;. The distance adjusts dynamically between this value and the &apos;Aggressive&apos; profile&apos;s distance based on your speed.</source>
+        <source>Set the minimum following distance in &apos;Traffic Mode.&apos; The system will adjust dynamically between this value and the &apos;Aggressive&apos; profile distance based on your speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration Change Sensitivity</source>
+        <source>Acceleration Sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty applied for changes in acceleration while in &apos;Traffic Mode&apos;. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes but may feel jerky.</source>
+        <source>Sets how sensitive the system is to changes in acceleration in &apos;Traffic Mode.&apos; Higher values result in smoother, more gradual acceleration and deceleration, while lower values allow for faster changes that may feel more abrupt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hazard Sensitivity</source>
+        <source>Deceleration Sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjusts the penalty for getting too close to other vehicles or obstacles while in &apos;Traffic Mode&apos;. Higher values make openpilot more cautious, maintaining a safer distance and prioritizing safety, while lower values reduce the likelihood of sudden braking but increase the risk of following too closely.</source>
+        <source>Controls how sensitive the system is to changes in deceleration in &apos;Traffic Mode.&apos; Higher values result in smoother, more gradual braking, while lower values allow for quicker, more responsive braking that may feel abrupt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed Change Smoothness</source>
+        <source>Safety Distance Sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty on the rate of change of acceleration while in &apos;Traffic Mode&apos;. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.</source>
+        <source>Adjusts how cautious the system is around other vehicles or obstacles in &apos;Traffic Mode.&apos; Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Increase Responsiveness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controls how quickly the system adjusts speed in &apos;Traffic Mode.&apos; Higher values ensure smoother, more gradual speed changes, while lower values enable quicker adjustments that might feel sharper or less smooth.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Decrease Responsiveness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sets how quickly the system adjusts to decreasing speeds in &apos;Traffic Mode.&apos; Higher values ensure smoother transitions when slowing down, while lower values allow for quicker, more responsive speed reductions that might feel sharper.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -736,29 +752,41 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the &apos;Aggressive&apos; personality profile.</source>
+        <source>Customize the &apos;Aggressive&apos; personality profile, designed for a more assertive driving style.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set the following distance for &apos;Aggressive&apos; mode. This represents how many seconds you follow behind the car ahead.
+        <source>Set the following distance for &apos;Aggressive&apos; mode. This determines how many seconds you&apos;ll follow behind the car ahead.
 
 Default: 1.25 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty applied for changes in acceleration while using the &apos;Aggressive&apos; profile personality. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes but may feel jerky.
+        <source>Controls how sensitive the system is to acceleration changes in &apos;Aggressive&apos; mode. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes that may feel jerky.
 
 Default: 0.5.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjusts the penalty for getting too close to other vehicles or obstacles while using the &apos;Aggressive&apos; personality profile. Higher values make openpilot more cautious, maintaining a safer distance and prioritizing safety, while lower values reduce the likelihood of sudden braking but increase the risk of following too closely.
+        <source>Controls how sensitive the system is to deceleration in &apos;Aggressive&apos; mode. Higher values result in smoother braking, while lower values allow for more immediate braking that may feel abrupt.
+
+Default: 0.5.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjusts how cautious the system is around vehicles or obstacles in &apos;Aggressive&apos; mode. Higher values make it more cautious, while lower values allow for closer following, increasing the risk of sudden braking.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty on the rate of change of acceleration while using the &apos;Standard&apos; personality profile. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+        <source>Controls how quickly the system adjusts speed in &apos;Aggressive&apos; mode. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+
+Default: 0.5.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sets how quickly the system adjusts to speed reductions in &apos;Aggressive&apos; mode. Higher values ensure smoother transitions when slowing down, while lower values allow for quicker, more responsive speed decreases that may feel sharp.
 
 Default: 0.5.</source>
         <translation type="unfinished"></translation>
@@ -772,29 +800,41 @@ Default: 0.5.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the &apos;Standard&apos; personality profile.</source>
+        <source>Customize the &apos;Standard&apos; personality profile, optimized for balanced driving.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set the following distance for &apos;Standard&apos; mode. This represents how many seconds you follow behind the car ahead.
+        <source>Set the following distance for &apos;Standard&apos; mode. This determines how many seconds you&apos;ll follow behind the car ahead.
 
 Default: 1.45 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty applied for changes in acceleration while using the &apos;Standard&apos; profile personality. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes but may feel jerky.
+        <source>Controls how sensitive the system is to acceleration changes in &apos;Standard&apos; mode. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes that may feel jerky.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjusts the penalty for getting too close to other vehicles or obstacles while using the &apos;Standard&apos; personality profile. Higher values make openpilot more cautious, maintaining a safer distance and prioritizing safety, while lower values reduce the likelihood of sudden braking but increase the risk of following too closely.
+        <source>Controls how sensitive the system is to deceleration in &apos;Standard&apos; mode. Higher values result in smoother braking, while lower values allow for quicker, more immediate braking that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty on the rate of change of acceleration while using the &apos;Standard&apos; personality profile. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+        <source>Adjusts how cautious the system is around vehicles or obstacles in &apos;Standard&apos; mode. Higher values make it more cautious, while lower values allow for closer following, increasing the risk of sudden braking.
+
+Default: 1.0.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controls how quickly the system adjusts speed in &apos;Standard&apos; mode. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+
+Default: 1.0.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sets how quickly the system adjusts to speed reductions in &apos;Standard&apos; mode. Higher values ensure smoother transitions when slowing down, while lower values allow for quicker, more responsive speed decreases that may feel sharp.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -808,29 +848,41 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the &apos;Relaxed&apos; personality profile.</source>
+        <source>Customize the &apos;Relaxed&apos; personality profile, ideal for a more laid-back driving style.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set the following distance for &apos;Relaxed&apos; mode. This represents how many seconds you follow behind the car ahead.
+        <source>Set the following distance for &apos;Relaxed&apos; mode. This determines how many seconds you&apos;ll follow behind the car ahead.
 
 Default: 1.75 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty applied for changes in acceleration while using the &apos;Relaxed&apos; profile personality. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes but may feel jerky.
+        <source>Controls how sensitive the system is to acceleration changes in &apos;Relaxed&apos; mode. Higher values make acceleration and deceleration smoother but slower, while lower values allow quicker changes that may feel jerky.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjusts the penalty for getting too close to other vehicles or obstacles while using the &apos;Relaxed&apos; personality profile. Higher values make openpilot more cautious, maintaining a safer distance and prioritizing safety, while lower values reduce the likelihood of sudden braking but increase the risk of following too closely.
+        <source>Controls how sensitive the system is to deceleration in &apos;Relaxed&apos; mode. Higher values result in smoother braking, while lower values allow for quicker, more immediate braking that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls the penalty on the rate of change of acceleration while using the &apos;Relaxed&apos; personality profile. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+        <source>Adjusts how cautious the system is around vehicles or obstacles in &apos;Relaxed&apos; mode. Higher values make it more cautious, while lower values allow for closer following, increasing the risk of sudden braking.
+
+Default: 1.0.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controls how quickly the system adjusts speed in &apos;Relaxed&apos; mode. Higher values result in smoother but slower speed changes, while lower values make speed adjustments quicker but potentially more abrupt.
+
+Default: 1.0.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sets how quickly the system adjusts to speed reductions in &apos;Relaxed&apos; mode. Higher values ensure smoother transitions when slowing down, while lower values allow for quicker, more responsive speed decreases that may feel sharp.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -2164,6 +2216,14 @@ Overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Onroad Personality Button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the current driving personality on the onroad screen. Tap to switch between personalities, or long press for 2.5 seconds to activate &apos;Traffic Mode&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Reverse Cruise Increase</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3087,6 +3147,14 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>comma&apos;s New Toyota Tune</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate Comma&apos;s latest Toyota tuning, expertly crafted by Shane for enhanced vehicle performance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Stop and Go Hack</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3100,6 +3168,10 @@ Want to submit your own turn signal animation? Post it in the &apos;feature-requ
     </message>
     <message>
         <source>Unlock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FrogsGoMoo&apos;s Personal Tweaks</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
