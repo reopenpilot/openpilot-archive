@@ -2,20 +2,20 @@
 
 FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
   const std::vector<std::tuple<QString, QString, QString, QString>> themeToggles {
-    {"HolidayThemes", tr("Holiday Themes"), tr("Change the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last a week."), "../frogpilot/assets/toggle_icons/icon_calendar.png"},
-
     {"PersonalizeOpenpilot", tr("Custom Theme"), tr("Custom openpilot themes."), "../frogpilot/assets/toggle_icons/frog.png"},
-    {"CustomColors", tr("Color Theme"), tr("Themed color schemes.\n\nWant to submit your own color scheme? Share it in the 'feature-request' channel on the FrogPilot Discord!"), ""},
+    {"CustomColors", tr("Color Scheme"), tr("Themed color schemes.\n\nWant to submit your own color scheme? Share it in the 'feature-request' channel on the FrogPilot Discord!"), ""},
     {"CustomDistanceIcon", "Distance Button Icons", "Themed distance button icons.\n\nWant to submit your own icon pack? Share it in the 'feature-request' channel on the FrogPilot Discord!", ""},
     {"CustomIcons", tr("Icon Pack"), tr("Themed icon packs.\n\nWant to submit your own icons? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
     {"CustomSounds", tr("Sound Pack"), tr("Themed sound effects.\n\nWant to submit your own sounds? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
-    {"WheelIcon", tr("Steering Wheel Icon"), tr("Custom steering wheel icons."), ""},
-    {"CustomSignals", tr("Turn Signal Animations"), tr("Themed turn signal animations.\n\nWant to submit your own animations? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
+    {"WheelIcon", tr("Steering Wheel"), tr("Custom steering wheel icons."), ""},
+    {"CustomSignals", tr("Turn Signal Animation"), tr("Themed turn signal animations.\n\nWant to submit your own animations? Share them in the 'feature-request' channel on the FrogPilot Discord!"), ""},
     {"DownloadStatusLabel", tr("Download Status"), "", ""},
+
+    {"HolidayThemes", tr("Holiday Themes"), tr("Change the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last a week."), "../frogpilot/assets/toggle_icons/icon_calendar.png"},
 
     {"RandomEvents", tr("Random Events"), tr("Random cosmetic events that happen during certain driving conditions. These events are purely for fun and don't affect driving controls!"), "../frogpilot/assets/toggle_icons/icon_random.png"},
 
-    {"StartupAlert", tr("Custom Startup Alert"), tr("Custom 'Startup' alert message that appears when you start driving."), "../frogpilot/assets/toggle_icons/icon_message.png"}
+    {"StartupAlert", tr("Startup Alert"), tr("Custom 'Startup' alert message that appears when you start driving."), "../frogpilot/assets/toggle_icons/icon_message.png"}
   };
 
   for (const auto &[param, title, desc, icon] : themeToggles) {
