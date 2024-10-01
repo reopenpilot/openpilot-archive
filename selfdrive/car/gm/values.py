@@ -7,8 +7,6 @@ from openpilot.selfdrive.car import dbc_dict, PlatformConfig, DbcDict, Platforms
 from openpilot.selfdrive.car.docs_definitions import CarHarness, CarDocs, CarParts
 from openpilot.selfdrive.car.fw_query_definitions import FwQueryConfig, Request, StdQueries
 
-from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_variables import get_max_allowed_accel
-
 Ecu = car.CarParams.Ecu
 
 
@@ -35,6 +33,7 @@ class CarControllerParams:
   # Our controller should still keep the 2 second average above
   # -3.5 m/s^2 as per planner limits
   ACCEL_MAX = 2.  # m/s^2
+  ACCEL_MAX_PLUS = 4.  # m/s^2
   ACCEL_MIN = -4.  # m/s^2
 
   def __init__(self, CP):
@@ -68,8 +67,8 @@ class CarControllerParams:
       self.max_regen_acceleration = -1. if CP.carFingerprint in EV_CAR else -0.1
 
     self.GAS_LOOKUP_BP = [self.max_regen_acceleration, 0., self.ACCEL_MAX]
+    self.GAS_LOOKUP_BP_PLUS = [self.max_regen_acceleration, 0., self.ACCEL_MAX_PLUS]
     self.GAS_LOOKUP_V = [self.MAX_ACC_REGEN, self.ZERO_GAS, self.MAX_GAS]
-    self.GAS_LOOKUP_BP_PLUS = [self.max_regen_acceleration, 0., 4.]
     self.GAS_LOOKUP_V_PLUS = [self.MAX_ACC_REGEN, self.ZERO_GAS, self.MAX_GAS_PLUS]
 
     self.BRAKE_LOOKUP_BP = [self.ACCEL_MIN, self.max_regen_acceleration]
@@ -83,8 +82,9 @@ class CarControllerParams:
 
   def update_ev_gas_brake_threshold(self, v_ego):
     gas_brake_threshold = interp(v_ego, self.EV_GAS_BRAKE_THRESHOLD_BP, self.EV_GAS_BRAKE_THRESHOLD_V)
+    self.GAS_LOOKUP_BP_PLUS = [self.max_regen_acceleration, 0., self.ACCEL_MAX_PLUS]
     self.EV_GAS_LOOKUP_BP = [gas_brake_threshold, max(0., gas_brake_threshold), self.ACCEL_MAX]
-    self.EV_GAS_LOOKUP_BP_PLUS = [gas_brake_threshold, max(0., gas_brake_threshold), get_max_allowed_accel(v_ego)]
+    self.EV_GAS_LOOKUP_BP_PLUS = [gas_brake_threshold, max(0., gas_brake_threshold), self.ACCEL_MAX_PLUS]
     self.EV_BRAKE_LOOKUP_BP = [self.ACCEL_MIN, gas_brake_threshold]
 
 @dataclass
