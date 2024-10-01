@@ -652,7 +652,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force Standstill State</source>
+        <source>Force Keep openpilot in the Standstill State</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -660,7 +660,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force Stop the Detected Stop Lights/Signs</source>
+        <source>Force Stop for &apos;Detected&apos; Stop Lights/Signs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1187,7 +1187,7 @@ Default: 1.0.</source>
 <context>
     <name>FrogPilotAdvancedVisualsPanel</name>
     <message>
-        <source>Advanced Custom Onroad UI</source>
+        <source>Advanced Onroad UI Widgets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1200,6 +1200,14 @@ Default: 1.0.</source>
     </message>
     <message>
         <source>Camera view for the onroad UI. This is purely a visual change and doesn&apos;t impact how openpilot drives.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display Stopping Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1224,14 +1232,6 @@ Default: 1.0.</source>
     </message>
     <message>
         <source>Hide the selected UI elements from the onroad screen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stopping Points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1873,7 +1873,7 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide Status Bar</source>
+        <source>Hide the Status Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2052,7 +2052,7 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide Status Bar</source>
+        <source>Hide the Status Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2272,7 +2272,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed Limit Priority</source>
+        <source>Speed Limit Source Priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2630,7 +2630,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FrogPilot&apos;s sounds and alerts.</source>
+        <source>Options to customize FrogPilot&apos;s sound alerts and notifications.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2642,15 +2642,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tools and system utilities for maintaining and troubleshooting FrogPilot.</source>
+        <source>Tools and system utilities used to maintain and troubleshoot FrogPilot.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Theme customization and FrogPilot onroad UI widgets.</source>
+        <source>Options for customizing FrogPilot&apos;s themes, UI appearance, and onroad widgets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings specific to select makes and models.</source>
+        <source>Vehicle-specific settings and configurations for supported makes and models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2836,14 +2836,6 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
 <context>
     <name>FrogPilotThemesPanel</name>
     <message>
-        <source>Holiday Themes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Change the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last a week.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Custom Theme</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2852,7 +2844,7 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color Theme</source>
+        <source>Color Scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2882,7 +2874,7 @@ Want to submit your own sounds? Share them in the &apos;feature-request&apos; ch
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Steering Wheel Icon</source>
+        <source>Steering Wheel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2890,7 +2882,7 @@ Want to submit your own sounds? Share them in the &apos;feature-request&apos; ch
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Turn Signal Animations</source>
+        <source>Turn Signal Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2904,6 +2896,14 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Holiday Themes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last a week.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Random Events</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2912,7 +2912,7 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Custom Startup Alert</source>
+        <source>Startup Alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3099,19 +3099,19 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental GM Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FrogsGoMoo&apos;s experimental GM tune that is based on nothing but guesswork. Use at your own risk!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>2017 Volt Stop and Go Hack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Force stop and go for the 2017 Chevy Volt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Experimental GM Tune</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FrogsGoMoo&apos;s experimental GM tune that is based on nothing but guesswork. Use at your own risk!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3159,7 +3159,7 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s New Toyota Tune</source>
+        <source>comma&apos;s New Toyota/Lexus Tune</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
