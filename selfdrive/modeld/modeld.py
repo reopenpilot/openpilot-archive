@@ -50,7 +50,7 @@ metadata_file = (
   'secret-good-openpilot_metadata.pkl' if SECRET_GOOD_OPENPILOT else
   'gas-brake_metadata.pkl' if GAS_BRAKE else
   'poseless_metadata.pkl' if DISABLE_POSE else
-  'supercombo_metadata.pkl'
+  'classic_metadata.pkl'
 )
 METADATA_PATH = Path(__file__).parent / f'models/{metadata_file}'
 
@@ -161,8 +161,7 @@ class ModelState:
     else:
       # if getCLBuffer is not None, frame will be None
       self.model.setInputBuffer("input_imgs", self.frame.prepare(buf, transform.flatten(), self.model.getCLBuffer("input_imgs")))
-      if wbuf is not None:
-        self.model.setInputBuffer("big_input_imgs", self.wide_frame.prepare(wbuf, transform_wide.flatten(), self.model.getCLBuffer("big_input_imgs")))
+      self.model.setInputBuffer("big_input_imgs", self.wide_frame.prepare(wbuf, transform_wide.flatten(), self.model.getCLBuffer("big_input_imgs")))
 
     if prepare_only:
       return None
