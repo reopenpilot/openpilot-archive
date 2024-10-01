@@ -222,7 +222,7 @@ class LongitudinalPlanner:
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
     # Compute model v_ego error
     self.v_model_error = get_speed_error(sm['modelV2'], v_ego)
-    x, v, a, j, throttle_prob = self.parse_model(sm['modelV2'], self.v_model_error)
+    x, v, a, j, throttle_prob = self.parse_model(sm['modelV2'], self.v_model_error, v_ego, frogpilot_toggles.taco_tune)
     self.allow_throttle = throttle_prob > ALLOW_THROTTLE_THRESHOLD
 
     if not self.allow_throttle and v_ego > 5.0:  # Don't clip at low speeds since throttle_prob doesn't account for creep
