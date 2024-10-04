@@ -289,7 +289,7 @@ class CarState(CarStateBase):
       ("STEER_TORQUE_SENSOR", 50),
     ]
 
-    if CP.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
+    if CP.carFingerprint in (CAR.LEXUS_ES_TSS2, CAR.TOYOTA_COROLLA_TSS2):
       messages.append(("CLUTCH", 15))
 
     if CP.carFingerprint != CAR.TOYOTA_MIRAI:
