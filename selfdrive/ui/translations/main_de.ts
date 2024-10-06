@@ -3159,11 +3159,11 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s New Toyota/Lexus Tune</source>
+        <source>FrogsGoMoo&apos;s Personal Tweaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Activate comma&apos;s latest Toyota tuning, expertly crafted by Shane for enhanced vehicle performance.</source>
+        <source>Use FrogsGoMoo&apos;s personal tweaks to the Toyota tune focused around his 2019 Lexus ES 350 to take off a bit quicker and stop a bit smoother.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3180,10 +3180,6 @@ Want to submit your own animations? Share them in the &apos;feature-request&apos
     </message>
     <message>
         <source>Unlock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FrogsGoMoo&apos;s Personal Tweaks</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
