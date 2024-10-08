@@ -2634,10 +2634,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FrogPilot features than impact acceleration, braking, and steering.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Offline maps downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2694,7 +2690,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>FrogPilot features that impact acceleration, braking, and steering.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>OFFLINE MAPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRIMELESS NAVIGATION</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
