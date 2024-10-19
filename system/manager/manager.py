@@ -31,9 +31,10 @@ def manager_init() -> None:
 
   build_metadata = get_build_metadata()
 
-  setup_frogpilot(build_metadata)
-
   params = Params()
+
+  setup_frogpilot(build_metadata, params)
+
   params_storage = Params("/persist/params")
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
   params.clear_all(ParamKeyType.CLEAR_ON_ONROAD_TRANSITION)
@@ -285,6 +286,7 @@ def manager_init() -> None:
     ("RelaxedJerkSpeed", "100"),
     ("RelaxedJerkSpeedDecrease", "100"),
     ("RelaxedPersonalityProfile", "1"),
+    ("ResetFrogTheme", "0"),
     ("ReverseCruise", "0"),
     ("RoadEdgesWidth", "2"),
     ("RoadNameUI", "1"),
