@@ -1503,6 +1503,10 @@ Default matches half of the MUTCD standard of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Adjacent Leads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Jerk Values</source>
         <translation type="unfinished"></translation>
     </message>
