@@ -1431,10 +1431,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Longitudinal Jerk</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Fahrenheit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1504,6 +1500,10 @@ Default matches the MUTCD standard of 4 inches.</source>
         <source>Adjust how thick the road edges appear on the display.
 
 Default matches half of the MUTCD standard of 4 inches.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Jerk Values</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
