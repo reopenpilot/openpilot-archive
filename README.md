@@ -3617,7 +3617,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 
 
 
-### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20240930-0039/)
+### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20241027-0823/)
 ```
 https://smiskol.com/fork/sp/dev-c3
 ```
@@ -4353,6 +4353,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20240930-0039
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20241027-0823</summary>
+> >
+> > #### sp-dev-c3-20241027-0823
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/sp-dev-c3-20241027-0823
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s sp-dev-c3-20241027-0823
 > > ```
 > >
 > > </details>
