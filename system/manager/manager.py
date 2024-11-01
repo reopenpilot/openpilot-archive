@@ -174,7 +174,7 @@ def manager_thread() -> None:
   started_prev = False
 
   # FrogPilot variables
-  frogpilot_toggles = get_frogpilot_toggles(True)
+  frogpilot_toggles = get_frogpilot_toggles()
   classic_model = frogpilot_toggles.classic_model
 
   error_log = os.path.join(sentry.CRASHES_DIR, 'error.txt')
