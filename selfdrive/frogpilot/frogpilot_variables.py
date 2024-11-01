@@ -29,11 +29,7 @@ TO_RADIANS = math.pi / 180                              # Conversion factor from
 
 
 def get_frogpilot_toggles(block=False):
-  toggles = Params().get("FrogPilotToggles", block=block)
-  if toggles is None:
-    return SimpleNamespace()
-
-  toggles_dict = json.loads(toggles)
+  toggles_dict = json.loads(Params().get("FrogPilotToggles", block=block))
   return SimpleNamespace(**toggles_dict)
 
 
