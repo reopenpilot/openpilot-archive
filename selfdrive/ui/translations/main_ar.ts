@@ -981,10 +981,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Single Lane Change Per Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Lateral Tuning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1142,6 +1138,10 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Sets the minimum speed required for openpilot to perform a lane change.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only One Lane Change Per Signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3861,6 +3861,10 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Since you&apos;re fairly new to FrogPilot, the &apos;Basic&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Since you&apos;re experienced with openpilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
