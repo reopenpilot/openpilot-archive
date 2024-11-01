@@ -24,6 +24,7 @@ from openpilot.system.version import get_build_metadata, terms_version, training
 
 from openpilot.selfdrive.frogpilot.assets.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME
 from openpilot.selfdrive.frogpilot.frogpilot_functions import convert_params, frogpilot_boot_functions, setup_frogpilot, uninstall_frogpilot
+from openpilot.selfdrive.frogpilot.frogpilot_utilities import update_frogpilot_toggles
 from openpilot.selfdrive.frogpilot.frogpilot_variables import frogpilot_default_params, get_frogpilot_toggles
 
 
@@ -174,7 +175,8 @@ def manager_thread() -> None:
   started_prev = False
 
   # FrogPilot variables
-  frogpilot_toggles = get_frogpilot_toggles()
+  update_frogpilot_toggles()
+  frogpilot_toggles = get_frogpilot_toggles(True)
   classic_model = frogpilot_toggles.classic_model
 
   error_log = os.path.join(sentry.CRASHES_DIR, 'error.txt')
