@@ -1083,7 +1083,7 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
       "openpilot crashed",
       "Please post the 'Error Log' in the FrogPilot Discord!",
       AlertStatus.normal, AlertSize.mid,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.none, 10.),
+      Priority.HIGHEST, VisualAlert.none, AudibleAlert.prompt, 10.),
   },
 
   EventName.pedalInterceptorNoBrake: {
