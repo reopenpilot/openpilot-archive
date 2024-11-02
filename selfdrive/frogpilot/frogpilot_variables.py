@@ -143,7 +143,7 @@ frogpilot_default_params: list[tuple[str, str | bytes]] = [
   ("ForceStandstill", "0"),
   ("ForceStops", "0"),
   ("FPSCounter", "1"),
-  ("FrogPilotToggles", ""),
+  ("FrogPilotToggles", "{}"),
   ("FrogsGoMoosTweak", "1"),
   ("FullMap", "0"),
   ("GasRegenCmd", "1"),
@@ -581,15 +581,15 @@ class FrogPilotVariables:
     toggle.lead_detection_probability = clip(self.params.get_int("LeadDetectionThreshold") / 100, 0.01, 0.99) if toggle.longitudinal_tuning else 0.5
     toggle.max_desired_acceleration = clip(self.params.get_float("MaxDesiredAcceleration"), 0.1, 4.0) if toggle.longitudinal_tuning else 4.0
 
-    available_models = self.params.get("AvailableModels", block=True, encoding='utf-8') or ""
-    available_model_names = self.params.get("AvailableModelsNames", block=True, encoding='utf-8') or ""
+    available_models = self.params.get("AvailableModels", block=openpilot_installed and started, encoding='utf-8') or ""
+    available_model_names = self.params.get("AvailableModelsNames", block=openpilot_installed and started, encoding='utf-8') or ""
     if available_models:
       if self.params.get_bool("ModelRandomizer"):
         blacklisted_models = (self.params.get("BlacklistedModels", encoding='utf-8') or "").split(',')
         existing_models = [model for model in available_models.split(',') if model not in blacklisted_models and os.path.exists(os.path.join(MODELS_PATH, f"{model}.thneed"))]
         toggle.model = random.choice(existing_models) if existing_models else DEFAULT_MODEL
       else:
-        toggle.model = self.params.get("Model", block=True, encoding='utf-8')
+        toggle.model = self.params.get("Model", block=openpilot_installed and started, encoding='utf-8')
     else:
       toggle.model = DEFAULT_MODEL
     if toggle.model in available_models.split(',') and os.path.exists(os.path.join(MODELS_PATH, f"{toggle.model}.thneed")):
