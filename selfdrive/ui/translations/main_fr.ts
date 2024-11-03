@@ -4164,10 +4164,6 @@ Cela peut prendre jusqu&apos;à une minute.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to permanently delete any additional FrogPilot assets? This is 100% unrecoverable and includes backups, downloaded models, themes, and long-term storage toggle settings for easy reinstalls.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Error Log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4177,6 +4173,10 @@ Cela peut prendre jusqu&apos;à une minute.</translation>
     </message>
     <message>
         <source>View the error log for openpilot crashes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to permanently delete any additional FrogPilot assets? This is 100% unrecoverable and includes backups, models, and long-term storage toggle settings for easy reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
