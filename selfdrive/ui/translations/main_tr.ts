@@ -1257,10 +1257,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Human-Like Following Distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Increase Stopped Distance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1815,6 +1811,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Human-Like Approach Behind Leads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Dynamically adjusts the following distance when approaching slower or stopped vehicles for a more &apos;human-like&apos; driving experience.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2068,14 +2068,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset Model Calibrations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resets calibration settings for the driving models.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ADD</source>
         <translation type="unfinished">EKLE</translation>
     </message>
@@ -2184,35 +2176,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start with a fresh calibration for the newly selected model?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reboot required to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reboot Now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>RESET ALL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>RESET ONE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset all of your model calibrations?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a model to reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset this model&apos;s calibrations?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2222,30 +2190,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     <message>
         <source>Downloading models...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>openpilot requires the device to be mounted within 4° left or right and within 5° up or 9° down. openpilot is continuously calibrating, resetting is rarely required.</source>
-        <translation type="unfinished">openpilot, cihazın 4° sola veya 5° yukarı yada 9° aşağı bakıcak şekilde monte edilmesi gerekmektedir. openpilot sürekli kendisini kalibre edilmektedir ve nadiren sıfırlama gerebilir.</translation>
-    </message>
-    <message>
-        <source> Your device is pointed %1° %2 and %3° %4.</source>
-        <translation type="unfinished"> Cihazınız %1° %2 ve %3° %4 yönünde ayarlı</translation>
-    </message>
-    <message>
-        <source>down</source>
-        <translation type="unfinished">aşağı</translation>
-    </message>
-    <message>
-        <source>up</source>
-        <translation type="unfinished">yukarı</translation>
-    </message>
-    <message>
-        <source>left</source>
-        <translation type="unfinished">sol</translation>
-    </message>
-    <message>
-        <source>right</source>
-        <translation type="unfinished">sağ</translation>
     </message>
 </context>
 <context>
@@ -2859,14 +2803,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s New Toyota/Lexus Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables comma&apos;s latest Toyota tuning, expertly crafted by Shane for enhanced vehicle performance.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enables FrogsGoMoo&apos;s personal tweaks to the Toyota tune focused around his 2019 Lexus ES 350 to take off a bit quicker and stop a bit smoother.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2998,7 +2934,7 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Onroad Personality Button</source>
+        <source>On Screen Personality Button</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3067,6 +3003,14 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Hides non-critical alerts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Speed Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hides the speed limits.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4147,7 +4091,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to permanently delete any additional FrogPilot assets? This is 100% unrecoverable and includes backups, models, and long-term storage toggle settings for easy reinstalls.</source>
+        <source>Do you want to delete all FrogPilot assets? This is 100% unrecoverable and includes backups, models, and deep storage toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4488,7 +4432,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle off the &apos;Disable Uploading&apos; toggle to enable uploads.</source>
+        <source>Toggle off the &apos;Turn Off Data Uploads&apos; toggle to re-enable uploads.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

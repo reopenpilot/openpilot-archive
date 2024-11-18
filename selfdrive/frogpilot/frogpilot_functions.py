@@ -8,7 +8,7 @@ import tarfile
 import time
 
 from openpilot.common.basedir import BASEDIR
-from openpilot.common.params_pyx import Params, ParamKeyType, UnknownKeyName
+from openpilot.common.params_pyx import ParamKeyType, UnknownKeyName
 from openpilot.common.time import system_time_valid
 from openpilot.system.hardware import HARDWARE
 
