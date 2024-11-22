@@ -709,10 +709,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Backing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Compressing...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -770,6 +766,30 @@
     </message>
     <message>
         <source>Permanently deletes all stored driving footage and data from your device. Ideal for maintaining privacy or freeing up space.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DELETE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all screen recordings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all FrogPilot backups?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all toggle backups?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1153,14 +1173,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s 2022 Taco Bell Turn Hack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Uses comma&apos;s hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Force Turn Desires Below Lane Change Speed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1321,10 +1333,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Override Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speed Limit Source Priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1644,7 +1652,7 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Traffic&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <source>Controls how quickly openpilot decreases speed in &apos;Traffic&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1694,7 +1702,7 @@ Default: 0.5.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Aggressive&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Aggressive&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 0.5.</source>
         <translation type="unfinished"></translation>
@@ -1742,7 +1750,7 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Standard&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Standard&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -1790,7 +1798,7 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Relaxed&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Relaxed&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -1851,6 +1859,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets a cap on how fast openpilot can accelerate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&apos;Taco Bell Run&apos; Turn Speed Hack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uses comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1925,6 +1941,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets your max speed to match the current speed limit when enabling openpilot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Limit Source Priority Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2444,10 +2464,6 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed Limit Change Alert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Custom alerts for openpilot events.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2460,11 +2476,15 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plays an alert when the lead vehicle starts departing when at a standstill.</source>
+        <source>Plays an alert when the lead vehicle starts starts to depart when at a standstill.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Plays a louder alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Limit Changed Alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
