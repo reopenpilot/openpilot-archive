@@ -1,7 +1,7 @@
 import numpy as np
 from numbers import Number
 
-from openpilot.common.numpy_fast import clip, interp
+from opendbc.car.common.numpy_fast import clip, interp
 
 
 class PIDController:
@@ -49,10 +49,10 @@ class PIDController:
     self.f = 0.0
     self.control = 0
 
-  def update(self, error, error_rate=0.0, speed=0.0, override=False, feedforward=0., freeze_integrator=False, frogpilot_toggles=None):
+  def update(self, error, error_rate=0.0, speed=0.0, override=False, feedforward=0., freeze_integrator=False):
     self.speed = speed
 
-    self.p = float(error) * (frogpilot_toggles.steer_kp if frogpilot_toggles and frogpilot_toggles.use_custom_kp else self.k_p)
+    self.p = float(error) * self.k_p
     self.f = feedforward * self.k_f
     self.d = error_rate * self.k_d
 
