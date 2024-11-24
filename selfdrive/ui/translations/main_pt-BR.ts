@@ -4140,7 +4140,11 @@ Isso pode levar até um minuto.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to delete all FrogPilot assets? This is 100% unrecoverable and includes backups, models, and deep storage toggle settings for quick reinstalls.</source>
+        <source>Do you want to delete deep storage FrogPilot assets? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

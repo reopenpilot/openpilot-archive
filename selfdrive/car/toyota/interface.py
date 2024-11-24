@@ -7,12 +7,12 @@ from openpilot.selfdrive.car import create_button_events, get_safety_config
 from openpilot.selfdrive.car.disable_ecu import disable_ecu
 from openpilot.selfdrive.car.interfaces import CarInterfaceBase
 
+from openpilot.selfdrive.frogpilot.frogpilot_variables import params
+
 ButtonType = car.CarState.ButtonEvent.Type
 FrogPilotButtonType = custom.FrogPilotCarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
 SteerControlType = car.CarParams.SteerControlType
-
-from openpilot.selfdrive.frogpilot.frogpilot_variables import params
 
 class CarInterface(CarInterfaceBase):
   @staticmethod

@@ -17,11 +17,8 @@ from openpilot.selfdrive.frogpilot.frogpilot_variables import ACTIVE_THEME_PATH,
 
 
 def backup_directory(backup, destination, success_message, fail_message, minimum_backup_size=0, params=None, compressed=False):
-  compressed_backup = f"{destination}.tar.gz"
-  in_progress_compressed_backup = f"{compressed_backup}_in_progress"
-  in_progress_destination = f"{destination}_in_progress"
-
   try:
+    in_progress_destination = f"{destination}_in_progress"
     os.makedirs(in_progress_destination, exist_ok=False)
 
     if not compressed:
@@ -29,11 +26,21 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
         print("Backup already exists. Aborting.")
         return
 
+      backups = sorted(glob.glob(os.path.join(os.path.dirname(destination), "*_auto*")), key=os.path.getmtime, reverse=True)
+      if backups:
+        latest_backup = backups[0]
+        if not subprocess.call(["rsync", "-nrc", "--delete", os.path.join(backup, "."), latest_backup + "/"]):
+          print("An identical backup already exists. Aborting.")
+          return
+
       run_cmd(["sudo", "rsync", "-avq", os.path.join(backup, "."), in_progress_destination], success_message, fail_message)
       os.rename(in_progress_destination, destination)
       print(f"Backup successfully created at {destination}.")
 
     else:
+      compressed_backup = f"{destination}.tar.gz"
+      in_progress_compressed_backup = f"{compressed_backup}_in_progress"
+
       if os.path.exists(compressed_backup):
         print("Backup already exists. Aborting.")
         return
@@ -50,19 +57,14 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
       if minimum_backup_size == 0 or compressed_backup_size < minimum_backup_size:
         params.put_int_nonblocking("MinimumBackupSize", compressed_backup_size)
 
-    backups = sorted(glob.glob(os.path.join(os.path.dirname(destination), "*_auto*")), key=os.path.getmtime, reverse=True)
-    if len(backups) > 1:
-      latest_backup = backups[1]
-      if compressed:
-        if filecmp.cmp(compressed_backup, latest_backup, shallow=False):
-          run_cmd(["sudo", "rm", "-rf", compressed_backup], f"Deleted identical backup: {os.path.basename(compressed_backup)}", f"Failed to delete identical backup: {os.path.basename(compressed_backup)}")
-      else:
-        if not subprocess.call(["rsync", "-nrc", "--delete", destination + "/", latest_backup + "/"]):
-          run_cmd(["sudo", "rm", "-rf", destination], f"Deleted identical backup: {os.path.basename(destination)}", f"Failed to delete identical backup: {os.path.basename(destination)}")
+      backups = sorted(glob.glob(os.path.join(os.path.dirname(destination), "*_auto*")), key=os.path.getmtime, reverse=True)
+      if backups:
+        latest_backup = backups[0]
+        if os.path.exists(latest_backup) and filecmp.cmp(latest_backup, compressed_backup, shallow=False):
+          print("An identical backup already exists. Deleting.")
+          return
 
   except Exception as e:
-    print(f"An unexpected error occurred while trying to create the {backup} backup: {e}")
-
     if os.path.exists(in_progress_compressed_backup):
       try:
         os.remove(in_progress_compressed_backup)
@@ -174,6 +176,8 @@ def convert_params(params, params_storage):
 
 
 def frogpilot_boot_functions(build_metadata, params, params_storage):
+  params_storage.clear_all(ParamKeyType.ALL)
+
   old_screenrecordings = os.path.join("/data", "media", "0", "videos")
   new_screenrecordings = os.path.join("/data", "media", "screen_recordings")
 
