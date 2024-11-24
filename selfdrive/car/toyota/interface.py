@@ -60,9 +60,6 @@ class CarInterface(CarInterfaceBase):
     if candidate == CAR.LEXUS_ES_TSS2 and Ecu.hybrid not in found_ecus:
       ret.flags |= ToyotaFlags.RAISED_ACCEL_LIMIT.value
 
-    if params.get_bool("NewToyotaTune"):
-      ret.flags |= ToyotaFlags.NEW_TOYOTA_TUNE.value
-
     if candidate == CAR.TOYOTA_PRIUS:
       # Only give steer angle deadzone to for bad angle sensor prius
       for fw in car_fw:
