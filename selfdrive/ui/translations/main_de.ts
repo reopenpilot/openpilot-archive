@@ -698,10 +698,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Backing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Compressing...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -759,6 +755,30 @@
     </message>
     <message>
         <source>Permanently deletes all stored driving footage and data from your device. Ideal for maintaining privacy or freeing up space.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DELETE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all screen recordings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all FrogPilot backups?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all toggle backups?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1142,14 +1162,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s 2022 Taco Bell Turn Hack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Uses comma&apos;s hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Force Turn Desires Below Lane Change Speed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1265,10 +1277,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Human-Like Following Distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Increase Stopped Distance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1314,10 +1322,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Override Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speed Limit Source Priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1637,7 +1641,7 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Traffic&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <source>Controls how quickly openpilot decreases speed in &apos;Traffic&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1687,7 +1691,7 @@ Default: 0.5.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Aggressive&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Aggressive&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 0.5.</source>
         <translation type="unfinished"></translation>
@@ -1735,7 +1739,7 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Standard&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Standard&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -1783,7 +1787,7 @@ Default: 1.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets how quickly openpilot adjusts to decreasing speeds in &apos;Relaxed&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
+        <source>Controls how quickly openpilot decreases speed in &apos;Relaxed&apos; mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
 
 Default: 1.0.</source>
         <translation type="unfinished"></translation>
@@ -1823,6 +1827,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Human-Like Approach Behind Leads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Dynamically adjusts the following distance when approaching slower or stopped vehicles for a more &apos;human-like&apos; driving experience.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1840,6 +1848,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets a cap on how fast openpilot can accelerate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&apos;Taco Bell Run&apos; Turn Speed Hack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uses comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1914,6 +1930,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets your max speed to match the current speed limit when enabling openpilot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Limit Source Priority Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2076,14 +2096,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset Model Calibrations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resets calibration settings for the driving models.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ADD</source>
         <translation type="unfinished">HINZUFÜGEN</translation>
     </message>
@@ -2192,35 +2204,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start with a fresh calibration for the newly selected model?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reboot required to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reboot Now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>RESET ALL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>RESET ONE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset all of your model calibrations?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a model to reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset this model&apos;s calibrations?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2230,30 +2218,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     <message>
         <source>Downloading models...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>openpilot requires the device to be mounted within 4° left or right and within 5° up or 9° down. openpilot is continuously calibrating, resetting is rarely required.</source>
-        <translation type="unfinished">Damit Openpilot funktioniert, darf die Installationsposition nicht mehr als 4° nach rechts/links, 5° nach oben und 9° nach unten abweichen. Openpilot kalibriert sich durchgehend, ein Zurücksetzen ist selten notwendig.</translation>
-    </message>
-    <message>
-        <source> Your device is pointed %1° %2 and %3° %4.</source>
-        <translation type="unfinished"> Deine Geräteausrichtung ist %1° %2 und %3° %4.</translation>
-    </message>
-    <message>
-        <source>down</source>
-        <translation type="unfinished">unten</translation>
-    </message>
-    <message>
-        <source>up</source>
-        <translation type="unfinished">oben</translation>
-    </message>
-    <message>
-        <source>left</source>
-        <translation type="unfinished">links</translation>
-    </message>
-    <message>
-        <source>right</source>
-        <translation type="unfinished">rechts</translation>
     </message>
 </context>
 <context>
@@ -2489,10 +2453,6 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Speed Limit Change Alert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Custom alerts for openpilot events.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2505,11 +2465,15 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plays an alert when the lead vehicle starts departing when at a standstill.</source>
+        <source>Plays an alert when the lead vehicle starts starts to depart when at a standstill.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Plays a louder alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed Limit Changed Alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2867,14 +2831,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>comma&apos;s New Toyota/Lexus Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables comma&apos;s latest Toyota tuning, expertly crafted by Shane for enhanced vehicle performance.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enables FrogsGoMoo&apos;s personal tweaks to the Toyota tune focused around his 2019 Lexus ES 350 to take off a bit quicker and stop a bit smoother.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3006,7 +2962,7 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Onroad Personality Button</source>
+        <source>On Screen Personality Button</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3075,6 +3031,14 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Hides non-critical alerts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Speed Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hides the speed limits.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4165,7 +4129,11 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to permanently delete any additional FrogPilot assets? This is 100% unrecoverable and includes backups, models, and long-term storage toggle settings for easy reinstalls.</source>
+        <source>Do you want to delete deep storage FrogPilot assets? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4508,7 +4476,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle off the &apos;Disable Uploading&apos; toggle to enable uploads.</source>
+        <source>Toggle off the &apos;Turn Off Data Uploads&apos; toggle to re-enable uploads.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
