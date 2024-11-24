@@ -80,11 +80,8 @@ class CarState(CarStateBase):
     # Describes the acceleration request from the PCM if on flat ground, may be higher or lower if pitched
     # CLUTCH->ACCEL_NET is only accurate for gas, PCM_CRUISE->ACCEL_NET is only accurate for brake
     # These signals only have meaning when ACC is active
-    if self.CP.flags & ToyotaFlags.NEW_TOYOTA_TUNE or self.CP.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
-      if self.CP.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
-        self.pcm_accel_net = max(cp.vl["CLUTCH"]["ACCEL_NET"], 0.0)
-      else:
-        self.pcm_accel_net = max(cp.vl["PCM_CRUISE"]["ACCEL_NET"], 0.0)
+    if self.CP.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
+      self.pcm_accel_net = max(cp.vl["CLUTCH"]["ACCEL_NET"], 0.0)
 
       # Sometimes ACC_BRAKING can be 1 while showing we're applying gas already
       if cp.vl["PCM_CRUISE"]["ACC_BRAKING"]:

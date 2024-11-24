@@ -137,7 +137,7 @@ class CarInterface(CarInterfaceBase):
     ret.minEnableSpeed = -1. if (candidate in STOP_AND_GO_CAR or ret.enableGasInterceptor) else MIN_ACC_SPEED
 
     tune = ret.longitudinalTuning
-    if candidate in TSS2_CAR or ret.flags & ToyotaFlags.NEW_TOYOTA_TUNE:
+    if candidate in TSS2_CAR:
       tune.kpV = [0.0]
       tune.kiV = [0.5]
       ret.vEgoStopping = 0.25
@@ -146,7 +146,7 @@ class CarInterface(CarInterfaceBase):
 
       # Since we compensate for imprecise acceleration in carcontroller, we can be less aggressive with tuning
       # This also prevents unnecessary request windup due to internal car jerk limits
-      if ret.flags & ToyotaFlags.NEW_TOYOTA_TUNE or ret.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
+      if ret.flags & ToyotaFlags.RAISED_ACCEL_LIMIT:
         tune.kiV = [0.25]
     else:
       tune.kiBP = [0., 5., 35.]
