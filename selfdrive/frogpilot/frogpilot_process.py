@@ -138,8 +138,6 @@ def frogpilot_thread():
   model_manager = ModelManager()
   theme_manager = ThemeManager()
 
-  theme_manager.update_active_theme()
-
   run_update_checks = False
   started_previously = False
   time_validated = False
@@ -154,6 +152,8 @@ def frogpilot_thread():
   error_log = os.path.join(sentry.CRASHES_DIR, 'error.txt')
   if os.path.isfile(error_log):
     os.remove(error_log)
+
+  run_thread_with_lock("update_active_theme", theme_manager.update_active_theme)
 
   pm = messaging.PubMaster(['frogpilotPlan'])
   sm = messaging.SubMaster(['carState', 'controlsState', 'deviceState', 'modelV2', 'radarState',
