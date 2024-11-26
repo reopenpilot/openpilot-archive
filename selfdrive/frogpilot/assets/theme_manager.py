@@ -63,6 +63,9 @@ def update_wheel_image(image, holiday_theme=None, random_event=True):
   else:
     wheel_location = os.path.join(THEME_SAVE_PATH, "steering_wheels")
 
+  if not os.path.exists(wheel_location):
+    return
+
   if os.path.exists(wheel_save_location):
     shutil.rmtree(wheel_save_location)
   os.makedirs(wheel_save_location, exist_ok=True)
