@@ -37,7 +37,7 @@ class FrogPilotVCruise:
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, modelData, v_cruise, v_ego, frogpilot_toggles):
     if v_cruise != self.previous_v_cruise:
       self.previous_v_cruise = v_cruise
-      return
+      return v_cruise
 
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
     force_stop &= self.frogpilot_planner.model_length < 100

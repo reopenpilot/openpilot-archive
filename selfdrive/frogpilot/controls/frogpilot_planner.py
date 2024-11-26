@@ -142,6 +142,6 @@ class FrogPilotPlanner:
 
     frogpilotPlan.togglesUpdated = toggles_updated
 
-    frogpilotPlan.vCruise = float(self.v_cruise)
+    frogpilotPlan.vCruise = self.v_cruise
 
     pm.send('frogpilotPlan', frogpilot_plan_send)
