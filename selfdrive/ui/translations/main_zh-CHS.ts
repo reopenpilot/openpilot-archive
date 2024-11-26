@@ -150,10 +150,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> ft/s²</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Accel: %1%2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -183,16 +179,6 @@
     </message>
     <message>
         <source>Follow Distance: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm speed limit
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ignore speed limit
-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -281,6 +267,14 @@
     </message>
     <message>
         <source>. Double tap the screen to revert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PENDING</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ft/s²</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1244,14 +1238,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disable Speed Value Smoothing In the UI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speed value smoothing is disabled in the UI to instead display the exact speed requested by the curve control.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Experimental Mode Activation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1480,10 +1466,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Offline Maps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Highest</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1589,6 +1571,14 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Controls how aggressive openpilot takes turns. Higher values result in faster turns, while lower values result in slower turns.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Desired Speed Widget From UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hides the desired speed widget from the onroad UI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1972,6 +1962,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show Speed Limit Sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the speed limit sources in the onroad UI when using &apos;Speed Limit Controller&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Reset</source>
         <translation type="unfinished">重置</translation>
     </message>
@@ -1981,6 +1979,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Max Set Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Map Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2696,6 +2698,14 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Changes the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last the entire week.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Swap out the path in the onroad UI for a Mario Kart inspired &apos;Rainbow Path&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
