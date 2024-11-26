@@ -18,7 +18,9 @@ from openpilot.selfdrive.frogpilot.frogpilot_variables import ACTIVE_THEME_PATH,
 
 def backup_directory(backup, destination, success_message, fail_message, minimum_backup_size=0, params=None, compressed=False):
   try:
+    compressed_backup = f"{destination}.tar.gz"
     in_progress_destination = f"{destination}_in_progress"
+    in_progress_compressed_backup = f"{compressed_backup}_in_progress"
     os.makedirs(in_progress_destination, exist_ok=False)
 
     if not compressed:
@@ -38,9 +40,6 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
       print(f"Backup successfully created at {destination}.")
 
     else:
-      compressed_backup = f"{destination}.tar.gz"
-      in_progress_compressed_backup = f"{compressed_backup}_in_progress"
-
       if os.path.exists(compressed_backup):
         print("Backup already exists. Aborting.")
         return
