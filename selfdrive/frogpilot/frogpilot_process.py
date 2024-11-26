@@ -153,8 +153,6 @@ def frogpilot_thread():
   if os.path.isfile(error_log):
     os.remove(error_log)
 
-  run_thread_with_lock("update_active_theme", theme_manager.update_active_theme)
-
   pm = messaging.PubMaster(['frogpilotPlan'])
   sm = messaging.SubMaster(['carState', 'controlsState', 'deviceState', 'modelV2', 'radarState',
                             'frogpilotCarControl', 'frogpilotCarState', 'frogpilotNavigation'],

@@ -4,6 +4,7 @@ import os
 import re
 import requests
 import shutil
+import time
 import zipfile
 
 from datetime import date, timedelta
@@ -246,6 +247,7 @@ class ThemeManager:
     if theme_changed:
       if current_holiday_theme:
         self.previous_assets["holiday_theme"] = current_holiday_theme
+      time.sleep(5)
       update_frogpilot_toggles()
 
   def extract_zip(self, zip_file, extract_path):
@@ -396,7 +398,6 @@ class ThemeManager:
         print(f"{theme_name} for {theme_component} not found. Downloading...")
         self.download_theme(theme_component, theme_name, theme_param)
         self.previous_assets = {}
-        self.update_active_theme()
 
   def update_themes(self, boot_run=False):
     if not os.path.exists(THEME_SAVE_PATH):
