@@ -2260,10 +2260,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Offline maps downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tools and system utilities used to maintain and troubleshoot FrogPilot.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2332,11 +2328,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Map data downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>DRIVING MODEL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OFFLINE MAPS</source>
+        <source>MAP DATA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

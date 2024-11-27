@@ -465,7 +465,8 @@ class FrogPilotVariables:
 
     toggle.crosstrek_torque = car_model == "SUBARU_IMPREZA" and params.get_bool("CrosstrekTorque")
 
-    toggle.current_holiday_theme = params.get("CurrentHolidayTheme", encoding='utf-8') if params.get_bool("HolidayThemes") else None
+    toggle.holiday_themes = params.get_bool("HolidayThemes")
+    toggle.current_holiday_theme = params.get("CurrentHolidayTheme", encoding='utf-8') if toggle.holiday_themes else None
 
     toggle.curve_speed_controller = openpilot_longitudinal and params.get_bool("CurveSpeedControl")
     toggle.curve_sensitivity = params.get_int("CurveSensitivity") / 100 if toggle.curve_speed_controller else 1

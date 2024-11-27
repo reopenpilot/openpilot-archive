@@ -28,17 +28,12 @@ class FrogPilotVCruise:
     self.overridden_speed = 0
     self.override_force_stop_timer = 0
     self.previous_speed_limit = 0
-    self.previous_v_cruise = 0
     self.slc_target = 0
     self.speed_limit_timer = 0
     self.tracked_model_length = 0
     self.vtsc_target = 0
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, modelData, v_cruise, v_ego, frogpilot_toggles):
-    if v_cruise != self.previous_v_cruise:
-      self.previous_v_cruise = v_cruise
-      return v_cruise
-
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
     force_stop &= self.frogpilot_planner.model_length < 100
     force_stop &= self.override_force_stop_timer <= 0
