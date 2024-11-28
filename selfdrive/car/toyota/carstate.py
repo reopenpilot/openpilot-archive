@@ -296,7 +296,7 @@ class CarState(CarStateBase):
         ("GAS_PEDAL", 42),
       ]
     else:
-      pt_messages.append(("VSC1S07", 20))
+      messages.append(("VSC1S07", 20))
       if CP.carFingerprint not in [CAR.TOYOTA_MIRAI]:
         messages.append(("ENGINE_RPM", 42))
 
