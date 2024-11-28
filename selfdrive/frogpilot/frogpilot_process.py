@@ -62,16 +62,13 @@ def automatic_update_check(frogs_go_moo, started):
     os.system("pkill -SIGUSR1 -f system.updated.updated")
 
 
-def check_assets(model_manager, theme_manager, toggles_updated, frogpilot_toggles):
+def check_assets(model_manager, theme_manager, frogpilot_toggles):
   if params_memory.get_bool("DownloadAllModels"):
     run_thread_with_lock("download_all_models", model_manager.download_all_models)
 
   model_to_download = params_memory.get("ModelToDownload", encoding='utf-8')
   if model_to_download is not None:
     run_thread_with_lock("download_model", model_manager.download_model, (model_to_download,))
-
-  if toggles_updated:
-    run_thread_with_lock("update_active_theme", theme_manager.update_active_theme, (frogpilot_toggles,))
 
   assets = [
     ("ColorToDownload", "colors"),
@@ -170,6 +167,7 @@ def frogpilot_thread():
       frogpilot_toggles = get_frogpilot_toggles()
       if time_validated:
         run_thread_with_lock("backup_toggles", backup_toggles, (params, params_storage))
+      run_thread_with_lock("update_active_theme", theme_manager.update_active_theme, (frogpilot_toggles,))
       toggles_last_updated = now
     toggles_updated = (now - toggles_last_updated).total_seconds() <= 1
 
@@ -195,7 +193,7 @@ def frogpilot_thread():
 
     started_previously = started
 
-    check_assets(model_manager, theme_manager, toggles_updated, frogpilot_toggles)
+    check_assets(model_manager, theme_manager, frogpilot_toggles)
 
     if params_memory.get_bool("ManualUpdateInitiated"):
       run_thread_with_lock("update_checks", update_checks, (False, frogpilot_toggles.frogs_go_moo, model_manager, now, screen_off, started, theme_manager, time_validated))

@@ -4479,6 +4479,10 @@ Isso pode levar até um minuto.</translation>
         <source>Resets your toggle settings back to their default settings.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Failed...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WiFiPromptWidget</name>

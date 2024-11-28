@@ -52,6 +52,8 @@ class FrogPilotVCruise:
     elif self.override_force_stop_timer > 0:
       self.override_force_stop_timer -= DT_MDL
 
+    v_cruise = max(controlsState.vCruiseCluster * CV.KPH_TO_MS, v_cruise)
+
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
     v_ego_diff = v_ego_cluster - v_ego
 
