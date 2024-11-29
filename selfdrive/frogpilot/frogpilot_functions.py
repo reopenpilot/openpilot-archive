@@ -184,8 +184,6 @@ def convert_params(params, params_storage):
 
 
 def frogpilot_boot_functions(build_metadata, params, params_storage):
-  params_storage.clear_all(ParamKeyType.ALL)
-
   old_screenrecordings = os.path.join("/data", "media", "0", "videos")
   new_screenrecordings = os.path.join("/data", "media", "screen_recordings")
 

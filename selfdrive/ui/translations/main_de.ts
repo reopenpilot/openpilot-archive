@@ -875,10 +875,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>I understand the risks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>WARNING: This will prevent your drives from being recorded and the data will be unobtainable!</source>
         <translation type="unfinished"></translation>
     </message>
