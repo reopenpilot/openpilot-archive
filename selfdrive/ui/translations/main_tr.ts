@@ -636,10 +636,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a recording to rename</source>
         <translation type="unfinished"></translation>
     </message>
@@ -680,15 +676,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to compress this backup? The end file size will be 2.25x smaller, but can take 10+ minutes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Compressing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Success!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -756,7 +744,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>A recording with this name already exists. Please choose a different name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A backup with this name already exists. Please choose a different name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to compress this backup? The final result will be 2.25x smaller and will run in the background, but can take 10+ minutes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Backing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup created!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
