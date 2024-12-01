@@ -150,10 +150,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> ft/s²</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Accel: %1%2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -183,16 +179,6 @@
     </message>
     <message>
         <source>Follow Distance: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm speed limit
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ignore speed limit
-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -281,6 +267,14 @@
     </message>
     <message>
         <source>. Double tap the screen to revert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PENDING</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ft/s²</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -650,10 +644,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a recording to rename</source>
         <translation type="unfinished"></translation>
     </message>
@@ -694,15 +684,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to compress this backup? The end file size will be 2.25x smaller, but can take 10+ minutes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Compressing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Success!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -770,7 +752,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>A recording with this name already exists. Please choose a different name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A backup with this name already exists. Please choose a different name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to compress this backup? The final result will be 2.25x smaller and will run in the background, but can take 10+ minutes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Backing up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup created!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -878,10 +876,6 @@
     </message>
     <message>
         <source>WARNING: This can cause premature wear or damage by running the device over comma&apos;s recommended temperature limits!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>I understand the risks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1233,14 +1227,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disable Speed Value Smoothing In the UI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speed value smoothing is disabled in the UI to instead display the exact speed requested by the curve control.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Experimental Mode Activation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1469,10 +1455,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Offline Maps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Highest</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1578,6 +1560,14 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Controls how aggressive openpilot takes turns. Higher values result in faster turns, while lower values result in slower turns.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Desired Speed Widget From UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hides the desired speed widget from the onroad UI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1961,6 +1951,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show Speed Limit Sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the speed limit sources in the onroad UI when using &apos;Speed Limit Controller&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Reset</source>
         <translation type="unfinished">リセット</translation>
     </message>
@@ -1970,6 +1968,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Max Set Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Map Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2258,10 +2260,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Offline maps downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tools and system utilities used to maintain and troubleshoot FrogPilot.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2330,11 +2328,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Map data downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>DRIVING MODEL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OFFLINE MAPS</source>
+        <source>MAP DATA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2685,6 +2687,14 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Changes the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last the entire week.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Swap out the path in the onroad UI for a Mario Kart inspired &apos;Rainbow Path&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4438,6 +4448,10 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Resets your toggle settings back to their default settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
