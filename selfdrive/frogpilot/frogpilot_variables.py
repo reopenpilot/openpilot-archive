@@ -35,8 +35,8 @@ MODELS_PATH = os.path.join("/data", "models")
 RANDOM_EVENTS_PATH = os.path.join(BASEDIR, "selfdrive", "frogpilot", "assets", "random_events")
 THEME_SAVE_PATH = os.path.join("/data", "themes")
 
-DEFAULT_MODEL = "alabama"
-DEFAULT_MODEL_NAME = "Alabama"
+DEFAULT_MODEL = "frankenweenie"
+DEFAULT_MODEL_NAME = "Frankenweenie"
 
 DEFAULT_CLASSIC_MODEL = "north-dakota"
 DEFAULT_CLASSIC_MODEL_NAME = "North Dakota (Default)"
@@ -606,6 +606,7 @@ class FrogPilotVariables:
       params_memory.put("CurrentModelName", current_model_name)
     else:
       toggle.model = DEFAULT_CLASSIC_MODEL
+    toggle.model = DEFAULT_MODEL
     classic_models = params.get("ClassicModels", encoding='utf-8') or ""
     toggle.classic_model = classic_models and toggle.model in classic_models.split(',')
     navigation_models = params.get("NavigationModels", encoding='utf-8') or ""
