@@ -1974,6 +1974,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">Réinitialiser</translation>
     </message>
     <message>
+        <source>The &apos;Map Based&apos; option is only available when some &apos;Map Data&apos; has been downloaded!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Okay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Set With Gas Pedal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2332,6 +2340,22 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Choose your preferred customization level. &apos;Standard&apos; is recommended for most users, offering a balanced experience and automatically managing more &apos;Advanced&apos; features, while &apos;Basic&apos; is designed for those new to customization or seeking simplicity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WARNING: This unlocks some potentially dangerous settings that can DRASTICALLY alter your driving experience!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I understand the risks.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The &apos;Advanced&apos; preset is only available for users with over 100 hours on FrogPilot!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Okay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3829,10 +3853,6 @@ Cela peut prendre jusqu&apos;à une minute.</translation>
         <source>Since you&apos;re experienced with FrogPilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Since you&apos;re very experienced with FrogPilot, the &apos;Advanced&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Setup</name>
@@ -4150,11 +4170,11 @@ Cela peut prendre jusqu&apos;à une minute.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <source>Do you want to delete deep storage FrogPilot assets? This includes FrogPilot stats and toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you&apos;ll lose all your previous settings!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
