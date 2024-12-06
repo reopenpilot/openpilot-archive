@@ -78,7 +78,7 @@ class CarState(CarStateBase):
     ret = car.CarState.new_message()
     fp_ret = custom.FrogPilotCarState.new_message()
 
-    if not self.CP.flags & ToyotaFlags.SECOC.value:
+    if False:
       self.gvc = cp.vl["VSC1S07"]["GVC"]
 
     # Describes the acceleration request from the PCM if on flat ground, may be higher or lower if pitched
@@ -283,7 +283,7 @@ class CarState(CarStateBase):
       ("STEER_TORQUE_SENSOR", 50),
     ]
 
-    if not CP.flags & ToyotaFlags.SECOC.value:
+    if False:
       messages.append(("VSC1S07", 20))
 
     if CP.carFingerprint in (TSS2_CAR - SECOC_CAR - {CAR.LEXUS_NX_TSS2, CAR.TOYOTA_ALPHARD_TSS2, CAR.LEXUS_IS_TSS2}):
