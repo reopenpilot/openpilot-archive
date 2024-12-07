@@ -2323,7 +2323,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Basic</source>
+        <source>Stock-Like</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2335,11 +2335,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">高级</translation>
     </message>
     <message>
-        <source>Customization Level</source>
+        <source>Expert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose your preferred customization level. &apos;Standard&apos; is recommended for most users, offering a balanced experience and automatically managing more &apos;Advanced&apos; features, while &apos;Basic&apos; is designed for those new to customization or seeking simplicity.</source>
+        <source>Tuning Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the tuning level that best suits your needs. &apos;Basic&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Expert&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2351,7 +2355,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The &apos;Advanced&apos; preset is only available for users with over 100 hours on FrogPilot!</source>
+        <source>The &apos;Expert&apos; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4166,7 +4170,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
