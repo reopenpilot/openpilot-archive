@@ -1290,14 +1290,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cruise Increase Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Cruise Interval (Long Press)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1860,7 +1852,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Cruise Increase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Controls the interval used when increasing the cruise control speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cruise Increase (Long Press)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2323,7 +2323,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stock-Like</source>
+        <source>Minimal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2335,7 +2335,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">高级</translation>
     </message>
     <message>
-        <source>Expert</source>
+        <source>Developer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2343,7 +2343,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select the tuning level that best suits your needs. &apos;Basic&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Expert&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
+        <source>Select the tuning level that best suits your needs. &apos;Basic&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Developer&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2355,7 +2355,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The &apos;Expert&apos; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
+        <source>The &apos;Developer&apos; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3834,7 +3834,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Welcome to FrogPilot! Since you&apos;re new to FrogPilot, the &apos;Basic&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Welcome to FrogPilot! Since you&apos;re new to FrogPilot, the &apos;Minimal&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3842,15 +3842,19 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re fairly new to FrogPilot, the &apos;Basic&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re fairly new to FrogPilot, the &apos;Minimal&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re experienced with openpilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re experienced with openpilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re experienced with FrogPilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re experienced with FrogPilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Since you&apos;re very experienced with FrogPilot, the &apos;Advanced&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4472,6 +4476,10 @@ This may take up to a minute.</source>
         <translation type="unfinished">重置</translation>
     </message>
     <message>
+        <source>Reset your toggle settings back to their default settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Are you sure you want to completely reset all of your toggle settings?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4493,14 +4501,6 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Forces openpilot either offroad or onroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resets your toggle settings back to their default settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
