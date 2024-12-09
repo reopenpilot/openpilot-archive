@@ -15,7 +15,7 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
                                              scheduleOptions);
   addItem(preferredSchedule);
 
-  selectMapsButton = new FrogPilotButtonsControl(tr("Select Offline Maps"), tr("Offline maps to use with 'Curve Speed Control' and 'Speed Limit Controller'."), {tr("COUNTRIES"), tr("STATES")});
+  selectMapsButton = new FrogPilotButtonsControl(tr("Select Map Data Sources"), tr("Map data sources to use with 'Curve Speed Control' and 'Speed Limit Controller'."), {tr("COUNTRIES"), tr("STATES")});
   QObject::connect(selectMapsButton, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
     if (id == 0) {
       countriesOpen = true;
@@ -121,6 +121,8 @@ void FrogPilotMapsPanel::updateState(const UIState &s) {
     return;
   }
 
+  uiState()->scene.keep_screen_on = downloadActive;
+
   if (downloadActive) {
     updateDownloadStatusLabels();
   }
@@ -136,8 +138,6 @@ void FrogPilotMapsPanel::cancelDownload() {
 }
 
 void FrogPilotMapsPanel::downloadMaps() {
-  device()->resetInteractiveTimeout(300);
-
   params.remove("OSMDownloadProgress");
 
   resetDownloadLabels();
@@ -162,7 +162,7 @@ void FrogPilotMapsPanel::downloadMaps() {
     return;
   }
 
-  paramsMemory.put("OSMDownloadLocations", params.get("MapsSelected"));
+  params_memory.put("OSMDownloadLocations", params.get("MapsSelected"));
 
   downloadActive = true;
 
@@ -263,6 +263,8 @@ void FrogPilotMapsPanel::finalizeDownload() {
   params.putNonBlocking("LastMapsUpdate", formattedDate.toStdString());
   params.remove("OSMDownloadProgress");
 
+  mapsSize->setText(calculateDirectorySize(mapsFolderPath));
+
   resetDownloadLabels();
 
   downloadMapsButton->setText(tr("DOWNLOAD"));
@@ -311,7 +313,7 @@ void FrogPilotMapsPanel::displayMapButtons(bool visible) {
   lastMapsDownload->setVisible(!visible && !downloadActive);
   mapsSize->setVisible(!visible);
   preferredSchedule->setVisible(!visible);
-  removeMapsButton->setVisible(!visible && QDir(mapsFolderPath).exists());
+  removeMapsButton->setVisible(!visible && QDir(mapsFolderPath).exists() && !downloadActive);
   selectMapsButton->setVisible(!visible);
 
   africaMaps->setVisible(visible && countriesOpen);

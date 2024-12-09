@@ -15,11 +15,20 @@ signals:
 
 private:
   void hideToggles();
-  void showToggles(std::set<QString> &keys);
+  void showEvent(QShowEvent *event) override;
+  void showToggles(const std::set<QString> &keys);
+  void updateState(const UIState &s);
+
+  FrogPilotSettingsWindow *parent;
+
+  QJsonObject frogpilot_toggle_levels;
+
+  bool started;
+
+  int tuningLevel;
+
+  std::map<QString, AbstractControl*> toggles;
 
   std::set<QString> deviceManagementKeys = {"DeviceShutdown", "IncreaseThermalLimits", "LowVoltageShutdown", "NoLogging", "NoUploads", "OfflineMode"};
-
-  std::map<std::string, AbstractControl*> toggles;
-
-  Params params;
+  std::set<QString> screenKeys = {"ScreenBrightness", "ScreenBrightnessOnroad", "ScreenRecorder", "ScreenTimeout", "ScreenTimeoutOnroad"};
 };

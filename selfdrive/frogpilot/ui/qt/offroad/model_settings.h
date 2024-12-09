@@ -22,13 +22,10 @@ private:
   void hideToggles();
   void showToggles(const std::set<QString> &keys);
   void startDownloadAllModels();
-  void updateCalibrationDescription();
   void updateModelLabels();
   void updateState(const UIState &s);
 
-  std::set<QString> modelRandomizerKeys = {
-    "ManageBlacklistedModels", "ResetScores", "ReviewScores"
-  };
+  std::set<QString> modelRandomizerKeys = {"ManageBlacklistedModels", "ResetScores", "ReviewScores"};
 
   ButtonControl *deleteModelBtn;
   ButtonControl *downloadAllModelsBtn;
@@ -36,7 +33,7 @@ private:
   ButtonControl *selectModelBtn;
 
   Params params;
-  Params paramsMemory{"/dev/shm/params"};
+  Params params_memory{"/dev/shm/params"};
   Params paramsStorage{"/persist/params"};
 
   QDir modelDir{"/data/models/"};
@@ -53,6 +50,7 @@ private:
   bool modelDeleting;
   bool modelDownloading;
   bool modelRandomizer;
+  bool modelRandomizerOpen;
   bool modelsDownloaded;
   bool started;
 

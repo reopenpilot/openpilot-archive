@@ -1,6 +1,34 @@
+#include <filesystem>
+
 #include "selfdrive/frogpilot/ui/qt/offroad/sounds_settings.h"
 
-FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent) {
+void playSound(const std::string &alert, int volume) {
+  Params params_memory{"/dev/shm/params"};
+
+  std::string stockPath = "/data/openpilot/selfdrive/assets/sounds/" + alert + ".wav";
+  std::string themePath = "/data/openpilot/selfdrive/frogpilot/assets/active_theme/sounds/" + alert + ".wav";
+
+  std::string filePath;
+  if (std::filesystem::exists(themePath)) {
+    filePath = themePath;
+  } else if (std::filesystem::exists(stockPath)) {
+    filePath = stockPath;
+  } else {
+    return;
+  }
+
+  params_memory.putBool("TestingSound", true);
+
+  std::system("pkill -f 'ffplay'");
+
+  volume = std::clamp(volume, 0, 100);
+  std::string command = "ffplay -nodisp -autoexit -volume " + std::to_string(volume) + " \"" + filePath + "\"";
+  std::system(command.c_str());
+
+  params_memory.putBool("TestingSound", false);
+}
+
+FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
   const std::vector<std::tuple<QString, QString, QString, QString>> soundsToggles {
     {"AlertVolumeControl", tr("Alert Volume Controller"), tr("Control the volume level for each individual sound in openpilot."), "../frogpilot/assets/toggle_icons/icon_mute.png"},
     {"DisengageVolume", tr("Disengage Volume"), tr("Related alerts:\n\nAdaptive Cruise Disabled\nParking Brake Engaged\nBrake Pedal Pressed\nSpeed too Low"), ""},
@@ -11,10 +39,12 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
     {"WarningSoftVolume", tr("Warning Soft Volume"), tr("Related alerts:\n\nBRAKE!, Risk of Collision\nTAKE CONTROL IMMEDIATELY"), ""},
     {"WarningImmediateVolume", tr("Warning Immediate Volume"), tr("Related alerts:\n\nDISENGAGE IMMEDIATELY, Driver Distracted\nDISENGAGE IMMEDIATELY, Driver Unresponsive"), ""},
 
-    {"CustomAlerts", tr("Custom Alerts"), tr("Enable custom alerts for openpilot events."), "../frogpilot/assets/toggle_icons/icon_green_light.png"},
-    {"GreenLightAlert", tr("Green Light Alert"), tr("Get an alert when a traffic light changes from red to green."), ""},
-    {"LeadDepartingAlert", tr("Lead Departing Alert"), tr("Get an alert when the lead vehicle starts departing when at a standstill."), ""},
-    {"LoudBlindspotAlert", tr("Loud Blindspot Alert"), tr("Enable a louder alert for when a vehicle is detected in the blindspot when attempting to change lanes."), ""},
+    {"CustomAlerts", tr("Custom Alerts"), tr("Custom alerts for openpilot events."), "../frogpilot/assets/toggle_icons/icon_green_light.png"},
+    {"GoatScream", tr("Goat Scream Steering Saturated Alert"), tr("Enables the famed 'Goat Scream' that has brought both joy and anger to FrogPilot users all around the world!"), ""},
+    {"GreenLightAlert", tr("Green Light Alert"), tr("Plays an alert when a traffic light changes from red to green."), ""},
+    {"LeadDepartingAlert", tr("Lead Departing Alert"), tr("Plays an alert when the lead vehicle starts starts to depart when at a standstill."), ""},
+    {"LoudBlindspotAlert", tr("Loud Blindspot Alert"), tr("Plays a louder alert for when a vehicle is detected in the blindspot when attempting to change lanes."), ""},
+    {"SpeedLimitChangedAlert", tr("Speed Limit Changed Alert"), tr("Plays an alert when the speed limit changes."), ""},
   };
 
   for (const auto &[param, title, desc, icon] : soundsToggles) {
@@ -27,10 +57,15 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
       });
       soundsToggle = alertVolumeControlToggle;
     } else if (alertVolumeControlKeys.find(param) != alertVolumeControlKeys.end()) {
+      std::map<int, QString> volumeLabels;
+      for (int i = 0; i <= 101; ++i) {
+        volumeLabels[i] = i == 101 ? tr("Auto") : i == 0 ? tr("Muted") : QString::number(i) + "%";
+      }
+      std::vector<QString> alertButton{"Test"};
       if (param == "WarningImmediateVolume") {
-        soundsToggle = new FrogPilotParamValueControl(param, title, desc, icon, 25, 100, "%");
+        soundsToggle = new FrogPilotParamValueButtonControl(param, title, desc, icon, 25, 101, QString(), volumeLabels, 1, {}, alertButton, false, false);
       } else {
-        soundsToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 100, "%");
+        soundsToggle = new FrogPilotParamValueButtonControl(param, title, desc, icon, 0, 101, QString(), volumeLabels, 1, {}, alertButton, false, false);
       }
 
     } else if (param == "CustomAlerts") {
@@ -42,6 +77,10 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
           modifiedCustomAlertsKeys.erase("LoudBlindspotAlert");
         }
 
+        if (!(hasOpenpilotLongitudinal && params.getBool("SpeedLimitController"))) {
+          modifiedCustomAlertsKeys.erase("SpeedLimitChangedAlert");
+        }
+
         showToggles(modifiedCustomAlertsKeys);
       });
       soundsToggle = customAlertsToggle;
@@ -51,42 +90,56 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
     }
 
     addItem(soundsToggle);
-    toggles[param.toStdString()] = soundsToggle;
+    toggles[param] = soundsToggle;
 
-    tryConnect<ToggleControl>(soundsToggle, &ToggleControl::toggleFlipped, this, updateFrogPilotToggles);
-    tryConnect<FrogPilotButtonToggleControl>(soundsToggle, &FrogPilotButtonToggleControl::buttonClicked, this, updateFrogPilotToggles);
-    tryConnect<FrogPilotParamManageControl>(soundsToggle, &FrogPilotParamManageControl::manageButtonClicked, this, &FrogPilotSoundsPanel::openParentToggle);
-    tryConnect<FrogPilotParamValueControl>(soundsToggle, &FrogPilotParamValueControl::valueChanged, this, updateFrogPilotToggles);
+    makeConnections(soundsToggle);
+
+    if (FrogPilotParamManageControl *frogPilotManageToggle = qobject_cast<FrogPilotParamManageControl*>(soundsToggle)) {
+      QObject::connect(frogPilotManageToggle, &FrogPilotParamManageControl::manageButtonClicked, this, &FrogPilotSoundsPanel::openParentToggle);
+    }
 
     QObject::connect(soundsToggle, &AbstractControl::showDescriptionEvent, [this]() {
       update();
     });
   }
 
+  for (const QString &key : alertVolumeControlKeys) {
+    FrogPilotParamValueButtonControl *toggle = static_cast<FrogPilotParamValueButtonControl*>(toggles[key]);
+    QObject::connect(toggle, &FrogPilotParamValueButtonControl::buttonClicked, [=]() {
+      QString alertKey = key;
+      alertKey.remove("Volume");
+      QString snakeCaseKey;
+      for (int i = 0; i < alertKey.size(); ++i) {
+        QChar c = alertKey[i];
+        if (c.isUpper() && i > 0) {
+          snakeCaseKey += '_';
+        }
+        snakeCaseKey += c.toLower();
+      }
+
+      std::thread([=]() {
+        playSound(snakeCaseKey.toStdString(), params.getInt(key.toStdString()));
+      }).detach();
+    });
+  }
+
   QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, this, &FrogPilotSoundsPanel::hideToggles);
-  QObject::connect(uiState(), &UIState::offroadTransition, this, &FrogPilotSoundsPanel::updateCarToggles);
 }
 
-void FrogPilotSoundsPanel::updateCarToggles() {
-  auto carParams = params.get("CarParamsPersistent");
-  if (!carParams.empty()) {
-    AlignedBuffer aligned_buf;
-    capnp::FlatArrayMessageReader cmsg(aligned_buf.align(carParams.data(), carParams.size()));
-    cereal::CarParams::Reader CP = cmsg.getRoot<cereal::CarParams>();
-
-    hasBSM = CP.getEnableBsm();
-  } else {
-    hasBSM = true;
-  }
+void FrogPilotSoundsPanel::showEvent(QShowEvent *event) {
+  frogpilot_toggle_levels = parent->frogpilot_toggle_levels;
+  hasBSM = parent->hasBSM;
+  hasOpenpilotLongitudinal = parent->hasOpenpilotLongitudinal;
+  tuningLevel = parent->tuningLevel;
 
   hideToggles();
 }
 
-void FrogPilotSoundsPanel::showToggles(std::set<QString> &keys) {
+void FrogPilotSoundsPanel::showToggles(const std::set<QString> &keys) {
   setUpdatesEnabled(false);
 
   for (auto &[key, toggle] : toggles) {
-    toggle->setVisible(keys.find(key.c_str()) != keys.end());
+    toggle->setVisible(keys.find(key) != keys.end() && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
@@ -97,9 +150,10 @@ void FrogPilotSoundsPanel::hideToggles() {
   setUpdatesEnabled(false);
 
   for (auto &[key, toggle] : toggles) {
-    bool subToggles = alertVolumeControlKeys.find(key.c_str()) != alertVolumeControlKeys.end() ||
-                      customAlertsKeys.find(key.c_str()) != customAlertsKeys.end();
-    toggle->setVisible(!subToggles);
+    bool subToggles = alertVolumeControlKeys.find(key) != alertVolumeControlKeys.end() ||
+                      customAlertsKeys.find(key) != customAlertsKeys.end();
+
+    toggle->setVisible(!subToggles && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
