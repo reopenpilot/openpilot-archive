@@ -2924,10 +2924,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stock openpilot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mapbox Streets</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3389,6 +3385,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>Show Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
