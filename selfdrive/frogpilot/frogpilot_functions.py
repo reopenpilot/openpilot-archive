@@ -23,11 +23,9 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
       print("Backup already exists. Aborting")
       return
 
-    in_progress_destination = f"{destination}_in_progress"
-    os.makedirs(in_progress_destination, exist_ok=False)
+    os.makedirs(destination, exist_ok=False)
 
-    run_cmd(["sudo", "rsync", "-avq", os.path.join(backup, "."), in_progress_destination], success_message, fail_message)
-    os.rename(in_progress_destination, destination)
+    run_cmd(["sudo", "rsync", "-avq", os.path.join(backup, "."), destination], success_message, fail_message)
     print(f"Backup successfully created at {destination}")
 
   else:
