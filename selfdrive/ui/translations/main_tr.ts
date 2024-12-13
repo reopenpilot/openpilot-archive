@@ -3248,6 +3248,14 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show Speed Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the currently detected speed limit in the top left corner of the onroad UI. Uses data from your car&apos;s dashboard (if supported) and data from &apos;OpenStreetMaps&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Use Vienna-Style Speed Signs</source>
         <translation type="unfinished"></translation>
     </message>
