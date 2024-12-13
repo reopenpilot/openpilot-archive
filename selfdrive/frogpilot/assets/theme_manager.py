@@ -401,10 +401,6 @@ class ThemeManager:
     }
 
     for theme_param, (theme_component, theme_name) in asset_mappings.items():
-      if not theme_name or theme_name == "stock":
-        self.theme_assets[theme_component] = "stock"
-        continue
-
       if theme_component == "distance_icons":
         theme_path = os.path.join(THEME_SAVE_PATH, theme_component, theme_name)
       elif theme_component == "steering_wheels":
@@ -418,12 +414,9 @@ class ThemeManager:
       else:
         theme_path = os.path.join(THEME_SAVE_PATH, "theme_packs", theme_name, theme_component)
 
-      if theme_path is None or not os.path.exists(theme_path):
+      if not os.path.exists(theme_path):
         print(f"{theme_name} for {theme_component} not found. Downloading...")
         self.download_theme(theme_component, theme_name, theme_param)
-        self.theme_assets[theme_component] = "stock"
-      else:
-        self.theme_assets[theme_component] = theme_name
 
   def update_themes(self, frogpilot_toggles, boot_run=False):
     repo_url = get_repository_url()
