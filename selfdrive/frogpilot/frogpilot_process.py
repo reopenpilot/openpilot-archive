@@ -156,8 +156,7 @@ def frogpilot_thread():
     started = sm['deviceState'].started
 
     if params_memory.get_bool("FrogPilotTogglesUpdated") or theme_updated:
-      if theme_updated:
-        frogpilot_toggles.current_holiday_theme = theme_manager.theme_assets["holiday_theme"]
+      theme_updated = theme_manager.update_active_theme(time_validated, frogpilot_toggles)
 
       frogpilot_variables.update(started)
       frogpilot_toggles = get_frogpilot_toggles()
@@ -195,8 +194,6 @@ def frogpilot_thread():
 
     if now.second % 2 == 0:
       check_assets(model_manager, theme_manager, frogpilot_toggles)
-
-      theme_updated = theme_manager.update_active_theme(time_validated, frogpilot_toggles)
 
     run_update_checks |= params_memory.get_bool("ManualUpdateInitiated")
     run_update_checks |= now.second == 0 and (now.minute % 60 == 0 or frogpilot_toggles.frogs_go_moo)

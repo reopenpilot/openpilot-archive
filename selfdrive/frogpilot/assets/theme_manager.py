@@ -401,6 +401,9 @@ class ThemeManager:
     }
 
     for theme_param, (theme_component, theme_name) in asset_mappings.items():
+      if theme_name == "stock":
+        continue
+
       if theme_component == "distance_icons":
         theme_path = os.path.join(THEME_SAVE_PATH, theme_component, theme_name)
       elif theme_component == "steering_wheels":
