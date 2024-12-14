@@ -85,8 +85,8 @@ class FrogPilotVCruise:
         speed_limit_accepted = frogpilotCarControl.resumePressed and carControl.longActive or params_memory.get_bool("SLCConfirmed")
         speed_limit_denied = any(be.type == ButtonType.decelCruise for be in carState.buttonEvents) and carControl.longActive or self.speed_limit_timer >= 30
 
-        speed_limit_decreased = self.speed_limit_changed and self.slc_target > unconfirmed_slc_target
-        speed_limit_increased = self.speed_limit_changed and self.slc_target < unconfirmed_slc_target
+        speed_limit_decreased = self.speed_limit_changed and (self.slc_target - unconfirmed_slc_target) > 1
+        speed_limit_increased = self.speed_limit_changed and (unconfirmed_slc_target - self.slc_target) > 1
 
         if speed_limit_accepted:
           self.previous_speed_limit = unconfirmed_slc_target

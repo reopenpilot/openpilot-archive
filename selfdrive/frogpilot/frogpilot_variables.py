@@ -38,8 +38,8 @@ THEME_SAVE_PATH = os.path.join("/data", "themes")
 DEFAULT_MODEL = "postal-service"
 DEFAULT_MODEL_NAME = "Postal Service 👀📡"
 
-DEFAULT_CLASSIC_MODEL = "north-dakota"
-DEFAULT_CLASSIC_MODEL_NAME = "North Dakota (Default) 👀📡"
+DEFAULT_CLASSIC_MODEL = "wd-40"
+DEFAULT_CLASSIC_MODEL_NAME = "WD-40 (Default) 👀📡"
 
 def get_frogpilot_toggles():
   return SimpleNamespace(**json.loads(params_memory.get("FrogPilotToggles", block=True)))
@@ -71,10 +71,10 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("AlwaysOnLateralMain", "1", 1),
   ("AMapKey1", "", 0),
   ("AMapKey2", "", 0),
-  ("AutomaticallyUpdateModels", "1", 2),
+  ("AutomaticallyUpdateModels", "1", 1),
   ("AutomaticUpdates", "1", 0),
-  ("AvailableModels", "", 2),
-  ("AvailableModelsNames", "", 2),
+  ("AvailableModels", "", 1),
+  ("AvailableModelsNames", "", 1),
   ("BigMap", "0", 2),
   ("BlacklistedModels", "", 2),
   ("BlindSpotMetrics", "1", 2),
@@ -100,7 +100,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("CESpeed", "0", 1),
   ("CESpeedLead", "0", 1),
   ("CEStoppedLead", "0", 1),
-  ("ClassicModels", "", 2),
+  ("ClassicModels", "", 1),
   ("ClusterOffset", "1.015", 2),
   ("Compass", "0", 1),
   ("ConditionalExperimental", "1", 0),
@@ -134,7 +134,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("EngageVolume", "101", 2),
   ("ExperimentalGMTune", "0", 2),
   ("ExperimentalModeActivation", "1", 1),
-  ("ExperimentalModels", "", 2),
+  ("ExperimentalModels", "", 1),
   ("ExperimentalModeViaDistance", "1", 1),
   ("ExperimentalModeViaLKAS", "1", 1),
   ("ExperimentalModeViaTap", "0", 1),
@@ -193,13 +193,13 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("MapStyle", "0", 2),
   ("MaxDesiredAcceleration", "4.0", 3),
   ("MinimumLaneChangeSpeed", str(LANE_CHANGE_SPEED_MIN / CV.MPH_TO_MS), 2),
-  ("Model", DEFAULT_CLASSIC_MODEL, 2),
-  ("ModelName", DEFAULT_CLASSIC_MODEL_NAME, 2),
+  ("Model", DEFAULT_CLASSIC_MODEL, 1),
+  ("ModelName", DEFAULT_CLASSIC_MODEL_NAME, 1),
   ("ModelRandomizer", "0", 2),
   ("ModelUI", "1", 2),
   ("MTSCCurvatureCheck", "1", 2),
   ("MTSCEnabled", "1", 1),
-  ("NavigationModels", "", 2),
+  ("NavigationModels", "", 1),
   ("NavigationUI", "1", 2),
   ("NewLongAPI", "0", 2),
   ("NewLongAPIGM", "1", 2),
@@ -234,7 +234,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("QOLLateral", "1", 2),
   ("QOLLongitudinal", "1", 2),
   ("QOLVisuals", "1", 0),
-  ("RadarlessModels", "", 2),
+  ("RadarlessModels", "", 1),
   ("RadicalTurtleDrives", "0", 2),
   ("RadicalTurtleScore", "0", 2),
   ("RainbowPath", "0", 1),
@@ -568,7 +568,7 @@ class FrogPilotVariables:
     toggle.frogsgomoo_tweak = openpilot_longitudinal and car_make == "toyota" and (params.get_bool("FrogsGoMoosTweak") if tuning_level >= level["FrogsGoMoosTweak"] else default.get_bool("FrogsGoMoosTweak"))
 
     toggle.holiday_themes = params.get_bool("HolidayThemes") if tuning_level >= level["HolidayThemes"] else default.get_bool("HolidayThemes")
-    toggle.current_holiday_theme = "stock"
+    toggle.current_holiday_theme = params.get("CurrentHolidayTheme", encoding='utf-8') if toggle.holiday_themes else "stock"
 
     lane_change_customizations = params.get_bool("LaneChangeCustomizations") if tuning_level >= level["LaneChangeCustomizations"] else default.get_bool("LaneChangeCustomizations")
     toggle.lane_change_delay = params.get_float("LaneChangeTime") if lane_change_customizations and tuning_level >= level["LaneChangeTime"] else default.get_float("LaneChangeTime")

@@ -109,13 +109,13 @@ def update_wheel_image(image, holiday_theme="stock", random_event=True):
 class ThemeManager:
   def __init__(self):
     self.theme_assets = {
-      "holiday_theme": "stock",
-      "color_scheme": "stock",
-      "distance_icons": "stock",
-      "icon_pack": "stock",
-      "sound_pack": "stock",
-      "turn_signal_pack": "stock",
-      "wheel_image": "stock"
+      "holiday_theme": "",
+      "color_scheme": "",
+      "distance_icons": "",
+      "icon_pack": "",
+      "sound_pack": "",
+      "turn_signal_pack": "",
+      "wheel_image": ""
     }
 
   @staticmethod
@@ -163,6 +163,7 @@ class ThemeManager:
       self.update_holiday()
     else:
       self.theme_assets["holiday_theme"] = "stock"
+    params.put("CurrentHolidayTheme", self.theme_assets["holiday_theme"])
 
     if self.theme_assets.get("holiday_theme") != "stock":
       asset_mappings = {
@@ -401,7 +402,7 @@ class ThemeManager:
     }
 
     for theme_param, (theme_component, theme_name) in asset_mappings.items():
-      if theme_name == "stock":
+      if theme_name in {"none", "stock"}:
         continue
 
       if theme_component == "distance_icons":
@@ -417,7 +418,7 @@ class ThemeManager:
       else:
         theme_path = os.path.join(THEME_SAVE_PATH, "theme_packs", theme_name, theme_component)
 
-      if theme_path is None or not os.path.exists(theme_path):
+      if not os.path.exists(theme_path):
         print(f"{theme_name} for {theme_component} not found. Downloading...")
         self.download_theme(theme_component, theme_name, theme_param)
 
