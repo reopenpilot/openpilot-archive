@@ -2038,7 +2038,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatically downloads new models and updates them if needed.</source>
+        <source>Automatically downloads new models and updates existing ones if needed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2046,7 +2046,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Randomly selects a model each drive and brings up a prompt at the end of the drive to review the model if it&apos;s longer than 15 minutes to help find your preferred model.</source>
+        <source>Randomly selects a model each drive and brings up a model review prompt at the end to help find your preferred model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2054,7 +2054,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls which models are blacklisted and won&apos;t be used for future drives.</source>
+        <source>Manage the blacklisted models that aren&apos;t being used with &apos;Model Randomizer&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2062,7 +2062,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Clears the ratings you&apos;ve given to the driving models.</source>
+        <source>Clear the ratings you&apos;ve given to the driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2070,7 +2070,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Displays the ratings you&apos;ve assigned to the driving models.</source>
+        <source>View the ratings you&apos;ve assigned to the driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2078,7 +2078,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Removes the selected driving model from your device.</source>
+        <source>Delete driving models from your device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2086,15 +2086,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloads the selected driving model.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download All Models</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloads all undownloaded driving models.</source>
+        <source>Download new driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2102,7 +2094,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selects which model openpilot uses to drive.</source>
+        <source>Select your preferred driving model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2114,7 +2106,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">削除</translation>
     </message>
     <message>
-        <source>There&apos;s no more models to blacklist! The only available model is &quot;%1&quot;!</source>
+        <source>REMOVE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There are no more models to blacklist! The only available model is &quot;%1&quot;!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2146,15 +2142,19 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Are you sure you want to remove all of your blacklisted models?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>RESET</source>
         <translation type="unfinished">ﾘｾｯﾄ</translation>
     </message>
     <message>
-        <source>Reset all model scores?</source>
+        <source>Are you sure you want to reset all of your model drives and scores?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VIEW</source>
+        <source>REVIEW</source>
         <translation type="unfinished">見る</translation>
     </message>
     <message>
@@ -2162,7 +2162,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a model to delete</source>
+        <source>DELETE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a driving model to delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2174,11 +2178,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Deleting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deleted!</source>
+        <source>Are you sure you want to delete all of your downloaded driving models?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2186,15 +2186,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CANCEL</source>
+        <source>DOWNLOAD ALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select a driving model to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading %1...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2203,14 +2199,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Select a model - 🗺️ = Navigation | 📡 = Radar | 👀 = VOACC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WARNING: This is a very experimental model and may drive dangerously!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>I understand the risks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2226,7 +2214,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloading models...</source>
+        <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2332,7 +2320,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select the tuning level that best suits your needs. &apos;Basic&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Developer&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
+        <source>Select the tuning level that best suits your needs. &apos;Minimal&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Developer&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2614,27 +2602,7 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a signal pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; signal pack?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a sound pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; sound scheme?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2642,15 +2610,7 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a sound scheme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a steering wheel to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel image?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2731,6 +2691,50 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Controls the text of the &apos;Startup&apos; alert message that appears when you start the drive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; distance icon pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; signal animation?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; sound pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a sound pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
