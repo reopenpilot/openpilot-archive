@@ -1271,14 +1271,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cruise Increase Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Cruise Interval (Long Press)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1841,7 +1833,15 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Cruise Increase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Controls the interval used when increasing the cruise control speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cruise Increase (Long Press)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1955,6 +1955,14 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The &apos;Map Based&apos; option is only available when some &apos;Map Data&apos; has been downloaded!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Okay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Set With Gas Pedal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2022,7 +2030,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatically downloads new models and updates them if needed.</source>
+        <source>Automatically downloads new models and updates existing ones if needed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2030,7 +2038,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Randomly selects a model each drive and brings up a prompt at the end of the drive to review the model if it&apos;s longer than 15 minutes to help find your preferred model.</source>
+        <source>Randomly selects a model each drive and brings up a model review prompt at the end to help find your preferred model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2038,7 +2046,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls which models are blacklisted and won&apos;t be used for future drives.</source>
+        <source>Manage the blacklisted models that aren&apos;t being used with &apos;Model Randomizer&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2046,7 +2054,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Clears the ratings you&apos;ve given to the driving models.</source>
+        <source>Clear the ratings you&apos;ve given to the driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2054,7 +2062,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Displays the ratings you&apos;ve assigned to the driving models.</source>
+        <source>View the ratings you&apos;ve assigned to the driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2062,7 +2070,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Removes the selected driving model from your device.</source>
+        <source>Delete driving models from your device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2070,15 +2078,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloads the selected driving model.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download All Models</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloads all undownloaded driving models.</source>
+        <source>Download new driving models.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2086,7 +2086,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selects which model openpilot uses to drive.</source>
+        <source>Select your preferred driving model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2098,7 +2098,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">KALDIR</translation>
     </message>
     <message>
-        <source>There&apos;s no more models to blacklist! The only available model is &quot;%1&quot;!</source>
+        <source>REMOVE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There are no more models to blacklist! The only available model is &quot;%1&quot;!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2130,23 +2134,31 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Are you sure you want to remove all of your blacklisted models?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>RESET</source>
         <translation type="unfinished">SIFIRLA</translation>
     </message>
     <message>
-        <source>Reset all model scores?</source>
+        <source>Are you sure you want to reset all of your model drives and scores?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VIEW</source>
-        <translation type="unfinished">BAK</translation>
+        <source>REVIEW</source>
+        <translation type="unfinished">GÖZDEN GEÇİR</translation>
     </message>
     <message>
         <source>DELETE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a model to delete</source>
+        <source>DELETE ALL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a driving model to delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2158,11 +2170,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Deleting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deleted!</source>
+        <source>Are you sure you want to delete all of your downloaded driving models?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2170,15 +2178,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CANCEL</source>
+        <source>DOWNLOAD ALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select a driving model to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading %1...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2187,14 +2191,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Select a model - 🗺️ = Navigation | 📡 = Radar | 👀 = VOACC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WARNING: This is a very experimental model and may drive dangerously!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>I understand the risks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2210,7 +2206,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloading models...</source>
+        <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2296,7 +2292,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Basic</source>
+        <source>Minimal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2308,11 +2304,31 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished">Gelişmiş Seçenekler</translation>
     </message>
     <message>
-        <source>Customization Level</source>
+        <source>Developer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose your preferred customization level. &apos;Standard&apos; is recommended for most users, offering a balanced experience and automatically managing more &apos;Advanced&apos; features, while &apos;Basic&apos; is designed for those new to customization or seeking simplicity.</source>
+        <source>Tuning Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the tuning level that best suits your needs. &apos;Minimal&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Developer&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WARNING: This unlocks some potentially dangerous settings that can DRASTICALLY alter your driving experience!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I understand the risks.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The &apos;Developer&apos; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Okay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2578,27 +2594,7 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a signal pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; signal pack?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a signal pack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a sound pack to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; sound scheme?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2606,15 +2602,7 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a sound scheme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select a steering wheel to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel image?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2695,6 +2683,50 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Controls the text of the &apos;Startup&apos; alert message that appears when you start the drive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; distance icon pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a distance icon pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; signal animation?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a signal animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; sound pack?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a sound pack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the &apos;%1&apos; steering wheel?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2893,10 +2925,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Full Map</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stock openpilot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3224,6 +3252,14 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show Speed Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the currently detected speed limit in the top left corner of the onroad UI. Uses data from your car&apos;s dashboard (if supported) and data from &apos;OpenStreetMaps&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Use Vienna-Style Speed Signs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3361,6 +3397,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>Show Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3785,7 +3825,7 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Welcome to FrogPilot! Since you&apos;re new to FrogPilot, the &apos;Basic&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Welcome to FrogPilot! Since you&apos;re new to FrogPilot, the &apos;Minimal&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3793,19 +3833,19 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re fairly new to FrogPilot, the &apos;Basic&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re fairly new to FrogPilot, the &apos;Minimal&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re experienced with openpilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re experienced with openpilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re experienced with FrogPilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re experienced with FrogPilot, the &apos;Standard&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Since you&apos;re very experienced with FrogPilot, the &apos;Advanced&apos; toggle preset has been applied, but you can change this at any time via the &apos;Customization Level&apos; button!</source>
+        <source>Since you&apos;re very experienced with FrogPilot, the &apos;Advanced&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4121,11 +4161,11 @@ This may take up to a minute.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure? This is 100% unrecoverable and includes FrogPilot stats and toggle settings for quick reinstalls.</source>
+        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you&apos;ll lose all your previous settings!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4411,6 +4451,10 @@ This may take up to a minute.</source>
         <translation type="unfinished">SIFIRLA</translation>
     </message>
     <message>
+        <source>Reset your toggle settings back to their default settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Are you sure you want to completely reset all of your toggle settings?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4432,14 +4476,6 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Forces openpilot either offroad or onroad.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resets your toggle settings back to their default settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
