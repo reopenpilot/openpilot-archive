@@ -150,126 +150,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Accel: %1%2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> - Max: %1%2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> | Obstacle: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  |  Obstacle Factor: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> - Stop: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  -  Stop Factor: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Follow: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Follow Distance: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conditional Experimental Mode ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Conditional Experimental overridden</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode manually activated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>low speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>speed being less than %1 %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for turn</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> / lane change</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for intersection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for upcoming turn</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for curve</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for stopped lead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated for slower lead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>to stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode forced on %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Experimental Mode activated due to no speed limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Always On Lateral active</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>. Press the &quot;Cruise Control&quot; button to disable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>. Long press the &quot;distance&quot; button to revert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>. Click the &quot;LKAS&quot; button to revert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>. Double tap the screen to revert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>PENDING</source>
         <translation type="unfinished"></translation>
     </message>
@@ -971,10 +851,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide the Status Bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Lane Change Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1131,10 +1007,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hides status bar for &apos;Always On Lateral&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Automatic Lane Changes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1215,10 +1087,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Turn Signal Below</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide the Status Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1351,6 +1219,10 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Set Speed to Current Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Speed Limit Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1535,10 +1407,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Triggers &apos;Experimental Mode&apos; when using turn signals below the set speed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hides status bar for &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1904,10 +1772,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables manual confirmations before using a new speed limit.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Controls what happens when no speed limit data is available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1915,6 +1779,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <source>Controls how the current speed limit is overriden.
 
 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables manual confirmations before using a new speed limit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1959,6 +1827,18 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets the speed limit offset for speeds between 65 and 99 mph.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Visuals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Visual &apos;Speed Limit Controller&apos; features to improve your overall openpilot experience.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the speed limit offset separately in the onroad UI when using &apos;Speed Limit Controller&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2808,11 +2688,7 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental GM Tune</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Uphill/Downhill Smoothing</source>
+        <source>Force stop and go for the 2017 Chevy Volt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2824,15 +2700,19 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Increases the maximum allowed torque for the Subaru Crosstrek.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Automatically Lock/Unlock Doors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Automatically lock the doors when in drive and unlock when in park.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Cluster Speed Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set the cluster offset openpilot uses to try and match the speed displayed on the dash.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2852,43 +2732,155 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Acura</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audi</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buick</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cadillac</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chevrolet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chrysler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CUPRA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dodge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ford</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Genesis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GMC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Holden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Honda</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hyundai</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Jeep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lexus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lincoln</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mazda</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nissan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ram</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SEAT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Škoda</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subaru</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tesla</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toyota</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volkswagen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disables openpilot longitudinal control and uses the car&apos;s stock ACC instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Forces stop and go for the 2017 Chevy Volt.</source>
+        <source>Downhill/Uphill Smoothing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables FrogsGoMoo&apos;s experimental GM tune that is based on nothing but guesswork. Use at your own risk!</source>
+        <source>Smoothen the gas and brake response when driving downhill or uphill.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothens the gas and brake response when driving on slopes.</source>
+        <source>Experimental GM Longitudinal Tune</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables comma&apos;s new control system that has shown great improvement with acceleration and braking, but has a few issues on some GM vehicles.</source>
+        <source>Enable FrogsGoMoo&apos;s experimental GM longitudinal tune that is based on nothing but guesswork. Use at your own risk!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables comma&apos;s new control system that has shown great improvement with acceleration and braking, but has a few issues on Hyundai/Kia/Genesis.</source>
+        <source>Enable comma&apos;s new control system that has shown great improvement with acceleration and braking, but has issues on some GM vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatically locks the doors when in drive and unlocks when in park.</source>
+        <source>Enable comma&apos;s new control system that has shown great improvement with acceleration and braking, but has issues on some Hyundai/Kia/Genesis vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sets the cluster offset openpilot uses to try and match the speed displayed on the dash.</source>
+        <source>Increase the maximum allowed torque for the &apos;Subaru Crosstrek&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables FrogsGoMoo&apos;s personal tweaks to the Toyota tune focused around his 2019 Lexus ES 350 to take off a bit quicker and stop a bit smoother.</source>
+        <source>FrogsGoMoo&apos;s personal tweaks to the Toyota/Lexus tune that allows the vehicle to take off and stop a bit smoother.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Forces stop and go for vehicles without stock stop and go functionality.</source>
+        <source>Force stop and go for vehicles without stop and go functionality.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3099,11 +3091,15 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Developer Metrics</source>
+        <source>Developer UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show detailed information about openpilot&apos;s internal operations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer Metrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3160,6 +3156,26 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Displays measurements using the &apos;International System of Units&apos; (SI).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer Widgets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&apos;Conditional Experimental Mode&apos; Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show &apos;Conditional Experimental Mode&apos;&apos;s current status in the onroad UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Model Stopping Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays an image on the screen where openpilot is wanting to stop.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3227,14 +3243,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stopping Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Displays an image on the screen where openpilot is detecting a potential red light/stop sign.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&apos;Unlimited&apos; Road UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3260,14 +3268,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>Displays the current road name at the bottom of the screen using data from &apos;OpenStreetMap&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Speed Limit Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Displays the speed limit offset separately in the onroad UI when using &apos;Speed Limit Controller&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3347,6 +3347,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>MANAGE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Steering Torque</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3403,6 +3407,10 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> inches</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3412,10 +3420,6 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source> feet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
