@@ -2168,27 +2168,27 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Manage FrogPilot&apos;s alerts and notifications.</source>
+        <source>Manage FrogPilot&apos;s alerts and sounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjust features that affect acceleration, braking, and steering.</source>
+        <source>Manage FrogPilot&apos;s features that affect acceleration, braking, and steering.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Download map data and configure &apos;Navigate On openpilot (NOO)&apos;.</source>
+        <source>Manage map data to be used with &apos;Curve Speed Control&apos; and &apos;Speed Limit Controller&apos; and setup &apos;Navigate On openpilot (NOO)&apos; without a comma prime subscription.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Access tools, utilities, and device controls to maintain and troubleshoot FrogPilot.</source>
+        <source>Manage the device&apos;s internal settings along with other tools and utilities to maintain and troubleshoot FrogPilot.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customize the openpilot theme, UI appearance, and on-road widgets.</source>
+        <source>Manage openpilot&apos;s theme and onroad widgets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure vehicle-specific settings for supported makes and models.</source>
+        <source>Manage vehicle-specific settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2212,11 +2212,11 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select a tuning level that suits your needs:
+        <source>Select a tuning level that suits your preferences:
 
 Minimal - Ideal for those who prefer simplicity or ease of use
 Standard - Recommended for most users for a balanced experience
-Advanced - Unlocks some fine tuning controls for more experienced users
+Advanced - Unlocks fine-tuning controls for more experienced users
 Developer - Unlocks highly customizable settings for seasoned enthusiasts</source>
         <translation type="unfinished"></translation>
     </message>
