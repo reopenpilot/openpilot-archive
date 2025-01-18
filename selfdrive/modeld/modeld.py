@@ -25,7 +25,7 @@ from openpilot.selfdrive.modeld.fill_model_msg import fill_model_msg, fill_pose_
 from openpilot.selfdrive.modeld.constants import ModelConstants
 from openpilot.selfdrive.modeld.models.commonmodel_pyx import ModelFrame, CLContext
 
-from openpilot.selfdrive.frogpilot.frogpilot_variables import DEFAULT_MODEL, METADATAS_PATH, MODELS_PATH, get_frogpilot_toggles
+from openpilot.selfdrive.frogpilot.frogpilot_variables import METADATAS_PATH, MODELS_PATH, get_frogpilot_toggles
 
 PROCESS_NAME = "selfdrive.modeld.modeld"
 SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
@@ -53,9 +53,13 @@ class ModelState:
 
   def __init__(self, context: CLContext, model: str, model_version: str):
     # FrogPilot variables
-    model_path = MODELS_PATH / f'{model}.thneed'
-    if model != DEFAULT_MODEL and model_path.exists():
-      MODEL_PATHS[ModelRunner.THNEED] = model_path
+    MODEL_PATHS[ModelRunner.THNEED] = MODELS_PATH / f'{model}.thneed'
+
+    with open(METADATAS_PATH / f'supercombo_metadata_{model_version}.pkl', 'rb') as f:
+      model_metadata = pickle.load(f)
+
+    input_shapes = model_metadata.get('input_shapes')
+    self.use_desired_curvature = 'lateral_control_params' in input_shapes and 'prev_desired_curv' in input_shapes
 
     self.frame = ModelFrame(context)
     self.wide_frame = ModelFrame(context)
@@ -63,12 +67,6 @@ class ModelState:
     self.full_features_20Hz = np.zeros((ModelConstants.FULL_HISTORY_BUFFER_LEN, ModelConstants.FEATURE_LEN), dtype=np.float32)
     self.desire_20Hz =  np.zeros((ModelConstants.FULL_HISTORY_BUFFER_LEN + 1, ModelConstants.DESIRE_LEN), dtype=np.float32)
     self.prev_desired_curv_20hz = np.zeros((ModelConstants.FULL_HISTORY_BUFFER_LEN + 1, ModelConstants.PREV_DESIRED_CURV_LEN), dtype=np.float32)
-
-    with open(METADATAS_PATH / f'supercombo_metadata_{model_version}.pkl', 'rb') as f:
-      model_metadata = pickle.load(f)
-
-    input_shapes = model_metadata.get('input_shapes')
-    self.use_desired_curvature = 'lateral_control_params' in input_shapes and 'prev_desired_curv' in input_shapes
 
     # img buffers are managed in openCL transform code
     self.inputs = {
