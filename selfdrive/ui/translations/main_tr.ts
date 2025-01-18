@@ -2124,22 +2124,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Options to customize FrogPilot&apos;s sound alerts and notifications.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tools and system utilities used to maintain and troubleshoot FrogPilot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Options for customizing FrogPilot&apos;s themes, UI appearance, and onroad widgets.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vehicle-specific settings and configurations for supported makes and models.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>MANAGE</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2156,10 +2140,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>DEVICE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>UTILITIES</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2169,6 +2149,46 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>THEME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DRIVING MODEL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAP DATA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PRIMELESS NAVIGATION</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DEVICE CONTROLS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage FrogPilot&apos;s alerts and sounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage FrogPilot&apos;s features that affect acceleration, braking, and steering.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage map data to be used with &apos;Curve Speed Control&apos; and &apos;Speed Limit Controller&apos; and setup &apos;Navigate On openpilot (NOO)&apos; without a comma prime subscription.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage the device&apos;s internal settings along with other tools and utilities to maintain and troubleshoot FrogPilot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage openpilot&apos;s theme and onroad widgets.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage vehicle-specific settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2192,7 +2212,12 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select the tuning level that best suits your needs. &apos;Minimal&apos; is ideal for those who prefer simplicity and ease of use, &apos;Standard&apos; is recommended for most users, offering a balanced experience, &apos;Advanced&apos; provides more control for experienced users, while &apos;Developer&apos; unlocks highly customizable settings designed for seasoned enthusiasts.</source>
+        <source>Select a tuning level that suits your preferences:
+
+Minimal - Ideal for those who prefer simplicity or ease of use
+Standard - Recommended for most users for a balanced experience
+Advanced - Unlocks fine-tuning controls for more experienced users
+Developer - Unlocks highly customizable settings for seasoned enthusiasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2209,26 +2234,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Okay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FrogPilot features that impact acceleration, braking, and steering.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Map data downloader and &apos;Navigate On openpilot (NOO)&apos; settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DRIVING MODEL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAP DATA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PRIMELESS NAVIGATION</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2619,6 +2624,89 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
 </context>
 <context>
+    <name>FrogPilotUtilitiesPanel</name>
+    <message>
+        <source>Flash Panda</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FLASH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flashes the Panda device&apos;s firmware if you&apos;re running into issues.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to flash the Panda?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flash</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flashing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flashed!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rebooting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force Started State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Forces openpilot either offroad or onroad.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OFFROAD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ONROAD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OFF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Toggles to Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RESET</source>
+        <translation type="unfinished">SIFIRLA</translation>
+    </message>
+    <message>
+        <source>Reset your toggle settings back to their default settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset all of your toggle settings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resetting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FrogPilotVehiclesPanel</name>
     <message>
         <source>Select Make</source>
@@ -2713,118 +2801,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acura</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Audi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buick</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cadillac</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chevrolet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chrysler</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CUPRA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dodge</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ford</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Genesis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>GMC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Holden</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Honda</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hyundai</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Jeep</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Kia</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lexus</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lincoln</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mazda</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Nissan</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ram</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SEAT</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Škoda</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subaru</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tesla</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toyota</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volkswagen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Disables openpilot longitudinal control and uses the car&apos;s stock ACC instead.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2861,7 +2837,19 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Lock Doors On Ignition Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically lock the doors after the car&apos;s ignition has been turned off and no one is detected in either of the front seats.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Force stop and go for vehicles without stop and go functionality.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3195,6 +3183,7 @@ Default matches the MUTCD standard of 4 inches.</source>
 Default is 20% of the total path width.
 
 Color Guide:
+
 - Blue: Navigation
 - Light Blue: &apos;Always On Lateral&apos;
 - Green: Default
@@ -4403,84 +4392,8 @@ This may take up to a minute.</source>
 <context>
     <name>UtilitiesPanel</name>
     <message>
-        <source>Flash Panda</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FLASH</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to flash the Panda?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flash</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flashing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flashed!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rebooting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force Started State</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OFFROAD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ONROAD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OFF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset Toggles to Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>RESET</source>
-        <translation type="unfinished">SIFIRLA</translation>
-    </message>
-    <message>
-        <source>Reset your toggle settings back to their default settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset all of your toggle settings?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resetting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flashes the Panda device&apos;s firmware if you&apos;re running into issues.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Forces openpilot either offroad or onroad.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">SIFIRLA</translation>
     </message>
 </context>
 <context>
