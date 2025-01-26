@@ -2761,19 +2761,7 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>2017 Volt Stop and Go Hack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Force stop and go for the 2017 Chevy Volt.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use comma&apos;s New Longitudinal API</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subaru Crosstrek Torque Increase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2793,11 +2781,7 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FrogsGoMoo&apos;s Personal Tweaks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop and Go Hack</source>
+        <source>Force stop and go for vehicles without stock stop and go functionality.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2813,15 +2797,23 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downhill/Uphill Smoothing</source>
+        <source>General Motors Toggles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothen the gas and brake response when driving downhill or uphill.</source>
+        <source>Toggles catered towards &apos;General Motors&apos; vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Experimental GM Longitudinal Tune</source>
+        <source>Enable comma&apos;s New Longitudinal API</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable comma&apos;s new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some GM vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable FrogsGoMoo&apos;s Experimental Longitudinal Tune</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2829,35 +2821,47 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable comma&apos;s new control system that has shown great improvement with acceleration and braking, but has issues on some GM vehicles.</source>
+        <source>Enable Stop and Go Hack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable comma&apos;s new control system that has shown great improvement with acceleration and braking, but has issues on some Hyundai/Kia/Genesis vehicles.</source>
+        <source>Smoothen Pedal Response While Going Downhill/Uphill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Increase the maximum allowed torque for the &apos;Subaru Crosstrek&apos;.</source>
+        <source>Smoothen the gas and brake response when driving downhill or uphill.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FrogsGoMoo&apos;s personal tweaks to the Toyota/Lexus tune that allows the vehicle to take off and stop a bit smoother.</source>
+        <source>Hyundai/Kia/Genesis Toggles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lock Doors On Ignition Off</source>
+        <source>Toggles catered towards &apos;Hyundai/Kia/Genesis&apos; vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatically lock the doors after the car&apos;s ignition has been turned off and no one is detected in either of the front seats.</source>
+        <source>Enable comma&apos;s new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some Hyundai/Kia/Genesis vehicles.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force stop and go for vehicles without stop and go functionality.</source>
+        <source>Toyota/Lexus Toggles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Never</source>
+        <source>Toggles catered towards &apos;Toyota/Lexus&apos; vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable FrogsGoMoo&apos;s Personal Tweaks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FrogsGoMoo&apos;s personal tweaks that aim to take off faster and stop smoother.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MANAGE</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
