@@ -94,7 +94,7 @@ def capture_fingerprint(frogpilot_toggles, params, params_tracking):
 
     fingerprint = [params.get("DongleId", encoding="utf-8"), frogpilot_toggles.car_model]
     scope.fingerprint = fingerprint
-    sentry_sdk.capture_message(f"Logged user fingerprint: {fingerprint}", level="info")
+    sentry_sdk.capture_message(f"Logged user: {fingerprint}", level="info")
     sentry_sdk.flush()
 
     params.put_bool("FingerprintLogged", True)
