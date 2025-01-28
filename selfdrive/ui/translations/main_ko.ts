@@ -487,6 +487,14 @@
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Reboot required to take effect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reboot Now</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotDataPanel</name>
@@ -904,14 +912,6 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source> feet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot required to take effect.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot Now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1858,8 +1858,8 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Okay</source>
-        <translation type="unfinished"></translation>
+        <source>Ok</source>
+        <translation type="unfinished">확인</translation>
     </message>
     <message>
         <source>Set With Gas Pedal</source>
@@ -2005,8 +2005,8 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OK</source>
-        <translation type="unfinished">OK</translation>
+        <source>Ok</source>
+        <translation type="unfinished">확인</translation>
     </message>
     <message>
         <source>Select a model to add to the blacklist</source>
@@ -2090,14 +2090,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Select a model - 🗺️ = Navigation | 📡 = Radar | 👀 = VOACC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot required to take effect.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot Now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2252,8 +2244,8 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Okay</source>
-        <translation type="unfinished"></translation>
+        <source>Ok</source>
+        <translation type="unfinished">확인</translation>
     </message>
 </context>
 <context>
@@ -2697,6 +2689,42 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Report a Bug or an Issue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>REPORT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Let &apos;FrogsGoMoo&apos; know about an issue you&apos;re facing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>What&apos;s going on?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please describe what&apos;s happening</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>What&apos;s your Discord username?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Thanks for letting us know! Your report has been submitted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation type="unfinished">확인</translation>
+    </message>
+    <message>
         <source>Reset Toggles to Default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2761,14 +2789,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Are you sure you want to completely disable openpilot longitudinal control?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot required to take effect.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reboot Now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
