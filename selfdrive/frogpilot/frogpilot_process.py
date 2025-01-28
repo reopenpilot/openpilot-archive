@@ -18,7 +18,7 @@ from openpilot.selfdrive.frogpilot.assets.theme_manager import ThemeManager
 from openpilot.selfdrive.frogpilot.controls.frogpilot_planner import FrogPilotPlanner
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_tracking import FrogPilotTracking
 from openpilot.selfdrive.frogpilot.frogpilot_functions import backup_toggles
-from openpilot.selfdrive.frogpilot.frogpilot_utilities import flash_panda, is_url_pingable, lock_doors, run_thread_with_lock, update_maps, update_openpilot
+from openpilot.selfdrive.frogpilot.frogpilot_utilities import flash_panda, is_url_pingable, lock_doors, run_thread_with_lock, send_sentry_reports, update_maps, update_openpilot
 from openpilot.selfdrive.frogpilot.frogpilot_variables import FrogPilotVariables, get_frogpilot_toggles, params, params_memory
 
 def assets_checks(model_manager, theme_manager):
@@ -125,9 +125,7 @@ def frogpilot_thread():
       if frogpilot_toggles.lock_doors_timer != 0:
         run_thread_with_lock("lock_doors", lock_doors, (frogpilot_toggles.lock_doors_timer, sm))
     elif started and not started_previously:
-      sentry.capture_fingerprint(frogpilot_toggles, params, frogpilot_tracking.params_tracking)
-      sentry.capture_model(frogpilot_toggles.model_name)
-      sentry.capture_user(frogpilot_variables.short_branch)
+      run_thread_with_lock("send_sentry_reports", send_sentry_reports, (frogpilot_toggles, frogpilot_variables, params, frogpilot_tracking.params_tracking))
 
       radarless_model = frogpilot_toggles.radarless_model
 
@@ -158,7 +156,7 @@ def frogpilot_thread():
     manually_updated = params_memory.get_bool("ManualUpdateInitiated")
 
     run_update_checks |= manually_updated
-    run_update_checks |= now.second == 0 and (now.minute % 60 == 0 or now.minute % 5 == 0 and frogpilot_toggles.frogs_go_moo)
+    run_update_checks |= now.second == 0 and (now.minute % 60 == 0 or (now.minute % 5 == 0 and frogpilot_toggles.frogs_go_moo))
     run_update_checks &= time_validated
 
     if run_update_checks:

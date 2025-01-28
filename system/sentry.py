@@ -54,9 +54,14 @@ def capture_exception(*args, **kwargs) -> None:
 
 def capture_fingerprint(frogpilot_toggles, params, params_tracking):
   if frogpilot_toggles.block_user:
-    with sentry_sdk.push_scope() as scope:
-      sentry_sdk.capture_message("Blocked user from using the development branch", level="warning")
-      sentry_sdk.flush()
+    sentry_sdk.capture_message("Blocked user from using the development branch", level="warning")
+    sentry_sdk.flush()
+    return
+  else:
+    sentry_sdk.capture_message(f"User driving a: {frogpilot_toggles.car_model}", level="info")
+    sentry_sdk.flush()
+
+    if params.get_bool("FingerprintLogged"):
       return
 
   param_types = {
@@ -87,8 +92,12 @@ def capture_fingerprint(frogpilot_toggles, params, params_tracking):
     for label, key_values in matched_params.items():
       scope.set_context(label, key_values)
 
-    sentry_sdk.capture_message(f"Fingerprinted {frogpilot_toggles.car_model}", level="info")
+    fingerprint = [params.get("DongleId", encoding="utf-8"), frogpilot_toggles.car_model]
+    scope.fingerprint = fingerprint
+    sentry_sdk.capture_message(f"Logged user fingerprint: {fingerprint}", level="info")
     sentry_sdk.flush()
+
+    params.put_bool("FingerprintLogged", True)
 
 
 def capture_model(model_name):
