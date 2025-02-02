@@ -57,7 +57,7 @@ class ConditionalExperimentalMode:
       self.status_value = 13 if v_lead < 1 else 14
       return True
 
-    if frogpilot_toggles.conditional_model_stop_time != 0 and self.stop_light_detected and not self.frogpilot_planner.tracking_lead:
+    if frogpilot_toggles.conditional_model_stop_time != 0 and self.stop_light_detected:
       self.status_value = 15 if not self.frogpilot_planner.frogpilot_vcruise.forcing_stop else 16
       return True
 
@@ -94,7 +94,7 @@ class ConditionalExperimentalMode:
       model_stopping = self.frogpilot_planner.model_length < v_ego * frogpilot_toggles.conditional_model_stop_time
 
       self.stop_light_filter.update(self.frogpilot_planner.model_stopped or model_stopping)
-      self.stop_light_detected = self.stop_light_filter.x >= THRESHOLD**2
+      self.stop_light_detected = self.stop_light_filter.x >= THRESHOLD**2 and not self.frogpilot_planner.tracking_lead
     else:
       self.stop_light_filter.x = 0
       self.stop_light_detected = False
