@@ -13,47 +13,38 @@ QColor loadThemeColors(const QString &colorKey, bool clearCache) {
   static QJsonObject cachedColorData;
 
   if (clearCache) {
-    cachedColorData = QJsonObject();
-    return QColor();
+    QFile file("../frogpilot/assets/active_theme/colors/colors.json");
+
+    while (!file.exists()) {
+      util::sleep_for(UI_FREQ);
+    }
+
+    if (!file.open(QIODevice::ReadOnly)) {
+      return QColor();
+    }
+
+    cachedColorData = QJsonDocument::fromJson(file.readAll()).object();
   }
 
   if (cachedColorData.isEmpty()) {
-    QFile file("../frogpilot/assets/active_theme/colors/colors.json");
-    if (file.exists() && file.open(QIODevice::ReadOnly)) {
-      QJsonParseError parseError;
-      QByteArray fileData = file.readAll();
-      QJsonDocument doc = QJsonDocument::fromJson(fileData, &parseError);
-
-      if (parseError.error == QJsonParseError::NoError && doc.isObject()) {
-        cachedColorData = doc.object();
-      }
-    }
-  }
-
-  if (!cachedColorData.contains(colorKey)) {
     return QColor();
   }
 
   QJsonObject colorObj = cachedColorData.value(colorKey).toObject();
   return QColor(
-    colorObj.value("red").toInt(0),
-    colorObj.value("green").toInt(0),
-    colorObj.value("blue").toInt(0),
+    colorObj.value("red").toInt(255),
+    colorObj.value("green").toInt(255),
+    colorObj.value("blue").toInt(255),
     colorObj.value("alpha").toInt(255)
   );
 }
 
-bool FrogPilotConfirmationDialog::toggle(const QString &prompt_text, const QString &confirm_text, QWidget *parent, const bool isLong) {
-  ConfirmationDialog d(prompt_text, confirm_text, tr("Reboot Later"), false, parent, isLong);
+bool FrogPilotConfirmationDialog::toggleReboot(QWidget *parent) {
+  ConfirmationDialog d(tr("Reboot required to take effect."), tr("Reboot Now"), tr("Reboot Later"), false, parent);
   return d.exec();
 }
 
-bool FrogPilotConfirmationDialog::toggleAlert(const QString &prompt_text, const QString &button_text, QWidget *parent, const bool isLong) {
-  ConfirmationDialog d(prompt_text, button_text, "", false, parent, isLong);
-  return d.exec();
-}
-
-bool FrogPilotConfirmationDialog::yesorno(const QString &prompt_text, QWidget *parent, const bool isLong) {
-  ConfirmationDialog d(prompt_text, tr("Yes"), tr("No"), false, parent, isLong);
+bool FrogPilotConfirmationDialog::yesorno(const QString &prompt_text, QWidget *parent) {
+  ConfirmationDialog d(prompt_text, tr("Yes"), tr("No"), false, parent);
   return d.exec();
 }

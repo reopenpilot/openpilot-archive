@@ -22,8 +22,8 @@ FrogPilotDevicePanel::FrogPilotDevicePanel(FrogPilotSettingsWindow *parent) : Fr
     AbstractControl *deviceToggle;
 
     if (param == "DeviceManagement") {
-      FrogPilotParamManageControl *deviceManagementToggle = new FrogPilotParamManageControl(param, title, desc, icon);
-      QObject::connect(deviceManagementToggle, &FrogPilotParamManageControl::manageButtonClicked, [this]() {
+      FrogPilotManageControl *deviceManagementToggle = new FrogPilotManageControl(param, title, desc, icon);
+      QObject::connect(deviceManagementToggle, &FrogPilotManageControl::manageButtonClicked, [this]() {
         showToggles(deviceManagementKeys);
       });
       deviceToggle = deviceManagementToggle;
@@ -36,13 +36,13 @@ FrogPilotDevicePanel::FrogPilotDevicePanel(FrogPilotSettingsWindow *parent) : Fr
     } else if (param == "NoUploads") {
       std::vector<QString> uploadsToggles{"DisableOnroadUploads"};
       std::vector<QString> uploadsToggleNames{tr("Only Onroad")};
-      deviceToggle = new FrogPilotButtonToggleControl(param, title, desc, uploadsToggles, uploadsToggleNames);
+      deviceToggle = new FrogPilotButtonToggleControl(param, title, desc, icon, uploadsToggles, uploadsToggleNames);
     } else if (param == "LowVoltageShutdown") {
       deviceToggle = new FrogPilotParamValueControl(param, title, desc, icon, 11.8, 12.5, tr(" volts"), std::map<int, QString>(), 0.01);
 
     } else if (param == "ScreenManagement") {
-      FrogPilotParamManageControl *screenToggle = new FrogPilotParamManageControl(param, title, desc, icon);
-      QObject::connect(screenToggle, &FrogPilotParamManageControl::manageButtonClicked, [this]() {
+      FrogPilotManageControl *screenToggle = new FrogPilotManageControl(param, title, desc, icon);
+      QObject::connect(screenToggle, &FrogPilotManageControl::manageButtonClicked, [this]() {
         std::set<QString> modifiedScreenKeys = screenKeys;
 
         showToggles(modifiedScreenKeys);
@@ -54,7 +54,7 @@ FrogPilotDevicePanel::FrogPilotDevicePanel(FrogPilotSettingsWindow *parent) : Fr
       for (int i = 0; i <= 101; ++i) {
         brightnessLabels[i] = i == 101 ? tr("Auto") : i == 0 ? tr("Screen Off") : QString::number(i) + "%";
       }
-      deviceToggle = new FrogPilotParamValueControl(param, title, desc, icon, minBrightness, 101, QString(), brightnessLabels, 1, false, true);
+      deviceToggle = new FrogPilotParamValueControl(param, title, desc, icon, minBrightness, 101, QString(), brightnessLabels);
     } else if (param == "ScreenTimeout" || param == "ScreenTimeoutOnroad") {
       deviceToggle = new FrogPilotParamValueControl(param, title, desc, icon, 5, 60, tr(" seconds"));
 
@@ -65,42 +65,29 @@ FrogPilotDevicePanel::FrogPilotDevicePanel(FrogPilotSettingsWindow *parent) : Fr
     addItem(deviceToggle);
     toggles[param] = deviceToggle;
 
-    makeConnections(deviceToggle);
-
-    if (FrogPilotParamManageControl *frogPilotManageToggle = qobject_cast<FrogPilotParamManageControl*>(deviceToggle)) {
-      QObject::connect(frogPilotManageToggle, &FrogPilotParamManageControl::manageButtonClicked, this, &FrogPilotDevicePanel::openParentToggle);
+    if (FrogPilotManageControl *frogPilotManageToggle = qobject_cast<FrogPilotManageControl*>(deviceToggle)) {
+      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotDevicePanel::openParentToggle);
     }
-
-    QObject::connect(deviceToggle, &AbstractControl::showDescriptionEvent, [this]() {
-      update();
-    });
   }
 
   static_cast<ParamControl*>(toggles["IncreaseThermalLimits"])->setConfirmation(true, false);
   static_cast<ParamControl*>(toggles["NoLogging"])->setConfirmation(true, false);
   static_cast<ParamControl*>(toggles["NoUploads"])->setConfirmation(true, false);
 
-
-  FrogPilotParamValueControl *screenBrightnessToggle = static_cast<FrogPilotParamValueControl*>(toggles["ScreenBrightness"]);
-  QObject::connect(screenBrightnessToggle, &FrogPilotParamValueControl::valueChanged, [this](int value) {
-    if (!started) {
-      uiState()->scene.screen_brightness = value;
-    }
-  });
-
-  FrogPilotParamValueControl *screenBrightnessOnroadToggle = static_cast<FrogPilotParamValueControl*>(toggles["ScreenBrightnessOnroad"]);
-  QObject::connect(screenBrightnessOnroadToggle, &FrogPilotParamValueControl::valueChanged, [this](int value) {
-    if (started) {
-      uiState()->scene.screen_brightness_onroad = value;
-    }
-  });
+  std::set<QString> brightnessKeys = {"ScreenBrightness", "ScreenBrightnessOnroad"};
+  for (const QString &key : brightnessKeys) {
+    FrogPilotParamValueControl *paramControl = static_cast<FrogPilotParamValueControl*>(toggles[key]);
+    QObject::connect(paramControl, &FrogPilotParamValueControl::valueChanged, [](int value) {
+      Hardware::set_brightness(value);
+    });
+  }
 
   QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, this, &FrogPilotDevicePanel::hideToggles);
   QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotDevicePanel::updateState);
 }
 
 void FrogPilotDevicePanel::showEvent(QShowEvent *event) {
-  frogpilot_toggle_levels = parent->frogpilot_toggle_levels;
+  frogpilotToggleLevels = parent->frogpilotToggleLevels;
   tuningLevel = parent->tuningLevel;
 
   hideToggles();
@@ -118,10 +105,11 @@ void FrogPilotDevicePanel::showToggles(const std::set<QString> &keys) {
   setUpdatesEnabled(false);
 
   for (auto &[key, toggle] : toggles) {
-    toggle->setVisible(keys.find(key) != keys.end() && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
+    toggle->setVisible(keys.find(key) != keys.end() && tuningLevel >= frogpilotToggleLevels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
+
   update();
 }
 
@@ -131,9 +119,10 @@ void FrogPilotDevicePanel::hideToggles() {
   for (auto &[key, toggle] : toggles) {
     bool subToggles = deviceManagementKeys.find(key) != deviceManagementKeys.end() ||
                       screenKeys.find(key) != screenKeys.end();
-    toggle->setVisible(!subToggles && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
+    toggle->setVisible(!subToggles && tuningLevel >= frogpilotToggleLevels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
+
   update();
 }

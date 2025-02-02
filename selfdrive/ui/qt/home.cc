@@ -223,6 +223,8 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
   timer = new QTimer(this);
   timer->callOnTimeout(this, &OffroadHome::refresh);
 
+  QObject::connect(uiState(), &UIState::togglesUpdated, this, &OffroadHome::refresh);
+
   setStyleSheet(R"(
     * {
       color: white;
@@ -252,18 +254,12 @@ void OffroadHome::hideEvent(QHideEvent *event) {
 }
 
 void OffroadHome::refresh() {
-  QString model = QString::fromStdString(params.get("ModelName")).remove(QRegularExpression("[🗺️👀📡]")).remove("(Default)").trimmed();
-
-  if (params.getBool("TuningLevelConfirmed") && params.getInt("TuningLevel") != 2) {
-    model = QString::fromStdString(params.get("DefaultModelName")).trimmed();
-  }
-
-  if (uiState()->scene.model_randomizer) {
-    model = "Mystery Model 👻";
-  }
+  QString model = processModelName(uiState()->scene.model_name);
 
   date->setText(QLocale(uiState()->language.mid(5)).toString(QDateTime::currentDateTime(), "dddd, MMMM d"));
   version->setText(getBrand() + " v" + getVersion().left(14).trimmed() + " - " + model);
+
+  date->setVisible(util::system_time_valid());
 
   bool updateAvailable = update_widget->refresh();
   int alerts = alerts_widget->refresh();

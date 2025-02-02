@@ -51,8 +51,8 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
     AbstractControl *soundsToggle;
 
     if (param == "AlertVolumeControl") {
-      FrogPilotParamManageControl *alertVolumeControlToggle = new FrogPilotParamManageControl(param, title, desc, icon);
-      QObject::connect(alertVolumeControlToggle, &FrogPilotParamManageControl::manageButtonClicked, [this]() {
+      FrogPilotManageControl *alertVolumeControlToggle = new FrogPilotManageControl(param, title, desc, icon);
+      QObject::connect(alertVolumeControlToggle, &FrogPilotManageControl::manageButtonClicked, [this]() {
         showToggles(alertVolumeControlKeys);
       });
       soundsToggle = alertVolumeControlToggle;
@@ -69,15 +69,15 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
       }
 
     } else if (param == "CustomAlerts") {
-      FrogPilotParamManageControl *customAlertsToggle = new FrogPilotParamManageControl(param, title, desc, icon);
-      QObject::connect(customAlertsToggle, &FrogPilotParamManageControl::manageButtonClicked, [this]() {
+      FrogPilotManageControl *customAlertsToggle = new FrogPilotManageControl(param, title, desc, icon);
+      QObject::connect(customAlertsToggle, &FrogPilotManageControl::manageButtonClicked, [this]() {
         std::set<QString> modifiedCustomAlertsKeys = customAlertsKeys;
 
         if (!hasBSM) {
           modifiedCustomAlertsKeys.erase("LoudBlindspotAlert");
         }
 
-        if (!(hasOpenpilotLongitudinal && params.getBool("SpeedLimitController"))) {
+        if (!(params.getBool("ShowSpeedLimits") || hasOpenpilotLongitudinal && params.getBool("SpeedLimitController"))) {
           modifiedCustomAlertsKeys.erase("SpeedLimitChangedAlert");
         }
 
@@ -92,20 +92,14 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
     addItem(soundsToggle);
     toggles[param] = soundsToggle;
 
-    makeConnections(soundsToggle);
-
-    if (FrogPilotParamManageControl *frogPilotManageToggle = qobject_cast<FrogPilotParamManageControl*>(soundsToggle)) {
-      QObject::connect(frogPilotManageToggle, &FrogPilotParamManageControl::manageButtonClicked, this, &FrogPilotSoundsPanel::openParentToggle);
+    if (FrogPilotManageControl *frogPilotManageToggle = qobject_cast<FrogPilotManageControl*>(soundsToggle)) {
+      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotSoundsPanel::openParentToggle);
     }
-
-    QObject::connect(soundsToggle, &AbstractControl::showDescriptionEvent, [this]() {
-      update();
-    });
   }
 
   for (const QString &key : alertVolumeControlKeys) {
     FrogPilotParamValueButtonControl *toggle = static_cast<FrogPilotParamValueButtonControl*>(toggles[key]);
-    QObject::connect(toggle, &FrogPilotParamValueButtonControl::buttonClicked, [=]() {
+    QObject::connect(toggle, &FrogPilotParamValueButtonControl::buttonClicked, [this, key]() {
       QString alertKey = key;
       alertKey.remove("Volume");
       QString snakeCaseKey;
@@ -117,7 +111,7 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
         snakeCaseKey += c.toLower();
       }
 
-      std::thread([=]() {
+      std::thread([this, key, snakeCaseKey]() {
         playSound(snakeCaseKey.toStdString(), params.getInt(key.toStdString()));
       }).detach();
     });
@@ -127,7 +121,7 @@ FrogPilotSoundsPanel::FrogPilotSoundsPanel(FrogPilotSettingsWindow *parent) : Fr
 }
 
 void FrogPilotSoundsPanel::showEvent(QShowEvent *event) {
-  frogpilot_toggle_levels = parent->frogpilot_toggle_levels;
+  frogpilotToggleLevels = parent->frogpilotToggleLevels;
   hasBSM = parent->hasBSM;
   hasOpenpilotLongitudinal = parent->hasOpenpilotLongitudinal;
   tuningLevel = parent->tuningLevel;
@@ -139,10 +133,11 @@ void FrogPilotSoundsPanel::showToggles(const std::set<QString> &keys) {
   setUpdatesEnabled(false);
 
   for (auto &[key, toggle] : toggles) {
-    toggle->setVisible(keys.find(key) != keys.end() && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
+    toggle->setVisible(keys.find(key) != keys.end() && tuningLevel >= frogpilotToggleLevels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
+
   update();
 }
 
@@ -153,9 +148,10 @@ void FrogPilotSoundsPanel::hideToggles() {
     bool subToggles = alertVolumeControlKeys.find(key) != alertVolumeControlKeys.end() ||
                       customAlertsKeys.find(key) != customAlertsKeys.end();
 
-    toggle->setVisible(!subToggles && tuningLevel >= frogpilot_toggle_levels[key].toDouble());
+    toggle->setVisible(!subToggles && tuningLevel >= frogpilotToggleLevels[key].toDouble());
   }
 
   setUpdatesEnabled(true);
+
   update();
 }

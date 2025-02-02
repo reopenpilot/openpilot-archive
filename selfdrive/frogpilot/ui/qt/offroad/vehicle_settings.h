@@ -10,51 +10,31 @@ class FrogPilotVehiclesPanel : public FrogPilotListWidget {
 public:
   explicit FrogPilotVehiclesPanel(FrogPilotSettingsWindow *parent);
 
+signals:
+  void openParentToggle();
+
 private:
-  void setModels();
   void showEvent(QShowEvent *event) override;
   void updateState(const UIState &s);
   void updateToggles();
 
-  ButtonControl *selectMakeButton;
-  ButtonControl *selectModelButton;
-
-  FrogPilotSettingsWindow *parent;
-
-  QJsonObject frogpilot_toggle_levels;
-
-  QMap<QString, QString> carModels;
-
-  QString carMake;
-  QString carModel;
-
-  QStringList models;
-
-  ParamControl *forceFingerprint;
-
-  Params params;
-
-  ToggleControl *disableOpenpilotLong;
-
-  bool disableOpenpilotLongitudinal;
-  bool hasExperimentalOpenpilotLongitudinal;
-  bool hasOpenpilotLongitudinal;
-  bool hasSNG;
-  bool isBolt;
-  bool isImpreza;
-  bool isVolt;
   bool started;
-
-  int tuningLevel;
 
   std::map<QString, AbstractControl*> toggles;
 
   std::set<QString> gmKeys = {"ExperimentalGMTune", "LongPitch", "NewLongAPIGM", "VoltSNG"};
-  std::set<QString> hyundaiKeys = {"NewLongAPI"};
-  std::set<QString> imprezaKeys = {"CrosstrekTorque"};
-  std::set<QString> longitudinalKeys = {"ExperimentalGMTune", "LongPitch", "NewLongAPI", "NewLongAPIGM", "SNGHack", "VoltSNG"};
-  std::set<QString> sngKeys = {"SNGHack"};
-  std::set<QString> subaruKeys = {"CrosstrekTorque"};
+  std::set<QString> hkgKeys = {"NewLongAPI"};
+  std::set<QString> longitudinalKeys = {"ExperimentalGMTune", "FrogsGoMoosTweak", "LongPitch", "NewLongAPI", "NewLongAPIGM", "SNGHack", "VoltSNG"};
   std::set<QString> toyotaKeys = {"ClusterOffset", "FrogsGoMoosTweak", "SNGHack", "ToyotaDoors"};
-  std::set<QString> voltKeys = {"VoltSNG"};
+
+  FrogPilotSettingsWindow *parent;
+
+  QMap<QString, QString> carModels;
+
+  QStackedLayout *vehiclesLayout;
+
+  ParamControl *disableOpenpilotLong;
+
+  Params params;
+  Params params_default{"/dev/shm/params_default"};
 };
