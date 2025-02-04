@@ -87,7 +87,7 @@ def register(show_spinner=False) -> str | None:
         time.sleep(backoff)
 
       if time.monotonic() - start_time > 60 and show_spinner:
-        spinner.update(f"registering device - serial: {serial}, IMEI: ({imei1}, {imei2})")
+        break
 
     if show_spinner:
       spinner.close()

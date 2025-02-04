@@ -1732,7 +1732,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Uses comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
+        <source>Enable comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2832,14 +2832,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable comma&apos;s New Longitudinal API</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable comma&apos;s new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some GM vehicles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable FrogsGoMoo&apos;s Experimental Longitudinal Tune</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2865,6 +2857,10 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Toggles catered towards &apos;Hyundai/Kia/Genesis&apos; vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable comma&apos;s New Longitudinal API</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
