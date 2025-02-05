@@ -2,6 +2,10 @@ name: Update FrogPilot Branch
 
 on:
   workflow_dispatch:
+    inputs:
+      scheduled_date:
+        description: "Enter the date to run at (YYYY-MM-DD)"
+        required: true
 
 jobs:
   update-branch:
@@ -12,16 +16,43 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Reset "FrogPilot-Previous" branch to match "FrogPilot"
+      - name: Convert Scheduled Date to UTC and Wait
         run: |
-          git fetch origin
-          git checkout FrogPilot-Previous || git checkout -b FrogPilot-Previous
-          git reset --hard origin/FrogPilot
-          git push origin FrogPilot-Previous --force
+          SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
+          SCHEDULED_DATETIME="$SCHEDULED_DATE 13:00"
+
+          TARGET_TIME=$(TZ="America/Phoenix" date -d "$SCHEDULED_DATETIME" --utc +%s)
+          CURRENT_TIME=$(date +%s)
+          SLEEP_TIME=$((TARGET_TIME - CURRENT_TIME))
+
+          if [ $SLEEP_TIME -gt 0 ]; then
+            echo "Waiting for $SLEEP_TIME seconds until Noon Phoenix Time..."
+            sleep $SLEEP_TIME
+          else
+            echo "Scheduled time is in the past. Running immediately."
+          fi
+
+      #- name: Reset "FrogPilot-Previous" branch to match "FrogPilot"
+        #run: |
+          #git fetch origin
+          #git checkout FrogPilot-Previous || git checkout -b FrogPilot-Previous
+          #git reset --hard origin/FrogPilot
+          #git push origin FrogPilot-Previous --force
 
       - name: Reset "FrogPilot" branch to match "FrogPilot-Staging"
         run: |
           git fetch origin
           git checkout FrogPilot || git checkout -b FrogPilot
           git reset --hard origin/FrogPilot-Staging
+          git push origin FrogPilot --force
+
+      - name: Rewrite Commit Dates to Noon Phoenix Time
+        run: |
+          SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
+          FIXED_DATETIME="$SCHEDULED_DATE 12:00"
+
+          FIXED_UTC=$(TZ="America/Phoenix" date -d "$FIXED_DATETIME" --utc +"%Y-%m-%dT%H:%M:%S %z")
+
+          git rebase -i --root --autosquash --exec "GIT_COMMITTER_DATE='$FIXED_UTC' git commit --amend --no-edit --date '$FIXED_UTC'"
+
           git push origin FrogPilot --force
