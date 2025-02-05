@@ -1958,6 +1958,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot'
 > > </details>
 > >
 > 
+> > <details><summary>20250205-1200</summary>
+> >
+> > #### fp-FrogPilot-20250205-1200
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20250205-1200
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-20250205-1200
+> > ```
+> >
+> > </details>
+> >
+> 
 > > <details><summary>20250205-1822</summary>
 > >
 > > #### fp-FrogPilot-20250205-1822
