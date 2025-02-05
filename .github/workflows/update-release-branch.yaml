@@ -11,18 +11,20 @@ jobs:
   update-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
       - name: Convert Scheduled Date to UTC and Wait
         run: |
           SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
-          SCHEDULED_DATETIME="$SCHEDULED_DATE 13:00"
+          SCHEDULED_TIME="13:00"
+
+          SCHEDULED_DATETIME="$SCHEDULED_DATE $SCHEDULED_TIME"
+
+          TARGET_TIME=$(TZ="America/Phoenix" date -d "$SCHEDULED_DATETIME" +%s)
 
           CURRENT_TIME=$(TZ="America/Phoenix" date +%s)
-          TARGET_TIME=$(TZ="America/Phoenix" date -d "$SCHEDULED_DATETIME" --utc +%s)
+
+          echo "Scheduled Time (Phoenix): $SCHEDULED_DATETIME"
+          echo "Scheduled Time (Epoch): $TARGET_TIME"
+          echo "Current Time (Epoch): $CURRENT_TIME"
 
           SLEEP_TIME=$((TARGET_TIME - CURRENT_TIME))
 
@@ -32,6 +34,11 @@ jobs:
           else
             echo "Scheduled time is in the past. Running immediately."
           fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set Git user name and email
         run: |
@@ -55,9 +62,13 @@ jobs:
       - name: Rewrite Commit Dates to Noon Phoenix Time
         run: |
           SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
-          FIXED_DATETIME="$SCHEDULED_DATE 12:00"
+          SCHEDULED_TIME="13:00"
+          FIXED_DATETIME="$SCHEDULED_DATE $SCHEDULED_TIME"
 
           FIXED_UTC=$(TZ="America/Phoenix" date -d "$FIXED_DATETIME" --utc +"%Y-%m-%dT%H:%M:%S %z")
+
+          echo "Commit timestamps will be set to (Phoenix Time): $FIXED_DATETIME"
+          echo "Commit timestamps will be set to (UTC): $FIXED_UTC"
 
           git filter-branch --env-filter "
             export GIT_AUTHOR_DATE='$FIXED_UTC'
