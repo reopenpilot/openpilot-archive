@@ -3641,6 +3641,14 @@ Default matches half of the MUTCD standard of 4 inches.</source>
         <source>Reboot Device</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>openpilot crashed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please post the &apos;Error Log&apos; in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PairingPopup</name>

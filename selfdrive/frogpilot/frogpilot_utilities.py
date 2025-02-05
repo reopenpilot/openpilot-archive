@@ -196,8 +196,7 @@ def send_sentry_reports(frogpilot_toggles, frogpilot_variables, params, params_t
   while not is_url_pingable("https://sentry.io"):
     time.sleep(1)
 
-  sentry.capture_fingerprint(frogpilot_toggles, params, params_tracking)
-  sentry.capture_frogpilot_stats(frogpilot_toggles, frogpilot_variables.short_branch)
+  sentry.capture_user_report(frogpilot_variables.short_branch, frogpilot_toggles, params, params_tracking)
 
   params.put_bool("UserLogged", True)
 
