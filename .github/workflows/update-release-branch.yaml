@@ -55,11 +55,11 @@ jobs:
       - name: Rewrite Commit Dates to Noon Phoenix Time
         run: |
           COMMIT_DATETIME="${{ github.event.inputs.scheduled_date }} 12:00"
-          COMMIT_UTC=$(TZ="America/Phoenix" date -d "$COMMIT_DATETIME" --utc +"%Y-%m-%dT%H:%M:%S %z")
+          COMMIT_PHX=$(TZ="America/Phoenix" date -d "$COMMIT_DATETIME" +"%Y-%m-%dT%H:%M:%S %z")
 
           git filter-branch --env-filter "
-            export GIT_AUTHOR_DATE="$COMMIT_UTC"
-            export GIT_COMMITTER_DATE="$COMMIT_UTC"
+            export GIT_AUTHOR_DATE=\"$COMMIT_PHX\"
+            export GIT_COMMITTER_DATE=\"$COMMIT_PHX\"
           " -- --all
 
           git push origin FrogPilot --force
