@@ -3659,11 +3659,15 @@ Default matches half of the MUTCD standard of 4 inches.</source>
         <translation>إعادة التشغيل</translation>
     </message>
     <message>
-        <source>openpilot crashed</source>
+        <source>openpilot crashed 💩</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Please post the &apos;Error Log&apos; in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>openpilot crashed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

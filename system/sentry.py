@@ -12,7 +12,7 @@ from openpilot.system.hardware import HARDWARE, PC
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.version import get_build_metadata, get_version
 
-CRASHES_DIR = Path("/data/crashes")
+from openpilot.selfdrive.frogpilot.frogpilot_variables import CRASHES_DIR
 
 class SentryProject(Enum):
   # python project
@@ -120,8 +120,6 @@ def set_tag(key: str, value: str) -> None:
 
 
 def save_exception(exc_text: str) -> None:
-  CRASHES_DIR.mkdir(parents=True, exist_ok=True)
-
   files = [
     CRASHES_DIR / datetime.now().strftime("%Y-%m-%d--%H-%M-%S.log"),
     CRASHES_DIR / "error.txt"

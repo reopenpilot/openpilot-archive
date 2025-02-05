@@ -2,7 +2,6 @@
 import time
 import json
 import jwt
-import os
 import random
 import string
 from pathlib import Path
