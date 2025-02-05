@@ -12,7 +12,7 @@ from openpilot.system.hardware import HARDWARE, PC
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.version import get_build_metadata, get_version
 
-CRASHES_DIR = Path("/data/crashes")
+from openpilot.selfdrive.frogpilot.frogpilot_variables import CRASHES_DIR
 
 class SentryProject(Enum):
   # python project
@@ -52,17 +52,11 @@ def capture_exception(*args, **kwargs) -> None:
     cloudlog.exception("sentry exception")
 
 
-def capture_fingerprint(frogpilot_toggles, params, params_tracking):
+def capture_user_report(branch, frogpilot_toggles, params, params_tracking):
   if frogpilot_toggles.block_user:
     sentry_sdk.capture_message("Blocked user from using the development branch", level="warning")
     sentry_sdk.flush()
     return
-  else:
-    sentry_sdk.capture_message(f"User driving a: {frogpilot_toggles.car_model}", level="info")
-    sentry_sdk.flush()
-
-    if params.get_bool("FingerprintLogged"):
-      return
 
   param_types = {
     "FrogPilot Controls": ParamKeyType.FROGPILOT_CONTROLS,
@@ -92,17 +86,19 @@ def capture_fingerprint(frogpilot_toggles, params, params_tracking):
     for label, key_values in matched_params.items():
       scope.set_context(label, key_values)
 
-    fingerprint = [params.get("DongleId", encoding="utf-8"), frogpilot_toggles.car_model]
+    fingerprint = [params.get("DongleId", encoding="utf-8")]
     scope.fingerprint = fingerprint
-    sentry_sdk.capture_message(f"Logged user: {fingerprint}", level="info")
+
+    title = (
+      f"Logged user: {fingerprint} - "
+      f"{branch} - "
+      f"{frogpilot_toggles.car_make.capitalize()} - "
+      f"{frogpilot_toggles.car_model} - "
+      f"{frogpilot_toggles.model_name.replace(' (Default)', '')}"
+    )
+
+    sentry_sdk.capture_message(title, level="info")
     sentry_sdk.flush()
-
-    params.put_bool("FingerprintLogged", True)
-
-
-def capture_model(model_name):
-  sentry_sdk.capture_message(f"User using: {model_name}", level="info")
-  sentry_sdk.flush()
 
 
 def capture_report(discord_user, report, frogpilot_toggles):
@@ -119,18 +115,11 @@ def capture_report(discord_user, report, frogpilot_toggles):
     sentry_sdk.flush()
 
 
-def capture_user(channel):
-  sentry_sdk.capture_message(f"Logged user on: {channel}", level="info")
-  sentry_sdk.flush()
-
-
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
 
 
 def save_exception(exc_text: str) -> None:
-  CRASHES_DIR.mkdir(parents=True, exist_ok=True)
-
   files = [
     CRASHES_DIR / datetime.now().strftime("%Y-%m-%d--%H-%M-%S.log"),
     CRASHES_DIR / "error.txt"

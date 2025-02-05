@@ -1039,6 +1039,22 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <source> seconds</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for &apos;Friction&apos;?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for &apos;Kp Factor&apos;?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for &apos;Lateral Accel&apos;?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for &apos;Steer Ratio&apos;?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotLongitudinalPanel</name>
@@ -1697,7 +1713,7 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Uses comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
+        <source>Enable comma&apos;s speed hack they used to help handle left and right turns more precisely during their 2022 &apos;Taco Bell&apos; drive by reducing the maximum allowed speed and acceleration while turning.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1831,16 +1847,12 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <source>RESET</source>
+        <translation type="unfinished">SIFIRLA</translation>
     </message>
     <message>
         <source>The &apos;Map Based&apos; option is only available when some &apos;Map Data&apos; has been downloaded!</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="unfinished">Tamam</translation>
     </message>
     <message>
         <source>Set With Gas Pedal</source>
@@ -1900,6 +1912,13 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>Sets the speed limit offset for speeds between 65-99 mph.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FrogPilotManageControl</name>
+    <message>
+        <source>MANAGE</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1984,10 +2003,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     <message>
         <source>There are no more models to blacklist! The only available model is &quot;%1&quot;!</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="unfinished">Tamam</translation>
     </message>
     <message>
         <source>Select a model to add to the blacklist</source>
@@ -2079,13 +2094,6 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FrogPilotParamManageControl</name>
-    <message>
-        <source>MANAGE</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2217,16 +2225,8 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>I understand the risks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The &apos;Developer&apos; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="unfinished">Tamam</translation>
     </message>
 </context>
 <context>
@@ -2702,10 +2702,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ok</source>
-        <translation type="unfinished">Tamam</translation>
-    </message>
-    <message>
         <source>Reset Toggles to Default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2817,14 +2813,6 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable comma&apos;s New Longitudinal API</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable comma&apos;s new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some GM vehicles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable FrogsGoMoo&apos;s Experimental Longitudinal Tune</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2850,6 +2838,10 @@ Want to submit your own animations? Share them in the &apos;custom-themes&apos; 
     </message>
     <message>
         <source>Toggles catered towards &apos;Hyundai/Kia/Genesis&apos; vehicles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable comma&apos;s New Longitudinal API</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3641,6 +3633,18 @@ Default matches half of the MUTCD standard of 4 inches.</source>
         <source>Reboot Device</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>openpilot crashed 💩</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please post the &apos;Error Log&apos; in the FrogPilot Discord!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>openpilot crashed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PairingPopup</name>
@@ -3843,10 +3847,6 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Welcome to FrogPilot! Since you&apos;re new to FrogPilot, the &apos;Minimal&apos; toggle preset has been applied, but you can change this at any time via the &apos;Tuning Level&apos; button!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sounds good!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
