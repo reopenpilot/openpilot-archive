@@ -11,28 +11,21 @@ jobs:
   update-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Convert Scheduled Date to UTC and Wait
+      - name: Wait Until Noon On Scheduled Date
         run: |
-          SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
-          SCHEDULED_TIME="13:00"
-
-          SCHEDULED_DATETIME="$SCHEDULED_DATE $SCHEDULED_TIME"
+          SCHEDULED_DATETIME="${{ github.event.inputs.scheduled_date }} 12:00"
 
           TARGET_TIME=$(TZ="America/Phoenix" date -d "$SCHEDULED_DATETIME" +%s)
-
           CURRENT_TIME=$(TZ="America/Phoenix" date +%s)
 
           echo "Scheduled Time (Phoenix): $SCHEDULED_DATETIME"
-          echo "Scheduled Time (Epoch): $TARGET_TIME"
-          echo "Current Time (Epoch): $CURRENT_TIME"
 
           SLEEP_TIME=$((TARGET_TIME - CURRENT_TIME))
 
           if [ $SLEEP_TIME -gt 0 ]; then
             echo "Waiting for $SLEEP_TIME seconds until Noon Phoenix Time..."
             sleep $SLEEP_TIME
-          else
-            echo "Scheduled time is in the past. Running immediately."
+
           fi
 
       - name: Checkout repository
@@ -40,17 +33,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set Git user name and email
+      - name: Set Git Username and Email
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      #- name: Reset "FrogPilot-Previous" branch to match "FrogPilot"
-        #run: |
-          #git fetch origin
-          #git checkout FrogPilot-Previous || git checkout -b FrogPilot-Previous
-          #git reset --hard origin/FrogPilot
-          #git push origin FrogPilot-Previous --force
+      - name: Reset "FrogPilot-Previous" branch to match "FrogPilot"
+        run: |
+          git fetch origin
+          git checkout FrogPilot-Previous || git checkout -b FrogPilot-Previous
+          git reset --hard origin/FrogPilot
+          git push origin FrogPilot-Previous --force
 
       - name: Reset "FrogPilot" branch to match "FrogPilot-Staging"
         run: |
@@ -61,18 +54,12 @@ jobs:
 
       - name: Rewrite Commit Dates to Noon Phoenix Time
         run: |
-          SCHEDULED_DATE="${{ github.event.inputs.scheduled_date }}"
-          SCHEDULED_TIME="13:00"
-          FIXED_DATETIME="$SCHEDULED_DATE $SCHEDULED_TIME"
-
-          FIXED_UTC=$(TZ="America/Phoenix" date -d "$FIXED_DATETIME" --utc +"%Y-%m-%dT%H:%M:%S %z")
-
-          echo "Commit timestamps will be set to (Phoenix Time): $FIXED_DATETIME"
-          echo "Commit timestamps will be set to (UTC): $FIXED_UTC"
+          COMMIT_DATETIME="${{ github.event.inputs.scheduled_date }} 12:00"
+          COMMIT_PHX=$(TZ="America/Phoenix" date -d "$COMMIT_DATETIME" +"%Y-%m-%dT%H:%M:%S %z")
 
           git filter-branch --env-filter "
-            export GIT_AUTHOR_DATE='$FIXED_UTC'
-            export GIT_COMMITTER_DATE='$FIXED_UTC'
+            export GIT_AUTHOR_DATE=\"$COMMIT_PHX\"
+            export GIT_COMMITTER_DATE=\"$COMMIT_PHX\"
           " -- --all
 
           git push origin FrogPilot --force
