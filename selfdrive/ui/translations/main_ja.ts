@@ -1044,7 +1044,7 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> seconds</source>
+        <source>Instant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1260,6 +1260,10 @@ Deactivate only occurs with the &apos;Cruise Control&apos; button.</source>
     </message>
     <message>
         <source>Turns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1857,6 +1861,10 @@ This overrides &apos;Conditional Experimental Mode&apos;.</source>
     <message>
         <source>RESET</source>
         <translation type="unfinished">ﾘｾｯﾄ</translation>
+    </message>
+    <message>
+        <source> second</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The &apos;Map Based&apos; option is only available when some &apos;Map Data&apos; has been downloaded!</source>
