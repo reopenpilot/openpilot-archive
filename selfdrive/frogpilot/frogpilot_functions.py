@@ -192,10 +192,10 @@ def setup_frogpilot(build_metadata):
     run_cmd(["sudo", "mount", "-o", f"remount,{stock_mount_options}", "/"], "Successfully restored stock mount options", "Failed to restore stock mount options")
 
   persist_comma_path = Path("/persist/comma")
-  backup_comma_path = Path("/data/comma")
+  backup_comma_path = Path("/data/backup_comma")
   if persist_comma_path.exists():
     shutil.copytree(persist_comma_path, backup_comma_path, dirs_exist_ok=True)
-    print("Successfully backed up /persist/comma to /data/comma")
+    print("Successfully backed up /persist/comma to /data/backup_comma")
 
   persist_params_path = Path("/persist/params")
   if persist_params_path.exists() and persist_params_path.is_dir():
