@@ -307,7 +307,7 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'dp/master3-sgo'
 
 
 
-### [< FrogPilot FrogPilot >](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-20250220-2101/)
+### [< FrogPilot FrogPilot >](https://github.com/reopenpilot/openpilot-archive/commits/fp-FrogPilot-20250221-1916/)
 ```
 https://smiskol.com/fork/fp/FrogPilot
 ```
@@ -2135,6 +2135,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-20250220-2101
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20250221-1916</summary>
+> >
+> > #### fp-FrogPilot-20250221-1916
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20250221-1916
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-20250221-1916
 > > ```
 > >
 > > </details>
