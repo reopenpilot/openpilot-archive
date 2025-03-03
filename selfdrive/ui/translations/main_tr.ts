@@ -1235,7 +1235,7 @@ Yalnızca 'Hız Sabitleyici' düğmesiyle devre dışı bırakılır.</translati
     </message>
     <message>
         <source>Sport+</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Spor+</translation>
     </message>
     <message>
         <source> feet</source>
@@ -3035,7 +3035,7 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Light</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3481,7 +3481,7 @@ Varsayılan, MUTCD standart şerit çizgi genişliğinin yarısı olan 4 inç'e 
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3513,7 +3513,7 @@ Varsayılan, MUTCD standart şerit çizgi genişliğinin yarısı olan 4 inç'e 
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>
@@ -4197,7 +4197,7 @@ Bu işlem bir dakikaya kadar sürebilir.</translation>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>

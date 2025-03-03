@@ -2592,19 +2592,25 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <source>Changes out openpilot's color scheme.
 
 Want to submit your own color scheme? Share it in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">更改 openpilot 的配色方案。
+
+想提交您自己的配色方案吗？在 FrogPilot Discord 的“custom-themes”频道分享吧！</translation>
     </message>
     <message>
         <source>Changes out openpilot's icon pack.
 
 Want to submit your own icons? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">更改 openpilot 的图标包。
+
+想提交您自己的图标吗？请在 FrogPilot Discord 的“custom-themes”频道分享它们！</translation>
     </message>
     <message>
         <source>Changes out openpilot's sound effects.
 
 Want to submit your own sounds? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">更改 openpilot 的音效。
+
+想提交你自己的声音？请在 FrogPilot Discord 的“custom-themes”频道分享它们！</translation>
     </message>
     <message>
         <source>Enables a custom steering wheel icon in the top right of the screen.</source>
@@ -2614,7 +2620,9 @@ Want to submit your own sounds? Share them in the 'custom-themes' channel on the
         <source>Enables themed turn signal animations.
 
 Want to submit your own animations? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">启用主题化转向灯动画。
+
+想提交您自己的动画吗？请在 FrogPilot Discord 的“custom-themes”频道分享它们！</translation>
     </message>
     <message>
         <source>Changes the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last the entire week.</source>
@@ -3027,7 +3035,7 @@ Want to submit your own animations? Share them in the 'custom-themes' channel on
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Light</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3505,7 +3513,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>

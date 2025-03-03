@@ -570,7 +570,7 @@
     </message>
     <message>
         <source>DELETE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">EXCLUIR TUDO</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all screen recordings?</source>
@@ -1235,7 +1235,7 @@ A desativação ocorre apenas com o botão 'Controle de Cruzeiro'.</translation>
     </message>
     <message>
         <source>Sport+</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sport+</translation>
     </message>
     <message>
         <source> feet</source>
@@ -2043,7 +2043,7 @@ Isso substitui o 'Modo Experimental Condicional'.</translation>
     </message>
     <message>
         <source>REMOVE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">REMOVER TUDO</translation>
     </message>
     <message>
         <source>There are no more models to blacklist! The only available model is "%1"!</source>
@@ -2095,7 +2095,7 @@ Isso substitui o 'Modo Experimental Condicional'.</translation>
     </message>
     <message>
         <source>DELETE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">EXCLUIR TUDO</translation>
     </message>
     <message>
         <source>Select a driving model to delete</source>
@@ -2119,7 +2119,7 @@ Isso substitui o 'Modo Experimental Condicional'.</translation>
     </message>
     <message>
         <source>DOWNLOAD ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">BAIXAR TUDO</translation>
     </message>
     <message>
         <source>Select a driving model to download</source>
@@ -2139,7 +2139,7 @@ Isso substitui o 'Modo Experimental Condicional'.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CANCELAR</translation>
     </message>
 </context>
 <context>
@@ -2206,7 +2206,7 @@ Isso substitui o 'Modo Experimental Condicional'.</translation>
     </message>
     <message>
         <source>PRIMELESS NAVIGATION</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">NAVEGAÇÃO SEM PRIME</translation>
     </message>
     <message>
         <source>DEVICE CONTROLS</source>
@@ -2482,7 +2482,7 @@ DESENGATE IMEDIATAMENTE, Motorista Não Responsivo</translation>
     </message>
     <message>
         <source>Download Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Status do Download</translation>
     </message>
     <message>
         <source>Holiday Themes</source>
@@ -2586,7 +2586,7 @@ DESENGATE IMEDIATAMENTE, Motorista Não Responsivo</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CANCELAR</translation>
     </message>
     <message>
         <source>Changes out openpilot's color scheme.
@@ -3035,7 +3035,7 @@ Quer enviar suas próprias animações? Compartilhe-as no canal 'custom-themes' 
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Light</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3481,7 +3481,7 @@ O padrão corresponde à metade da largura padrão da linha de faixa do MUTCD, q
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3513,7 +3513,7 @@ O padrão corresponde à metade da largura padrão da linha de faixa do MUTCD, q
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>
@@ -4201,7 +4201,7 @@ Isso pode levar até um minuto.</translation>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>

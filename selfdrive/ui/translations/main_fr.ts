@@ -415,7 +415,7 @@
     </message>
     <message>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Non</translation>
     </message>
     <message>
         <source>Reboot required to take effect.</source>
@@ -542,7 +542,7 @@
     </message>
     <message>
         <source>Extracting...</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Extraction...</translation>
     </message>
     <message>
         <source>Restored!</source>
@@ -570,7 +570,7 @@
     </message>
     <message>
         <source>DELETE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">SUPPRIMER TOUT</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all screen recordings?</source>
@@ -578,7 +578,7 @@
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Tout supprimer</translation>
     </message>
     <message>
         <source>A recording with this name already exists. Please choose a different name.</source>
@@ -1207,7 +1207,7 @@ La désactivation se produit uniquement avec le bouton 'Régulateur de vitesse'.
     </message>
     <message>
         <source>Intersections</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Carrefours</translation>
     </message>
     <message>
         <source>Turns</source>
@@ -1231,11 +1231,11 @@ La désactivation se produit uniquement avec le bouton 'Régulateur de vitesse'.
     </message>
     <message>
         <source>Sport</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sport</translation>
     </message>
     <message>
         <source>Sport+</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sport+</translation>
     </message>
     <message>
         <source> feet</source>
@@ -1283,7 +1283,7 @@ La désactivation se produit uniquement avec le bouton 'Régulateur de vitesse'.
     </message>
     <message>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Navigation</translation>
     </message>
     <message>
         <source>Highest</source>
@@ -2043,7 +2043,7 @@ Cela remplace le 'Mode Expérimental Conditionnel'.</translation>
     </message>
     <message>
         <source>REMOVE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">SUPPRIMER TOUT</translation>
     </message>
     <message>
         <source>There are no more models to blacklist! The only available model is "%1"!</source>
@@ -2095,7 +2095,7 @@ Cela remplace le 'Mode Expérimental Conditionnel'.</translation>
     </message>
     <message>
         <source>DELETE ALL</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">SUPPRIMER TOUT</translation>
     </message>
     <message>
         <source>Select a driving model to delete</source>
@@ -2154,7 +2154,7 @@ Cela remplace le 'Mode Expérimental Conditionnel'.</translation>
     </message>
     <message>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Navigation</translation>
     </message>
     <message>
         <source>System Management</source>
@@ -3027,7 +3027,7 @@ Vous souhaitez soumettre vos propres animations ? Partagez-les dans le canal 'cu
     </message>
     <message>
         <source>Mapbox Streets</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Streets</translation>
     </message>
     <message>
         <source>Mapbox Outdoors</source>
@@ -3047,7 +3047,7 @@ Vous souhaitez soumettre vos propres animations ? Partagez-les dans le canal 'cu
     </message>
     <message>
         <source>Mapbox Satellite Streets</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Satellite Streets</translation>
     </message>
     <message>
         <source>Mapbox Navigation Day</source>
@@ -3481,7 +3481,7 @@ Par défaut, cela correspond à la moitié de la largeur standard des lignes de 
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3513,7 +3513,7 @@ Par défaut, cela correspond à la moitié de la largeur standard des lignes de 
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>
@@ -3752,7 +3752,7 @@ La valeur par défaut correspond à la moitié de la norme MUTCD de 4 pouces.</t
     <name>OnroadAlerts</name>
     <message>
         <source>openpilot Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">openpilot Indisponible</translation>
     </message>
     <message>
         <source>Waiting for controls to start</source>
@@ -3760,7 +3760,7 @@ La valeur par défaut correspond à la moitié de la norme MUTCD de 4 pouces.</t
     </message>
     <message>
         <source>TAKE CONTROL IMMEDIATELY</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">PRENEZ LE CONTRÔLE IMMÉDIATEMENT</translation>
     </message>
     <message>
         <source>Controls Unresponsive</source>
@@ -4201,7 +4201,7 @@ Cela peut prendre jusqu'à une minute.</translation>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>

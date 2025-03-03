@@ -3027,7 +3027,7 @@ Want to submit your own animations? Share them in the 'custom-themes' channel on
     </message>
     <message>
         <source>Mapbox Streets</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">ถนน Mapbox</translation>
     </message>
     <message>
         <source>Mapbox Outdoors</source>
@@ -3035,7 +3035,7 @@ Want to submit your own animations? Share them in the 'custom-themes' channel on
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Light</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3513,7 +3513,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>

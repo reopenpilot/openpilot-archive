@@ -988,7 +988,7 @@ Deactivate only occurs with the 'Cruise Control' button.</source>
     </message>
     <message>
         <source>Uses Twilsonco's 'Neural Network FeedForward' for more precise steering control.</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Twilsonco의 'Neural Network FeedForward'를 사용하여 더욱 정확한 조향 제어를 제공합니다.</translation>
     </message>
     <message>
         <source>Smoothens the steering control when entering and exiting curves by using Twilsonco's torque adjustments.</source>
@@ -2592,19 +2592,25 @@ DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
         <source>Changes out openpilot's color scheme.
 
 Want to submit your own color scheme? Share it in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">openpilot의 색상 테마를 변경합니다.
+
+자신만의 색상 테마를 제출하고 싶으신가요? FrogPilot Discord의 'custom-themes' 채널에 공유하세요!</translation>
     </message>
     <message>
         <source>Changes out openpilot's icon pack.
 
 Want to submit your own icons? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">openpilot의 아이콘 팩을 변경합니다.
+
+자신만의 아이콘을 제출하고 싶으신가요? FrogPilot Discord의 'custom-themes' 채널에서 공유하세요!</translation>
     </message>
     <message>
         <source>Changes out openpilot's sound effects.
 
 Want to submit your own sounds? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">openpilot의 사운드 효과를 변경합니다.
+
+자신만의 사운드를 제출하고 싶으신가요? FrogPilot Discord의 'custom-themes' 채널에서 공유하세요!</translation>
     </message>
     <message>
         <source>Enables a custom steering wheel icon in the top right of the screen.</source>
@@ -3475,7 +3481,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3507,7 +3513,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>
@@ -4191,7 +4197,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>

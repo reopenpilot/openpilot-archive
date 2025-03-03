@@ -3481,7 +3481,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3513,7 +3513,7 @@ Default matches half of the MUTCD standard lane line width of 4 inches.</source>
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">％</translation>
     </message>
     <message>
         <source> feet</source>
@@ -4197,7 +4197,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>

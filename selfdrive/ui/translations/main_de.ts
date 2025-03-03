@@ -665,7 +665,7 @@
     </message>
     <message>
         <source>Screen Timeout (Offroad)</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Bildschirm-Timeout (Offroad)</translation>
     </message>
     <message>
         <source>Screen Timeout (Onroad)</source>
@@ -1012,7 +1012,7 @@ Die Deaktivierung erfolgt nur mit der 'Tempomat'-Taste.</translation>
     </message>
     <message>
         <source>Instant</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sofort</translation>
     </message>
 </context>
 <context>
@@ -1231,11 +1231,11 @@ Die Deaktivierung erfolgt nur mit der 'Tempomat'-Taste.</translation>
     </message>
     <message>
         <source>Sport</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sport</translation>
     </message>
     <message>
         <source>Sport+</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Sport+</translation>
     </message>
     <message>
         <source> feet</source>
@@ -1283,7 +1283,7 @@ Die Deaktivierung erfolgt nur mit der 'Tempomat'-Taste.</translation>
     </message>
     <message>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Navigation</translation>
     </message>
     <message>
         <source>Highest</source>
@@ -2154,7 +2154,7 @@ Dies überschreibt den 'Bedingten Experimentellen Modus'.</translation>
     </message>
     <message>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Navigation</translation>
     </message>
     <message>
         <source>System Management</source>
@@ -2482,7 +2482,7 @@ SOFORT DEAKTIVIEREN, Fahrer reagiert nicht</translation>
     </message>
     <message>
         <source>Download Status</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Download-Status</translation>
     </message>
     <message>
         <source>Holiday Themes</source>
@@ -2765,7 +2765,7 @@ Möchten Sie Ihre eigenen Animationen einreichen? Teilen Sie sie im 'custom-them
     </message>
     <message>
         <source>What's going on?</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Was ist los?</translation>
     </message>
     <message>
         <source>Please describe what's happening</source>
@@ -3035,7 +3035,7 @@ Möchten Sie Ihre eigenen Animationen einreichen? Teilen Sie sie im 'custom-them
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Licht</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3055,7 +3055,7 @@ Möchten Sie Ihre eigenen Animationen einreichen? Teilen Sie sie im 'custom-them
     </message>
     <message>
         <source>Mapbox Navigation Night</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mapbox Navigation Nacht</translation>
     </message>
     <message>
         <source>Mapbox Traffic Night</source>
@@ -3469,7 +3469,7 @@ Standardmäßig entspricht die Hälfte der MUTCD-Standardspurbreite von 4 Zoll.<
     </message>
     <message>
         <source>Lead Info</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Lead-Informationen</translation>
     </message>
     <message>
         <source>Jerk Values</source>
@@ -3481,7 +3481,7 @@ Standardmäßig entspricht die Hälfte der MUTCD-Standardspurbreite von 4 Zoll.<
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source>GPU</source>
@@ -3513,7 +3513,7 @@ Standardmäßig entspricht die Hälfte der MUTCD-Standardspurbreite von 4 Zoll.<
     </message>
     <message>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">%</translation>
     </message>
     <message>
         <source> feet</source>
@@ -4202,7 +4202,7 @@ Dies kann bis zu einer Minute dauern.</translation>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">CPU</translation>
     </message>
     <message>
         <source> GB</source>
