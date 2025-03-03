@@ -2701,7 +2701,7 @@ Vous souhaitez soumettre vos propres animations ? Partagez-les dans le canal 'cu
     <name>FrogPilotUtilitiesPanel</name>
     <message>
         <source>Flash Panda</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Mettre à jour Panda</translation>
     </message>
     <message>
         <source>FLASH</source>
@@ -3035,7 +3035,7 @@ Vous souhaitez soumettre vos propres animations ? Partagez-les dans le canal 'cu
     </message>
     <message>
         <source>Mapbox Light</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Carte Mapbox Clair</translation>
     </message>
     <message>
         <source>Mapbox Dark</source>
@@ -3051,7 +3051,7 @@ Vous souhaitez soumettre vos propres animations ? Partagez-les dans le canal 'cu
     </message>
     <message>
         <source>Mapbox Navigation Day</source>
-        <translation type="unfinished"></translation>
+        <translation type="gpt-4o-generated">Navigation de Mapbox Jour</translation>
     </message>
     <message>
         <source>Mapbox Navigation Night</source>
