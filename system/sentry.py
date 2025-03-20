@@ -105,6 +105,24 @@ def capture_report(discord_user, report, frogpilot_toggles):
     sentry_sdk.capture_message(f"{discord_user} submitted report: {report}", level="fatal")
     sentry_sdk.flush()
 
+def capture_soundd_error(stream, frogpilot_toggles):
+  error_report = (
+    "AssertionError: Audio stream failed to start!\n"
+    "Debugging Information:\n"
+    f"  - Stream Object: {stream}\n"
+    f"  - Device: {stream.device}\n"
+    f"  - Sample Rate: {stream.samplerate} Hz\n"
+    f"  - Channels: {stream.channels}\n"
+    f"  - Block Size: {stream.blocksize}\n"
+    f"  - Data Type: {stream.dtype}"
+  )
+
+  with sentry_sdk.push_scope() as scope:
+    scope.set_context("Sound Error Log", {"content": error_report})
+    scope.set_context("Toggle Values", frogpilot_toggles)
+    sentry_sdk.capture_message("Soundd Error", level="fatal")
+    sentry_sdk.flush()
+
 
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
