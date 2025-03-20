@@ -3,6 +3,8 @@ import numpy as np
 import time
 import wave
 
+import openpilot.system.sentry as sentry
+
 from pathlib import Path
 
 from cereal import car, messaging
@@ -230,7 +232,12 @@ class Soundd:
 
         rk.keep_time()
 
-        assert stream.active
+        try:
+          assert stream.active
+        except AssertionError:
+          sentry.capture_soundd_error(stream, self.frogpilot_toggles)
+          stream = self.get_stream(sd)
+          stream.start()
 
         # Update FrogPilot parameters
         if sm['frogpilotPlan'].togglesUpdated:
