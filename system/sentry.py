@@ -105,22 +105,14 @@ def capture_report(discord_user, report, frogpilot_toggles):
     sentry_sdk.capture_message(f"{discord_user} submitted report: {report}", level="fatal")
     sentry_sdk.flush()
 
-def capture_soundd_error(stream, frogpilot_toggles):
-  error_report = (
-    "AssertionError: Audio stream failed to start!\n"
-    "Debugging Information:\n"
-    f"  - Stream Object: {stream}\n"
-    f"  - Device: {stream.device}\n"
-    f"  - Sample Rate: {stream.samplerate} Hz\n"
-    f"  - Channels: {stream.channels}\n"
-    f"  - Block Size: {stream.blocksize}\n"
-    f"  - Data Type: {stream.dtype}"
-  )
+
+def send_tmux(log_path):
+  with open(log_path, "r", encoding="utf-8") as log_file:
+    log_content = log_file.read()
 
   with sentry_sdk.push_scope() as scope:
-    scope.set_context("Sound Error Log", {"content": error_report})
-    scope.set_context("Toggle Values", frogpilot_toggles)
-    sentry_sdk.capture_message("Soundd Error", level="fatal")
+    scope.set_context("Tmux Log", log_content)
+    sentry_sdk.capture_message("Lock/Unlock operation completed. Log attached.")
     sentry_sdk.flush()
 
 
