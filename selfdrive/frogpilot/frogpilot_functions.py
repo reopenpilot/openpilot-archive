@@ -32,7 +32,7 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
       print("Backup already exists. Aborting...")
       return
 
-    run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], "", fail_message, capture_output=False)
+    run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], "", fail_message, report=False)
 
     tar_file = destination.parent / (destination.name + "_in_progress.tar")
     with tarfile.open(tar_file, "w") as tar:
@@ -64,7 +64,7 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
       print("Backup already exists. Aborting...")
       return
 
-    run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], success_message, fail_message, capture_output=False)
+    run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], success_message, fail_message, report=False)
     in_progress_destination.rename(destination)
 
 def cleanup_backups(directory, limit, compressed=False):
@@ -96,9 +96,6 @@ def backup_toggles(params_cache):
 
   changes_found = False
   for key, _, _ in frogpilot_default_params:
-    if key in EXCLUDED_KEYS:
-      continue
-
     new_value = params.get(key)
     current_value = params_backup.get(key)
 
@@ -107,7 +104,7 @@ def backup_toggles(params_cache):
         params_backup.put(key, new_value)
         params_cache.put(key, new_value)
 
-      changes_found = True
+      changes_found = key not in EXCLUDED_KEYS
 
   backup_path = Path("/data/toggle_backups")
   maximum_backups = 5
