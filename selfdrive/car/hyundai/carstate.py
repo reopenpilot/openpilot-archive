@@ -27,7 +27,7 @@ def calculate_speed_limit(CP, cp, cp_cam):
 
     speed_limit = speed_limit_bus.vl["CLUSTER_SPEED_LIMIT"]["SPEED_LIMIT_1"]
   else:
-    if self.CP.flags & HyundaiFlags.LKAS12:
+    if CP.flags & HyundaiFlags.LKAS12:
       speed_limit = cp_cam.vl["LKAS12"]["CF_Lkas_TsrSpeed_Display_Clu"]
     else:
       speed_limit = 0
