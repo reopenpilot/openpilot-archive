@@ -1126,10 +1126,6 @@
         <translation type="gpt-4o-generated">Anhalteabstand erhöhen</translation>
     </message>
     <message>
-        <source>Quality of Life Improvements</source>
-        <translation type="gpt-4o-generated">Verbesserungen der Lebensqualität</translation>
-    </message>
-    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">Beschleunigung/Verzögerung auf Gänge abbilden</translation>
     </message>
