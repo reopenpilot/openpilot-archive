@@ -1182,6 +1182,10 @@
         <translation type="gpt-4o-generated">Tasa Máxima de Aceleración</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">Mejoras en la Calidad de Vida</translation>
+    </message>
+    <message>
         <source>Force Keep openpilot in the Standstill State</source>
         <translation type="gpt-4o-generated">Forzar mantener openpilot en el estado de parada</translation>
     </message>

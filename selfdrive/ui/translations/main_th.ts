@@ -1126,6 +1126,10 @@
         <translation type="gpt-4o-generated">เพิ่มระยะหยุด</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">การปรับปรุงคุณภาพชีวิต</translation>
+    </message>
+    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">แมปการเร่ง/ชะลอตัวกับเกียร์</translation>
     </message>

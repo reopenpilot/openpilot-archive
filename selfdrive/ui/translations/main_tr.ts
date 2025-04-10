@@ -1126,6 +1126,10 @@
         <translation type="gpt-4o-generated">Durmuş Mesafeyi Artır</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">Yaşam Kalitesi İyileştirmeleri</translation>
+    </message>
+    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">Harita Hızlanma/Yavaşlama için Vites Ata</translation>
     </message>

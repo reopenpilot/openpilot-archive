@@ -1126,6 +1126,10 @@
         <translation type="gpt-4o-generated">زيادة المسافة المتوقفة</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">تحسينات جودة الحياة</translation>
+    </message>
+    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">تسارع/تراجع الخريطة إلى التروس</translation>
     </message>

@@ -1126,6 +1126,10 @@
         <translation type="gpt-4o-generated">정지 거리 증가</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">삶의 질 개선사항</translation>
+    </message>
+    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">기어에 가속/감속 매핑</translation>
     </message>

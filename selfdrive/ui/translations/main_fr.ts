@@ -1126,6 +1126,10 @@
         <translation type="gpt-4o-generated">Augmenter la distance d'arrêt</translation>
     </message>
     <message>
+        <source>Quality of Life Improvements</source>
+        <translation type="gpt-4o-generated">Améliorations de la qualité de vie</translation>
+    </message>
+    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">Mapper l'accélération/décélération aux vitesses</translation>
     </message>
