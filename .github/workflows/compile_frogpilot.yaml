@@ -172,9 +172,7 @@ jobs:
           rm -f Jenkinsfile
 
           rm -f panda/board/obj/.placeholder
-          rm -f panda/board/obj/bootstub.panda.bin
           rm -f panda/board/obj/bootstub.panda.elf
-          rm -f panda/board/obj/bootstub.panda_h7.bin
           rm -f panda/board/obj/bootstub.panda_h7.elf
           rm -f panda/board/obj/panda.bin
           rm -f panda/board/obj/panda.elf
@@ -237,6 +235,18 @@ jobs:
 
           if [ "${{ github.event.inputs.not_vetted }}" = "true" ]; then
             touch not_vetted
+          fi
+
+      - name: Retrieve update_date from FrogPilot-Staging
+        run: |
+          if [ "${{ github.event.inputs.publish_staging }}" = "true" ]; then
+            git fetch origin FrogPilot-Staging
+
+            if git ls-tree --name-only origin/FrogPilot-Staging .github/update_date | grep -q ".github/update_date"; then
+              git show origin/FrogPilot-Staging:.github/update_date > .github/update_date
+            else
+              echo "No .github/update_date found in FrogPilot-Staging branch."
+            fi
           fi
 
       - name: Commit Build
