@@ -1126,10 +1126,6 @@
         <translation type="gpt-4o-generated">增加停止距離</translation>
     </message>
     <message>
-        <source>Quality of Life Improvements</source>
-        <translation type="gpt-4o-generated">生活品質改進</translation>
-    </message>
-    <message>
         <source>Map Accel/Decel to Gears</source>
         <translation type="gpt-4o-generated">將加速/減速映射到齒輪</translation>
     </message>
