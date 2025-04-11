@@ -100,15 +100,15 @@
     </message>
     <message>
         <source>Only Onroad</source>
-        <translation type="gpt-4o-generated">僅在路上</translation>
+        <translation type="gpt-4o-generated">僅限駕駛中使用</translation>
     </message>
     <message>
         <source>Until Reboot</source>
-        <translation type="gpt-4o-generated">直到重新啟動</translation>
+        <translation type="gpt-4o-generated">直到重啟</translation>
     </message>
     <message>
         <source>Allow tethering with your data SIM and keep it active either while driving or continuously.</source>
-        <translation type="gpt-4o-generated">允許使用您的數據SIM進行網絡共享，並在駕駛時或持續啟用。</translation>
+        <translation type="gpt-4o-generated">允許使用您的數據 SIM 來分享網路，並在駕駛時或持續保持啟用。</translation>
     </message>
 </context>
 <context>
@@ -139,7 +139,7 @@
     </message>
     <message>
         <source>m/s²</source>
-        <translation type="gpt-4o-generated">公尺每平方秒</translation>
+        <translation type="gpt-4o-generated">米/秒²</translation>
     </message>
     <message>
         <source>m/s</source>
@@ -403,7 +403,7 @@
     <name>FrogPilotConfirmationDialog</name>
     <message>
         <source>Reboot Later</source>
-        <translation type="gpt-4o-generated">稍後重新啟動</translation>
+        <translation type="gpt-4o-generated">稍後重啟</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -446,7 +446,7 @@
     </message>
     <message>
         <source>Screen Recordings</source>
-        <translation type="gpt-4o-generated">螢幕錄製</translation>
+        <translation type="gpt-4o-generated">螢幕錄影</translation>
     </message>
     <message>
         <source>Manage your screen recordings.</source>
@@ -506,7 +506,7 @@
     </message>
     <message>
         <source>Compressing...</source>
-        <translation type="gpt-4o-generated">壓縮中...</translation>
+        <translation type="gpt-4o-generated">正在壓縮...</translation>
     </message>
     <message>
         <source>Select a backup to delete</source>
@@ -530,15 +530,15 @@
     </message>
     <message>
         <source>Restoring...</source>
-        <translation type="gpt-4o-generated">正在還原...</translation>
+        <translation type="gpt-4o-generated">正在恢復...</translation>
     </message>
     <message>
         <source>Extracting...</source>
-        <translation type="gpt-4o-generated">提取中...</translation>
+        <translation type="gpt-4o-generated">正在提取...</translation>
     </message>
     <message>
         <source>Restored!</source>
-        <translation type="gpt-4o-generated">已還原！</translation>
+        <translation type="gpt-4o-generated">已恢復！</translation>
     </message>
     <message>
         <source>Rebooting...</source>
@@ -558,7 +558,7 @@
     </message>
     <message>
         <source>DELETE ALL</source>
-        <translation type="gpt-4o-generated">刪除所有</translation>
+        <translation type="gpt-4o-generated">刪除全部</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all screen recordings?</source>
@@ -566,15 +566,15 @@
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="gpt-4o-generated">全部刪除</translation>
+        <translation type="gpt-4o-generated">刪除全部</translation>
     </message>
     <message>
         <source>A recording with this name already exists. Please choose a different name.</source>
-        <translation type="gpt-4o-generated">已經存在使用此名稱的錄影。請選擇其他名稱。</translation>
+        <translation type="gpt-4o-generated">具有該名稱的錄音已存在。請選擇其他名稱。</translation>
     </message>
     <message>
         <source>A backup with this name already exists. Please choose a different name.</source>
-        <translation type="gpt-4o-generated">已存在此名稱的備份。請選擇其他名稱。</translation>
+        <translation type="gpt-4o-generated">已存在具有此名稱的備份。請選擇不同的名稱。</translation>
     </message>
     <message>
         <source>Backing up...</source>
@@ -582,7 +582,7 @@
     </message>
     <message>
         <source>Backup created!</source>
-        <translation type="gpt-4o-generated">備份已創建！</translation>
+        <translation type="gpt-4o-generated">備份已建立！</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all FrogPilot backups?</source>
@@ -598,15 +598,15 @@
     </message>
     <message>
         <source>Deletes all stored driving footage and data from your device. Ideal for maintaining privacy or for simply freeing up space.</source>
-        <translation type="gpt-4o-generated">刪除設備中所有儲存的駕駛影片和數據。適合維護隱私或僅是釋放空間。</translation>
+        <translation type="gpt-4o-generated">從您的設備中刪除所有存儲的駕駛影像和數據。適合維護隱私或僅僅用於釋放空間。</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all of your driving footage and data?</source>
-        <translation type="gpt-4o-generated">您確定要刪除您所有的行車影像和數據嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要刪除所有駕駛影像和數據嗎？</translation>
     </message>
     <message>
         <source>Deletes all stored error logs from your device. Ideal for freeing up space.</source>
-        <translation type="gpt-4o-generated">刪除裝置中所有儲存的錯誤日誌。這是釋放空間的理想方法。</translation>
+        <translation type="gpt-4o-generated">從您的裝置中刪除所有儲存的錯誤日誌。非常適合釋放空間。</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all of the error logs?</source>
@@ -614,7 +614,7 @@
     </message>
     <message>
         <source>Do you want to compress this backup? This will take a few minutes, but the final result will be smaller and run in the background.</source>
-        <translation type="gpt-4o-generated">您想要壓縮此備份嗎？這將需要幾分鐘，但最終結果將更小並在背景中運行。</translation>
+        <translation type="gpt-4o-generated">您要壓縮此備份嗎？這需要幾分鐘，但最終結果會較小並在背景中運行。</translation>
     </message>
     <message>
         <source>Name your toggle backup</source>
@@ -622,11 +622,11 @@
     </message>
     <message>
         <source>A toggle backup with this name already exists. Please choose a different name.</source>
-        <translation type="gpt-4o-generated">具有此名稱的切換備份已經存在。請選擇一個不同的名稱。</translation>
+        <translation type="gpt-4o-generated">已存在具有此名稱的切換備份。請選擇其他名稱。</translation>
     </message>
     <message>
         <source>Select a toggle backup to delete</source>
-        <translation type="gpt-4o-generated">選擇要刪除的備份</translation>
+        <translation type="gpt-4o-generated">選擇要刪除的切換備份</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this toggle backup?</source>
@@ -634,14 +634,14 @@
     </message>
     <message>
         <source>Select a toggle restore point</source>
-        <translation type="gpt-4o-generated">選擇切換恢復點</translation>
+        <translation type="gpt-4o-generated">選擇一個切換還原點</translation>
     </message>
 </context>
 <context>
     <name>FrogPilotDevicePanel</name>
     <message>
         <source>Device Settings</source>
-        <translation type="gpt-4o-generated">設備設定</translation>
+        <translation type="gpt-4o-generated">裝置設定</translation>
     </message>
     <message>
         <source>Device Shutdown Timer</source>
@@ -649,7 +649,7 @@
     </message>
     <message>
         <source>Disable Internet Requirement</source>
-        <translation type="gpt-4o-generated">停用網際網路要求</translation>
+        <translation type="gpt-4o-generated">禁用網際網路要求</translation>
     </message>
     <message>
         <source>Increase Thermal Safety Limit</source>
@@ -661,19 +661,19 @@
     </message>
     <message>
         <source>Screen Brightness (Offroad)</source>
-        <translation type="gpt-4o-generated">螢幕亮度（離線模式）</translation>
+        <translation type="gpt-4o-generated">螢幕亮度（非駕駛模式）</translation>
     </message>
     <message>
         <source>Screen Brightness (Onroad)</source>
-        <translation type="gpt-4o-generated">螢幕亮度（行車中）</translation>
+        <translation type="gpt-4o-generated">螢幕亮度（行駛中）</translation>
     </message>
     <message>
         <source>Screen Recorder</source>
-        <translation type="gpt-4o-generated">螢幕錄製器</translation>
+        <translation type="gpt-4o-generated">螢幕錄影機</translation>
     </message>
     <message>
         <source>Screen Timeout (Offroad)</source>
-        <translation type="gpt-4o-generated">螢幕超時（離線）</translation>
+        <translation type="gpt-4o-generated">螢幕超時（未行駛）</translation>
     </message>
     <message>
         <source>Screen Timeout (Onroad)</source>
@@ -717,7 +717,7 @@
     </message>
     <message>
         <source>How long the device stays on after you go offroad.</source>
-        <translation type="gpt-4o-generated">當您離開道路後，設備保持開啟的時間長度。</translation>
+        <translation type="gpt-4o-generated">在您離開公路之後，設備保持開啟的時間。</translation>
     </message>
     <message>
         <source>WARNING: This will prevent your drives from being recorded and all data will be unobtainable!</source>
@@ -725,11 +725,11 @@
     </message>
     <message>
         <source>Only Disable While Onroad</source>
-        <translation type="gpt-4o-generated">僅在道路上時禁用</translation>
+        <translation type="gpt-4o-generated">僅在駕駛時禁用</translation>
     </message>
     <message>
         <source>Allow the device to work indefinitely without an internet connection.</source>
-        <translation type="gpt-4o-generated">允許設備在無網路連線的情況下無限期工作。</translation>
+        <translation type="gpt-4o-generated">允許設備在沒有網際網路連線的情況下無限期運作。</translation>
     </message>
     <message>
         <source>Disable all data logging to improve privacy.</source>
@@ -749,7 +749,7 @@
     </message>
     <message>
         <source>Automatically shut down the device when the vehicle's battery voltage reaches the set threshold, preventing excessive drain and protecting the battery.</source>
-        <translation type="gpt-4o-generated">當車輛電池電壓達到設定的閾值時，自動關閉設備，防止過度耗電並保護電池。</translation>
+        <translation type="gpt-4o-generated">當車輛的電池電壓達到設定閾值時，自動關閉設備，以防止過度耗電並保護電池。</translation>
     </message>
     <message>
         <source>Disable Data Logging</source>
@@ -757,7 +757,7 @@
     </message>
     <message>
         <source>Disable Data Uploads</source>
-        <translation type="gpt-4o-generated">停用數據上傳</translation>
+        <translation type="gpt-4o-generated">停用資料上傳</translation>
     </message>
     <message>
         <source>WARNING: This will prevent your drives from appearing on &lt;b&gt;comma connect&lt;/b&gt;, which may impact debugging and support!</source>
@@ -777,7 +777,7 @@
     </message>
     <message>
         <source>Settings that control screen behavior.</source>
-        <translation type="gpt-4o-generated">控制螢幕行為的設置。</translation>
+        <translation type="gpt-4o-generated">控制螢幕行為的設定。</translation>
     </message>
     <message>
         <source>The screen brightness when not driving.</source>
@@ -789,7 +789,7 @@
     </message>
     <message>
         <source>Enable a button in the driving screen to record the screen.</source>
-        <translation type="gpt-4o-generated">在駕駛屏幕上啟用按鈕以錄製屏幕。</translation>
+        <translation type="gpt-4o-generated">在駕駛畫面啟用按鈕來錄製螢幕。</translation>
     </message>
     <message>
         <source>How long it takes for the screen to turn off when not driving.</source>
@@ -797,18 +797,18 @@
     </message>
     <message>
         <source>How long it takes for the screen to turn off while driving.</source>
-        <translation type="gpt-4o-generated">駕駛時螢幕關閉所需的時間。</translation>
+        <translation type="gpt-4o-generated">駕駛時螢幕關閉所需時間。</translation>
     </message>
 </context>
 <context>
     <name>FrogPilotLateralPanel</name>
     <message>
         <source>Always on Lateral</source>
-        <translation type="gpt-4o-generated">始終開啟橫向控制</translation>
+        <translation type="gpt-4o-generated">始終啟用橫向控制</translation>
     </message>
     <message>
         <source>Pause on Brake Below</source>
-        <translation type="gpt-4o-generated">低於時暫停剎車</translation>
+        <translation type="gpt-4o-generated">低於此速度時按下煞車暫停</translation>
     </message>
     <message>
         <source>Lane Change Delay</source>
@@ -820,7 +820,7 @@
     </message>
     <message>
         <source>Neural Network Feedforward (NNFF)</source>
-        <translation type="gpt-4o-generated">神經網絡前饋 (NNFF)</translation>
+        <translation type="gpt-4o-generated">神經網路前饋 (NNFF)</translation>
     </message>
     <message>
         <source>Smooth Curve Handling</source>
@@ -828,11 +828,11 @@
     </message>
     <message>
         <source>Pause Steering Below</source>
-        <translation type="gpt-4o-generated">暫停轉向低於</translation>
+        <translation type="gpt-4o-generated">在以下情況暫停轉向</translation>
     </message>
     <message>
         <source>mph</source>
-        <translation type="gpt-4o-generated">英哩/小時</translation>
+        <translation type="gpt-4o-generated">英里每小時</translation>
     </message>
     <message>
         <source> feet</source>
@@ -844,11 +844,11 @@
     </message>
     <message>
         <source>Advanced Lateral Tuning</source>
-        <translation type="gpt-4o-generated">高級橫向調校</translation>
+        <translation type="gpt-4o-generated">進階橫向調校</translation>
     </message>
     <message>
         <source>Friction (Default: %1)</source>
-        <translation type="gpt-4o-generated">摩擦力 (預設值: %1)</translation>
+        <translation type="gpt-4o-generated">摩擦力 (預設值：%1)</translation>
     </message>
     <message>
         <source>Friction</source>
@@ -888,7 +888,7 @@
     </message>
     <message>
         <source>Automatic Lane Changes</source>
-        <translation type="gpt-4o-generated">自動車道變更</translation>
+        <translation type="gpt-4o-generated">自動變道</translation>
     </message>
     <message>
         <source>Force Turn Desires Below Lane Change Speed</source>
@@ -896,7 +896,7 @@
     </message>
     <message>
         <source>Instant</source>
-        <translation type="gpt-4o-generated">立即</translation>
+        <translation type="gpt-4o-generated">即時</translation>
     </message>
     <message>
         <source>Advanced settings for fine-tuning openpilot's lateral controls.</source>
@@ -912,11 +912,11 @@
     </message>
     <message>
         <source>Enable With Cruise Control</source>
-        <translation type="gpt-4o-generated">啟用巡航控制</translation>
+        <translation type="gpt-4o-generated">啟用定速巡航控制</translation>
     </message>
     <message>
         <source>Minimum Lane Change Speed</source>
-        <translation type="gpt-4o-generated">最小變道速度</translation>
+        <translation type="gpt-4o-generated">最低變道速度</translation>
     </message>
     <message>
         <source>Minimum speed required for openpilot to perform a lane change.</source>
@@ -928,7 +928,7 @@
     </message>
     <message>
         <source>Force turn desires below the minimum lane change speed to improve turning accuracy.</source>
-        <translation type="gpt-4o-generated">在低於最低變道速度時強制轉彎需求以提高轉彎準確性。</translation>
+        <translation type="gpt-4o-generated">在低於最低變道速度時強制轉向願望以提高轉向精度。</translation>
     </message>
     <message>
         <source>Off</source>
@@ -940,7 +940,7 @@
     </message>
     <message>
         <source>Lane Changes</source>
-        <translation type="gpt-4o-generated">車道變更</translation>
+        <translation type="gpt-4o-generated">變換車道</translation>
     </message>
     <message>
         <source>Adjust steering resistance. Higher values feel more stable but heavier; lower values feel lighter but more sensitive.</source>
@@ -948,15 +948,15 @@
     </message>
     <message>
         <source>Limit lane changes to one per turn signal activation.</source>
-        <translation type="gpt-4o-generated">將變道次數限制為每次轉向燈啟動一次。</translation>
+        <translation type="gpt-4o-generated">限制車道變更為每次轉向燈啟動僅一次。</translation>
     </message>
     <message>
         <source>How aggressively openpilot corrects steering. Higher values respond faster but may feel jerky; lower values are smoother but slower.</source>
-        <translation type="gpt-4o-generated">openpilot 修正方向盤的積極程度。較高的數值反應更快，但可能感覺不穩；較低的數值則較平順但較慢。</translation>
+        <translation type="gpt-4o-generated">openpilot 矯正轉向的積極程度。較高的值反應更快但可能會感覺不穩；較低的值則更平穩但反應較慢。</translation>
     </message>
     <message>
         <source>How quickly openpilot makes lateral adjustments. Higher values allow sharper turns; lower values provide smoother steering.</source>
-        <translation type="gpt-4o-generated">openpilot調整橫向動作的速度。較高的值允許更急的轉彎；較低的值提供更平穩的轉向。</translation>
+        <translation type="gpt-4o-generated">openpilot進行橫向調整的速度。較高的值允許更急的轉彎；較低的值則提供更平穩的轉向。</translation>
     </message>
     <message>
         <source>How much the steering wheel turns in response to commands. Higher values feel more stable; lower values feel quicker.</source>
@@ -968,7 +968,7 @@
     </message>
     <message>
         <source>Allow &lt;b&gt;Always on Lateral&lt;/b&gt; to be active whenever &lt;b&gt;Cruise Control&lt;/b&gt; is active, bypassing the need to enable openpilot first.</source>
-        <translation type="gpt-4o-generated">允許&lt;b&gt;始終啟用側向控制&lt;/b&gt;在&lt;b&gt;定速巡航&lt;/b&gt;啟用時自動生效，無需先啟用 openpilot。</translation>
+        <translation type="gpt-4o-generated">允許&lt;b&gt;始終啟用橫向控制&lt;/b&gt;在&lt;b&gt;巡航控制&lt;/b&gt;啟用時始終處於活動狀態，無需先啟用 openpilot。</translation>
     </message>
     <message>
         <source>Enable With LKAS Button</source>
@@ -980,19 +980,19 @@
     </message>
     <message>
         <source>Temporarily pause &lt;b&gt;Always on Lateral&lt;/b&gt; below the set speed when braking.</source>
-        <translation type="gpt-4o-generated">在剎車時，暫時暫停&lt;b&gt;始終啟用橫向控制&lt;/b&gt;於設定速度以下。</translation>
+        <translation type="gpt-4o-generated">當剎車時，在設定速度以下暫時暫停&lt;b&gt;持續橫向控制&lt;/b&gt;。</translation>
     </message>
     <message>
         <source>Customize how openpilot performs lane changes.</source>
-        <translation type="gpt-4o-generated">自訂 openpilot 執行換道的方式。</translation>
+        <translation type="gpt-4o-generated">自訂 openpilot 執行變換車道的方式。</translation>
     </message>
     <message>
         <source>Change lanes automatically when the turn signal is on. No steering input needed!</source>
-        <translation type="gpt-4o-generated">當打開轉向燈時自動變換車道。無需方向盤輸入！</translation>
+        <translation type="gpt-4o-generated">當打開轉向燈時自動變換車道。無需進行方向盤操作！</translation>
     </message>
     <message>
         <source>Delay automatic lane changes by the set amount of time.</source>
-        <translation type="gpt-4o-generated">將自動變道延遲設定的時間。</translation>
+        <translation type="gpt-4o-generated">延遲自動變道的設定時間。</translation>
     </message>
     <message>
         <source>Minimum Lane Width</source>
@@ -1000,7 +1000,7 @@
     </message>
     <message>
         <source>openpilot won't initiate a lane change into a lane narrower than this width.</source>
-        <translation type="gpt-4o-generated">openpilot 不會在比此寬度窄的車道中啟動變道。</translation>
+        <translation type="gpt-4o-generated">openpilot 不會進行車道變換到比此寬度更窄的車道。</translation>
     </message>
     <message>
         <source>One Lane Change Per Signal</source>
@@ -1008,7 +1008,7 @@
     </message>
     <message>
         <source>Use &lt;b&gt;Twilsonco’s&lt;/b&gt; &lt;b&gt;Neural Network FeedForward&lt;/b&gt; model for smoother, model-based steering trained on your vehicle's data.</source>
-        <translation type="gpt-4o-generated">使用 &lt;b&gt;Twilsonco&lt;/b&gt; 的 &lt;b&gt;Neural Network FeedForward&lt;/b&gt; 模型，以您車輛的數據訓練的模型進行更平滑的方向盤控制。</translation>
+        <translation type="gpt-4o-generated">使用 &lt;b&gt;Twilsonco 的&lt;/b&gt; &lt;b&gt;Neural Network FeedForward&lt;/b&gt; 模型，根據您車輛的數據訓練，以獲得更平穩的基於模型的轉向。</translation>
     </message>
     <message>
         <source>Use &lt;b&gt;Twilsonco’s&lt;/b&gt; torque-based adjustments to smooth out steering during curves.</source>
@@ -1024,15 +1024,15 @@
     </message>
     <message>
         <source>Temporarily pause steering control below the set speed.</source>
-        <translation type="gpt-4o-generated">暫時在設定速度以下暫停方向盤控制。</translation>
+        <translation type="gpt-4o-generated">暫時在設定速度以下暫停轉向控制。</translation>
     </message>
     <message>
         <source> second</source>
-        <translation type="gpt-4o-generated">第二個</translation>
+        <translation type="gpt-4o-generated">秒</translation>
     </message>
     <message>
         <source> seconds</source>
-        <translation type="gpt-4o-generated">秒鐘</translation>
+        <translation type="gpt-4o-generated">秒</translation>
     </message>
     <message>
         <source>Are you sure you want to completely reset your &lt;b&gt;Friction&lt;/b&gt; values?</source>
@@ -1040,7 +1040,7 @@
     </message>
     <message>
         <source>Are you sure you want to completely reset your &lt;b&gt;Kp Factor&lt;/b&gt; values?</source>
-        <translation type="gpt-4o-generated">您確定要完全重置您的 &lt;b&gt;Kp 因素&lt;/b&gt; 值嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要完全重置您的&lt;b&gt;Kp 因子&lt;/b&gt;值嗎？</translation>
     </message>
     <message>
         <source>Are you sure you want to completely reset your &lt;b&gt;Lateral Accel&lt;/b&gt; values?</source>
@@ -1063,7 +1063,7 @@
     <name>FrogPilotLongitudinalPanel</name>
     <message>
         <source>Conditional Experimental Mode</source>
-        <translation type="gpt-4o-generated">條件性實驗模式</translation>
+        <translation type="gpt-4o-generated">條件實驗模式</translation>
     </message>
     <message>
         <source>Below</source>
@@ -1091,7 +1091,7 @@
     </message>
     <message>
         <source>Curve Speed Control</source>
-        <translation type="gpt-4o-generated">彎道速度控制</translation>
+        <translation type="gpt-4o-generated">曲線速度控制</translation>
     </message>
     <message>
         <source>Curve Detection Method</source>
@@ -1103,15 +1103,15 @@
     </message>
     <message>
         <source>Longitudinal Tuning</source>
-        <translation type="gpt-4o-generated">縱向調校</translation>
+        <translation type="gpt-4o-generated">縱向調整</translation>
     </message>
     <message>
         <source>Settings that control how openpilot manages speed and acceleration.</source>
-        <translation type="gpt-4o-generated">控制 openpilot 如何管理速度和加速度的設定。</translation>
+        <translation type="gpt-4o-generated">控制 openpilot 如何管理速度和加速度的设置。</translation>
     </message>
     <message>
         <source>Acceleration Profile</source>
-        <translation type="gpt-4o-generated">加速配置文件</translation>
+        <translation type="gpt-4o-generated">加速設定檔</translation>
     </message>
     <message>
         <source>Deceleration Profile</source>
@@ -1139,7 +1139,7 @@
     </message>
     <message>
         <source>Confirm New Speed Limits</source>
-        <translation type="gpt-4o-generated">確認新速度限制</translation>
+        <translation type="gpt-4o-generated">確認新的速度限制</translation>
     </message>
     <message>
         <source>Speed Limit Offsets</source>
@@ -1147,15 +1147,15 @@
     </message>
     <message>
         <source>Show Speed Limit Offset</source>
-        <translation type="gpt-4o-generated">顯示速度限制偏移</translation>
+        <translation type="gpt-4o-generated">顯示限速偏移</translation>
     </message>
     <message>
         <source>mph</source>
-        <translation type="gpt-4o-generated">英里每小時</translation>
+        <translation type="gpt-4o-generated">英里/小時</translation>
     </message>
     <message>
         <source>With Lead</source>
-        <translation type="gpt-4o-generated">有前車</translation>
+        <translation type="gpt-4o-generated">有引導車輛</translation>
     </message>
     <message>
         <source>Slower Lead</source>
@@ -1163,7 +1163,7 @@
     </message>
     <message>
         <source>Stopped Lead</source>
-        <translation type="gpt-4o-generated">停止領頭車輛</translation>
+        <translation type="gpt-4o-generated">停止的前車</translation>
     </message>
     <message>
         <source>Intersections</source>
@@ -1235,7 +1235,7 @@
     </message>
     <message>
         <source>SELECT</source>
-        <translation type="gpt-4o-generated">選取</translation>
+        <translation type="gpt-4o-generated">選擇</translation>
     </message>
     <message>
         <source>Dashboard</source>
@@ -1255,11 +1255,11 @@
     </message>
     <message>
         <source>Select your primary priority</source>
-        <translation type="gpt-4o-generated">選擇您的主要優先事項</translation>
+        <translation type="gpt-4o-generated">選擇您的首要優先事項</translation>
     </message>
     <message>
         <source>Select your secondary priority</source>
-        <translation type="gpt-4o-generated">選擇您的次要優先項</translation>
+        <translation type="gpt-4o-generated">選擇您的次要優先級</translation>
     </message>
     <message>
         <source>Select your tertiary priority</source>
@@ -1271,7 +1271,7 @@
     </message>
     <message>
         <source> seconds</source>
-        <translation type="gpt-4o-generated">秒</translation>
+        <translation type="gpt-4o-generated">秒鐘</translation>
     </message>
     <message>
         <source> meters</source>
@@ -1279,7 +1279,7 @@
     </message>
     <message>
         <source>Curve Detection Sensitivity</source>
-        <translation type="gpt-4o-generated">曲線檢測靈敏度</translation>
+        <translation type="gpt-4o-generated">曲線偵測靈敏度</translation>
     </message>
     <message>
         <source>Customize Driving Personalities</source>
@@ -1311,7 +1311,7 @@
     </message>
     <message>
         <source>Aggressive Personality</source>
-        <translation type="gpt-4o-generated">激進個性</translation>
+        <translation type="gpt-4o-generated">激進性格</translation>
     </message>
     <message>
         <source>Standard Personality</source>
@@ -1323,7 +1323,7 @@
     </message>
     <message>
         <source>Human-Like Approach Behind Leads</source>
-        <translation type="gpt-4o-generated">類人接近後方車輛</translation>
+        <translation type="gpt-4o-generated">類人化接近領先車輛</translation>
     </message>
     <message>
         <source>Lead Detection Confidence</source>
@@ -1331,15 +1331,15 @@
     </message>
     <message>
         <source>Maximum Acceleration Rate</source>
-        <translation type="gpt-4o-generated">最大加速率</translation>
+        <translation type="gpt-4o-generated">最大加速度率</translation>
     </message>
     <message>
         <source>Force Keep openpilot in the Standstill State</source>
-        <translation type="gpt-4o-generated">強制保持 openpilot 在停車狀態</translation>
+        <translation type="gpt-4o-generated">強制保持 openpilot 在靜止狀態</translation>
     </message>
     <message>
         <source>Set Speed Offset</source>
-        <translation type="gpt-4o-generated">設置速度偏移量</translation>
+        <translation type="gpt-4o-generated">設定速度偏移</translation>
     </message>
     <message>
         <source>Show Speed Limit Sources</source>
@@ -1347,7 +1347,7 @@
     </message>
     <message>
         <source>RESET</source>
-        <translation type="gpt-4o-generated">重設</translation>
+        <translation type="gpt-4o-generated">重置</translation>
     </message>
     <message>
         <source>Set With Gas Pedal</source>
@@ -1383,11 +1383,11 @@
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when driving below this speed.</source>
-        <translation type="gpt-4o-generated">當速度低於此速度時，切換到&lt;b&gt;實驗模式&lt;/b&gt;。</translation>
+        <translation type="gpt-4o-generated">當車速低於此速度時，切換到&lt;b&gt;實驗模式&lt;/b&gt;。</translation>
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when a curve is detected ahead. Useful for letting the model choose the appropriate speed for the curve.</source>
-        <translation type="gpt-4o-generated">當前方偵測到曲線時切換至&lt;b&gt;實驗模式&lt;/b&gt;。 這對於讓模型選擇適合曲線的速度很有用。</translation>
+        <translation type="gpt-4o-generated">當偵測到前方有彎道時，切換到&lt;b&gt;實驗模式&lt;/b&gt;。這有助於讓模型為彎道選擇合適的速度。</translation>
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when a slower or stopped vehicle is detected ahead. Can improve braking smoothness and reliability on some vehicles.</source>
@@ -1395,7 +1395,7 @@
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when approaching intersections or turns on the active route while using &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;. Useful for letting the model choose the appropriate speed for upcoming navigation maneuvers.</source>
-        <translation type="gpt-4o-generated">在使用&lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;的同時，當接近交叉路口或轉彎處時，切換到&lt;b&gt;實驗模式&lt;/b&gt;。這對於讓模型選擇即將到來的導航操作的合適速度很有用。</translation>
+        <translation type="gpt-4o-generated">在使用&lt;b&gt;openpilot導航（NOO）&lt;/b&gt;時，當接近路口或轉彎處時切換至&lt;b&gt;實驗模式&lt;/b&gt;。這對於讓模型選擇即將到來的導航操作的適當速度很有用。</translation>
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when openpilot wants to stop within the set amount of time. This is typically triggered by the driving model "detecting" a red light or stop sign.</source>
@@ -1403,7 +1403,7 @@
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when using a turn signal below the set speed. Useful for letting the model choose the appropriate speed for upcoming left or right turns.</source>
-        <translation type="gpt-4o-generated">當使用轉向燈且低於設定速度時，切換至&lt;b&gt;實驗模式&lt;/b&gt;。這對於讓模型選擇即將到來的左轉或右轉的適當速度很有用。</translation>
+        <translation type="gpt-4o-generated">在設定速度以下使用轉向燈時切換到&lt;b&gt;實驗模式&lt;/b&gt;。有助於讓模型選擇即將到來的左轉或右轉的適當速度。</translation>
     </message>
     <message>
         <source>Show the &lt;b&gt;Conditional Experimental Mode&lt;/b&gt; status on the driving screen.</source>
@@ -1415,7 +1415,7 @@
     </message>
     <message>
         <source>How curves are detected. &lt;b&gt;Map-Based&lt;/b&gt; uses downloaded map data to identify curves and determine the appropriate speed in which to handle them at, while &lt;b&gt;Vision&lt;/b&gt; relies solely on the driving model.</source>
-        <translation type="gpt-4o-generated">如何偵測彎道。&lt;b&gt;地圖基礎&lt;/b&gt;使用下載的地圖數據來識別彎道並確定適當的處理速度，而&lt;b&gt;視覺&lt;/b&gt;則完全依賴於駕駛模型。</translation>
+        <translation type="gpt-4o-generated">如何檢測彎道。&lt;b&gt;基於地圖&lt;/b&gt;的方式使用下載的地圖數據來識別彎道並確定適當的速度以應對，而&lt;b&gt;視覺&lt;/b&gt;則完全依賴於駕駛模型。</translation>
     </message>
     <message>
         <source>Only trigger &lt;b&gt;Curve Speed Control&lt;/b&gt; if a curve is detected with the model while using the &lt;b&gt;Map-Based&lt;/b&gt; method. Useful to help prevent false positives.</source>
@@ -1435,11 +1435,11 @@
     </message>
     <message>
         <source>Show &lt;b&gt;Curve Speed Control&lt;/b&gt;'s desired speed on the driving screen.</source>
-        <translation type="gpt-4o-generated">在駕駛屏幕上顯示&lt;b&gt;彎道速度控制&lt;/b&gt;的期望速度。</translation>
+        <translation type="gpt-4o-generated">在駕駛屏幕上顯示&lt;b&gt;曲線速度控制&lt;/b&gt;的預期速度。</translation>
     </message>
     <message>
         <source>Customize the personality profiles to your driving style.</source>
-        <translation type="gpt-4o-generated">自訂個性設定以符合您的駕駛風格。</translation>
+        <translation type="gpt-4o-generated">根據您的駕駛風格自定義個性化設定檔。</translation>
     </message>
     <message>
         <source>Customize the &lt;b&gt;Traffic&lt;/b&gt; personality profile. Tailored for navigating through traffic.</source>
@@ -1451,23 +1451,23 @@
     </message>
     <message>
         <source>How sensitive openpilot is to changes in acceleration while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">在&lt;b&gt;交通模式&lt;/b&gt;下，openpilot 對加速度變化的敏感度。較高的值會導致更平滑、更逐步的加速，而較低的值則允許更快速、更靈敏的變化，這可能感覺突然。</translation>
+        <translation type="gpt-4o-generated">在&lt;b&gt;交通模式&lt;/b&gt;下，openpilot對加速度變化的敏感度。較高的值會導致更平滑、更逐步的加速，而較低的值則允許更快速、更靈敏的變化，這可能感覺突然。</translation>
     </message>
     <message>
         <source>How sensitive openpilot is to changes in deceleration while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot 在&lt;b&gt;交通模式&lt;/b&gt;下對減速變化的敏感度。較高的值會帶來更平穩、逐漸的減速，而較低的值則允許更快速、更靈敏的變化，但可能感覺突然。</translation>
+        <translation type="gpt-4o-generated">在&lt;b&gt;交通模式&lt;/b&gt;下，openpilot 對減速變化的敏感程度。較高的值會導致更平滑、更漸進的減速，而較低的值則允許更快速、更靈敏的變化，但可能感覺突然。</translation>
     </message>
     <message>
         <source>How cautious openpilot is around other vehicles or obstacles while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
-        <translation type="gpt-4o-generated">openpilot 在&lt;b&gt;交通模式&lt;/b&gt;下對其他車輛或障礙物的謹慎程度。較高的數值會增加跟車距離並優先考慮安全，從而導致更謹慎的駕駛，而較低的數值則允許更接近的跟車，但可能會降低反應時間。</translation>
+        <translation type="gpt-4o-generated">openpilot 在&lt;b&gt;交通模式&lt;/b&gt;中對其他車輛或障礙物的謹慎程度。較高的數值會增加跟車距離並優先考慮安全，從而導致更加謹慎的駕駛，而較低的數值則允許更近的跟車距離，但可能會減少反應時間。</translation>
     </message>
     <message>
         <source>Speed Increase Response</source>
-        <translation type="gpt-4o-generated">速度增加響應</translation>
+        <translation type="gpt-4o-generated">加速響應</translation>
     </message>
     <message>
         <source>How quickly openpilot increases speed while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot 在&lt;b&gt;交通模式&lt;/b&gt;下加速的速度。較高的數值可確保更平滑、更逐步的速度變化，而較低的數值則允許更快速、更靈敏的變化，可能會感到突然。</translation>
+        <translation type="gpt-4o-generated">在&lt;b&gt;交通模式&lt;/b&gt;下，openpilot 提升速度的速度。較高的值可確保加速時速度變化更平穩、更漸進，而較低的值則允許速度變化更快速、更具反應性，但可能會感覺突然。</translation>
     </message>
     <message>
         <source>Speed Decrease Response</source>
@@ -1475,7 +1475,7 @@
     </message>
     <message>
         <source>How quickly openpilot decreases speed while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot 在&lt;b&gt;交通模式&lt;/b&gt;下減速的速度有多快。較高的值可確保在減速時速度變化平穩且漸進，而較低的值則允許更快速且更具響應性的變化，可能會感覺突然。</translation>
+        <translation type="gpt-4o-generated">在&lt;b&gt;交通模式&lt;/b&gt;下，openpilot 減速的速度。較高的數值可確保在減速時速度變化更平滑、更漸進，而較低的數值則允許更快速、更靈敏的變化，這可能會感覺突兀。</translation>
     </message>
     <message>
         <source>Reset &lt;b&gt;Traffic Mode&lt;/b&gt; settings to default values.</source>
@@ -1483,7 +1483,7 @@
     </message>
     <message>
         <source>Customize the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Designed for a more assertive driving style.</source>
-        <translation type="gpt-4o-generated">自訂&lt;b&gt;積極&lt;/b&gt;的個性設定檔。設計為更具攻擊性的駕駛風格。</translation>
+        <translation type="gpt-4o-generated">自訂&lt;b&gt;積極&lt;/b&gt;個性配置。設計為更果斷的駕駛風格。</translation>
     </message>
     <message>
         <source>How many seconds openpilot will follow behind lead vehicles while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile.&lt;br&gt;&lt;br&gt;Default: 1.25 seconds.</source>
@@ -1499,7 +1499,7 @@
     </message>
     <message>
         <source>How cautious openpilot is around other vehicles or obstacles while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
-        <translation type="gpt-4o-generated">openpilot 在使用&lt;b&gt;激進&lt;/b&gt;個性設定檔時，對其他車輛或障礙物的警惕程度。較高的數值會增加跟車距離並優先考慮安全，導致更加謹慎的駕駛，而較低的數值則允許更接近的跟車，但可能會減少反應時間。</translation>
+        <translation type="gpt-4o-generated">在使用&lt;b&gt;激進&lt;/b&gt;個性設定時，openpilot 對於周圍車輛或障礙物的謹慎程度。較高的數值會增加跟車距離並優先考慮安全，從而導致更謹慎的駕駛，而較低的數值則允許更近的跟車距離，但可能降低反應時間。</translation>
     </message>
     <message>
         <source>How quickly openpilot increases speed while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
@@ -1511,11 +1511,11 @@
     </message>
     <message>
         <source>Reset the &lt;b&gt;Aggressive&lt;/b&gt; personality profile settings to default values.</source>
-        <translation type="gpt-4o-generated">將&lt;b&gt;激進&lt;/b&gt;人格設定重置為預設值。</translation>
+        <translation type="gpt-4o-generated">將&lt;b&gt;激進&lt;/b&gt;個性配置設定重設為預設值。</translation>
     </message>
     <message>
         <source>Customize the &lt;b&gt;Standard&lt;/b&gt; personality profile. Designed for a balanced driving style.</source>
-        <translation type="gpt-4o-generated">自訂&lt;b&gt;標準&lt;/b&gt;個性設定檔。旨在實現平衡的駕駛風格。</translation>
+        <translation type="gpt-4o-generated">自訂&lt;b&gt;標準&lt;/b&gt;個性設定檔。專為平衡的駕駛風格而設計。</translation>
     </message>
     <message>
         <source>How many seconds openpilot will follow behind lead vehicles while using the &lt;b&gt;Standard&lt;/b&gt; personality profile.&lt;br&gt;&lt;br&gt;Default: 1.45 seconds.</source>
@@ -1523,15 +1523,15 @@
     </message>
     <message>
         <source>How sensitive openpilot is to changes in acceleration while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">使用&lt;b&gt;標準&lt;/b&gt;個人化設定時，openpilot 對加速度變化的敏感度。較高的數值將導致更平滑、更漸進的加速，而較低的數值允許更快速、更靈敏的變化，這可能會感到突然。</translation>
+        <translation type="gpt-4o-generated">使用&lt;b&gt;標準&lt;/b&gt;個性設定檔時，openpilot 對加速變化的敏感度。較高的值會帶來更平滑、更逐漸的加速，而較低的值則允許更快、更具回應性的變化，這樣可能會感覺突然。</translation>
     </message>
     <message>
         <source>How sensitive openpilot is to changes in deceleration while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">使用&lt;b&gt;標準&lt;/b&gt;個性化設定檔時，openpilot 對減速變化的敏感度。較高的數值會導致更平穩、更逐漸的減速，而較低的數值則允許更快速、更靈敏的變化，但可能感覺突然。</translation>
+        <translation type="gpt-4o-generated">在使用&lt;b&gt;標準&lt;/b&gt;個性設定時，openpilot 對減速變化的敏感程度。較高的值會帶來更平滑、更漸進的減速，而較低的值則允許更快速、更靈敏的變化，這可能會感覺突然。</translation>
     </message>
     <message>
         <source>How cautious openpilot is around other vehicles or obstacles while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
-        <translation type="gpt-4o-generated">在使用&lt;b&gt;標準&lt;/b&gt;個性檔案時，openpilot 在其他車輛或障礙物周圍的謹慎程度。較高的值會增加跟車距離並優先考慮安全，導致更謹慎的駕駛，而較低的值允許更接近的跟車距離但可能減少反應時間。</translation>
+        <translation type="gpt-4o-generated">使用&lt;b&gt;標準&lt;/b&gt;個性設定檔時，openpilot 在其他車輛或障礙物周圍的謹慎程度。較高的值會增加跟車距離並優先考慮安全性，導致更謹慎的駕駛，而較低的值則允許更近的跟車距離，但可能減少反應時間。</translation>
     </message>
     <message>
         <source>How quickly openpilot increases speed while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
@@ -1543,7 +1543,7 @@
     </message>
     <message>
         <source>Reset the &lt;b&gt;Standard&lt;/b&gt; personality profile settings to default values.</source>
-        <translation type="gpt-4o-generated">將&lt;b&gt;標準&lt;/b&gt;個性設定檔的設置重置為預設值。</translation>
+        <translation type="gpt-4o-generated">將&lt;b&gt;標準&lt;/b&gt;個性配置設定重置為預設值。</translation>
     </message>
     <message>
         <source>Customize the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Designed for a more laid-back driving style.</source>
@@ -1555,7 +1555,7 @@
     </message>
     <message>
         <source>How sensitive openpilot is to changes in acceleration while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">在使用&lt;b&gt;放鬆&lt;/b&gt;個性設定資料時，openpilot對於加速變化的敏感程度。較高的數值會導致更平滑、更漸進的加速，而較低的數值則允許更快速、更靈敏的變化，可能會感覺突然。</translation>
+        <translation type="gpt-4o-generated">使用&lt;b&gt;放鬆&lt;/b&gt;個性檔案時，openpilot對加速度變化的敏感程度。較高的值會導致更平滑、更漸進的加速度，而較低的值允許更快速、更具反應性的變化，這可能會感覺突兀。</translation>
     </message>
     <message>
         <source>How sensitive openpilot is to changes in deceleration while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
@@ -1583,7 +1583,7 @@
     </message>
     <message>
         <source>Enable either a sporty or eco-friendly deceleration profile.</source>
-        <translation type="gpt-4o-generated">啟用運動或環保減速設定。</translation>
+        <translation type="gpt-4o-generated">啟用運動或環保的減速模式。</translation>
     </message>
     <message>
         <source>Use the lead vehicle's acceleration rate when at a takeoff and ramp off the acceleration rate when approaching the maximum set speed for a more "human-like" driving experience.</source>
@@ -1599,11 +1599,11 @@
     </message>
     <message>
         <source>Set a cap on how fast openpilot can accelerate.</source>
-        <translation type="gpt-4o-generated">設置 openpilot 的加速上限。</translation>
+        <translation type="gpt-4o-generated">設定 openpilot 的加速上限。</translation>
     </message>
     <message>
         <source>"Taco Bell Run" Turn Speed Hack</source>
-        <translation type="gpt-4o-generated">「Taco Bell Run」轉彎速度破解</translation>
+        <translation type="gpt-4o-generated">"Taco Bell Run" 轉彎速度破解</translation>
     </message>
     <message>
         <source>The turn speed hack from comma’s 2022 "Taco Bell Run" drive. Designed to slow down when taking left/right turns for smoother turns.</source>
@@ -1615,7 +1615,7 @@
     </message>
     <message>
         <source>Miscellaneous features to improve the acceleration and braking experience.</source>
-        <translation type="gpt-4o-generated">各種功能提升加速和制動體驗。</translation>
+        <translation type="gpt-4o-generated">各種功能以改善加速和制動體驗。</translation>
     </message>
     <message>
         <source>Cruise Interval</source>
@@ -1623,7 +1623,7 @@
     </message>
     <message>
         <source>The interval used when changing the cruise control speed.</source>
-        <translation type="gpt-4o-generated">更改巡航控制速度時使用的間隔。</translation>
+        <translation type="gpt-4o-generated">變更定速巡航速度時使用的間隔。</translation>
     </message>
     <message>
         <source>Cruise Interval (Long Press)</source>
@@ -1631,11 +1631,11 @@
     </message>
     <message>
         <source>The interval used when changing the cruise control speed while holding down the button for 0.5+ seconds.</source>
-        <translation type="gpt-4o-generated">按住按鈕超過0.5秒時更改巡航控制速度所使用的間隔。</translation>
+        <translation type="gpt-4o-generated">按住按鈕超過0.5秒時更改巡航控制速度所用的間隔。</translation>
     </message>
     <message>
         <source>Keep openpilot in the standstill state until either the gas pedal or &lt;b&gt;resume&lt;/b&gt; button is pressed.</source>
-        <translation type="gpt-4o-generated">保持 openpilot 在停止狀態，直到按下油門踏板或&lt;b&gt;恢復&lt;/b&gt;按鈕。</translation>
+        <translation type="gpt-4o-generated">將 openpilot 保持在靜止狀態，直到按下油門踏板或&lt;b&gt;恢復&lt;/b&gt;按鈕。</translation>
     </message>
     <message>
         <source>Force Stop for "Detected" Stop Lights/Signs</source>
@@ -1651,15 +1651,15 @@
     </message>
     <message>
         <source>How much higher or lower the set speed should be compared to your current set speed. For example, if you prefer to drive 5 mph above the speed limit, this setting will automatically add that difference when you adjust your set speed.</source>
-        <translation type="gpt-4o-generated">設定速度應比當前設定速度高或低多少。例如，如果您喜歡在限速以上駕駛 5 英里/小時，當您調整設定速度時，此設置將自動增加該差異。</translation>
+        <translation type="gpt-4o-generated">設定速度應比當前設定速度高或低多少。例如，如果您希望駕駛時比限速高出 5 英里/小時，當您調整設定速度時，此設置會自動加上這個差值。</translation>
     </message>
     <message>
         <source>Map the acceleration and deceleration profiles to your car's &lt;b&gt;Eco&lt;/b&gt; or &lt;b&gt;Sport&lt;/b&gt; gear modes.</source>
-        <translation type="gpt-4o-generated">將加速和減速設定對應到您車輛的&lt;b&gt;經濟&lt;/b&gt;或&lt;b&gt;運動&lt;/b&gt;檔位模式。</translation>
+        <translation type="gpt-4o-generated">將加速和減速曲線映射到您汽車的&lt;b&gt;經濟&lt;/b&gt;或&lt;b&gt;運動&lt;/b&gt;檔位模式。</translation>
     </message>
     <message>
         <source>Reverse the &lt;b&gt;long press&lt;/b&gt; cruise increase feature to increase the max speed by 5 instead of 1 on short presses.</source>
-        <translation type="gpt-4o-generated">將短按巡航功能從增加 1 單位的最大速度改為增加 5 單位，逆轉&lt;b&gt;長按&lt;/b&gt;巡航增加功能。</translation>
+        <translation type="gpt-4o-generated">將&lt;b&gt;長按&lt;/b&gt;巡航增速功能反轉為短按時將最高速度增加5而不是1。</translation>
     </message>
     <message>
         <source>Limit openpilot's maximum driving speed based on data from downloaded maps, &lt;b&gt;Mapbox&lt;/b&gt;, &lt;b&gt;Navigate on openpilot&lt;/b&gt;, or the dashboard (supported vehicles: &lt;b&gt;Ford&lt;/b&gt;, &lt;b&gt;Genesis&lt;/b&gt;, &lt;b&gt;Hyundai&lt;/b&gt;, &lt;b&gt;Kia&lt;/b&gt;, &lt;b&gt;Lexus&lt;/b&gt;, &lt;b&gt;Toyota&lt;/b&gt;).</source>
@@ -1671,27 +1671,27 @@
     </message>
     <message>
         <source>The speed limit source when no speed limit data is available.</source>
-        <translation type="gpt-4o-generated">當沒有速度限制資料時的速度限制來源。</translation>
+        <translation type="gpt-4o-generated">當沒有速度限制數據可用時的速度限制來源。</translation>
     </message>
     <message>
         <source>Override Speed</source>
-        <translation type="gpt-4o-generated">覆蓋速度</translation>
+        <translation type="gpt-4o-generated">超速覆蓋</translation>
     </message>
     <message>
         <source>The speed openpilot uses after manually exceeding the posted speed limit.&lt;br&gt;&lt;br&gt;&lt;b&gt;- Set With Gas Pedal&lt;/b&gt;: Uses the speed obtained while pressing the gas&lt;br&gt;&lt;b&gt;- Max Set Speed&lt;/b&gt;: Uses the cruise control set speed&lt;br&gt;&lt;br&gt;Overrides clear upon disengagement.</source>
-        <translation type="gpt-4o-generated">openpilot 在手動超過規定速度限制後使用的速度。&lt;br&gt;&lt;br&gt;&lt;b&gt;- 使用油門設定&lt;/b&gt;：使用按下油門時獲得的速度&lt;br&gt;&lt;b&gt;- 最大設定速度&lt;/b&gt;：使用巡航控制設定的速度&lt;br&gt;&lt;br&gt;覆蓋會在取消啟用時清除。</translation>
+        <translation type="gpt-4o-generated">openpilot 在手動超過公佈的限速後使用的速度。&lt;br&gt;&lt;br&gt;&lt;b&gt;- 以油門設定&lt;/b&gt;: 使用按下油門時獲得的速度&lt;br&gt;&lt;b&gt;- 最大設定速度&lt;/b&gt;: 使用巡航控制設定的速度&lt;br&gt;&lt;br&gt;取消時會清除覆蓋。</translation>
     </message>
     <message>
         <source>Miscellaneous features to improve the &lt;b&gt;Speed Limit Controller&lt;/b&gt; experience.</source>
-        <translation type="gpt-4o-generated">各種功能以改善&lt;b&gt;速度限制控制器&lt;/b&gt;體驗。</translation>
+        <translation type="gpt-4o-generated">改善&lt;b&gt;速度限制控制器&lt;/b&gt;體驗的其他功能。</translation>
     </message>
     <message>
         <source>Require confirmation before applying new speed limits. To accept, use the flashing widget on the driving screen or press the &lt;b&gt;Cruise Increase&lt;/b&gt; button. To deny, press the &lt;b&gt;Cruise Decrease&lt;/b&gt; button or simply ignore the prompt for 30 seconds.</source>
-        <translation type="gpt-4o-generated">在應用新的速度限制之前需要確認。若要接受，請使用駕駛螢幕上的閃爍小工具或按下&lt;b&gt;巡航增加&lt;/b&gt;按鈕。若要拒絕，請按下&lt;b&gt;巡航減少&lt;/b&gt;按鈕或直接忽略提示30秒。</translation>
+        <translation type="gpt-4o-generated">需要確認才能應用新的速度限制。要接受，請使用駕駛螢幕上的閃爍小部件或按下 &lt;b&gt;巡航增加&lt;/b&gt; 按鈕。要拒絕，請按下 &lt;b&gt;巡航減少&lt;/b&gt; 按鈕或直接忽略提示30秒。</translation>
     </message>
     <message>
         <source>Force Dashboard MPH</source>
-        <translation type="gpt-4o-generated">強制儀表板顯示英里每小時</translation>
+        <translation type="gpt-4o-generated">強制儀錶板英里每小時</translation>
     </message>
     <message>
         <source>Force dashboard speed limit readings to be in mph.</source>
@@ -1699,7 +1699,7 @@
     </message>
     <message>
         <source>Higher Limit Lookahead Time</source>
-        <translation type="gpt-4o-generated">較高限制預見時間</translation>
+        <translation type="gpt-4o-generated">較高限制預測時間</translation>
     </message>
     <message>
         <source>How far ahead openpilot anticipates upcoming higher speed limits from the downloaded map data.</source>
@@ -1707,7 +1707,7 @@
     </message>
     <message>
         <source>Lower Limit Lookahead Time</source>
-        <translation type="gpt-4o-generated">最低限預視時間</translation>
+        <translation type="gpt-4o-generated">下限預測時間</translation>
     </message>
     <message>
         <source>How far ahead openpilot anticipates upcoming lower speed limits from the downloaded map data.</source>
@@ -1727,23 +1727,23 @@
     </message>
     <message>
         <source>Define the priority order for speed limit sources (&lt;b&gt;Dashboard&lt;/b&gt;, &lt;b&gt;Map Data&lt;/b&gt;, &lt;b&gt;Navigation&lt;/b&gt;). Higher-priority sources override lower ones when multiple limits are detected.</source>
-        <translation type="gpt-4o-generated">定義速度限制來源的優先順序（&lt;b&gt;儀表板&lt;/b&gt;、&lt;b&gt;地圖數據&lt;/b&gt;、&lt;b&gt;導航&lt;/b&gt;）。當檢測到多個限制時，優先等級較高的來源將覆蓋較低的來源。</translation>
+        <translation type="gpt-4o-generated">定義速度限制來源的優先順序（&lt;b&gt;儀表板&lt;/b&gt;、&lt;b&gt;地圖數據&lt;/b&gt;、&lt;b&gt;導航&lt;/b&gt;）。當檢測到多個限制時，較高優先級的來源會覆蓋較低的。</translation>
     </message>
     <message>
         <source>Offsets relative to the posted speed limit for a more "human-like" driving experience.</source>
-        <translation type="gpt-4o-generated">相對於公佈的速度限制的偏移，以獲得更“人性化”的駕駛體驗。</translation>
+        <translation type="gpt-4o-generated">相對於公佈的速限偏移，以提供更“人性化”的駕駛體驗。</translation>
     </message>
     <message>
         <source>Speed Limit Offset (0–24 mph)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（0–24 英里/小時）</translation>
+        <translation type="gpt-4o-generated">速度限制偏移 (0–24 英里/小時)</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 0 and 24 mph.</source>
-        <translation type="gpt-4o-generated">目標速度偏移適用於0到24英里/小時之間的公佈限速。</translation>
+        <translation type="gpt-4o-generated">目標速度偏移應用於限速介於0到24英里/小時之間。</translation>
     </message>
     <message>
         <source>Speed Limit Offset (25–34 mph)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（25–34 英里/小時）</translation>
+        <translation type="gpt-4o-generated">限速偏移量（25–34 英里/小時）</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 25 and 34 mph.</source>
@@ -1755,7 +1755,7 @@
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 35 and 44 mph.</source>
-        <translation type="gpt-4o-generated">目標速度偏移適用於限速介於35至44英里/小時之間的情況。</translation>
+        <translation type="gpt-4o-generated">對於限速介於35至44英里/小時之間的情況，已應用目標速度偏移。</translation>
     </message>
     <message>
         <source>Speed Limit Offset (45–54 mph)</source>
@@ -1763,11 +1763,11 @@
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 45 and 54 mph.</source>
-        <translation type="gpt-4o-generated">目標速度偏移適用於速度限制在 45 到 54 英里每小時之間。</translation>
+        <translation type="gpt-4o-generated">目標速度偏移應用於 45 到 54 英里/小時之間的公佈限速。</translation>
     </message>
     <message>
         <source>Speed Limit Offset (55–64 mph)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（55–64 英里/小時）</translation>
+        <translation type="gpt-4o-generated">速度限制偏移 (55–64 英里/小時)</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 55 and 64 mph.</source>
@@ -1775,7 +1775,7 @@
     </message>
     <message>
         <source>Speed Limit Offset (65–74 mph)</source>
-        <translation type="gpt-4o-generated">速度限制偏移 (65–74 英里/小時)</translation>
+        <translation type="gpt-4o-generated">速度限制偏移（65–74 英里/小時）</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 65 and 74 mph.</source>
@@ -1783,7 +1783,7 @@
     </message>
     <message>
         <source>Speed Limit Offset (75–99 mph)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（75–99 英里/小時）</translation>
+        <translation type="gpt-4o-generated">速度限制偏移 (75–99 英里/小時)</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 75 and 99 mph.</source>
@@ -1795,7 +1795,7 @@
     </message>
     <message>
         <source>Visual features to improve the &lt;b&gt;Speed Limit Controller&lt;/b&gt; experience.</source>
-        <translation type="gpt-4o-generated">視覺功能以提升&lt;b&gt;速度限制控制器&lt;/b&gt;體驗。</translation>
+        <translation type="gpt-4o-generated">改進&lt;b&gt;速度限制控制器&lt;/b&gt;體驗的視覺功能。</translation>
     </message>
     <message>
         <source>Display the speed limit offset separately on the driving screen.</source>
@@ -1803,7 +1803,7 @@
     </message>
     <message>
         <source>Display the speed limit sources on the driving screen.</source>
-        <translation type="gpt-4o-generated">在駕駛屏幕上顯示限速來源。</translation>
+        <translation type="gpt-4o-generated">在駕駛螢幕上顯示限速來源。</translation>
     </message>
     <message>
         <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when driving below this speed with a lead.</source>
@@ -1839,15 +1839,15 @@
     </message>
     <message>
         <source>Speed Limit Offset (0–29 km/h)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（0–29 公里/小時）</translation>
+        <translation type="gpt-4o-generated">速度限制偏移量（0–29 公里/小時）</translation>
     </message>
     <message>
         <source>Speed Limit Offset (30–49 km/h)</source>
-        <translation type="gpt-4o-generated">速度限制偏移 (30–49 公里/小時)</translation>
+        <translation type="gpt-4o-generated">速度限制偏移（30–49 公里/小時）</translation>
     </message>
     <message>
         <source>Speed Limit Offset (50–59 km/h)</source>
-        <translation type="gpt-4o-generated">速度限制偏移（50–59 公里/小時）</translation>
+        <translation type="gpt-4o-generated">速度限制偏移（50–59 公里/小时）</translation>
     </message>
     <message>
         <source>Speed Limit Offset (60–79 km/h)</source>
@@ -1863,11 +1863,11 @@
     </message>
     <message>
         <source>Speed Limit Offset (120–140 km/h)</source>
-        <translation type="gpt-4o-generated">速度限制偏移 (120–140 公里/小時)</translation>
+        <translation type="gpt-4o-generated">速度限制偏移（120–140 公里/小時）</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 0 and 29 km/h.</source>
-        <translation type="gpt-4o-generated">目標速度偏移適用於張貼限速介於 0 到 29 公里/小時之間的情況。</translation>
+        <translation type="gpt-4o-generated">目標速度偏移適用於 0 至 29 公里/小時之間的標示限速。</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 30 and 49 km/h.</source>
@@ -1879,7 +1879,7 @@
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 60 and 79 km/h.</source>
-        <translation type="gpt-4o-generated">目標速度偏移適用於限速介於60至79公里/小時之間。</translation>
+        <translation type="gpt-4o-generated">目標速度偏移適用於限速在 60 到 79 公里/小時之間。</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 80 and 99 km/h.</source>
@@ -1887,7 +1887,7 @@
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 100 and 119 km/h.</source>
-        <translation type="gpt-4o-generated">目標速度偏差適用於限速在100至119公里/小時之間。</translation>
+        <translation type="gpt-4o-generated">目標速度偏移適用於限速介於100至119公里/小時之間的情況。</translation>
     </message>
     <message>
         <source>Target speed offset applied for posted limits between 120 and 140 km/h.</source>
@@ -1925,11 +1925,11 @@
     </message>
     <message>
         <source>There are no more models to blacklist! The only available model is "%1"!</source>
-        <translation type="gpt-4o-generated">沒有更多的模型可加入黑名單！唯一可用的模型是「%1」！</translation>
+        <translation type="gpt-4o-generated">沒有更多的模型可列入黑名單！唯一可用的模型是「%1」！</translation>
     </message>
     <message>
         <source>Select a model to add to the blacklist</source>
-        <translation type="gpt-4o-generated">選擇一個模型以加入黑名單</translation>
+        <translation type="gpt-4o-generated">選擇要加入黑名單的模型</translation>
     </message>
     <message>
         <source>Add</source>
@@ -1937,7 +1937,7 @@
     </message>
     <message>
         <source>Select a model to remove from the blacklist</source>
-        <translation type="gpt-4o-generated">選擇一個模型從黑名單中移除</translation>
+        <translation type="gpt-4o-generated">選擇要從黑名單中移除的模型</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -1945,7 +1945,7 @@
     </message>
     <message>
         <source>Are you sure you want to remove all of your blacklisted models?</source>
-        <translation type="gpt-4o-generated">您確定要刪除所有列入黑名單的型號嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要移除所有列入黑名單的型號嗎？</translation>
     </message>
     <message>
         <source>RESET</source>
@@ -1953,7 +1953,7 @@
     </message>
     <message>
         <source>Are you sure you want to reset all of your model drives and scores?</source>
-        <translation type="gpt-4o-generated">您確定要重置所有模型的駕駛數據和分數嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要重置您所有的模型駕駛數據和分數嗎？</translation>
     </message>
     <message>
         <source>DELETE</source>
@@ -1981,11 +1981,11 @@
     </message>
     <message>
         <source>DOWNLOAD ALL</source>
-        <translation type="gpt-4o-generated">下載全部</translation>
+        <translation type="gpt-4o-generated">全部下載</translation>
     </message>
     <message>
         <source>Select a driving model to download</source>
-        <translation type="gpt-4o-generated">選擇駕駛模型以下載</translation>
+        <translation type="gpt-4o-generated">選擇要下載的駕駛模型</translation>
     </message>
     <message>
         <source>SELECT</source>
@@ -2005,7 +2005,7 @@
     </message>
     <message>
         <source>Automatically downloads new driving models as they become available.</source>
-        <translation type="gpt-4o-generated">自動下載新的駕駛模型，當它們可用時。</translation>
+        <translation type="gpt-4o-generated">自動下載新駕駛模型，當其可用時。</translation>
     </message>
     <message>
         <source>Delete Driving Models</source>
@@ -2013,7 +2013,7 @@
     </message>
     <message>
         <source>Delete selected driving models from the device.</source>
-        <translation type="gpt-4o-generated">從設備中刪除選定的駕駛模型。</translation>
+        <translation type="gpt-4o-generated">從設備中刪除所選的駕駛模型。</translation>
     </message>
     <message>
         <source>Download Driving Models</source>
@@ -2021,7 +2021,7 @@
     </message>
     <message>
         <source>Download additional driving models to the device.</source>
-        <translation type="gpt-4o-generated">下載其他駕駛模型至裝置。</translation>
+        <translation type="gpt-4o-generated">下載其他駕駛模型到裝置。</translation>
     </message>
     <message>
         <source>A random driving model is chosen each drive and prompts for feedback after the drive to find the model that best suits your needs.</source>
@@ -2037,7 +2037,7 @@
     </message>
     <message>
         <source>Clear or view all saved ratings for driving models.</source>
-        <translation type="gpt-4o-generated">清除或查看所有駕駛模型的儲存評分。</translation>
+        <translation type="gpt-4o-generated">清除或查看所有已儲存的駕駛模型評級。</translation>
     </message>
     <message>
         <source>Select Driving Model</source>
@@ -2053,7 +2053,7 @@
     </message>
     <message>
         <source>Are you sure you want to add the "%1" model to the blacklist?</source>
-        <translation type="gpt-4o-generated">您確定要將「%1」模型新增到黑名單嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要將「%1」模型加入黑名單嗎？</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the "%1" model from the blacklist?</source>
@@ -2072,7 +2072,7 @@
     <name>FrogPilotSettingsWindow</name>
     <message>
         <source>Alerts and Sounds</source>
-        <translation type="gpt-4o-generated">警示與聲音</translation>
+        <translation type="gpt-4o-generated">警報和聲音</translation>
     </message>
     <message>
         <source>Driving Controls</source>
@@ -2088,7 +2088,7 @@
     </message>
     <message>
         <source>Theme and Appearance</source>
-        <translation type="gpt-4o-generated">主題和外觀</translation>
+        <translation type="gpt-4o-generated">主題與外觀</translation>
     </message>
     <message>
         <source>Vehicle Controls</source>
@@ -2100,11 +2100,11 @@
     </message>
     <message>
         <source>GAS / BRAKE</source>
-        <translation type="gpt-4o-generated">油門 / 剎車</translation>
+        <translation type="gpt-4o-generated">油門 / 煞車</translation>
     </message>
     <message>
         <source>STEERING</source>
-        <translation type="gpt-4o-generated">方向盤</translation>
+        <translation type="gpt-4o-generated">轉向</translation>
     </message>
     <message>
         <source>DATA</source>
@@ -2152,11 +2152,11 @@
     </message>
     <message>
         <source>Tuning Level</source>
-        <translation type="gpt-4o-generated">調整級別</translation>
+        <translation type="gpt-4o-generated">調整等級</translation>
     </message>
     <message>
         <source>WARNING: This unlocks some potentially dangerous settings that can DRASTICALLY alter your driving experience!</source>
-        <translation type="gpt-4o-generated">警告：這將解鎖一些可能危險的設定，可能會極大地改變您的駕駛體驗！</translation>
+        <translation type="gpt-4o-generated">警告：這將解鎖一些具有潛在危險的設定，可能會極大地改變您的駕駛體驗！</translation>
     </message>
     <message>
         <source>NAVIGATION</source>
@@ -2172,7 +2172,7 @@
     </message>
     <message>
         <source>FrogPilot settings for alert volumes and custom notifications to stay informed about important driving events.</source>
-        <translation type="gpt-4o-generated">FrogPilot 設定，用於警報音量和自定義通知，以保持對重要駕駛事件的了解。</translation>
+        <translation type="gpt-4o-generated">FrogPilot 設定，用於警報音量和自訂通知，以保持對重要駕駛事件的了解。</translation>
     </message>
     <message>
         <source>FrogPilot settings for acceleration, braking, and steering.</source>
@@ -2180,11 +2180,11 @@
     </message>
     <message>
         <source>Download map data for &lt;b&gt;Curve Speed Control&lt;/b&gt;, &lt;b&gt;Speed Limit Controller&lt;/b&gt;, and set up &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;.</source>
-        <translation type="gpt-4o-generated">下載地圖數據以用於&lt;b&gt;彎道速度控制&lt;/b&gt;、&lt;b&gt;速度限制控制器&lt;/b&gt;，並設置&lt;b&gt;openpilot導航 (NOO)&lt;/b&gt;。</translation>
+        <translation type="gpt-4o-generated">下載地圖數據以使用&lt;b&gt;轉彎速度控制&lt;/b&gt;、&lt;b&gt;速度限制控制器&lt;/b&gt;，並設置&lt;b&gt;openpilot 導航 (NOO)&lt;/b&gt;。</translation>
     </message>
     <message>
         <source>Data storage management, debugging tools, device settings, screen behavior settings, system backups, and utilities to maintain, optimize, and troubleshoot FrogPilot.</source>
-        <translation type="gpt-4o-generated">數據存儲管理、調試工具、設備設置、屏幕行為設置、系統備份，以及用於維護、優化和排除 FrogPilot 故障的實用工具。</translation>
+        <translation type="gpt-4o-generated">資料儲存管理、除錯工具、裝置設定、螢幕行為設定、系統備份以及用於維護、優化和疑難排解 FrogPilot 的工具。</translation>
     </message>
     <message>
         <source>FrogPilot settings for the current theme, driving-screen, and the overall user interface.</source>
@@ -2217,7 +2217,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     <name>FrogPilotSoundsPanel</name>
     <message>
         <source>Disengage Volume</source>
-        <translation type="gpt-4o-generated">取消音量</translation>
+        <translation type="gpt-4o-generated">解除音量</translation>
     </message>
     <message>
         <source>Engage Volume</source>
@@ -2241,11 +2241,11 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Warning Immediate Volume</source>
-        <translation type="gpt-4o-generated">立即音量警告</translation>
+        <translation type="gpt-4o-generated">立即警告音量</translation>
     </message>
     <message>
         <source>Goat Scream Steering Saturated Alert</source>
-        <translation type="gpt-4o-generated">山羊尖叫轉向飽和警告</translation>
+        <translation type="gpt-4o-generated">山羊尖叫方向盤飽和警報</translation>
     </message>
     <message>
         <source>Green Light Alert</source>
@@ -2253,7 +2253,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Lead Departing Alert</source>
-        <translation type="gpt-4o-generated">領導偏離警報</translation>
+        <translation type="gpt-4o-generated">前車駛離提醒</translation>
     </message>
     <message>
         <source>Auto</source>
@@ -2281,11 +2281,11 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;Car Detected in Blindspot&lt;/b&gt;&lt;br&gt;&lt;b&gt;Steer Unavailable Below &lt;i&gt;X&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;Speed too Low&lt;/b&gt;&lt;br&gt;&lt;b&gt;Take Control, Turn Exceeds Steering Limit&lt;/b&gt;</source>
-        <translation type="gpt-4o-generated">調整警報音量，例如：&lt;br&gt;&lt;br&gt;&lt;b&gt;偵測到盲點車輛&lt;/b&gt;&lt;br&gt;&lt;b&gt;轉向無法在低於 &lt;i&gt;X&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;速度過低&lt;/b&gt;&lt;br&gt;&lt;b&gt;接管控制，轉彎超過轉向限制&lt;/b&gt;</translation>
+        <translation type="gpt-4o-generated">調整警報音量，例如：&lt;br&gt;&lt;br&gt;&lt;b&gt;盲點偵測到車輛&lt;/b&gt;&lt;br&gt;&lt;b&gt;在&lt;i&gt;X&lt;/i&gt;以下無法轉向&lt;/b&gt;&lt;br&gt;&lt;b&gt;速度過低&lt;/b&gt;&lt;br&gt;&lt;b&gt;超出轉向限制，請接管&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;Pay Attention, Driver Distracted&lt;/b&gt;&lt;br&gt;&lt;b&gt;Touch Steering Wheel, Driver Unresponsive&lt;/b&gt;</source>
-        <translation type="gpt-4o-generated">調整提示音量，如：&lt;br&gt;&lt;br&gt;&lt;b&gt;注意，駕駛分心&lt;/b&gt;&lt;br&gt;&lt;b&gt;觸摸方向盤，駕駛無反應&lt;/b&gt;</translation>
+        <translation type="gpt-4o-generated">調整警報音量，例如：&lt;br&gt;&lt;br&gt;&lt;b&gt;注意，駕駛分心&lt;/b&gt;&lt;br&gt;&lt;b&gt;觸摸方向盤，駕駛無反應&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;openpilot Unavailable&lt;/b&gt;</source>
@@ -2297,7 +2297,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;DISENGAGE IMMEDIATELY, Driver Distracted&lt;/b&gt;&lt;br&gt;&lt;b&gt;DISENGAGE IMMEDIATELY, Driver Unresponsive&lt;/b&gt;</source>
-        <translation type="gpt-4o-generated">調整警報的音量，如：&lt;br&gt;&lt;br&gt;&lt;b&gt;立即取消啟用，駕駛分心&lt;/b&gt;&lt;br&gt;&lt;b&gt;立即取消啟用，駕駛無反應&lt;/b&gt;</translation>
+        <translation type="gpt-4o-generated">調整以下警報的音量：&lt;br&gt;&lt;br&gt;&lt;b&gt;立即解除，駕駛分心&lt;/b&gt;&lt;br&gt;&lt;b&gt;立即解除，駕駛無反應&lt;/b&gt;</translation>
     </message>
     <message>
         <source>FrogPilot Alerts</source>
@@ -2305,11 +2305,11 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>FrogPilot alerts for various events in openpilot.</source>
-        <translation type="gpt-4o-generated">FrogPilot 會針對 openpilot 中的各種事件發出警報。</translation>
+        <translation type="gpt-4o-generated">FrogPilot 會在 openpilot 中針對各種事件發出警報。</translation>
     </message>
     <message>
         <source>The infamous &lt;b&gt;Goat Scream&lt;/b&gt; that has brought both joy and anger to FrogPilot users all around the world!</source>
-        <translation type="gpt-4o-generated">在世界各地的 FrogPilot 用戶中帶來歡樂與憤怒的臭名昭著的&lt;b&gt;山羊尖叫聲&lt;/b&gt;！</translation>
+        <translation type="gpt-4o-generated">令全球 FrogPilot 使用者又愛又恨的惡名昭彰&lt;b&gt;山羊尖叫聲&lt;/b&gt;！</translation>
     </message>
     <message>
         <source>An alert for when the traffic light changes from red to green.</source>
@@ -2321,19 +2321,19 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Loud "Car Detected in Blindspot" Alert</source>
-        <translation type="gpt-4o-generated">響亮的「盲點中發現車輛」警示</translation>
+        <translation type="gpt-4o-generated">大聲提示「盲點中有車輛偵測到」</translation>
     </message>
     <message>
         <source>A louder alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
-        <translation type="gpt-4o-generated">當嘗試變換車道時，偵測到盲點有車輛時發出更響亮的警報。</translation>
+        <translation type="gpt-4o-generated">當嘗試變更車道時，偵測到盲點內有車輛的提醒音更大聲。</translation>
     </message>
     <message>
         <source>Speed Limit Change Alert</source>
-        <translation type="gpt-4o-generated">速度限制變更警報</translation>
+        <translation type="gpt-4o-generated">速度限制變更提醒</translation>
     </message>
     <message>
         <source>An alert for when the speed limit changes.</source>
-        <translation type="gpt-4o-generated">速度限制變更時的警報。</translation>
+        <translation type="gpt-4o-generated">當限速變更時的警示。</translation>
     </message>
 </context>
 <context>
@@ -2352,7 +2352,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Sound Pack</source>
-        <translation type="gpt-4o-generated">聲音包</translation>
+        <translation type="gpt-4o-generated">音效包</translation>
     </message>
     <message>
         <source>Steering Wheel</source>
@@ -2360,7 +2360,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Turn Signal Animation</source>
-        <translation type="gpt-4o-generated">轉向燈動畫</translation>
+        <translation type="gpt-4o-generated">方向燈動畫</translation>
     </message>
     <message>
         <source>Download Status</source>
@@ -2400,7 +2400,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Select a color scheme to download</source>
-        <translation type="gpt-4o-generated">選擇要下載的色彩方案</translation>
+        <translation type="gpt-4o-generated">選擇配色方案以下載</translation>
     </message>
     <message>
         <source>Select a color scheme</source>
@@ -2424,7 +2424,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Select a sound pack to download</source>
-        <translation type="gpt-4o-generated">選擇一個音效包以進行下載</translation>
+        <translation type="gpt-4o-generated">選擇要下載的音效包</translation>
     </message>
     <message>
         <source>Select a steering wheel to delete</source>
@@ -2468,15 +2468,15 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Select a distance icon pack to delete</source>
-        <translation type="gpt-4o-generated">選擇要刪除的距離圖示包</translation>
+        <translation type="gpt-4o-generated">選擇一個距離圖標包以刪除</translation>
     </message>
     <message>
         <source>Select a distance icon pack to download</source>
-        <translation type="gpt-4o-generated">選擇一個距離圖示包下載</translation>
+        <translation type="gpt-4o-generated">選擇一個距離圖標包下載</translation>
     </message>
     <message>
         <source>Select a distance icon pack</source>
-        <translation type="gpt-4o-generated">選擇距離圖示包</translation>
+        <translation type="gpt-4o-generated">選擇距離圖標包</translation>
     </message>
     <message>
         <source>Select a signal animation to delete</source>
@@ -2500,7 +2500,7 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
     </message>
     <message>
         <source>Enter the text for the bottom half</source>
-        <translation type="gpt-4o-generated">輸入下半部分的文字</translation>
+        <translation type="gpt-4o-generated">輸入下半部分的文本</translation>
     </message>
     <message>
         <source>The overall appearance of openpilot.</source>
@@ -2510,9 +2510,9 @@ Developer - Unlocks highly customizable settings for seasoned enthusiasts</sourc
         <source>openpilot's color scheme.
 
 Want to submit your own color scheme? Share it in the "custom-themes" channel on the FrogPilot Discord!</source>
-        <translation type="gpt-4o-generated">openpilot 的色彩方案。
+        <translation type="gpt-4o-generated">openpilot 的配色方案。
 
-想提交您自己的色彩方案嗎？在 FrogPilot Discord 的「custom-themes」頻道中分享吧！</translation>
+想提交您自己的配色方案嗎？請在 FrogPilot Discord 的 “custom-themes” 頻道中分享！</translation>
     </message>
     <message>
         <source>openpilot's icon pack.
@@ -2532,7 +2532,7 @@ Want to submit your own sounds? Share them in the "custom-themes" channel on the
     </message>
     <message>
         <source>The steering wheel icon in the top right of the driving screen.</source>
-        <translation type="gpt-4o-generated">駕駛畫面右上角的方向盤圖示。</translation>
+        <translation type="gpt-4o-generated">駕駛畫面右上角的方向盤圖標。</translation>
     </message>
     <message>
         <source>Themed turn signal animations.
@@ -2552,7 +2552,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Random cosmetic events that trigger after certain driving conditions. These events are purely for fun and don't affect driving controls!</source>
-        <translation type="gpt-4o-generated">在特定駕駛條件下觸發的隨機化妝事件。這些事件純粹是為了娛樂，不會影響駕駛控制！</translation>
+        <translation type="gpt-4o-generated">在特定駕駛條件後觸發的隨機外觀事件。這些事件純粹是為了娛樂，並不影響駕駛控制！</translation>
     </message>
     <message>
         <source>Random Themes</source>
@@ -2564,7 +2564,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The text of the "Startup Alert" message that appears at the beginning of a drive.</source>
-        <translation type="gpt-4o-generated">「啟動警示」訊息在駕駛開始時顯示的文字。</translation>
+        <translation type="gpt-4o-generated">在駕駛開始時顯示的「啟動警報」信息文本。</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" color scheme?</source>
@@ -2572,7 +2572,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" distance icon pack?</source>
-        <translation type="gpt-4o-generated">您確定要刪除 "%1" 距離圖標包嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要刪除「%1」距離圖示包嗎？</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" icon pack?</source>
@@ -2580,11 +2580,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" signal animation?</source>
-        <translation type="gpt-4o-generated">您確定要刪除 "%1" 信號動畫嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要刪除「%1」信號動畫嗎？</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" sound pack?</source>
-        <translation type="gpt-4o-generated">您確定要刪除 "%1" 聲音包嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要刪除「%1」音效包嗎？</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the "%1" steering wheel?</source>
@@ -2611,11 +2611,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Flash</source>
-        <translation type="gpt-4o-generated">閃爍</translation>
+        <translation type="gpt-4o-generated">閃存</translation>
     </message>
     <message>
         <source>Flashing...</source>
-        <translation type="gpt-4o-generated">閃爍中...</translation>
+        <translation type="gpt-4o-generated">正在閃爍...</translation>
     </message>
     <message>
         <source>Flashed!</source>
@@ -2623,7 +2623,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Rebooting...</source>
-        <translation type="gpt-4o-generated">重新啟動中...</translation>
+        <translation type="gpt-4o-generated">重新啟動中…</translation>
     </message>
     <message>
         <source>Force Started State</source>
@@ -2631,7 +2631,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>OFFROAD</source>
-        <translation type="gpt-4o-generated">離線模式</translation>
+        <translation type="gpt-4o-generated">越野</translation>
     </message>
     <message>
         <source>ONROAD</source>
@@ -2655,7 +2655,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Please describe what's happening</source>
-        <translation type="gpt-4o-generated">請描述發生了什麼事</translation>
+        <translation type="gpt-4o-generated">請描述發生的情況</translation>
     </message>
     <message>
         <source>Send Report</source>
@@ -2663,15 +2663,15 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>What's your Discord username?</source>
-        <translation type="gpt-4o-generated">您的 Discord 用戶名是什麼？</translation>
+        <translation type="gpt-4o-generated">你的 Discord 使用者名稱是什麼？</translation>
     </message>
     <message>
         <source>Reset Toggles to Default</source>
-        <translation type="gpt-4o-generated">重設切換為預設值</translation>
+        <translation type="gpt-4o-generated">重設切換至預設值</translation>
     </message>
     <message>
         <source>RESET</source>
-        <translation type="gpt-4o-generated">重設</translation>
+        <translation type="gpt-4o-generated">重置</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -2679,7 +2679,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Resetting...</source>
-        <translation type="gpt-4o-generated">重設中...</translation>
+        <translation type="gpt-4o-generated">重置中...</translation>
     </message>
     <message>
         <source>Reset!</source>
@@ -2687,11 +2687,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Debug Mode</source>
-        <translation type="gpt-4o-generated">除錯模式</translation>
+        <translation type="gpt-4o-generated">偵錯模式</translation>
     </message>
     <message>
         <source>Debug FrogPilot during the next drive by utilizing all of FrogPilot's developer metrics for either bug reporting, or self-debugging.</source>
-        <translation type="gpt-4o-generated">在下一次駕駛過程中，通過利用 FrogPilot 的所有開發者指標來調試 FrogPilot，以進行錯誤報告或自我調試。</translation>
+        <translation type="gpt-4o-generated">在下一次駕駛過程中利用所有 FrogPilot 的開發者指標來調試 FrogPilot，以便用於錯誤報告或自我調試。</translation>
     </message>
     <message>
         <source>Force openpilot either offroad or onroad.</source>
@@ -2699,11 +2699,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Your report has been submitted. Thanks for letting us know!</source>
-        <translation type="gpt-4o-generated">您的報告已提交。謝謝告訴我們！</translation>
+        <translation type="gpt-4o-generated">您的報告已提交。感謝您告訴我們！</translation>
     </message>
     <message>
         <source>Flash the Panda's firmware. Use if you're running into issues with the Panda.</source>
-        <translation type="gpt-4o-generated">刷新 Panda 的韌體。如果您遇到 Panda 的問題，請使用此選項。</translation>
+        <translation type="gpt-4o-generated">更新 Panda 的韌體。如果您遇到 Panda 的問題，請使用此功能。</translation>
     </message>
     <message>
         <source>Let &lt;b&gt;FrogsGoMoo&lt;/b&gt; know about an issue you're facing.</source>
@@ -2719,7 +2719,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>I'm noticing harsh braking</source>
-        <translation type="gpt-4o-generated">我注意到剎車過猛</translation>
+        <translation type="gpt-4o-generated">我注意到急剎車</translation>
     </message>
     <message>
         <source>I'm noticing unusual steering</source>
@@ -2735,11 +2735,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Reset your toggles back to their default setting.</source>
-        <translation type="gpt-4o-generated">將切換按鈕重置回默認設置。</translation>
+        <translation type="gpt-4o-generated">重設您的切換開關回到其預設設定。</translation>
     </message>
     <message>
         <source>Are you sure you want to reset all of your toggles to their default setting?</source>
-        <translation type="gpt-4o-generated">您確定要將所有開關重置為默認設置嗎？</translation>
+        <translation type="gpt-4o-generated">您確定要將所有開關重設為預設設定嗎？</translation>
     </message>
 </context>
 <context>
@@ -2786,7 +2786,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Cluster Speed Offset</source>
-        <translation type="gpt-4o-generated">儀表速度偏移量</translation>
+        <translation type="gpt-4o-generated">叢集速度偏移</translation>
     </message>
     <message>
         <source>Lock</source>
@@ -2798,7 +2798,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Disables openpilot longitudinal control and uses the car's stock ACC instead.</source>
-        <translation type="gpt-4o-generated">停用 openpilot 縱向控制，改為使用車輛的原裝自適應巡航控制（ACC）。</translation>
+        <translation type="gpt-4o-generated">停用 openpilot 縱向控制並改用車輛的原廠自適應巡航控制 (ACC)。</translation>
     </message>
     <message>
         <source>MANAGE</source>
@@ -2806,7 +2806,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Lock Doors On Ignition Off After</source>
-        <translation type="gpt-4o-generated">熄火後鎖門時間</translation>
+        <translation type="gpt-4o-generated">點火關閉後鎖門</translation>
     </message>
     <message>
         <source>Never</source>
@@ -2826,7 +2826,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Automatically lock the doors after the car's ignition has been turned off and no one is detected in either of the front seats.</source>
-        <translation type="gpt-4o-generated">熄火後，若前座無人，車門將自動上鎖。</translation>
+        <translation type="gpt-4o-generated">在車輛點火關閉且未檢測到前排座椅有人時，自動鎖門。</translation>
     </message>
     <message>
         <source>General Motors Settings</source>
@@ -2842,7 +2842,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>&lt;b&gt;FrogsGoMoo's&lt;/b&gt; experimental &lt;b&gt;General Motors&lt;/b&gt; tune that aims to smoothen out stopping and takeoff control based on nothing but guesswork. Use at your own risk!</source>
-        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo&lt;/b&gt; 的實驗性 &lt;b&gt;通用汽車&lt;/b&gt; 調校，旨在僅根據猜測來平滑停止和起步控制。使用風險自負！</translation>
+        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo 的&lt;/b&gt;實驗性&lt;b&gt;通用汽車&lt;/b&gt;調校，旨在僅依靠猜測平滑停車和啟動控制。使用風險自負！</translation>
     </message>
     <message>
         <source>Smooth Pedal Response on Hills</source>
@@ -2850,15 +2850,15 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Smoothen the acceleration and braking when driving uphill or downhill.</source>
-        <translation type="gpt-4o-generated">在上坡或下坡駕駛時，平滑加速和制動。</translation>
+        <translation type="gpt-4o-generated">在上坡或下坡時平滑加速和制動。</translation>
     </message>
     <message>
         <source>Force stop and go on the &lt;b&gt;2017 Chevy Volt&lt;/b&gt;.</source>
-        <translation type="gpt-4o-generated">在&lt;b&gt;2017 Chevy Volt&lt;/b&gt;上強制啟停。</translation>
+        <translation type="gpt-4o-generated">在&lt;b&gt;2017款雪佛蘭Volt&lt;/b&gt;上強制停車和啟動。</translation>
     </message>
     <message>
         <source>Hyundai/Kia/Genesis Settings</source>
-        <translation type="gpt-4o-generated">現代/起亞/創世 Settings</translation>
+        <translation type="gpt-4o-generated">Hyundai/Kia/Genesis 設定</translation>
     </message>
     <message>
         <source>Settings specific to &lt;b&gt;Hyundai&lt;/b&gt;, &lt;b&gt;Kia&lt;/b&gt;, and &lt;b&gt;Genesis&lt;/b&gt; vehicles.</source>
@@ -2866,7 +2866,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>comma's new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some &lt;b&gt;Hyundai&lt;/b&gt;/&lt;b&gt;Kia&lt;/b&gt;/&lt;b&gt;Genesis&lt;/b&gt; vehicles.</source>
-        <translation type="gpt-4o-generated">comma 的新縱向控制系統在加速和制動方面顯示出極大的改進，但在某些 &lt;b&gt;現代&lt;/b&gt;/&lt;b&gt;起亞&lt;/b&gt;/&lt;b&gt;Genesis&lt;/b&gt; 車輛上存在問題。</translation>
+        <translation type="gpt-4o-generated">comma 的新縱向控制系統在加速和制動方面顯示出巨大改進，但在某些 &lt;b&gt;現代&lt;/b&gt;/&lt;b&gt;起亞&lt;/b&gt;/&lt;b&gt;Genesis&lt;/b&gt; 車輛上存在問題。</translation>
     </message>
     <message>
         <source>Toyota/Lexus Settings</source>
@@ -2882,19 +2882,19 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The cluster speed offset used by openpilot to match the speed displayed on the dash.</source>
-        <translation type="gpt-4o-generated">openpilot 用來匹配儀表板上顯示速度的儀表速度偏移。</translation>
+        <translation type="gpt-4o-generated">openpilot 使用的儀表板速度偏移量以匹配儀表板上顯示的速度。</translation>
     </message>
     <message>
         <source>&lt;b&gt;FrogsGoMoo's&lt;/b&gt; personal tweaks for quicker acceleration and smoother braking.</source>
-        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo 的&lt;/b&gt; 個人調整，以實現更快的加速和更平順的制動。</translation>
+        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo 的&lt;/b&gt;個人調整，可實現更快的加速和更平穩的制動。</translation>
     </message>
     <message>
         <source>Force stop and go on &lt;b&gt;Toyota&lt;/b&gt;/&lt;b&gt;Lexus&lt;/b&gt; vehicles without stock stop and go functionality.</source>
-        <translation type="gpt-4o-generated">在不具備原廠停車啟動功能的&lt;b&gt;Toyota&lt;/b&gt;/&lt;b&gt;Lexus&lt;/b&gt;車輛上強制啟用停車啟動。</translation>
+        <translation type="gpt-4o-generated">在沒有原廠停走功能的&lt;b&gt;豐田&lt;/b&gt;/&lt;b&gt;雷克薩斯&lt;/b&gt;車輛上強制啟用停走功能。</translation>
     </message>
     <message>
         <source> seconds</source>
-        <translation type="gpt-4o-generated">秒鐘</translation>
+        <translation type="gpt-4o-generated">秒</translation>
     </message>
 </context>
 <context>
@@ -2949,7 +2949,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Mapbox Streets</source>
-        <translation type="gpt-4o-generated">Mapbox 街道</translation>
+        <translation type="gpt-4o-generated">Mapbox 街道图层</translation>
     </message>
     <message>
         <source>Mapbox Outdoors</source>
@@ -2961,7 +2961,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Mapbox Dark</source>
-        <translation type="gpt-4o-generated">Mapbox 深色模式</translation>
+        <translation type="gpt-4o-generated">Mapbox 暗色模式</translation>
     </message>
     <message>
         <source>Mapbox Satellite</source>
@@ -2977,15 +2977,15 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Mapbox Navigation Night</source>
-        <translation type="gpt-4o-generated">Mapbox導航夜間模式</translation>
+        <translation type="gpt-4o-generated">Mapbox 導航夜間模式</translation>
     </message>
     <message>
         <source>Mapbox Traffic Night</source>
-        <translation type="gpt-4o-generated">Mapbox 交通夜間模式</translation>
+        <translation type="gpt-4o-generated">Mapbox 夜間交通</translation>
     </message>
     <message>
         <source>mike854's (Satellite hybrid)</source>
-        <translation type="gpt-4o-generated">mike854 的 (衛星混合)</translation>
+        <translation type="gpt-4o-generated">mike854 的（衛星混合）</translation>
     </message>
     <message>
         <source>SELECT</source>
@@ -2997,11 +2997,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Visual features to improve your overall openpilot experience.</source>
-        <translation type="gpt-4o-generated">視覺功能提升您的整體 openpilot 體驗。</translation>
+        <translation type="gpt-4o-generated">視覺功能以提升您的整體 openpilot 體驗。</translation>
     </message>
     <message>
         <source>Camera View</source>
-        <translation type="gpt-4o-generated">攝影機視圖</translation>
+        <translation type="gpt-4o-generated">攝像頭視圖</translation>
     </message>
     <message>
         <source>Standby Mode</source>
@@ -3009,7 +3009,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Advanced UI Controls</source>
-        <translation type="gpt-4o-generated">高級 UI 控制項</translation>
+        <translation type="gpt-4o-generated">進階使用者介面控制項</translation>
     </message>
     <message>
         <source>Hide Current Speed</source>
@@ -3017,7 +3017,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Hide Lead Marker</source>
-        <translation type="gpt-4o-generated">隱藏前車標記</translation>
+        <translation type="gpt-4o-generated">隱藏引導標記</translation>
     </message>
     <message>
         <source>Hide Max Speed</source>
@@ -3025,7 +3025,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Hide Non-Critical Alerts</source>
-        <translation type="gpt-4o-generated">隱藏非關鍵警報</translation>
+        <translation type="gpt-4o-generated">隱藏非重要警報</translation>
     </message>
     <message>
         <source>Hide Speed Limits</source>
@@ -3081,7 +3081,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Model UI</source>
-        <translation type="gpt-4o-generated">模型介面</translation>
+        <translation type="gpt-4o-generated">模型使用者介面</translation>
     </message>
     <message>
         <source>Lane Lines Width</source>
@@ -3109,7 +3109,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Use Vienna-Style Speed Signs</source>
-        <translation type="gpt-4o-generated">使用維也納風格的速度標誌</translation>
+        <translation type="gpt-4o-generated">使用維也納風格速度標誌</translation>
     </message>
     <message>
         <source>Acceleration Path</source>
@@ -3153,7 +3153,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Turn Signal</source>
-        <translation type="gpt-4o-generated">轉向燈</translation>
+        <translation type="gpt-4o-generated">方向燈</translation>
     </message>
     <message>
         <source>Adjacent Path Metrics</source>
@@ -3161,7 +3161,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Auto Tune</source>
-        <translation type="gpt-4o-generated">自動調校</translation>
+        <translation type="gpt-4o-generated">自動調整</translation>
     </message>
     <message>
         <source>Lead Info</source>
@@ -3213,7 +3213,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Stock</source>
-        <translation type="gpt-4o-generated">股票</translation>
+        <translation type="gpt-4o-generated">原廠</translation>
     </message>
     <message>
         <source> centimeters</source>
@@ -3229,11 +3229,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Radar Tracks</source>
-        <translation type="gpt-4o-generated">雷達追蹤</translation>
+        <translation type="gpt-4o-generated">雷達軌跡</translation>
     </message>
     <message>
         <source>Advanced settings for fine-tuning openpilot's driving screen.</source>
-        <translation type="gpt-4o-generated">進階設定以微調 openpilot 的駕駛螢幕。</translation>
+        <translation type="gpt-4o-generated">進階設定用於微調 openpilot 的駕駛螢幕。</translation>
     </message>
     <message>
         <source>Hide the current speed from the driving screen.</source>
@@ -3241,11 +3241,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Hide the marker for lead vehicles from the driving screen.</source>
-        <translation type="gpt-4o-generated">從駕駛屏幕隱藏前車的標記。</translation>
+        <translation type="gpt-4o-generated">隱藏駕駛屏幕上領先車輛的標記。</translation>
     </message>
     <message>
         <source>Hide Map Settings Button</source>
-        <translation type="gpt-4o-generated">隱藏地圖設定按鈕</translation>
+        <translation type="gpt-4o-generated">隱藏地圖設置按鈕</translation>
     </message>
     <message>
         <source>Hide the map settings button from the driving screen.</source>
@@ -3253,23 +3253,23 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Hide the max speed from the driving screen.</source>
-        <translation type="gpt-4o-generated">隱藏駕駛畫面的最高速度。</translation>
+        <translation type="gpt-4o-generated">隱藏駕駛屏幕上的最高速度。</translation>
     </message>
     <message>
         <source>Hide non-critical alerts from the driving screen.</source>
-        <translation type="gpt-4o-generated">從駕駛屏幕隱藏非關鍵警報。</translation>
+        <translation type="gpt-4o-generated">從駕駛螢幕隱藏非重要警報。</translation>
     </message>
     <message>
         <source>Hide the speed limits from the driving screen.</source>
-        <translation type="gpt-4o-generated">從駕駛畫面中隱藏速度限制。</translation>
+        <translation type="gpt-4o-generated">隱藏駕駛螢幕上的速度限制。</translation>
     </message>
     <message>
         <source>Use the vehicle's wheel speed instead of the cluster speed. This is purely a visual change and doesn't impact how openpilot drives.</source>
-        <translation type="gpt-4o-generated">使用車輛的車輪速度而不是儀表盤速度。這純粹是一個視覺上的變化，不會影響 openpilot 的駕駛方式。</translation>
+        <translation type="gpt-4o-generated">使用車輛的輪速而非儀表板速度。這純粹是視覺上的變化，並不影響 openpilot 的駕駛方式。</translation>
     </message>
     <message>
         <source>Detailed information about openpilot's internal operations.</source>
-        <translation type="gpt-4o-generated">有關 openpilot 內部操作的詳細資訊。</translation>
+        <translation type="gpt-4o-generated">有關 openpilot 內部運作的詳細資訊。</translation>
     </message>
     <message>
         <source>Performance data, sensor readings, and system metrics for debugging and optimizing openpilot.</source>
@@ -3277,7 +3277,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Metrics displayed around the border of the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Blind Spot&lt;/b&gt;: Turn the border red when a vehicle is detected in a blind spot&lt;br&gt;&lt;b&gt;Steering Torque&lt;/b&gt;: Highlight the border green to red in accordance to the amount of steering torque being used&lt;br&gt;&lt;b&gt;Turn Signal&lt;/b&gt;: Flash the border yellow when a turn signal is active</source>
-        <translation type="gpt-4o-generated">駕駛畫面邊框顯示的指標。&lt;br&gt;&lt;br&gt;&lt;b&gt;盲點&lt;/b&gt;：當偵測到盲點有車輛時，將邊框變為紅色&lt;br&gt;&lt;b&gt;轉向扭矩&lt;/b&gt;：根據所用的轉向扭矩量，將邊框從綠色高亮到紅色&lt;br&gt;&lt;b&gt;轉向燈&lt;/b&gt;：當轉向燈啟用時，閃爍邊框黃色</translation>
+        <translation type="gpt-4o-generated">駕駛畫面邊框顯示的指標。&lt;br&gt;&lt;br&gt;&lt;b&gt;盲點&lt;/b&gt;：當偵測到盲點車輛時，將邊框變為紅色&lt;br&gt;&lt;b&gt;轉向扭矩&lt;/b&gt;：根據使用的轉向扭矩量，將邊框從綠色突出顯示到紅色&lt;br&gt;&lt;b&gt;轉向燈&lt;/b&gt;：當轉向燈啟動時，閃爍邊框為黃色</translation>
     </message>
     <message>
         <source>Display the &lt;b&gt;Frames Per Second (FPS)&lt;/b&gt; at the bottom of the driving screen.</source>
@@ -3285,7 +3285,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Metrics related to steering control.&lt;br&gt;&lt;br&gt;&lt;b&gt;Adjacent Path Metrics&lt;/b&gt;: Paint the adjacent lanes and their width measurements&lt;br&gt;&lt;b&gt;Auto Tune&lt;/b&gt;: Display the &lt;b&gt;Friction&lt;/b&gt; and &lt;b&gt;Lateral Acceleration&lt;/b&gt; values from comma's auto tune at the top of the driving screen</source>
-        <translation type="gpt-4o-generated">與轉向控制相關的指標。&lt;br&gt;&lt;br&gt;&lt;b&gt;相鄰路徑指標&lt;/b&gt;：顯示相鄰車道及其寬度測量&lt;br&gt;&lt;b&gt;自動調整&lt;/b&gt;：在駕駛螢幕頂部顯示 comma 的自動調整中的&lt;b&gt;摩擦&lt;/b&gt;和&lt;b&gt;側向加速度&lt;/b&gt;值</translation>
+        <translation type="gpt-4o-generated">與轉向控制相關的指標。&lt;br&gt;&lt;br&gt;&lt;b&gt;相鄰路徑指標&lt;/b&gt;：繪製相鄰車道及其寬度測量&lt;br&gt;&lt;b&gt;自動調整&lt;/b&gt;：在駕駛屏幕頂部顯示來自 comma 自動調整的&lt;b&gt;摩擦&lt;/b&gt;和&lt;b&gt;橫向加速度&lt;/b&gt;值</translation>
     </message>
     <message>
         <source>Metrics related to gas/brake control.&lt;br&gt;&lt;br&gt;&lt;b&gt;Lead Info&lt;/b&gt;: Display the lead vehicle's distance and speed on the lead marker&lt;br&gt;&lt;b&gt;Jerk Values&lt;/b&gt;: Display the current longitudinal jerk values and any offsets from FrogPilot functions at the top of the driving screen</source>
@@ -3297,11 +3297,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Display system information (&lt;b&gt;CPU&lt;/b&gt;, &lt;b&gt;GPU&lt;/b&gt;, &lt;b&gt;RAM usage&lt;/b&gt;, &lt;b&gt;IP address&lt;/b&gt;, &lt;b&gt;device storage&lt;/b&gt;) in the sidebar.</source>
-        <translation type="gpt-4o-generated">在側邊欄顯示系統資訊（&lt;b&gt;CPU&lt;/b&gt;、&lt;b&gt;GPU&lt;/b&gt;、&lt;b&gt;RAM 使用量&lt;/b&gt;、&lt;b&gt;IP 位址&lt;/b&gt;、&lt;b&gt;設備存儲&lt;/b&gt;）。</translation>
+        <translation type="gpt-4o-generated">在側邊欄顯示系統資訊（&lt;b&gt;CPU&lt;/b&gt;、&lt;b&gt;GPU&lt;/b&gt;、&lt;b&gt;記憶體使用量&lt;/b&gt;、&lt;b&gt;IP 位址&lt;/b&gt;、&lt;b&gt;設備儲存空間&lt;/b&gt;）。</translation>
     </message>
     <message>
         <source>Display measurements using the &lt;b&gt;International System of Units (SI)&lt;/b&gt; standard.</source>
-        <translation type="gpt-4o-generated">使用&lt;b&gt;國際單位制 (SI)&lt;/b&gt;標準顯示測量值。</translation>
+        <translation type="gpt-4o-generated">使用&lt;b&gt;國際單位制 (SI)&lt;/b&gt; 標準顯示測量值。</translation>
     </message>
     <message>
         <source>Overlays displaying debugging visuals, internal states, and model predictions on the driving screen.</source>
@@ -3309,7 +3309,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Adjacent leads detected by the car's radar to the left and right of the current driving path.</source>
-        <translation type="gpt-4o-generated">車輛的雷達在當前行駛路徑的左側和右側檢測到相鄰的車輛。</translation>
+        <translation type="gpt-4o-generated">汽車雷達在當前行駛路徑的左側和右側檢測到相鄰的車輛。</translation>
     </message>
     <message>
         <source>Display an image on the screen where openpilot is wanting to stop.</source>
@@ -3317,7 +3317,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Display all of the radar points produced by the car's radar.</source>
-        <translation type="gpt-4o-generated">顯示車輛雷達產生的所有雷達點。</translation>
+        <translation type="gpt-4o-generated">顯示汽車雷達生成的所有雷達點。</translation>
     </message>
     <message>
         <source>Driving Screen Widgets</source>
@@ -3337,19 +3337,19 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Display a red driving path for detected vehicles in the corresponding lane's blind spot.</source>
-        <translation type="gpt-4o-generated">為偵測到在相應車道盲點的車輛顯示紅色駕駛路徑。</translation>
+        <translation type="gpt-4o-generated">在對應車道盲點中顯示偵測到的車輛的紅色駕駛路徑。</translation>
     </message>
     <message>
         <source>A compass to show the current driving direction.</source>
-        <translation type="gpt-4o-generated">一個指南針以顯示當前行駛方向。</translation>
+        <translation type="gpt-4o-generated">指南針顯示當前駕駛方向。</translation>
     </message>
     <message>
         <source>Pedals to indicate when either of the pedals are currently being used.&lt;br&gt;&lt;br&gt;&lt;b&gt;Dynamic&lt;/b&gt;: The pedals change in opacity in accordance to how much openpilot is accelerating or decelerating&lt;br&gt;&lt;b&gt;Static&lt;/b&gt;: The pedals are displayed with full opacity when active, and dimmed when not in use</source>
-        <translation type="gpt-4o-generated">踏板指示目前是否正在使用任何踏板。&lt;br&gt;&lt;br&gt;&lt;b&gt;動態&lt;/b&gt;：踏板的透明度會根據openpilot的加速或減速程度改變&lt;br&gt;&lt;b&gt;靜態&lt;/b&gt;：踏板在激活時以全透明度顯示，未使用時則變暗顯示</translation>
+        <translation type="gpt-4o-generated">踏板顯示目前是否正在使用任一踏板。&lt;br&gt;&lt;br&gt;&lt;b&gt;動態&lt;/b&gt;：踏板的透明度會根據openpilot的加速或減速程度而改變&lt;br&gt;&lt;b&gt;靜態&lt;/b&gt;：踏板在啟用時全亮顯示，未使用時則會調暗</translation>
     </message>
     <message>
         <source>Rotate the steering wheel alongside the vehicle's physical steering wheel.</source>
-        <translation type="gpt-4o-generated">隨著車輛的實體方向盤旋轉方向盤。</translation>
+        <translation type="gpt-4o-generated">將方向盤旋轉至與車輛的實體方向盤一致。</translation>
     </message>
     <message>
         <source>Model visualizations on the driving screen for the driving path, lane lines, path edges, and road edges.</source>
@@ -3361,11 +3361,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The thickness of the lane lines on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 4 inches.</source>
-        <translation type="gpt-4o-generated">駕駛螢幕上的車道線粗細。&lt;br&gt;&lt;br&gt;&lt;b&gt;預設值符合&lt;b&gt;MUTCD&lt;/b&gt;車道線寬度標準4英吋。</translation>
+        <translation type="gpt-4o-generated">駕駛螢幕上車道線的厚度。&lt;br&gt;&lt;br&gt;&lt;b&gt;預設符合&lt;b&gt;MUTCD&lt;/b&gt;車道線寬度標準4英吋。</translation>
     </message>
     <message>
         <source>The width of the edges of the driving path that represent different driving modes and statuses.&lt;br&gt;&lt;br&gt;Default is &lt;b&gt;20%&lt;/b&gt; of the total path width.&lt;br&gt;&lt;br&gt;Color Guide:&lt;br&gt;&lt;br&gt;- &lt;b&gt;Blue&lt;/b&gt;: Navigation&lt;br&gt;- &lt;b&gt;Light Blue&lt;/b&gt;: Always On Lateral&lt;br&gt;- &lt;b&gt;Green&lt;/b&gt;: Default&lt;br&gt;- &lt;b&gt;Orange&lt;/b&gt;: Experimental Mode&lt;br&gt;- &lt;b&gt;Red&lt;/b&gt;: Traffic Mode&lt;br&gt;- &lt;b&gt;Yellow&lt;/b&gt;: Conditional Experimental Mode overridden</source>
-        <translation type="gpt-4o-generated">表示不同駕駛模式和狀態的駕駛路徑邊緣寬度。&lt;br&gt;&lt;br&gt;默認為總路徑寬度的&lt;b&gt;20%&lt;/b&gt;。&lt;br&gt;&lt;br&gt;顏色指南：&lt;br&gt;&lt;br&gt;- &lt;b&gt;藍色&lt;/b&gt;：導航&lt;br&gt;- &lt;b&gt;淺藍色&lt;/b&gt;：總是開啟的橫向控制&lt;br&gt;- &lt;b&gt;綠色&lt;/b&gt;：默認&lt;br&gt;- &lt;b&gt;橙色&lt;/b&gt;：試驗模式&lt;br&gt;- &lt;b&gt;紅色&lt;/b&gt;：交通模式&lt;br&gt;- &lt;b&gt;黃色&lt;/b&gt;：有條件的試驗模式被覆蓋</translation>
+        <translation type="gpt-4o-generated">駕駛路徑邊緣的寬度代表不同的駕駛模式和狀態。&lt;br&gt;&lt;br&gt;預設為總路徑寬度的&lt;b&gt;20%&lt;/b&gt;。&lt;br&gt;&lt;br&gt;顏色指南：&lt;br&gt;&lt;br&gt;- &lt;b&gt;藍色&lt;/b&gt;: 導航&lt;br&gt;- &lt;b&gt;淺藍色&lt;/b&gt;: 始終開啟橫向控制&lt;br&gt;- &lt;b&gt;綠色&lt;/b&gt;: 預設&lt;br&gt;- &lt;b&gt;橙色&lt;/b&gt;: 實驗模式&lt;br&gt;- &lt;b&gt;紅色&lt;/b&gt;: 交通模式&lt;br&gt;- &lt;b&gt;黃色&lt;/b&gt;: 條件實驗模式被覆蓋</translation>
     </message>
     <message>
         <source>The width of the driving path on the driving screen.&lt;br&gt;&lt;br&gt;Default &lt;b&gt;(6.1 feet / 1.9 meters)&lt;/b&gt; matches the width of a &lt;b&gt;2019 Lexus ES 350&lt;/b&gt;.</source>
@@ -3373,19 +3373,19 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The thickness of the road edges on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches half of the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 4 inches.</source>
-        <translation type="gpt-4o-generated">駕駛畫面上道路邊緣的厚度。&lt;br&gt;&lt;br&gt;&lt;b&gt;默認匹配&lt;b&gt;MUTCD&lt;/b&gt;車道線寬度標準的一半，即4英寸。</translation>
+        <translation type="gpt-4o-generated">駕駛畫面上道路邊緣的厚度。&lt;br&gt;&lt;br&gt;&lt;b&gt;預設值符合 &lt;b&gt;MUTCD&lt;/b&gt; 車道線寬標準的一半，即 4 英寸。</translation>
     </message>
     <message>
         <source>"Unlimited" Road UI</source>
-        <translation type="gpt-4o-generated">「無限」道路 UI</translation>
+        <translation type="gpt-4o-generated">「無限制」道路用戶介面</translation>
     </message>
     <message>
         <source>Extend the display of the driving path, lane lines, and road edges as far as the model can see.</source>
-        <translation type="gpt-4o-generated">將行駛路徑、車道線和道路邊緣的顯示範圍擴展到模型所能看到的最遠距離。</translation>
+        <translation type="gpt-4o-generated">將行駛路徑、車道線及道路邊緣的顯示範圍擴展至模型可見的最遠距離。</translation>
     </message>
     <message>
         <source>Map style tweaks, speed limits, and other navigation related widgets.</source>
-        <translation type="gpt-4o-generated">地圖樣式調整、速度限制和其他導航相關小工具。</translation>
+        <translation type="gpt-4o-generated">地圖樣式微調、速度限制和其他導航相關小工具。</translation>
     </message>
     <message>
         <source>Increase the size of the map for easier navigation readings.</source>
@@ -3393,19 +3393,19 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The map style used for &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;b&gt;Stock&lt;/b&gt;: Default comma.ai style&lt;br&gt;&lt;b&gt;Mapbox Streets&lt;/b&gt;: Standard street-focused view&lt;br&gt;&lt;b&gt;Mapbox Outdoors&lt;/b&gt;: Emphasizes outdoor and terrain features&lt;br&gt;&lt;b&gt;Mapbox Light&lt;/b&gt;: Minimalist, bright theme&lt;br&gt;&lt;b&gt;Mapbox Dark&lt;/b&gt;: Minimalist, dark theme&lt;br&gt;&lt;b&gt;Mapbox Navigation Day&lt;/b&gt;: Optimized for daytime navigation&lt;br&gt;&lt;b&gt;Mapbox Navigation Night&lt;/b&gt;: Optimized for nighttime navigation&lt;br&gt;&lt;b&gt;Mapbox Satellite&lt;/b&gt;: Satellite imagery only&lt;br&gt;&lt;b&gt;Mapbox Satellite Streets&lt;/b&gt;: Hybrid satellite imagery with street labels&lt;br&gt;&lt;b&gt;Mapbox Traffic Night&lt;/b&gt;: Dark theme emphasizing traffic conditions&lt;br&gt;&lt;b&gt;mike854's (Satellite hybrid)&lt;/b&gt;: Customized hybrid satellite view</source>
-        <translation type="gpt-4o-generated">在 &lt;b&gt;使用 openpilot 導航 (NOO)&lt;/b&gt; 時使用的地圖風格：&lt;br&gt;&lt;br&gt;&lt;b&gt;Stock&lt;/b&gt;：預設的 comma.ai 風格&lt;br&gt;&lt;b&gt;Mapbox Streets&lt;/b&gt;：標準街道專注視圖&lt;br&gt;&lt;b&gt;Mapbox Outdoors&lt;/b&gt;：強調戶外和地形特徵&lt;br&gt;&lt;b&gt;Mapbox Light&lt;/b&gt;：極簡明亮主題&lt;br&gt;&lt;b&gt;Mapbox Dark&lt;/b&gt;：極簡黑暗主題&lt;br&gt;&lt;b&gt;Mapbox Navigation Day&lt;/b&gt;：為日間導航優化&lt;br&gt;&lt;b&gt;Mapbox Navigation Night&lt;/b&gt;：為夜間導航優化&lt;br&gt;&lt;b&gt;Mapbox Satellite&lt;/b&gt;：僅衛星影像&lt;br&gt;&lt;b&gt;Mapbox Satellite Streets&lt;/b&gt;：結合街道標籤的混合衛星影像&lt;br&gt;&lt;b&gt;Mapbox Traffic Night&lt;/b&gt;：強調交通狀況的黑暗主題&lt;br&gt;&lt;b&gt;mike854's (Satellite hybrid)&lt;/b&gt;：自定義混合衛星視圖</translation>
+        <translation type="gpt-4o-generated">用於&lt;b&gt;openpilot導航 (NOO)&lt;/b&gt;的地圖樣式：&lt;br&gt;&lt;br&gt;&lt;b&gt;Stock&lt;/b&gt;：預設的comma.ai風格&lt;br&gt;&lt;b&gt;Mapbox Streets&lt;/b&gt;：標準街道為主的視圖&lt;br&gt;&lt;b&gt;Mapbox Outdoors&lt;/b&gt;：強調戶外和地形特徵&lt;br&gt;&lt;b&gt;Mapbox Light&lt;/b&gt;：極簡、明亮主題&lt;br&gt;&lt;b&gt;Mapbox Dark&lt;/b&gt;：極簡、暗色主題&lt;br&gt;&lt;b&gt;Mapbox Navigation Day&lt;/b&gt;：為日間導航優化&lt;br&gt;&lt;b&gt;Mapbox Navigation Night&lt;/b&gt;：為夜間導航優化&lt;br&gt;&lt;b&gt;Mapbox Satellite&lt;/b&gt;：僅顯示衛星圖像&lt;br&gt;&lt;b&gt;Mapbox Satellite Streets&lt;/b&gt;：混合衛星圖像與街道標籤&lt;br&gt;&lt;b&gt;Mapbox Traffic Night&lt;/b&gt;：強調交通狀況的暗色主題&lt;br&gt;&lt;b&gt;mike854's (Satellite hybrid)&lt;/b&gt;：自訂的混合衛星視圖</translation>
     </message>
     <message>
         <source>Display the road name at the bottom of the driving screen using data from &lt;b&gt;OpenStreetMap&lt;/b&gt;.</source>
-        <translation type="gpt-4o-generated">在駕駛畫面的底部顯示道路名稱，使用來自&lt;b&gt;OpenStreetMap&lt;/b&gt;的數據。</translation>
+        <translation type="gpt-4o-generated">在駕駛屏幕底部顯示道路名稱，使用來自&lt;b&gt;OpenStreetMap&lt;/b&gt;的數據。</translation>
     </message>
     <message>
         <source>Display speed limits in the top left corner of the driving screen. Uses data from your car's dashboard (if supported) and data from &lt;b&gt;OpenStreetMaps&lt;/b&gt;.</source>
-        <translation type="gpt-4o-generated">在駕駛畫面的左上角顯示速度限制。使用來自車輛儀表板（如果支持）的數據和來自&lt;b&gt;OpenStreetMaps&lt;/b&gt;的數據。</translation>
+        <translation type="gpt-4o-generated">在駕駛畫面的左上角顯示速度限制。使用來自您汽車儀表板（如果支持）的數據和來自 &lt;b&gt;OpenStreetMaps&lt;/b&gt; 的數據。</translation>
     </message>
     <message>
         <source>Force &lt;b&gt;Vienna-style (EU)&lt;/b&gt; speed limit signs instead of &lt;b&gt;MUTCD (US)&lt;/b&gt;.</source>
-        <translation type="gpt-4o-generated">強制使用&lt;b&gt;維也納風格（歐盟）&lt;/b&gt;的限速標誌，代替&lt;b&gt;MUTCD（美國）&lt;/b&gt;。</translation>
+        <translation type="gpt-4o-generated">強制使用&lt;b&gt;維也納風格（EU）&lt;/b&gt;的速度限制標誌，而非&lt;b&gt;MUTCD（US）&lt;/b&gt;。</translation>
     </message>
     <message>
         <source>Quality of Life</source>
@@ -3413,7 +3413,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The active camera view display. This is purely a visual change and doesn't impact how openpilot drives!</source>
-        <translation type="gpt-4o-generated">主動攝影機視圖顯示。這純粹是視覺上的變更，並不影響 openpilot 的駕駛方式！</translation>
+        <translation type="gpt-4o-generated">主動相機視圖顯示。這僅是視覺上的更改，不會影響 openpilot 的駕駛方式！</translation>
     </message>
     <message>
         <source>Control Driving Personality via the Driving Screen</source>
@@ -3441,7 +3441,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source> foot</source>
-        <translation type="gpt-4o-generated">英呎</translation>
+        <translation type="gpt-4o-generated">英尺</translation>
     </message>
     <message>
         <source> inch</source>
@@ -3457,7 +3457,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The thickness of the lane lines on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 10 centimeters.</source>
-        <translation type="gpt-4o-generated">駕駛畫面上車道線的厚度。&lt;br&gt;&lt;br&gt;&lt;b&gt;默認情況符合&lt;b&gt;MUTCD&lt;/b&gt;的車道線寬度標準，為10厘米。</translation>
+        <translation type="gpt-4o-generated">駕駛螢幕上車道線的厚度。&lt;br&gt;&lt;br&gt;&lt;b&gt;預設符合&lt;b&gt;MUTCD&lt;/b&gt;車道線寬度標準，即10厘米。</translation>
     </message>
     <message>
         <source>The thickness of the road edges on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches half of the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 10 centimeters.</source>
@@ -3472,7 +3472,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The action for a short press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
-        <translation type="gpt-4o-generated">按下&lt;b&gt;距離&lt;/b&gt;按鈕的短按動作。</translation>
+        <translation type="gpt-4o-generated">按一下&lt;b&gt;距離&lt;/b&gt;按鈕的動作。</translation>
     </message>
     <message>
         <source>Distance Button (Long Press)</source>
@@ -3480,7 +3480,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The action for a 0.5+ second press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
-        <translation type="gpt-4o-generated">按下&lt;b&gt;距離&lt;/b&gt;按鈕超過0.5秒的操作。</translation>
+        <translation type="gpt-4o-generated">按下&lt;b&gt;距離&lt;/b&gt;按鈕超過0.5秒的動作。</translation>
     </message>
     <message>
         <source>Distance Button (Very Long Press)</source>
@@ -3488,11 +3488,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>The action for a 2.5+ second press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
-        <translation type="gpt-4o-generated">&lt;b&gt;距離&lt;/b&gt;按鈕按下2.5秒以上的操作。</translation>
+        <translation type="gpt-4o-generated">按下&lt;b&gt;距離&lt;/b&gt;按鈕超過 2.5 秒的操作。</translation>
     </message>
     <message>
         <source>LKAS Button</source>
-        <translation type="gpt-4o-generated">LKAS 按鈕</translation>
+        <translation type="gpt-4o-generated">LKAS按鈕</translation>
     </message>
     <message>
         <source>The ahe action for pressing the &lt;b&gt;LKAS&lt;/b&gt; button.</source>
@@ -3512,7 +3512,7 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Force openpilot to Coast</source>
-        <translation type="gpt-4o-generated">強制開放駕駛滑行</translation>
+        <translation type="gpt-4o-generated">強制 openpilot 進入滑行模式</translation>
     </message>
     <message>
         <source>Pause Longitudinal</source>
@@ -3749,11 +3749,11 @@ Want to submit your own animations? Share them in the "custom-themes" channel on
     </message>
     <message>
         <source>Go to https://connect.comma.ai on your phone</source>
-        <translation type="gpt-4o-generated">請在手機上訪問 https://connect.comma.ai</translation>
+        <translation type="gpt-4o-generated">在您的手機上訪問 https://connect.comma.ai</translation>
     </message>
     <message>
         <source>Bookmark connect.comma.ai to your home screen to use it like an app</source>
-        <translation type="gpt-4o-generated">將 connect.comma.ai 書籤添加到您的主屏幕以像應用程式一樣使用</translation>
+        <translation type="gpt-4o-generated">將 connect.comma.ai 加入主畫面以像應用程式一樣使用</translation>
     </message>
 </context>
 <context>
@@ -3935,7 +3935,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Since you're fairly new to FrogPilot, the 'Minimal' toggle preset has been applied, but you can change this at any time via the 'Tuning Level' button!</source>
-        <translation type="gpt-4o-generated">由於您對 FrogPilot 還比較陌生，因此已應用「最小化」切換預設，但您可以隨時通過「調整級別」按鈕進行更改！</translation>
+        <translation type="gpt-4o-generated">由於您對 FrogPilot 還比較陌生，已應用「Minimal」切換預設，但您可以隨時通過「Tuning Level」按鈕進行更改！</translation>
     </message>
     <message>
         <source>Since you're experienced with openpilot, the 'Standard' toggle preset has been applied, but you can change this at any time via the 'Tuning Level' button!</source>
@@ -3943,7 +3943,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Since you're experienced with FrogPilot, the 'Standard' toggle preset has been applied, but you can change this at any time via the 'Tuning Level' button!</source>
-        <translation type="gpt-4o-generated">由於您對 FrogPilot 有經驗，已套用「標準」切換預設，但您可以隨時通過「調整級別」按鈕進行更改！</translation>
+        <translation type="gpt-4o-generated">由於您對 FrogPilot 有經驗，已應用「標準」切換預設，但您可以隨時透過「調校等級」按鈕進行更改！</translation>
     </message>
     <message>
         <source>Since you're very experienced with FrogPilot, the 'Advanced' toggle preset has been applied, but you can change this at any time via the 'Tuning Level' button!</source>
@@ -4148,7 +4148,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>CPU</source>
-        <translation type="gpt-4o-generated">中央處理器</translation>
+        <translation type="gpt-4o-generated">中央處理器 (CPU)</translation>
     </message>
     <message>
         <source> GB</source>
@@ -4247,7 +4247,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>FrogPilot will automatically update itself and it's assets when you're offroad and connected to Wi-Fi.</source>
-        <translation type="gpt-4o-generated">FrogPilot 將在您斷開駕駛並連接到 Wi-Fi 時自動更新自身及其資源。</translation>
+        <translation type="gpt-4o-generated">FrogPilot 會在您離線且連接到 Wi-Fi 時自動更新自身及其資產。</translation>
     </message>
     <message>
         <source>Error Log</source>
@@ -4263,15 +4263,15 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
-        <translation type="gpt-4o-generated">您是否要刪除深度儲存的 FrogPilot 資產？這包括您快速重新安裝的切換設定。</translation>
+        <translation type="gpt-4o-generated">您是否要刪除深層儲存 FrogPilot 資產？這包括您用於快速重新安裝的切換設置。</translation>
     </message>
     <message>
         <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you'll lose all your previous settings!</source>
-        <translation type="gpt-4o-generated">你確定嗎？這是百分之百無法恢復的，如果你重新安裝 FrogPilot，你將失去所有之前的設定！</translation>
+        <translation type="gpt-4o-generated">您確定嗎？這是100%無法恢復的，如果您重新安裝FrogPilot，您將失去所有先前的設定！</translation>
     </message>
     <message>
         <source>This branch must be downloaded before switching. Would you like to download it now?</source>
-        <translation type="gpt-4o-generated">在切換之前必須下載此分支。您現在要下載嗎？</translation>
+        <translation type="gpt-4o-generated">你想現在下載嗎？</translation>
     </message>
 </context>
 <context>
@@ -4529,7 +4529,7 @@ This may take up to a minute.</source>
     </message>
     <message>
         <source>Toggle off the 'Turn Off Data Uploads' toggle to re-enable uploads.</source>
-        <translation type="gpt-4o-generated">關閉「關閉數據上傳」開關以重新啟用上傳。</translation>
+        <translation type="gpt-4o-generated">關閉「關閉數據上傳」切換開關以重新啟用上傳。</translation>
     </message>
 </context>
 <context>
