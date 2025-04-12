@@ -12,49 +12,50 @@ public:
 
 signals:
   void openParentToggle();
-  void openSubParentToggle();
 
 protected:
   void showEvent(QShowEvent *event) override;
 
 private:
-  void hideSubToggles();
-  void hideToggles();
-  void showToggles(const std::set<QString> &keys);
-  void startDownloadAllModels();
-  void updateCalibrationDescription();
-  void updateModelLabels();
+  void updateModelLabels(FrogPilotListWidget *labelsList);
   void updateState(const UIState &s);
+  void updateToggles();
 
-  std::set<QString> modelRandomizerKeys = {
-    "ManageBlacklistedModels", "ResetScores", "ReviewScores"
-  };
+  bool allModelsDownloaded;
+  bool allModelsDownloading;
+  bool cancellingDownload;
+  bool finalizingDownload;
+  bool modelDownloading;
+  bool noModelsDownloaded;
+  bool started;
 
-  ButtonControl *deleteModelBtn;
-  ButtonControl *downloadAllModelsBtn;
-  ButtonControl *downloadModelBtn;
+  int tuningLevel;
+
+  std::map<QString, AbstractControl*> toggles;
+
   ButtonControl *selectModelBtn;
 
+  FrogPilotButtonsControl *deleteModelBtn;
+  FrogPilotButtonsControl *downloadModelBtn;
+
+  FrogPilotSettingsWindow *parent;
+
   Params params;
-  Params paramsMemory{"/dev/shm/params"};
-  Params paramsStorage{"/persist/params"};
+  Params params_cache{"/cache/params"};
+  Params params_default{"/dev/shm/params_default"};
+  Params params_memory{"/dev/shm/params"};
 
   QDir modelDir{"/data/models/"};
 
-  QList<LabelControl*> labelControls;
+  QJsonObject frogpilotToggleLevels;
 
-  QStringList availableModelNames;
+  QMap<QString, QString> modelFileToNameMap;
+  QMap<QString, QString> modelFileToNameMapProcessed;
+
+  QString currentModel;
+
   QStringList availableModels;
-  QStringList experimentalModels;
-
-  bool allModelsDownloading;
-  bool cancellingDownload;
-  bool haveModelsDownloaded;
-  bool modelDeleting;
-  bool modelDownloading;
-  bool modelRandomizer;
-  bool modelsDownloaded;
-  bool started;
-
-  std::map<QString, AbstractControl*> toggles;
+  QStringList availableModelNames;
+  QStringList deletableModels;
+  QStringList downloadableModels;
 };
