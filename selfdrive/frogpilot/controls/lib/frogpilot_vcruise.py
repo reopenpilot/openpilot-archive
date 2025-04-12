@@ -151,4 +151,7 @@ class FrogPilotVCruise:
 
       v_cruise = min([target if target > CRUISING_SPEED else v_cruise for target in targets])
 
+    self.mtsc_target += v_cruise_diff
+    self.vtsc_target += v_cruise_diff
+
     return v_cruise
