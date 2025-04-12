@@ -72,12 +72,10 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
 def cleanup_backups(directory, limit, compressed=False):
   directory.mkdir(parents=True, exist_ok=True)
 
-  backups = sorted(directory.glob("*_auto*"), key=lambda x: x.stat().st_mtime, reverse=True)
-  for backup in backups[:]:
-    if "_in_progress" in backup.name:
-      delete_file(backup)
-      backups.remove(backup)
+  for in_progress in directory.glob("*_in_progress*"):
+    delete_file(in_progress)
 
+  backups = sorted(directory.glob("*_auto*"), key=lambda x: x.stat().st_mtime, reverse=True)
   for oldest_backup in backups[limit:]:
     delete_file(oldest_backup)
 
@@ -131,7 +129,7 @@ def frogpilot_boot_functions(build_metadata, params_cache):
   if params.get_bool("HasAcceptedTerms"):
     params_cache.clear_all()
 
-  FrogPilotVariables().update(holiday_theme="stock", started=False)
+  FrogPilotVariables().update(holiday_theme="stock", started=False, boot_run=True)
   ModelManager().copy_default_model()
   ThemeManager().update_active_theme(time_validated=system_time_valid(), frogpilot_toggles=get_frogpilot_toggles(), boot_run=True)
 
