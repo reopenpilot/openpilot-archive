@@ -28,6 +28,7 @@ class FrogPilotVCruise:
     self.override_force_stop_timer = 0
     self.slc_offset = 0
     self.slc_target = 0
+    self.speed_limit_timer = 0
 
   def update(self, carState, controlsState, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled and frogpilot_toggles.force_stops
