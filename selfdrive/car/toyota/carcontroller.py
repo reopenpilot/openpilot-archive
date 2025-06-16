@@ -92,13 +92,13 @@ class CarController(CarControllerBase):
     self.secoc_key: bytes = b"00" * 16
 
     # FrogPilot variables
-    self.stock_max_accel = self.params.ACCEL_MAX
-
     self.doors_locked = False
     self.reverse_cruise_active = False
 
     self.cruise_timer = 0
     self.previous_set_speed = 0
+
+    self.stock_max_accel = self.params.ACCEL_MAX
 
   def update(self, CC, CS, now_nanos, frogpilot_toggles):
     if frogpilot_toggles.sport_plus and (CS.out.gearShifter == GearShifter.sport or not frogpilot_toggles.map_acceleration):
