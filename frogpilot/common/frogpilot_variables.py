@@ -851,7 +851,6 @@ class FrogPilotVariables:
     slc_override_method = params.get_int("SLCOverride") if toggle.speed_limit_controller and tuning_level >= level["SLCOverride"] else default.get_int("SLCOverride")
     toggle.speed_limit_controller_override_manual = slc_override_method == 1
     toggle.speed_limit_controller_override_set_speed = slc_override_method == 2
-    toggle.speed_limit_filler = toggle.speed_limit_controller and (params.get_bool("SpeedLimitFiller") if tuning_level >= level["SpeedLimitFiller"] else default.get_bool("SpeedLimitFiller"))
     toggle.speed_limit_offset1 = (params.get_int("Offset1") * speed_conversion if tuning_level >= level["Offset1"] else default.get_int("Offset1") * CV.MPH_TO_MS) if toggle.speed_limit_controller else 0
     toggle.speed_limit_offset2 = (params.get_int("Offset2") * speed_conversion if tuning_level >= level["Offset2"] else default.get_int("Offset2") * CV.MPH_TO_MS) if toggle.speed_limit_controller else 0
     toggle.speed_limit_offset3 = (params.get_int("Offset3") * speed_conversion if tuning_level >= level["Offset3"] else default.get_int("Offset3") * CV.MPH_TO_MS) if toggle.speed_limit_controller else 0
@@ -865,6 +864,8 @@ class FrogPilotVariables:
     toggle.speed_limit_priority_highest = toggle.speed_limit_priority1 == "Highest"
     toggle.speed_limit_priority_lowest = toggle.speed_limit_priority1 == "Lowest"
     toggle.speed_limit_sources = toggle.speed_limit_controller and (params.get_bool("SpeedLimitSources") if tuning_level >= level["SpeedLimitSources"] else default.get_bool("SpeedLimitSources"))
+
+    toggle.speed_limit_filler = params.get_bool("SpeedLimitFiller") if tuning_level >= level["SpeedLimitFiller"] else default.get_bool("SpeedLimitFiller")
 
     toggle.startup_alert_top = params.get("StartupMessageTop", encoding="utf-8") if tuning_level >= level["StartupMessageTop"] else default.get("StartupMessageTop", encoding="utf-8")
     toggle.startup_alert_bottom = params.get("StartupMessageBottom", encoding="utf-8") if tuning_level >= level["StartupMessageBottom"] else default.get("StartupMessageBottom", encoding="utf-8")
