@@ -2418,6 +2418,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot'
 > > </details>
 > >
 > 
+> > <details><summary>20250622-1900</summary>
+> >
+> > #### fp-FrogPilot-20250622-1900
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-20250622-1900
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-20250622-1900
+> > ```
+> >
+> > </details>
+> >
+> 
 > > <details><summary>20250622-2358</summary>
 > >
 > > #### fp-FrogPilot-20250622-2358
@@ -8044,6 +8058,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > > ```
 > > ```
 > > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20250622-0354
+> > ```
+> >
+> > </details>
+> >
+> 
+> > <details><summary>20250622-1900</summary>
+> >
+> > #### fp-FrogPilot-Staging-20250622-1900
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20250622-1900
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20250622-1900
 > > ```
 > >
 > > </details>
