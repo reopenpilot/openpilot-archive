@@ -304,22 +304,39 @@ async function deleteAllRoutes() {
   state.showDeleteAllModal = false;
   state.isDeletingAll = true;
 
-  const refreshInterval = setInterval(refresh, 500);
-
   try {
     const response = await fetch('/api/routes/delete_all', { method: 'DELETE' });
-    if (response.ok) {
-      showSnackbar("All routes deleted!");
-    } else {
-      const errorData = await response.json();
-      showSnackbar(errorData.error || "Failed to delete all routes...", "error");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.substring(6));
+            if (data.deleted_route) {
+              state.routes = state.routes.filter(route => route.name !== data.deleted_route);
+            }
+            if (data.status === 'complete') {
+              showSnackbar("All routes deleted!");
+              break;
+            }
+          } catch (e) {
+            console.error("Failed to parse JSON:", e);
+          }
+        }
+      }
     }
   } catch (_) {
     showSnackbar("An error occurred while deleting all routes...", "error");
   } finally {
-    resetInterval(refreshInterval);
     state.isDeletingAll = false;
-    refresh();
   }
 }
 
@@ -369,11 +386,6 @@ export function RouteRecordings() {
                     @mouseenter="${e => {
                       if (state.selectedRoute) return;
 
-                      document.querySelectorAll('.recording-preview-gif').forEach(g => {
-                        g.style.display = 'none';
-                        g.previousElementSibling.style.display = 'block';
-                      });
-
                       const card = e.currentTarget;
                       const gif = card.querySelector('.recording-preview-gif');
                       const png = card.querySelector('.recording-preview-png');
@@ -384,15 +396,20 @@ export function RouteRecordings() {
                         return;
                       }
 
+                      card.dataset.loadingGif = 'true';
                       const preloader = new Image();
                       preloader.onload = () => {
-                        gif.src = preloader.src;
-                        png.style.display = 'none';
-                        gif.style.display = 'block';
-                        card.dataset.gifLoaded = true;
+                        if (card.dataset.loadingGif === 'true') {
+                          gif.src = preloader.src;
+                          png.style.display = 'none';
+                          gif.style.display = 'block';
+                          card.dataset.gifLoaded = true;
+                        }
+                        delete card.dataset.loadingGif;
                       };
                       preloader.onerror = () => {
                         console.error('Failed to load preview GIF:', preloader.src);
+                        delete card.dataset.loadingGif;
                       };
 
                       preloader.src = gif.dataset.src;
@@ -401,6 +418,9 @@ export function RouteRecordings() {
                       const card = e.currentTarget;
                       card.querySelector('.recording-preview-png').style.display = 'block';
                       card.querySelector('.recording-preview-gif').style.display = 'none';
+                      if (card.dataset.loadingGif === 'true') {
+                        delete card.dataset.loadingGif;
+                      }
                     }}"
                     @click="${() => {
                       state.selectedRoute = route;

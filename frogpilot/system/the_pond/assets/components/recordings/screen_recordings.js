@@ -207,17 +207,42 @@ function closeOverlay() {
 
 async function deleteAllRecordings() {
   state.showDeleteAllModal = false;
+  state.isDeletingAll = true;
 
   try {
-    const res = await fetch('/api/screen_recordings/delete_all', { method: 'DELETE' });
-    if (res.ok) {
-      showSnackbar("All recordings deleted!");
-      refresh();
-    } else {
-      showSnackbar("Delete all failed...", "error");
+    const response = await fetch('/api/screen_recordings/delete_all', { method: 'DELETE' });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.substring(6));
+            if (data.deleted_recording) {
+              state.recordings = state.recordings.filter(rec => rec.filename !== data.deleted_recording);
+            }
+            if (data.status === 'complete') {
+              showSnackbar("All screen recordings deleted!");
+              break;
+            }
+          } catch (e) {
+            console.error("Failed to parse JSON:", e);
+          }
+        }
+      }
     }
-  } catch (err) {
-    showSnackbar("An error occurred while deleting recordings.", "error");
+  } catch (_) {
+    showSnackbar("An error occurred while deleting all screen recordings...", "error");
+  } finally {
+    state.isDeletingAll = false;
+    refresh();
   }
 }
 
@@ -248,35 +273,43 @@ export function ScreenRecordings() {
               <div
                 class="recording-card"
                 @mouseenter="${e => {
-                  if (!state.selectedRecording) {
-                    const card = e.currentTarget;
-                    const gif = card.querySelector('.recording-preview-gif');
-                    const png = card.querySelector('.recording-preview-png');
+                  if (state.selectedRecording) return;
 
-                    if (card.dataset.gifLoaded) {
-                      png.style.display = 'none';
-                      gif.style.display = 'block';
-                      return;
-                    }
+                  const card = e.currentTarget;
+                  const gif = card.querySelector('.recording-preview-gif');
+                  const png = card.querySelector('.recording-preview-png');
 
-                    const preloader = new Image();
-                    preloader.onload = () => {
-                      gif.src = preloader.src;
-                      png.style.display = 'none';
-                      gif.style.display = 'block';
-                      card.dataset.gifLoaded = true;
-                    };
-                    preloader.onerror = () => {
-                      console.error('Failed to load preview GIF:', preloader.src);
-                    };
-
-                    preloader.src = gif.dataset.src;
+                  if (card.dataset.gifLoaded) {
+                    png.style.display = 'none';
+                    gif.style.display = 'block';
+                    return;
                   }
+
+                  card.dataset.loadingGif = 'true';
+                  const preloader = new Image();
+                  preloader.onload = () => {
+                    if (card.dataset.loadingGif === 'true') {
+                        gif.src = preloader.src;
+                        png.style.display = 'none';
+                        gif.style.display = 'block';
+                        card.dataset.gifLoaded = true;
+                    }
+                    delete card.dataset.loadingGif;
+                  };
+                  preloader.onerror = () => {
+                    console.error('Failed to load preview GIF:', preloader.src);
+                    delete card.dataset.loadingGif;
+                  };
+
+                  preloader.src = gif.dataset.src;
                 }}"
                 @mouseleave="${e => {
-                  const card = e.currentTarget
-                  card.querySelector('.recording-preview-png').style.display = 'block'
-                  card.querySelector('.recording-preview-gif').style.display = 'none'
+                  const card = e.currentTarget;
+                  card.querySelector('.recording-preview-png').style.display = 'block';
+                  card.querySelector('.recording-preview-gif').style.display = 'none';
+                  if (card.dataset.loadingGif === 'true') {
+                      delete card.dataset.loadingGif;
+                  }
                 }}"
                 @click="${() => { state.selectedRecording = rec }}"
               >

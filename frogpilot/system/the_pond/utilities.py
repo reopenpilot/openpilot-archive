@@ -258,7 +258,7 @@ def video_to_gif(input_path, output_path):
 
 def video_to_png(input_path, output_path):
   run_ffmpeg([
-    "-ss", "2",
+    "-ss", str(get_video_duration(input_path) / 2),
     "-i", str(input_path),
     "-frames:v", "1",
     str(output_path)

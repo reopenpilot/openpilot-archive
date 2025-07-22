@@ -374,9 +374,18 @@ def setup(app):
 
   @app.route("/api/screen_recordings/delete_all", methods=["DELETE"])
   def delete_all_screen_recordings():
-    for f in os.listdir(SCREEN_RECORDINGS_PATH):
-      delete_file(os.path.join(SCREEN_RECORDINGS_PATH, f))
-    return {"message": "All recordings deleted!"}, 200
+    def generate():
+      files_to_delete = [f for f in os.listdir(SCREEN_RECORDINGS_PATH) if f.endswith(".mp4")]
+      for filename in files_to_delete:
+        delete_file(os.path.join(SCREEN_RECORDINGS_PATH, filename))
+        for ext in (".png", ".gif"):
+          thumb = os.path.join(SCREEN_RECORDINGS_PATH, filename.replace(".mp4", ext))
+          if os.path.exists(thumb):
+            delete_file(thumb)
+        yield f"data: {json.dumps({'deleted_recording': filename})}\\n\\n"
+        time.sleep(0.1)
+      yield f"data: {json.dumps({'status': 'complete'})}\\n\\n"
+    return Response(generate(), mimetype="text/event-stream")
 
   @app.route("/api/screen_recordings/download/<path:filename>", methods=["GET"])
   def download_screen_recording(filename):
@@ -456,11 +465,24 @@ def setup(app):
 
   @app.route("/api/routes/delete_all", methods=["DELETE"])
   def delete_all_routes():
-    for footage_path in FOOTAGE_PATHS:
-      if os.path.exists(footage_path):
-        for segment in os.listdir(footage_path):
-          delete_file(os.path.join(footage_path, segment))
-    return {"message": "All routes deleted!"}, 200
+    def generate():
+      route_names = set()
+      for footage_path in FOOTAGE_PATHS:
+        if os.path.exists(footage_path):
+          for segment in os.listdir(footage_path):
+            route_names.add(segment.split('--')[0])
+
+      for route_name in sorted(list(route_names)):
+        for footage_path in FOOTAGE_PATHS:
+          if os.path.exists(footage_path):
+            for segment in os.listdir(footage_path):
+              if segment.startswith(route_name):
+                  delete_file(os.path.join(footage_path, segment))
+          yield f"data: {json.dumps({'deleted_route': route_name})}\\n\\n"
+          time.sleep(0.1)
+
+      yield f"data: {json.dumps({'status': 'complete'})}\\n\\n"
+    return Response(generate(), mimetype="text/event-stream")
 
   @app.route("/api/routes/<name>/preserve", methods=["POST"])
   def preserve_route(name):
@@ -868,7 +890,8 @@ def setup(app):
   @app.route("/thumbnails/<path:file_path>", methods=["GET"])
   def get_thumbnail(file_path):
     for footage_path in FOOTAGE_PATHS:
-      return send_from_directory(footage_path, file_path, as_attachment=True)
+      if os.path.exists(os.path.join(footage_path, file_path)):
+        return send_from_directory(footage_path, file_path, as_attachment=True)
     return {"error": "Thumbnail not found"}, 404
 
   @app.route("/video/<path>", methods=["GET"])
