@@ -56,12 +56,22 @@ class MapSpeedLogger:
   @staticmethod
   def cleanup_dataset(dataset):
     cleaned_data = OrderedDict()
+
     for item in dataset:
+      if "last_vetted" in item or "segment_id" in item:
+        required = {"last_vetted", "segment_id", "source", "speed_limit", "start_coordinates"}
+      else:
+        required = {"bearing", "end_coordinates", "incorrect_limit", "road_name", "road_width", "source", "speed_limit", "start_coordinates"}
+
+      if not required.issubset(item.keys()):
+        continue
+
       entry_copy = item.copy()
       entry_copy.pop("last_vetted", None)
 
       key = json.dumps(entry_copy, sort_keys=True)
       cleaned_data[key] = item
+
     return deque(cleaned_data.values(), maxlen=MAX_ENTRIES)
 
   @staticmethod
