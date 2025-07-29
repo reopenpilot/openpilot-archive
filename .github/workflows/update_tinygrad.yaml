@@ -5,7 +5,7 @@ on:
 
 jobs:
   update_tinygrad:
-    name: Zip and upload versioned Tinygrad folders
+    name: Update Tinygrad
     runs-on:
       - self-hosted
       - c3x
@@ -39,12 +39,7 @@ jobs:
           git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git
 
       - name: Push updated Tinygrad
-        env:
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          cd /data/tmp/frogpilot_tinygrad
-
-          git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git repo
           cd repo
 
           cp ../Tinygrad_*.zip .
