@@ -28,7 +28,7 @@ jobs:
           mkdir -p /data/tmp/frogpilot_tinygrad
           cd /data/openpilot
 
-          ZIP_NAME="Tinygrad_v${{ steps.get_version.outputs.version }}.zip"
+          ZIP_NAME="Tinygrad_${{ steps.get_version.outputs.version }}.zip"
           zip -r "/data/tmp/frogpilot_tinygrad/$ZIP_NAME" frogpilot/tinygrad_modeld tinygrad
 
       - name: Clone GitLab repo
@@ -38,19 +38,23 @@ jobs:
           cd /data/tmp/frogpilot_tinygrad
           git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git
 
-      - name: Copy and push zip to GitLab
+      - name: Push updated Tinygrad
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          cd /data/tmp/frogpilot_tinygrad/FrogPilot-Resources
-          mkdir -p Tinygrad
+          cd /data/tmp/frogpilot_tinygrad
 
-          ZIP_NAME="Tinygrad_v${{ steps.get_version.outputs.version }}.zip"
-          cp "../$ZIP_NAME" Tinygrad/
+          git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git repo
+          cd repo
 
-          git config --global user.name "James"
-          git config --global user.email "91348155+FrogAi@users.noreply.github.com"
-          git add Tinygrad/$ZIP_NAME
-          git commit -m "Updated Tinygrad: $ZIP_NAME" || echo "No changes to commit"
-          git push origin main
+          cp ../Tinygrad_*.zip .
+
+          git config user.name "James"
+          git config user.email "91348155+FrogAi@users.noreply.github.com"
+
+          git add Tinygrad_*.zip
+          git commit -m "Updated Tinygrad: Tinygrad_${{ steps.get_version.outputs.version }}.zip"
+          git push origin Tinygrad
 
       - name: Cleanup temporary files
         run: |
