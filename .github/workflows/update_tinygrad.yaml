@@ -32,9 +32,11 @@ jobs:
           zip -r "/data/tmp/frogpilot_tinygrad/$ZIP_NAME" frogpilot/tinygrad_modeld tinygrad
 
       - name: Clone GitLab repo
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           cd /data/tmp/frogpilot_tinygrad
-          git clone https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/FrogAi/FrogPilot-Resources.git
+          git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git
 
       - name: Copy and push zip to GitLab
         run: |
