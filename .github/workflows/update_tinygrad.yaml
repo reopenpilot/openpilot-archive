@@ -1,0 +1,50 @@
+name: Update Tinygrad
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update_tinygrad:
+    name: Zip and upload versioned Tinygrad folders
+    runs-on: [self-hosted, c3x]
+
+    steps:
+      - name: Extract "VERSION" from model_manager.py
+        id: get_version
+        run: |
+          VERSION=$(grep '^VERSION' /data/openpilot/frogpilot/assets/model_manager.py | cut -d '"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    steps:
+      - name: Install zip
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Zip Tinygrad folders
+        run: |
+          mkdir -p /tmp/frogpilot_tinygrad
+          cd /data/openpilot
+
+          ZIP_NAME="Tinygrad_v${{ steps.get_version.outputs.version }}.zip"
+          zip -r "/tmp/frogpilot_tinygrad/$ZIP_NAME" frogpilot/tinygrad_modeld tinygrad
+
+      - name: Clone GitLab repo
+        run: |
+          cd /tmp/frogpilot_tinygrad
+          git clone https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/FrogAi/FrogPilot-Resources.git
+
+      - name: Copy and push zip to GitLab
+        run: |
+          cd /tmp/frogpilot_tinygrad/FrogPilot-Resources
+          mkdir -p Tinygrad
+
+          ZIP_NAME="Tinygrad_v${{ steps.get_version.outputs.version }}.zip"
+          cp "../$ZIP_NAME" Tinygrad/
+
+          git config --global user.name "James"
+          git config --global user.email "91348155+FrogAi@users.noreply.github.com"
+          git add Tinygrad/$ZIP_NAME
+          git commit -m "Updated Tinygrad: $ZIP_NAME" || echo "No changes to commit"
+          git push origin main
+
+      - name: Cleanup temporary files
+        run: rm -rf /tmp/frogpilot_tinygrad
