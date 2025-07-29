@@ -23,32 +23,31 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zip
 
-      - name: Zip Tinygrad folders
-        run: |
-          mkdir -p /data/tmp/frogpilot_tinygrad
-          cd /data/openpilot
-
-          ZIP_NAME="Tinygrad_${{ steps.get_version.outputs.version }}.zip"
-          zip -r "/data/tmp/frogpilot_tinygrad/$ZIP_NAME" frogpilot/tinygrad_modeld tinygrad
-
       - name: Clone GitLab repo
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
+          mkdir -p /data/tmp/frogpilot_tinygrad
           cd /data/tmp/frogpilot_tinygrad
           git clone --depth 1 --branch Tinygrad https://oauth2:${GITLAB_TOKEN}@gitlab.com/FrogAi/FrogPilot-Resources.git
 
+      - name: Zip Tinygrad folders
+        run: |
+          cd /data/openpilot
+
+          ZIP_NAME="Tinygrad_${{ steps.get_version.outputs.version }}.zip"
+
+          zip -r "/data/tmp/frogpilot_tinygrad/FrogPilot-Resources/$ZIP_NAME" frogpilot/tinygrad_modeld tinygrad
+
       - name: Push updated Tinygrad
         run: |
-          cd repo
-
-          cp ../Tinygrad_*.zip .
+          cd /data/tmp/frogpilot_tinygrad/FrogPilot-Resources
 
           git config user.name "James"
           git config user.email "91348155+FrogAi@users.noreply.github.com"
 
           git add Tinygrad_*.zip
-          git commit -m "Updated Tinygrad: Tinygrad_${{ steps.get_version.outputs.version }}.zip"
+          git commit -m "Updated Tinygrad: ${{ steps.get_version.outputs.version }}"
           git push origin Tinygrad
 
       - name: Cleanup temporary files
