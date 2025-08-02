@@ -2,10 +2,12 @@ import json
 import math
 import numpy as np
 import os
+import random
 import subprocess
 import sys
 import urllib.request
 
+from collections import Counter
 from datetime import datetime, timezone
 
 import openpilot.system.sentry as sentry
@@ -50,14 +52,26 @@ def get_zip_code_center(latitude, longitude):
     with urllib.request.urlopen(request, timeout=10) as response:
       location_data = json.load(response)
 
-    postal_code = location_data.get("address", {}).get("postcode", "")
+    postal_code = location_data.get("address", {}).get("postcode")
+    if not postal_code:
+      sentry.capture_exception(Exception(f"Reverse geocoding failed: missing postal code for lat={latitude}, lon={longitude}, response={location_data}"))
+      raise ValueError("Postal code missing from reverse geocoding response")
+
     postal_code = postal_code.split("-")[0]
     postal_code_info = geocoder.query_postal_code(postal_code)
 
-    if postal_code_info is not None and not math.isnan(postal_code_info.latitude) and not math.isnan(postal_code_info.longitude):
-      return float(postal_code_info.latitude), float(postal_code_info.longitude)
+    if postal_code_info is not None:
+      if not math.isnan(postal_code_info.latitude) and not math.isnan(postal_code_info.longitude):
+        return float(postal_code_info.latitude), float(postal_code_info.longitude)
+      else:
+        sentry.capture_exception(Exception(f"Postal code lookup returned NaN coordinates for code={postal_code}, data={postal_code_info}"))
+    else:
+      sentry.capture_exception(Exception(f"Postal code lookup returned None for code={postal_code}"))
 
     postal_code_data = geocoder._data[["postal_code", "latitude", "longitude"]].dropna()
+    if postal_code_data.empty:
+      sentry.capture_exception(Exception(f"Fallback postal code dataset is empty for lat={latitude}, lon={longitude}"))
+      raise ValueError("Fallback postal code dataset is empty")
 
     latitude_radians = math.radians(latitude)
     longitude_radians = math.radians(longitude)
@@ -77,6 +91,9 @@ def get_zip_code_center(latitude, longitude):
     closest_index = int(np.argmin(haversine_distance))
     closest_latitude = float(postal_code_data.iloc[closest_index]["latitude"])
     closest_longitude = float(postal_code_data.iloc[closest_index]["longitude"])
+
+    if closest_latitude == 0.0 and closest_longitude == 0.0:
+      sentry.capture_exception(Exception(f"Fallback to nearest ZIP returned (0.0, 0.0) for lat={latitude}, lon={longitude}"))
 
     return closest_latitude, closest_longitude
 
@@ -108,6 +125,20 @@ def send_stats():
   original_longitude = location.get("longitude")
   latitude, longitude = get_zip_code_center(original_latitude, original_longitude)
 
+  theme_sources = [
+    frogpilot_toggles.icon_pack.replace("-animated", ""),
+    frogpilot_toggles.color_scheme,
+    frogpilot_toggles.distance_icons.replace("-animated", ""),
+    frogpilot_toggles.signal_icons.replace("-animated", ""),
+    frogpilot_toggles.sound_pack
+  ]
+
+  theme_counter = Counter(theme_sources)
+  most_common = theme_counter.most_common()
+  max_count = most_common[0][1]
+
+  selected_theme = random.choice([item for item, count in most_common if count == max_count])
+
   point = (Point("user_stats")
     .field("car_make", frogpilot_toggles.car_make.title())
     .field("car_model", frogpilot_toggles.car_model)
@@ -118,7 +149,7 @@ def send_stats():
     .field("frogpilot_miles", params_tracking.get_int("FrogPilotKilometers") * CV.KPH_TO_MPH)
     .field("latitude", latitude)
     .field("longitude", longitude)
-    .field("theme", frogpilot_toggles.icon_pack)
+    .field("theme", selected_theme.title())
 
     .tag("branch", get_build_metadata().channel)
     .tag("dongle_id", params.get("FrogPilotDongleId", encoding="utf-8"))
