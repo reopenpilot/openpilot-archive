@@ -118,6 +118,7 @@ def send_stats():
     .field("frogpilot_miles", params_tracking.get_int("FrogPilotKilometers") * CV.KPH_TO_MPH)
     .field("latitude", latitude)
     .field("longitude", longitude)
+    .field("theme", frogpilot_toggles.icon_pack)
 
     .tag("branch", get_build_metadata().channel)
     .tag("dongle_id", params.get("FrogPilotDongleId", encoding="utf-8"))
