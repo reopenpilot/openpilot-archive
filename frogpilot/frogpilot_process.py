@@ -16,6 +16,7 @@ from openpilot.frogpilot.common.frogpilot_utilities import flash_panda, is_url_p
 from openpilot.frogpilot.common.frogpilot_variables import ERROR_LOGS_PATH, FrogPilotVariables, get_frogpilot_toggles, params, params_cache, params_memory
 from openpilot.frogpilot.controls.frogpilot_planner import FrogPilotPlanner
 from openpilot.frogpilot.controls.lib.frogpilot_tracking import FrogPilotTracking
+from openpilot.frogpilot.system.frogpilot_stats import send_stats
 
 def assets_checks(model_manager, theme_manager):
   if params_memory.get_bool(MODEL_DOWNLOAD_ALL_PARAM):
@@ -107,6 +108,9 @@ def frogpilot_thread():
 
       if frogpilot_toggles.random_themes:
         theme_manager.update_active_theme(time_validated, frogpilot_toggles, randomize_theme=True)
+
+      if time_validated and is_url_pingable(os.environ.get("STATS_URL", "")):
+        send_stats()
 
       params_memory.put_bool("IsOnroad", False)
 
