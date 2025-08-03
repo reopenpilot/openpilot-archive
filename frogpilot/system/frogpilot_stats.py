@@ -46,7 +46,7 @@ def install_influxdb_client():
     stock_mount_options = subprocess.run(["findmnt", "-no", "OPTIONS", "/"], capture_output=True, text=True, check=True).stdout.strip()
 
     run_cmd(["sudo", "mount", "-o", "remount,rw", "/"], "Successfully remounted / as read-write", "Failed to remount / as read-write")
-    run_cmd(["sudo", sys.executable, "-m", "pip", "install", "influxdb-client"], "Successfully installed influxdb-client", "Failed to install influxdb-client")
+    run_cmd(["sudo", sys.executable, "-m", "pip", "install", "influxdb-client"], "Successfully installed influxdb-client", "Failed to install influxdb-client", report=False)
     run_cmd(["sudo", "mount", "-o", f"remount,{stock_mount_options}", "/"], "Successfully restored stock mount options", "Failed to restore stock mount options")
 
 def install_pgeocode():
@@ -57,7 +57,7 @@ def install_pgeocode():
     stock_mount_options = subprocess.run(["findmnt", "-no", "OPTIONS", "/"], capture_output=True, text=True, check=True).stdout.strip()
 
     run_cmd(["sudo", "mount", "-o", "remount,rw", "/"], "Successfully remounted / as read-write", "Failed to remount / as read-write")
-    run_cmd(["sudo", sys.executable, "-m", "pip", "install", "pgeocode"], "Successfully installed pgeocode", "Failed to install pgeocode")
+    run_cmd(["sudo", sys.executable, "-m", "pip", "install", "pgeocode"], "Successfully installed pgeocode", "Failed to install pgeocode", report=False)
     run_cmd(["sudo", "mount", "-o", f"remount,{stock_mount_options}", "/"], "Successfully restored stock mount options", "Failed to restore stock mount options")
 
 def get_zip_code_center(latitude, longitude):
