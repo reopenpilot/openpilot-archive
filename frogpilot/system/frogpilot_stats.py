@@ -155,7 +155,7 @@ def send_stats():
   most_common = theme_counter.most_common()
   max_count = most_common[0][1]
 
-  selected_theme = random.choice([item for item, count in most_common if count == max_count]).replace("-User_Created", "").replace("_", " ")
+  selected_theme = random.choice([item for item, count in most_common if count == max_count]).replace("-user_created", "").replace("_", " ")
 
   point = (Point("user_stats")
     .field("car_make", frogpilot_toggles.car_make.title())
