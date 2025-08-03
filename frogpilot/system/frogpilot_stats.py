@@ -3,8 +3,10 @@ import math
 import numpy as np
 import os
 import random
+import socket
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 
 from collections import Counter
@@ -17,6 +19,23 @@ from openpilot.system.version import get_build_metadata
 
 from openpilot.frogpilot.common.frogpilot_utilities import run_cmd
 from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles, params, params_tracking
+
+def handle_geocoding_error(error, latitude, longitude):
+  error_map = {
+    urllib.error.HTTPError: lambda e: f"HTTP error: {e.code} - {e.reason}",
+    urllib.error.URLError: lambda e: f"URL error: {e.reason}",
+    socket.gaierror: lambda e: "DNS resolution failed",
+    socket.timeout: lambda e: "Socket timed out",
+    TimeoutError: lambda e: "System timeout"
+  }
+
+  message = error_map.get(type(error), lambda e: f"Unexpected error: {e}")
+  print(f"Failed to get zip code center: {message(error)}")
+
+  if type(error) not in error_map:
+    sentry.capture_exception(error)
+
+  return latitude, longitude
 
 def install_influxdb_client():
   try:
@@ -99,11 +118,8 @@ def get_zip_code_center(latitude, longitude):
 
     return closest_latitude, closest_longitude
 
-  except Exception as exception:
-    sentry.capture_exception(exception)
-    print(f"Failed to get zip code center: {exception}")
-
-    return latitude, longitude
+  except (urllib.error.URLError, urllib.error.HTTPError, socket.gaierror, socket.timeout, TimeoutError, Exception) as error:
+    return handle_geocoding_error(error, latitude, longitude)
 
 def send_stats():
   frogpilot_toggles = get_frogpilot_toggles()
