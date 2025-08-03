@@ -5,7 +5,9 @@ import datetime
 import filecmp
 import glob
 import os
+import random
 import shutil
+import string
 import subprocess
 import tarfile
 import threading
@@ -146,6 +148,9 @@ def frogpilot_boot_functions(build_metadata, params_cache):
       params.put("DongleId", params.get("KonikDongleId", encoding="utf8"))
   elif params.get("DongleId", encoding="utf8") == params.get("KonikDongleId", encoding="utf8"):
     params.remove("DongleId")
+
+  if params.get("FrogPilotDongleId", encoding="utf8") == None:
+    params.put("FrogPilotDongleId", ''.join(random.choices(string.ascii_lowercase + string.digits, k=16)))
 
   def backup_thread():
     while not system_time_valid():

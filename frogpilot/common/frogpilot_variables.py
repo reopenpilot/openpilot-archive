@@ -211,6 +211,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("ForceStandstill", "0", 2, "0"),
   ("ForceStops", "0", 2, "0"),
   ("FPSCounter", "1", 3, "0"),
+  ("FrogPilotDongleId", "", 0, ""),
   ("FrogsGoMoosTweak", "1", 2, "0"),
   ("FullMap", "0", 2, "0"),
   ("GasRegenCmd", "1", 2, "0"),
