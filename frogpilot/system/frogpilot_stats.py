@@ -78,6 +78,9 @@ def send_stats():
   if frogpilot_toggles.frogs_go_moo:
     return
 
+  if frogpilot_toggles.car_make == "mock":
+    return
+
   install_influxdb_client()
 
   from influxdb_client import InfluxDBClient, Point, WriteOptions
@@ -108,7 +111,7 @@ def send_stats():
   selected_theme = random.choice([item for item, count in most_common if count == max_count]).replace("-user_created", "").replace("_", " ")
 
   point = (Point("user_stats")
-    .field("car_make", frogpilot_toggles.car_make.title())
+    .field("car_make", "GM" if frogpilot_toggles.car_make == "gm" else frogpilot_toggles.car_make.title())
     .field("car_model", frogpilot_toggles.car_model)
     .field("driving_model", frogpilot_toggles.model_name.replace("🗺️", "").replace("📡", "").replace("👀", "").replace("(Default)", "").strip())
     .field("event", 1)
