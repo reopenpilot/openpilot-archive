@@ -118,6 +118,8 @@ def send_stats():
     .field("frogpilot_drives", params_tracking.get_int("FrogPilotDrives"))
     .field("frogpilot_hours", params_tracking.get_int("FrogPilotMinutes") / 60)
     .field("frogpilot_miles", params_tracking.get_int("FrogPilotKilometers") * CV.KPH_TO_MPH)
+    .field("has_pedal", frogpilot_toggles.has_pedal)
+    .field("has_sdsu", frogpilot_toggles.has_sdsu)
     .field("latitude", latitude)
     .field("longitude", longitude)
     .field("theme", selected_theme.title())
