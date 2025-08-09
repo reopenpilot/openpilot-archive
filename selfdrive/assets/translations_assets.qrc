@@ -2,7 +2,10 @@
 <qresource>
 <file alias="main_en">../ui/translations/main_en.qm</file>
 <file alias="main_de">../ui/translations/main_de.qm</file>
+<file alias="main_duck">../ui/translations/main_duck.qm</file>
 <file alias="main_fr">../ui/translations/main_fr.qm</file>
+<file alias="main_frog">../ui/translations/main_frog.qm</file>
+<file alias="main_pirate">../ui/translations/main_pirate.qm</file>
 <file alias="main_pt-BR">../ui/translations/main_pt-BR.qm</file>
 <file alias="main_es">../ui/translations/main_es.qm</file>
 <file alias="main_tr">../ui/translations/main_tr.qm</file>
