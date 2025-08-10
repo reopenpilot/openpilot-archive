@@ -10,6 +10,7 @@ import urllib.request
 
 from collections import Counter
 from datetime import datetime, timezone
+from urllib3.exceptions import ConnectTimeoutError, NewConnectionError, ReadTimeoutError
 
 import openpilot.system.sentry as sentry
 
@@ -19,54 +20,76 @@ from openpilot.system.version import get_build_metadata
 from openpilot.frogpilot.common.frogpilot_utilities import run_cmd
 from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles, params, params_tracking
 
-def get_city_center(latitude, longitude):
+def get_county_center(latitude, longitude):
   try:
     url = f"https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={latitude}&lon={longitude}&addressdetails=1"
-    request = urllib.request.Request(url, headers={"User-Agent": "frogpilot-city-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
+    request = urllib.request.Request(url, headers={"User-Agent": "frogpilot-county-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
     with urllib.request.urlopen(request, timeout=10) as response:
       location_data = json.load(response)
 
     address = location_data.get("address", {})
-    city = address.get("city") or address.get("hamlet") or address.get("town") or address.get("village", "Unknown")
+    county = address.get("county", "Unknown")
     country = address.get("country", "United States")
     country_code = address.get("country_code", "US").upper()
     state = address.get("state", "N/A") if country_code == "US" else "N/A"
 
-    if city:
+    if county and county != "Unknown":
       try:
-        city_query = f"https://nominatim.openstreetmap.org/search?city={urllib.parse.quote(city)}&country={country_code}&format=json&limit=1"
-        city_request = urllib.request.Request(city_query, headers={"User-Agent": "frogpilot-city-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
-        with urllib.request.urlopen(city_request, timeout=10) as city_response:
-          city_data = json.load(city_response)
+        county_query = f"https://nominatim.openstreetmap.org/search?county={urllib.parse.quote(county)}&country={country_code}&format=json&limit=1&extratags=1"
+        county_request = urllib.request.Request(county_query, headers={"User-Agent": "frogpilot-county-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
+        with urllib.request.urlopen(county_request, timeout=10) as county_response:
+          county_data = json.load(county_response)
 
-        if city_data:
-          center_lat = float(city_data[0]["lat"])
-          center_lon = float(city_data[0]["lon"])
-          print(f"Using city center for {city}, {state}, {country} → ({center_lat}, {center_lon})")
-          return center_lat, center_lon, city, state, country
+        if county_data:
+          extratags = county_data[0].get("extratags", {}) or {}
+          population_string = extratags.get("population")
+          try:
+            county_population = int(str(population_string).replace(',', '').strip()) if population_string else 0
+          except Exception:
+            county_population = 0
+
+          if county_population >= 100000:
+            center_latitude = float(county_data[0]["lat"])
+            center_longitude = float(county_data[0]["lon"])
+            print(f"Using county center for {county}, {state}, {country} → ({center_latitude}, {center_longitude})")
+            return center_latitude, center_longitude, county, state, country
+          else:
+            if country_code == "US" and state != "N/A":
+              state_capital_query_url = f"https://nominatim.openstreetmap.org/search?state={urllib.parse.quote(state)}&country={country_code}&q=capital&format=json&limit=1"
+              state_capital_request = urllib.request.Request(state_capital_query_url, headers={"User-Agent": "frogpilot-county-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
+              with urllib.request.urlopen(state_capital_request, timeout=10) as state_capital_response:
+                state_capital_data = json.load(state_capital_response)
+
+              if state_capital_data:
+                capital_latitude = float(state_capital_data[0]["lat"])
+                capital_longitude = float(state_capital_data[0]["lon"])
+                print(f"County population below 100000 ({county_population}). Using state capital for {state} → ({capital_latitude}, {capital_longitude})")
+                return capital_latitude, capital_longitude, "Unknown", state, country
+
+            country_capital_query_url = f"https://nominatim.openstreetmap.org/search?country={country_code}&q=capital&format=json&limit=1"
+            country_capital_request = urllib.request.Request(country_capital_query_url, headers={"User-Agent": "frogpilot-county-center-checker/1.0 (https://github.com/FrogAi/FrogPilot)"})
+            with urllib.request.urlopen(country_capital_request, timeout=10) as country_capital_response:
+              country_capital_data = json.load(country_capital_response)
+
+            if country_capital_data:
+              capital_latitude = float(country_capital_data[0]["lat"])
+              capital_longitude = float(country_capital_data[0]["lon"])
+              print(f"County population below 100000 ({county_population}). Using country capital for {country} → ({capital_latitude}, {capital_longitude})")
+              return capital_latitude, capital_longitude, "Unknown", state, country
+
+            sentry.capture_exception(Exception(f"Capital lookup returned no results for {state}/{country_code}"))
         else:
-          sentry.capture_exception(Exception(f"City lookup returned no results for {city}, {country_code}"))
-      except Exception as city_error:
-        sentry.capture_exception(city_error)
+          sentry.capture_exception(Exception(f"County lookup returned no results for {county}, {country_code}"))
+      except Exception as county_error:
+        if not isinstance(county_error, (ConnectTimeoutError, NewConnectionError, ReadTimeoutError, TimeoutError, socket.gaierror, socket.timeout)):
+          sentry.capture_exception(county_error)
 
-    print(f"Falling back to fuzzed GPS for {latitude}, {longitude}")
-    return (
-      round(latitude + random.uniform(-0.1, 0.1), 6),
-      round(longitude + random.uniform(-0.1, 0.1), 6),
-      "Unknown",
-      "N/A",
-      "Unknown"
-    )
+    print(f"Falling back to (0, 0) for {latitude}, {longitude}")
+    return 0, 0, "Unknown", "N/A", "Unknown"
 
   except (urllib.error.URLError, urllib.error.HTTPError, socket.gaierror, socket.timeout, TimeoutError, Exception) as error:
     print(f"Falling back due to geocoding error: {error}")
-    return (
-      round(latitude + random.uniform(-0.1, 0.1), 6),
-      round(longitude + random.uniform(-0.1, 0.1), 6),
-      "Unknown",
-      "N/A",
-      "Unknown"
-    )
+    return 0, 0, "Unknown", "N/A", "Unknown"
 
 def install_influxdb_client():
   try:
@@ -106,7 +129,7 @@ def send_stats():
     return
   original_latitude = location.get("latitude")
   original_longitude = location.get("longitude")
-  latitude, longitude, city, state, country = get_city_center(original_latitude, original_longitude)
+  latitude, longitude, city, state, country = get_county_center(original_latitude, original_longitude)
 
   theme_sources = [
     frogpilot_toggles.icon_pack.replace("-animated", ""),
@@ -153,5 +176,6 @@ def send_stats():
     InfluxDBClient(org=org_ID, token=token, url=url).write_api(write_options=SYNCHRONOUS).write(bucket=bucket, org=org_ID, record=point)
     print("Successfully sent FrogPilot stats!")
   except Exception as exception:
-    sentry.capture_exception(exception)
+    if not isinstance(exception, (ConnectTimeoutError, NewConnectionError, ReadTimeoutError, TimeoutError, socket.gaierror, socket.timeout)):
+      sentry.capture_exception(exception)
     print(f"Failed to send FrogPilot stats: {exception}")
