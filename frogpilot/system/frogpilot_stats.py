@@ -102,12 +102,21 @@ def install_influxdb_client():
     print("influxdb-client not found. Attempting installation...")
     stock_mount_options = subprocess.run(["findmnt", "-no", "OPTIONS", "/"], capture_output=True, text=True, check=True).stdout.strip()
 
-    run_cmd(["sudo", "mount", "-o", "remount,rw", "/"], "Successfully remounted / as read-write", "Failed to remount / as read-write")
+    run_cmd(["sudo", "mount", "-o", "remount,rw", "/"], "Successfully remounted / as read-write", "Failed to remount / as read-write", report=False)
     run_cmd(["sudo", sys.executable, "-m", "pip", "install", "influxdb-client"], "Successfully installed influxdb-client", "Failed to install influxdb-client", report=False)
-    run_cmd(["sudo", "mount", "-o", f"remount,{stock_mount_options}", "/"], "Successfully restored stock mount options", "Failed to restore stock mount options")
+    run_cmd(["sudo", "mount", "-o", f"remount,{stock_mount_options}", "/"], "Successfully restored stock mount options", "Failed to restore stock mount options", report=False)
+
+def is_up_to_date(build_metadata):
+  remote_commit = subprocess.check_output(["git", "ls-remote", "origin", build_metadata.channel], text=True, stderr=subprocess.DEVNULL).strip()
+
+  if remote_commit:
+    return build_metadata.openpilot.git_commit == remote_commit.split()[0]
+
+  return True
 
 def send_stats():
   try:
+    build_metadata = get_build_metadata()
     frogpilot_toggles = get_frogpilot_toggles()
 
     if frogpilot_toggles.frogs_go_moo:
@@ -160,6 +169,7 @@ def send_stats():
       .field("frogpilot_drives", params_tracking.get_int("FrogPilotDrives"))
       .field("frogpilot_hours", params_tracking.get_int("FrogPilotMinutes") / 60)
       .field("frogpilot_miles", params_tracking.get_int("FrogPilotKilometers") * CV.KPH_TO_MPH)
+      .field("goat_scream", frogpilot_toggles.goat_scream_alert)
       .field("has_cc_long", frogpilot_toggles.has_cc_long)
       .field("has_openpilot_longitudinal", frogpilot_toggles.openpilot_longitudinal)
       .field("has_pedal", frogpilot_toggles.has_pedal)
@@ -167,6 +177,8 @@ def send_stats():
       .field("has_zss", frogpilot_toggles.has_zss)
       .field("latitude", latitude)
       .field("longitude", longitude)
+      .field("rainbow_path", frogpilot_toggles.rainbow_path)
+      .field("random_events", frogpilot_toggles.random_events)
       .field("state", state)
       .field("theme", selected_theme.title())
       .field("total_aol_seconds", float(frogpilot_stats.get("TotalAOLTime", 0)))
@@ -174,9 +186,10 @@ def send_stats():
       .field("total_longitudinal_seconds", float(frogpilot_stats.get("TotalLongitudinalTime", 0)))
       .field("total_tracked_seconds", float(frogpilot_stats.get("TotalTrackedTime", 0)))
       .field("tuning_level", params.get_int("TuningLevel") + 1 if params.get_bool("TuningLevelConfirmed") else 0)
+      .field("up_to_date", is_up_to_date(build_metadata))
       .field("using_stock_acc", not (frogpilot_toggles.has_cc_long or frogpilot_toggles.openpilot_longitudinal))
 
-      .tag("branch", get_build_metadata().channel)
+      .tag("branch", build_metadata.channel)
       .tag("dongle_id", params.get("FrogPilotDongleId", encoding="utf-8"))
 
       .time(datetime.now(timezone.utc))
