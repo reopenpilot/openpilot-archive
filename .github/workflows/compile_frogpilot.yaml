@@ -187,18 +187,11 @@ jobs:
           rm -f panda/board/obj/version
 
           find . -name '*.a' -delete
-          find . -name '*.cc' -delete
           find . -name '*.o' -delete
           find . -name '*.onnx' -delete
           find . -name '*.os' -delete
           find . -name '*.pyc' -delete
           find . -name 'moc_*' -delete
-
-          find . -name '*.h' | while read -r header; do
-            if [[ "$header" != *"common/version.h" && "$header" != *"system/camerad/sensors/"* ]]; then
-              rm -f "$header"
-            fi
-          done
 
           rm -rf .devcontainer/
           rm -rf .vscode/
