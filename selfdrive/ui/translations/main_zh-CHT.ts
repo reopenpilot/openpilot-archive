@@ -5128,14 +5128,6 @@ This may take up to a minute.</source>
         <translation type="gpt-5-generated">在切換前必須先下載此分支。現在要下載嗎？</translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
-        <translation type="gpt-5-generated">您要刪除深度儲存的 FrogPilot 資產嗎？這也會刪除您的切換設定，影響快速重新安裝。</translation>
-    </message>
-    <message>
-        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you'll lose all your previous settings!</source>
-        <translation type="gpt-5-generated">你確定嗎？這是 100% 無法復原的，如果你重新安裝 FrogPilot，你將失去所有先前的設定！</translation>
-    </message>
-    <message>
         <source>Error Log</source>
         <translation type="gpt-5-generated">錯誤記錄</translation>
     </message>
@@ -5146,6 +5138,14 @@ This may take up to a minute.</source>
     <message>
         <source>View the error log for openpilot crashes.</source>
         <translation type="gpt-5-generated">檢視 openpilot 當機的錯誤日誌。</translation>
+    </message>
+    <message>
+        <source>Do you want to perform a full factory reset? All saved assets and settings will be permanently deleted!</source>
+        <translation type="gpt-5-generated">您要執行完整的出廠重置嗎？所有已儲存的資產和設定將被永久刪除！</translation>
+    </message>
+    <message>
+        <source>This is a complete factory reset and cannot be undone. Are you absolutely sure you want to continue?</source>
+        <translation type="gpt-5-generated">這是完整的出廠重設，且無法復原。你確定要繼續嗎？</translation>
     </message>
 </context>
 <context>

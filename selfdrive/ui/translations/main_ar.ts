@@ -5148,14 +5148,6 @@ This may take up to a minute.</source>
         <translation type="gpt-5-generated">يجب تنزيل هذا الفرع قبل التبديل. هل ترغب في تنزيله الآن؟</translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
-        <translation type="gpt-5-generated">هل تريد حذف أصول FrogPilot من التخزين العميق؟ يشمل ذلك إعدادات التبديل الخاصة بك لعمليات إعادة التثبيت السريعة.</translation>
-    </message>
-    <message>
-        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you'll lose all your previous settings!</source>
-        <translation type="gpt-5-generated">هل أنت متأكد؟ هذا غير قابل للاسترداد بنسبة 100%، وإذا قمت بإعادة تثبيت FrogPilot فستفقد جميع إعداداتك السابقة!</translation>
-    </message>
-    <message>
         <source>Error Log</source>
         <translation type="gpt-5-generated">سجل الأخطاء</translation>
     </message>
@@ -5166,6 +5158,14 @@ This may take up to a minute.</source>
     <message>
         <source>View the error log for openpilot crashes.</source>
         <translation type="gpt-5-generated">اعرض سجل الأخطاء لحالات تعطل openpilot.</translation>
+    </message>
+    <message>
+        <source>Do you want to perform a full factory reset? All saved assets and settings will be permanently deleted!</source>
+        <translation type="gpt-5-generated">هل تريد إجراء إعادة ضبط المصنع بالكامل؟ سيتم حذف جميع الأصول والإعدادات المحفوظة نهائيًا!</translation>
+    </message>
+    <message>
+        <source>This is a complete factory reset and cannot be undone. Are you absolutely sure you want to continue?</source>
+        <translation type="gpt-5-generated">هذا إعادة ضبط مصنع كاملة ولا يمكن التراجع عنها. هل أنت متأكد تمامًا أنك تريد المتابعة؟</translation>
     </message>
 </context>
 <context>

@@ -5126,14 +5126,6 @@ This may take up to a minute.</source>
         <translation type="gpt-5-generated">このブランチは切り替える前にダウンロードする必要があります。今すぐダウンロードしますか?</translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
-        <translation type="gpt-5-generated">深層ストレージのFrogPilotアセットを削除しますか？これにはクイック再インストール用のトグル設定が含まれます。</translation>
-    </message>
-    <message>
-        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you'll lose all your previous settings!</source>
-        <translation type="gpt-5-generated">本当に実行しますか？これは100%復元不可能で、FrogPilotを再インストールすると以前の設定はすべて失われます。</translation>
-    </message>
-    <message>
         <source>Error Log</source>
         <translation type="gpt-5-generated">エラーログ</translation>
     </message>
@@ -5144,6 +5136,14 @@ This may take up to a minute.</source>
     <message>
         <source>View the error log for openpilot crashes.</source>
         <translation type="gpt-5-generated">openpilotのクラッシュのエラーログを表示します</translation>
+    </message>
+    <message>
+        <source>Do you want to perform a full factory reset? All saved assets and settings will be permanently deleted!</source>
+        <translation type="gpt-5-generated">完全な出荷時リセットを実行しますか？保存されたすべてのアセットと設定は永久に削除されます！</translation>
+    </message>
+    <message>
+        <source>This is a complete factory reset and cannot be undone. Are you absolutely sure you want to continue?</source>
+        <translation type="gpt-5-generated">これは完全な工場出荷時リセットであり、元に戻すことはできません。本当に続行してもよろしいですか？</translation>
     </message>
 </context>
 <context>

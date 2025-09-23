@@ -5127,14 +5127,6 @@ This may take up to a minute.</source>
         <translation type="gpt-5-generated">이 브랜치는 전환하기 전에 다운로드해야 합니다. 지금 다운로드하시겠습니까?</translation>
     </message>
     <message>
-        <source>Do you want to delete deep storage FrogPilot assets? This includes your toggle settings for quick reinstalls.</source>
-        <translation type="gpt-5-generated">깊은 저장소의 FrogPilot 에셋을 삭제하시겠습니까? 여기에는 빠른 재설치를 위한 토글 설정이 포함됩니다.</translation>
-    </message>
-    <message>
-        <source>Are you sure? This is 100% unrecoverable and if you reinstall FrogPilot you'll lose all your previous settings!</source>
-        <translation type="gpt-5-generated">정말로 진행하시겠습니까? 이는 100% 복구 불가능하며 FrogPilot을 재설치하면 이전 설정이 모두 삭제됩니다!</translation>
-    </message>
-    <message>
         <source>Error Log</source>
         <translation type="gpt-5-generated">오류 로그</translation>
     </message>
@@ -5145,6 +5137,14 @@ This may take up to a minute.</source>
     <message>
         <source>View the error log for openpilot crashes.</source>
         <translation type="gpt-5-generated">openpilot 충돌의 오류 로그를 확인합니다.</translation>
+    </message>
+    <message>
+        <source>Do you want to perform a full factory reset? All saved assets and settings will be permanently deleted!</source>
+        <translation type="gpt-5-generated">전체 초기화를 수행하시겠습니까? 저장된 모든 자산과 설정이 영구적으로 삭제됩니다!</translation>
+    </message>
+    <message>
+        <source>This is a complete factory reset and cannot be undone. Are you absolutely sure you want to continue?</source>
+        <translation type="gpt-5-generated">이 작업은 완전한 공장 초기화이며 되돌릴 수 없습니다. 정말 계속하시겠습니까?</translation>
     </message>
 </context>
 <context>
