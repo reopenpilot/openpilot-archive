@@ -447,9 +447,9 @@ def main() -> None:
     first_run = True
 
     # FrogPilot variables
-    frogpilot_toggles = get_frogpilot_toggles()
-
     install_date_set = params.get("InstallDate", encoding='utf-8') is not None and params.get("Updated", encoding='utf-8') is not None
+
+    frogpilot_toggles = get_frogpilot_toggles()
 
     while True:
       wait_helper.ready_event.clear()

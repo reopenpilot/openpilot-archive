@@ -186,11 +186,6 @@ class Controls:
     self.rk = Ratekeeper(100, print_delay_threshold=None)
 
     # FrogPilot variables
-    self.frogpilot_toggles = get_frogpilot_toggles()
-
-    self.frogpilot_AM = AlertManager()
-    self.frogpilot_events = Events(frogpilot=True)
-
     self.belowSteerSpeed_shown = False
     self.distance_pressed_previously = False
     self.resumeRequired_shown = False
@@ -202,9 +197,13 @@ class Controls:
 
     self.event_names_to_clear = set()
 
+    self.has_menu = self.CP.carName == "gm" and not (self.CP.flags & GMFlags.NO_CAMERA.value or self.CP.carFingerprint in CC_ONLY_CAR)
     self.use_old_long = self.frogpilot_toggles.old_long_api
 
-    self.has_menu = self.CP.carName == "gm" and not (self.CP.flags & GMFlags.NO_CAMERA.value or self.CP.carFingerprint in CC_ONLY_CAR)
+    self.frogpilot_AM = AlertManager()
+    self.frogpilot_events = Events(frogpilot=True)
+
+    self.frogpilot_toggles = get_frogpilot_toggles()
 
   def set_initial_state(self):
     if REPLAY:
