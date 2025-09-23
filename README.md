@@ -64,7 +64,7 @@ We have detailed instructions for [how to install the harness and device in a ca
 
 ------
 
-**FrogPilot** is a fully open-sourced fork of openpilot, featuring clear and concise commits striving to be a resource for the openpilot developer community! It thrives on contributions from both users and developers, focusing on a collaborative, community-led approach to deliver an advanced openpilot experience for everyone!
+**FrogPilot** is a fully open-sourced fork of openpilot, featuring clear and concise commits striving to be a resource for the openpilot developer community. It thrives on contributions from both users and developers, focusing on a collaborative, community-led approach to deliver an advanced openpilot experience for everyone!
 
 openpilot vs **FrogPilot**
 ------
@@ -84,7 +84,6 @@ openpilot vs **FrogPilot**
 | Custom Themes | ❌ | ✅ |
 | Driver Monitoring | ✅ | ✅ |
 | Driving Model Selector | ❌ | ✅ |
-| Highly Customizable | ❌ | ✅ |
 | Holiday Themes | ❌ | ✅ |
 | Speed Limit Support | ❌ | ✅ |
 | Weather Detection | ❌ | ✅ |
@@ -124,21 +123,19 @@ openpilot vs **FrogPilot**
 
 ### 🚗 Always On Lateral (AOL)
 
-With **"Always On Lateral"**, lane-centering stays active whenever cruise control is on, even when you press the accelerator or brake! This means steering assist won't cut out during manual speed adjustments giving you continuous support through curves, traffic, or mountain roads!
+With **"Always On Lateral"**, lane-centering stays active whenever cruise control is on, even when you press the accelerator or brake. This means steering assist won't cut out during manual speed adjustments giving you continuous support through curves, traffic, or mountain roads!
 
 ---
 
 ### 🧠 Conditional Experimental Mode (CEM)
 
-**["Experimental Mode"](https://blog.comma.ai/090release/#experimental-mode)** lets openpilot drive at the speed it thinks a human would to allow slowing for curves, stopping at stoplights/stop signs, and adapting to traffic. The set cruise speed becomes an upper bound, not a target. This makes it powerful in complex scenarios, but it's still well, "experimental", and less predictable than **"Chill Mode"**.
-
-**"Conditional Experimental Mode"** gives you the best of both worlds by automatically switching between **"Chill Mode"** for steady cruising and **"Experimental Mode"** for more advanced situations.
+**["Experimental Mode"](https://blog.comma.ai/090release/#experimental-mode)** lets openpilot drive at the speed it thinks a human would to allow slowing for curves, stopping at stoplights/stop signs, and adapting to traffic. The set cruise speed becomes an upper bound, not a target. This makes it powerful in complex scenarios, but it's still well, "experimental", and less predictable than **"Chill Mode"**. But **"Conditional Experimental Mode"** gives you the best of both worlds by automatically switching between **"Chill Mode"** for steady cruising and **"Experimental Mode"** for more advanced situations to help fully automate your driving experience!
 
 **"Conditional Experimental Mode"** switches into **"Experimental Mode"** when conditions like these are met:
 - Approaching curves and turns
 - Detecting slower or stopped lead vehicles
-- Driving below a set speed (with or without a lead)
-- Predicting a stop (e.g. stoplight or stop sign)
+- Driving below a set speed
+- Predicting an upcoming stop (e.g. stoplight or stop sign)
 
 Once conditions clear it returns to **"Chill Mode"** for stability and predictability.
 
@@ -150,12 +147,12 @@ Once conditions clear it returns to **"Chill Mode"** for stability and predictab
 
 With **"Driving Personalities"**, you choose how the vehicle behaves with four adjustable profiles:
 
-- **Traffic:** Optimized for stop-and-go, minimizing gaps and delays  
-- **Aggressive:** Tighter following distances and quicker reactions  
-- **Standard:** Balanced, all-purpose driving  
-- **Relaxed:** Smoother maneuvers with larger gaps  
+- **Traffic:** Catered towards stop-and-go traffic by minimizing gaps and delays  
+- **Aggressive:** Aimed to provide tighter following distances and quicker reactions  
+- **Standard:** Useful for a balanced, all-purpose driving  
+- **Relaxed:** A smoother driving experience with larger following distance gaps  
 
-Each profile can be fine-tuned to change the desired following distance, acceleration, and braking style letting you shape **FrogPilot**'s behavior to match your own driving preferences! Profiles can be switched instantly using the following distance button on the steering wheel while **"Traffic Mode"** can be enabled by simply holding down the following distance button.
+Each profile can be fine-tuned to change the desired following distance, acceleration, and braking style letting you shape **FrogPilot**'s behavior to match your own driving preferences! Profiles can be switched instantly using the following distance button on the steering wheel, while **"Traffic Mode"** can be enabled by simply holding down the following distance button.
 
 ---
 
