@@ -46,13 +46,13 @@ class CarControllerParams:
       self.INACTIVE_REGEN = 5650
       # Camera ACC vehicles have no regen while enabled.
       # Camera transitions to MAX_ACC_REGEN from ZERO_GAS and uses friction brakes instantly
-      self.max_regen_acceleration = 0.
+      max_regen_acceleration = 0.
 
     elif CP.carFingerprint in SDGM_CAR:
       self.MAX_GAS = 7496
       self.MAX_ACC_REGEN = 5610
       self.INACTIVE_REGEN = 5650
-      self.max_regen_acceleration = 0.
+      max_regen_acceleration = 0.
 
     else:
       self.MAX_GAS = 7168  # Safety limit, not ACC max. Stock ACC >8192 from standstill.
@@ -60,12 +60,12 @@ class CarControllerParams:
       self.INACTIVE_REGEN = 5500
       # ICE has much less engine braking force compared to regen in EVs,
       # lower threshold removes some braking deadzone
-      self.max_regen_acceleration = -1. if CP.carFingerprint in EV_CAR else -0.1
+      max_regen_acceleration = -1. if CP.carFingerprint in EV_CAR else -0.1
 
-    self.GAS_LOOKUP_BP = [self.max_regen_acceleration, 0., self.ACCEL_MAX]
+    self.GAS_LOOKUP_BP = [max_regen_acceleration, 0., self.ACCEL_MAX]
     self.GAS_LOOKUP_V = [self.MAX_ACC_REGEN, self.ZERO_GAS, self.MAX_GAS]
 
-    self.BRAKE_LOOKUP_BP = [self.ACCEL_MIN, self.max_regen_acceleration]
+    self.BRAKE_LOOKUP_BP = [self.ACCEL_MIN, max_regen_acceleration]
     self.BRAKE_LOOKUP_V = [self.MAX_BRAKE, 0.]
 
   # determined by letting Volt regen to a stop in L gear from 89mph,
