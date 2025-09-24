@@ -2804,8 +2804,8 @@ Desenvolvedor - Configurações altamente personalizáveis para entusiastas expe
         <translation type="gpt-5-generated">AVISO: Essas configurações são arriscadas e podem mudar drasticamente como o openpilot dirige. Só altere se você entender completamente o que elas fazem!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Todas as descrições de alternância estão atualmente expandidas. Você pode tocar no nome de uma alternância para abrir ou fechar sua descrição a qualquer momento.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Todas as descrições de alternância estão atualmente expandidas. Você pode tocar no nome de uma alternância para abrir ou fechar sua descrição a qualquer momento!</translation>
     </message>
 </context>
 <context>

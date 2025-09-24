@@ -2803,8 +2803,8 @@ Desarrollador: configuración altamente personalizable para entusiastas veterano
         <translation type="gpt-5-generated">ADVERTENCIA: Estas configuraciones son arriesgadas y pueden cambiar drásticamente cómo conduce openpilot. ¡Cámbialas solo si entiendes completamente lo que hacen!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Todas las descripciones de los interruptores están actualmente expandidas. Puedes tocar el nombre de un interruptor para abrir o cerrar su descripción en cualquier momento.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Todas las descripciones de los interruptores están actualmente desplegadas. Puedes tocar el nombre de un interruptor para abrir o cerrar su descripción en cualquier momento.</translation>
     </message>
 </context>
 <context>

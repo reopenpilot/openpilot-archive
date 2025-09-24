@@ -2803,8 +2803,8 @@ Geliştirici - Tecrübeli meraklılar için yüksek özelleştirilebilir ayarlar
         <translation type="gpt-5-generated">UYARI: Bu ayarlar risklidir ve openpilot’un sürüş şeklini kökten değiştirebilir. Yalnızca ne yaptıklarını tamamen anlıyorsanız değiştirin!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Tüm anahtar açıklamaları şu anda genişletilmiş. İstediğiniz zaman bir anahtarın adına dokunarak açıklamasını açıp kapatabilirsiniz.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Tüm anahtar açıklamaları şu anda genişletilmiş. İstediğiniz zaman bir anahtarın adına dokunarak açıklamasını açıp kapatabilirsiniz!</translation>
     </message>
 </context>
 <context>

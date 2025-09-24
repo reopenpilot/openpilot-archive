@@ -2803,8 +2803,8 @@ Developer - Highly customizable settings for seasoned enthusiasts</source>
         <translation type="gpt-5-generated">경고: 이 설정은 위험하며 openpilot의 주행 방식을 크게 바꿀 수 있습니다. 무엇을 하는지 완전히 이해한 경우에만 변경하세요!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">모든 토글 설명이 현재 펼쳐져 있습니다. 언제든지 토글 이름을 탭하여 설명을 열거나 닫을 수 있습니다.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">모든 토글 설명이 현재 펼쳐져 있습니다. 언제든지 토글 이름을 탭하여 설명을 열거나 닫을 수 있습니다!</translation>
     </message>
 </context>
 <context>

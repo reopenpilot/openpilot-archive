@@ -2804,8 +2804,8 @@ Entwickler – Hochgradig anpassbare Einstellungen für versierte Enthusiasten</
         <translation type="gpt-5-generated">WARNUNG: Diese Einstellungen sind riskant und können das Fahrverhalten von openpilot drastisch verändern. Nur ändern, wenn Sie vollständig verstehen, was sie bewirken!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Alle Umschaltbeschreibungen sind derzeit erweitert. Tippen Sie jederzeit auf den Namen eines Umschalters, um seine Beschreibung zu öffnen oder zu schließen.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Alle Umschaltbeschreibungen sind derzeit erweitert. Du kannst jederzeit auf den Namen eines Schalters tippen, um seine Beschreibung zu öffnen oder zu schließen!</translation>
     </message>
 </context>
 <context>

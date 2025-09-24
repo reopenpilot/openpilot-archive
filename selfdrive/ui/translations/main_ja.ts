@@ -2802,8 +2802,8 @@ Developer - こだわりのある上級者向けの高度にカスタマイズ�
         <translation type="gpt-5-generated">警告: これらの設定は危険で、openpilot の走行特性を大きく変える可能性があります。内容を完全に理解している場合のみ変更してください。</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">現在、すべてのトグルの説明が展開されています。トグル名をタップすると、いつでも説明を開閉できます。</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">すべてのトグルの説明が現在展開されています。いつでもトグル名をタップして説明を開閉できます。</translation>
     </message>
 </context>
 <context>

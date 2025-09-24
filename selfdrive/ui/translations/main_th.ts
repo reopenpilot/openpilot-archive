@@ -2804,8 +2804,8 @@ Developer - Highly customizable settings for seasoned enthusiasts</source>
         <translation type="gpt-5-generated">คำเตือน: การตั้งค่าเหล่านี้มีความเสี่ยงและอาจเปลี่ยนพฤติกรรมการขับของ openpilot ได้อย่างมาก ปรับเฉพาะเมื่อคุณเข้าใจสิ่งที่มันทำอย่างถ่องแท้เท่านั้น!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">คำอธิบายของสวิตช์ทั้งหมดถูกขยายอยู่ขณะนี้ คุณสามารถแตะชื่อของสวิตช์เพื่อเปิดหรือปิดคำอธิบายได้ทุกเมื่อ</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">คำอธิบายของสวิตช์ทั้งหมดถูกขยายอยู่ในขณะนี้ คุณสามารถแตะชื่อของสวิตช์เพื่อเปิดหรือปิดคำอธิบายได้ทุกเมื่อ!</translation>
     </message>
 </context>
 <context>

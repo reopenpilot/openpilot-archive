@@ -210,7 +210,7 @@ void FrogPilotSettingsWindow::showEvent(QShowEvent *event) {
     vehiclePanelButtons->showDescription();
 
     if (!alertShown) {
-      ConfirmationDialog::alert(tr("All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time."), this);
+      ConfirmationDialog::alert(tr("All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!"), this);
       alertShown = true;
     }
   }

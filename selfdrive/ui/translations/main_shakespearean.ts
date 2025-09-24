@@ -2810,8 +2810,8 @@ Developer - Most customizable settings for well-tried enthusiasts</translation>
         <translation type="gpt-5-generated">WARNING: These settings be perilous and may full sore transform how openpilot doth drive. Change them only if thou fully comprehend’st their doings!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">All toggle descriptions do now stand expanded. Thou canst tap a toggle’s name to ope or close its description at any time.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">All toggle descriptions do now lie expanded. Thou may’st tap a toggle’s name to ope or close its description at any hour!</translation>
     </message>
 </context>
 <context>

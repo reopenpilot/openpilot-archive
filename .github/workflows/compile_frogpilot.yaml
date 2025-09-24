@@ -3,6 +3,14 @@ name: Compile FrogPilot
 on:
   workflow_dispatch:
     inputs:
+      runner:
+        description: "Select the runner"
+        required: true
+        default: "c3"
+        type: choice
+        options:
+          - c3
+          - c3x
       not_vetted:
         description: "This branch is not vetted"
         required: false
@@ -46,7 +54,9 @@ env:
 
 jobs:
   get_branch:
-    runs-on: [self-hosted, c3x]
+    runs-on:
+      - self-hosted
+      - ${{ github.event.inputs.runner }}
     outputs:
       branch: ${{ steps.get_branch.outputs.branch }}
       python_version: ${{ steps.get_python_version.outputs.python_version }}
@@ -130,7 +140,9 @@ jobs:
       - get_branch
       - translate
     if: always()
-    runs-on: [self-hosted, c3x]
+    runs-on:
+      - self-hosted
+      - ${{ github.event.inputs.runner }}
     permissions:
       contents: write
     defaults:

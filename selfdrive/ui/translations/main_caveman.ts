@@ -2806,8 +2806,8 @@ Developer - Many custom setting for seasoned enthusiast</translation>
         <translation type="gpt-5-generated">WARNING: These setting risky. They can change how openpilot drive a lot. Only change if you fully understand what they do!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">All toggle words open now. Tap toggle name to open or close description any time.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">All toggle talk open now. Tap toggle name to open or close talk any time!</translation>
     </message>
 </context>
 <context>

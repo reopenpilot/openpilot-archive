@@ -2806,8 +2806,8 @@ Developer - Ultra-custom settings for seasoned duckthusiasts</translation>
         <translation type="gpt-5-generated">Quack! WARNING: These settings are risky and can drastically change how openpilot drives. Only change if you fully understand what they do, quack!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Quack! All toggle descriptions are fluffed out. Waddle over and tap a toggle’s name to open or close its description anytime, quack!</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Quack! All toggle descriptions are fluffed open. Waddle-tap a toggle’s name to quack open or close its description anytime!</translation>
     </message>
 </context>
 <context>

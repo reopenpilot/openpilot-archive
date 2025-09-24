@@ -2804,8 +2804,8 @@ Developer - Highly customizable settings for seasoned swamp pros</translation>
         <translation type="gpt-5-generated">RIBBIT: These settings are risky and can drastically change how openpilot drives. Only change if you fully understand what they do, croak!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Ribbit! All toggle descriptions be wide open. Tap a toggle’s name to pop its description open or shut anytime. Croak!</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Ribbit! All toggle descriptions are popped open. Tap a toggle’s name to open or close its description anytime, croak!</translation>
     </message>
 </context>
 <context>

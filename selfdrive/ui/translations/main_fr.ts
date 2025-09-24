@@ -2803,8 +2803,8 @@ Développeur – Paramètres hautement personnalisables pour passionnés chevron
         <translation type="gpt-5-generated">AVERTISSEMENT : Ces paramètres sont risqués et peuvent modifier radicalement la façon dont openpilot conduit. Ne les modifiez que si vous comprenez parfaitement ce qu’ils font !</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">Toutes les descriptions des interrupteurs sont actuellement développées. Vous pouvez toucher le nom d’un interrupteur pour ouvrir ou fermer sa description à tout moment.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">Toutes les descriptions des commutateurs sont actuellement développées. Vous pouvez toucher le nom d’un commutateur pour ouvrir ou fermer sa description à tout moment !</translation>
     </message>
 </context>
 <context>

@@ -2804,8 +2804,8 @@ Developer - Highly customizable riggin’s fer seasoned enthusiasts</translation
         <translation type="gpt-5-generated">WARNING: These settings be treacherous and can wildly change how openpilot sails the road. Tinker only if ye truly know what they do!</translation>
     </message>
     <message>
-        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time.</source>
-        <translation type="gpt-5-generated">All toggle tales be unfurled. Ye can tap a toggle’s name to open or shutter its tale any time, arr.</translation>
+        <source>All toggle descriptions are currently expanded. You can tap a toggle's name to open or close its description at any time!</source>
+        <translation type="gpt-5-generated">All toggle tales be unfurled. Ye can tap a toggle’s name to open or close its tale any time, arr!</translation>
     </message>
 </context>
 <context>
