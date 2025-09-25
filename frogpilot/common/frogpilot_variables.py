@@ -872,7 +872,7 @@ class FrogPilotVariables:
     if not toggle.random_themes:
       toggle.wheel_image = toggle.current_holiday_theme if toggle.current_holiday_theme != "stock" else params.get("WheelIcon", encoding="utf-8") if personalize_openpilot else "stock"
     else:
-      toggle.wheel_image = next((file.resolve().stem for file in (ACTIVE_THEME_PATH / "steering_wheel").glob("wheel.*")), "none")
+      toggle.wheel_image = next((file.resolve().stem for file in (ACTIVE_THEME_PATH / "steering_wheel").glob("wheel.*")), "stock")
 
     quality_of_life_lateral = params.get_bool("QOLLateral") if tuning_level >= level["QOLLateral"] else default.get_bool("QOLLateral")
     toggle.pause_lateral_below_speed = params.get_int("PauseLateralSpeed") * speed_conversion if quality_of_life_lateral and tuning_level >= level["PauseLateralSpeed"] else default.get_int("PauseLateralSpeed") * CV.MPH_TO_MS
