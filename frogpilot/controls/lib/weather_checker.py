@@ -77,8 +77,9 @@ class WeatherChecker:
         if start <= self.weather_id <= end:
           suffix = category["suffix"]
           break
-      if suffix:
-        break
+      else:
+        continue
+      break
 
     if suffix != WEATHER_CATEGORIES["CLEAR"]["suffix"]:
       self.increase_following_distance = getattr(frogpilot_toggles, f"increase_following_distance_{suffix}")
