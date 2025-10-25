@@ -597,6 +597,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"WarningImmediateVolume", PERSISTENT},
     {"WarningSoftVolume", PERSISTENT},
     {"WeatherPresets", PERSISTENT},
+    {"WeatherToken", PERSISTENT | DONT_LOG},
     {"WheelIcon", PERSISTENT},
     {"WheelSpeed", PERSISTENT},
     {"WheelToDownload", CLEAR_ON_MANAGER_START},
