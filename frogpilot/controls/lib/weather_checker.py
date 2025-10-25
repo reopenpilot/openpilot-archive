@@ -73,13 +73,9 @@ class WeatherChecker:
   def update_offsets(self, frogpilot_toggles):
     suffix = WEATHER_CATEGORIES["CLEAR"]["suffix"]
     for category in WEATHER_CATEGORIES.values():
-      for start, end in category["ranges"]:
-        if start <= self.weather_id <= end:
-          suffix = category["suffix"]
-          break
-      else:
-        continue
-      break
+      if any(start <= self.weather_id <= end for start, end in category["ranges"]):
+        suffix = category["suffix"]
+        break
 
     if suffix != WEATHER_CATEGORIES["CLEAR"]["suffix"]:
       self.increase_following_distance = getattr(frogpilot_toggles, f"increase_following_distance_{suffix}")
