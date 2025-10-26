@@ -1,6 +1,8 @@
 #include "frogpilot/ui/qt/offroad/longitudinal_settings.h"
 
 FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
+  networkManager = new QNetworkAccessManager(this);
+
   QJsonObject shownDescriptions = QJsonDocument::fromJson(QString::fromStdString(params.get("ShownToggleDescriptions")).toUtf8()).object();
   QString className = this->metaObject()->className();
 
@@ -416,24 +418,50 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
       });
       longitudinalToggle = weatherToggle;
     } else if (param == "SetWeatherKey") {
-      weatherKeyControl = new ButtonControl(title, "", desc);
-      QObject::connect(weatherKeyControl, &ButtonControl::clicked, [this] {
-        if (weatherKeyControl->text() == tr("ADD")) {
-          QString key = InputDialog::getText(tr("Enter your \"OpenWeatherMap\" key"), this).trimmed();
-          if (key.length() == 32) {
-            params.put("WeatherToken", key.toStdString());
+      weatherKeyControl = new FrogPilotButtonsControl(title, desc, icon, {tr("ADD"), tr("TEST")});
+      QObject::connect(weatherKeyControl, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
+        if (id == 0) {
+          if (!params.get("WeatherToken").empty()) {
+            if (FrogPilotConfirmationDialog::yesorno(tr("Are you sure you want to remove your key?"), this)) {
+              params.remove("WeatherToken");
+              params_cache.remove("WeatherToken");
 
-            weatherKeyControl->setText(tr("REMOVE"));
+              weatherKeyControl->setText(0, tr("ADD"));
+              weatherKeyControl->setVisibleButton(1, false);
+            }
           } else {
-            ConfirmationDialog::alert(tr("Invalid key!"), this);
+            QString key = InputDialog::getText(tr("Enter your \"OpenWeatherMap\" key"), this).trimmed();
+            if (key.length() == 32) {
+              params.put("WeatherToken", key.toStdString());
+
+              weatherKeyControl->setText(0, tr("REMOVE"));
+              weatherKeyControl->setVisibleButton(1, true);
+            } else if (!key.isEmpty()) {
+              ConfirmationDialog::alert(tr("Invalid key!"), this);
+            }
           }
         } else {
-          if (FrogPilotConfirmationDialog::yesorno(tr("Are you sure you want to remove your key?"), this)) {
-            params.remove("WeatherToken");
-            params_cache.remove("WeatherToken");
+          weatherKeyControl->setValue(tr("Testing..."));
 
-            weatherKeyControl->setText(tr("ADD"));
-          }
+          QString key = QString::fromStdString(params.get("WeatherToken"));
+          QString url = QString("https://api.openweathermap.org/data/2.5/weather?lat=42.4293&lon=-83.9850&appid=%1").arg(key);
+
+          QNetworkRequest request(url);
+          QNetworkReply *reply = networkManager->get(request);
+          connect(reply, &QNetworkReply::finished, [=]() {
+            weatherKeyControl->setValue("");
+
+            QString message;
+            if (reply->error() == QNetworkReply::NoError) {
+              message = tr("Key is valid!");
+            } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
+              message = tr("Invalid key!");
+            } else {
+              message = tr("An error occurred: %1").arg(reply->errorString());
+            }
+            ConfirmationDialog::alert(message, this);
+            reply->deleteLater();
+          });
         }
       });
       longitudinalToggle = weatherKeyControl;
@@ -805,6 +833,8 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
 }
 
 void FrogPilotLongitudinalPanel::showEvent(QShowEvent *event) {
+  FrogPilotUIState &fs = *frogpilotUIState();
+
   frogpilotToggleLevels = parent->frogpilotToggleLevels;
 
   calibratedLateralAccelerationLabel->setText(QString::number(params.getFloat("CalibratedLateralAcceleration"), 'f', 2) + tr(" m/s²"));
@@ -817,7 +847,9 @@ void FrogPilotLongitudinalPanel::showEvent(QShowEvent *event) {
   vEgoStartingToggle->setTitle(QString(tr("Start Speed (Default: %1)")).arg(QString::number(parent->vEgoStarting, 'f', 2)));
   vEgoStoppingToggle->setTitle(QString(tr("Stop Speed (Default: %1)")).arg(QString::number(parent->vEgoStopping, 'f', 2)));
 
-  weatherKeyControl->setText(params.get("WeatherToken").empty() ? tr("ADD") : tr("REMOVE"));
+  bool keyExists = !params.get("WeatherToken").empty();
+  weatherKeyControl->setText(0, keyExists ? tr("REMOVE") : tr("ADD"));
+  weatherKeyControl->setVisibleButton(1, keyExists && fs.frogpilot_scene.online);
 
   updateToggles();
 }

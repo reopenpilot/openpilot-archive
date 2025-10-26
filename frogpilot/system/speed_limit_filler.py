@@ -319,7 +319,6 @@ class MapSpeedLogger:
 
     self.update_params(dataset, filtered_dataset)
     params_memory.put("UpdateSpeedLimitsStatus", "Completed!")
-    params_memory.remove("UpdateSpeedLimits")
 
   def update_cached_segments(self, latitude, longitude, vetting=False):
     if not self.is_in_cached_box(latitude, longitude):
@@ -399,6 +398,8 @@ def main():
       previously_started = False
     elif params_memory.get_bool("UpdateSpeedLimits"):
       logger.process_speed_limits()
+
+      params_memory.remove("UpdateSpeedLimits")
     else:
       time.sleep(5)
 

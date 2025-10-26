@@ -2592,6 +2592,22 @@
         <source>Are you sure you want to remove your key?</source>
         <translation type="gpt-5-generated">Quack! You sure you want to pluck out your key? Waddle yes or no?</translation>
     </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">Quack! TEST 🦆</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Quack-testing...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Quack! Key is valid, waddle-yes!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Quack! An error splashed in: %1</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotManageControl</name>
@@ -3218,6 +3234,50 @@ Waddle back later—resets in %1 hours and %2 minutes.</translation>
     <message>
         <source>Completed!</source>
         <translation type="gpt-5-generated">Quack! All done!</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Public Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Quack! Manage your Public Mapbox Key, waddle-waddle.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">Quack TEST!</translation>
+    </message>
+    <message>
+        <source>Remove your Public Mapbox Key?</source>
+        <translation type="gpt-5-generated">Quack! Remove your Public Mapbox Key, waddly-waddle?</translation>
+    </message>
+    <message>
+        <source>Enter your Public Mapbox Key</source>
+        <translation type="gpt-5-generated">Quack! Waddle in your Public Mapbox Key, quack!</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Quack-testing... Waddle...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Quack! Key is valid, waddle-waddle!</translation>
+    </message>
+    <message>
+        <source>Key is invalid!</source>
+        <translation type="gpt-5-generated">Quack! This key is no good, waddle!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Quack! An error splashed in: %1</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Secret Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Quack! Waddle and manage your Secret Mapbox Key.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Remove your Secret Mapbox Key?</source>
+        <translation type="gpt-5-generated">Quack! Waddle away your Secret Mapbox Key?</translation>
+    </message>
+    <message>
+        <source>Enter your Secret Mapbox Key</source>
+        <translation type="gpt-5-generated">Quack! Enter your Secret Mapbox Key, waddle-waddle!</translation>
     </message>
 </context>
 <context>

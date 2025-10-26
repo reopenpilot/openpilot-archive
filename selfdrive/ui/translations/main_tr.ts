@@ -2590,6 +2590,22 @@
         <source>Are you sure you want to remove your key?</source>
         <translation type="gpt-5-generated">Anahtarınızı kaldırmak istediğinizden emin misiniz?</translation>
     </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">TEST</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Test ediliyor...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Anahtar geçerli!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Bir hata oluştu: %1</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotManageControl</name>
@@ -3215,6 +3231,50 @@ It will reset in %1 hours and %2 minutes.</source>
     <message>
         <source>Completed!</source>
         <translation type="gpt-5-generated">Tamamlandı!</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Public Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Genel Mapbox Anahtarınızı yönetin.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">TEST</translation>
+    </message>
+    <message>
+        <source>Remove your Public Mapbox Key?</source>
+        <translation type="gpt-5-generated">Genel Mapbox Anahtarınızı kaldırmak istiyor musunuz?</translation>
+    </message>
+    <message>
+        <source>Enter your Public Mapbox Key</source>
+        <translation type="gpt-5-generated">Genel Mapbox Anahtarınızı girin</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Test ediliyor...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Anahtar geçerli!</translation>
+    </message>
+    <message>
+        <source>Key is invalid!</source>
+        <translation type="gpt-5-generated">Anahtar geçersiz!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Bir hata oluştu: %1</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Secret Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Gizli Mapbox Anahtarınızı yönetin.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Remove your Secret Mapbox Key?</source>
+        <translation type="gpt-5-generated">Gizli Mapbox Anahtarınızı kaldırmak istiyor musunuz?</translation>
+    </message>
+    <message>
+        <source>Enter your Secret Mapbox Key</source>
+        <translation type="gpt-5-generated">Gizli Mapbox Anahtarınızı girin</translation>
     </message>
 </context>
 <context>

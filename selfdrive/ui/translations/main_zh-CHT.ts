@@ -2590,6 +2590,22 @@
         <source>Are you sure you want to remove your key?</source>
         <translation type="gpt-5-generated">您確定要移除您的金鑰嗎？</translation>
     </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">測試</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">測試中…</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">金鑰有效！</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">發生錯誤：%1</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotManageControl</name>
@@ -3216,6 +3232,50 @@ It will reset in %1 hours and %2 minutes.</source>
     <message>
         <source>Completed!</source>
         <translation type="gpt-5-generated">已完成！</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Public Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;管理您的公開 Mapbox 金鑰。&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">測試</translation>
+    </message>
+    <message>
+        <source>Remove your Public Mapbox Key?</source>
+        <translation type="gpt-5-generated">移除你的 Mapbox 公開金鑰？</translation>
+    </message>
+    <message>
+        <source>Enter your Public Mapbox Key</source>
+        <translation type="gpt-5-generated">輸入您的 Mapbox 公開金鑰</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">測試中…</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">金鑰有效！</translation>
+    </message>
+    <message>
+        <source>Key is invalid!</source>
+        <translation type="gpt-5-generated">金鑰無效！</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">發生錯誤：%1</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Secret Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;管理您的 Mapbox 祕密金鑰。&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Remove your Secret Mapbox Key?</source>
+        <translation type="gpt-5-generated">要移除您的 Secret Mapbox 金鑰嗎？</translation>
+    </message>
+    <message>
+        <source>Enter your Secret Mapbox Key</source>
+        <translation type="gpt-5-generated">輸入您的秘密 Mapbox 金鑰</translation>
     </message>
 </context>
 <context>

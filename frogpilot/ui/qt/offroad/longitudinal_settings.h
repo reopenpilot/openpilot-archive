@@ -50,7 +50,7 @@ private:
 
   QSet<QString> parentKeys;
 
-  ButtonControl *weatherKeyControl;
+  FrogPilotButtonsControl *weatherKeyControl;
 
   FrogPilotParamValueControl *longitudinalActuatorDelayToggle;
   FrogPilotParamValueControl *startAccelToggle;
@@ -70,4 +70,6 @@ private:
   Params params_cache{"/cache/params"};
   Params params_default{"/dev/shm/params_default"};
   Params params_memory{"/dev/shm/params"};
+
+  QNetworkAccessManager *networkManager;
 };

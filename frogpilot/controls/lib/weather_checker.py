@@ -4,7 +4,6 @@ import requests
 import time
 
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
 
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.params import Params
@@ -42,7 +41,6 @@ WEATHER_CATEGORIES = {
 class WeatherChecker:
   def __init__(self):
     self.is_daytime = False
-    self.updating_weather = False
 
     self.increase_following_distance = 0
     self.increase_stopped_distance = 0
@@ -107,9 +105,6 @@ class WeatherChecker:
     if self.sunrise and self.sunset:
       self.is_daytime = self.sunrise <= int(now.timestamp()) < self.sunset
 
-    if self.updating_weather:
-      return
-
     if self.last_updated and (now - self.last_updated).total_seconds() < self.check_interval:
       if self.hourly_forecast:
         current_forecast = min(self.hourly_forecast, key=lambda f: abs(f["dt"] - now.timestamp()))
@@ -117,13 +112,10 @@ class WeatherChecker:
         self.update_offsets(frogpilot_toggles)
       return
 
-    self.updating_weather = True
+    self.last_updated = now
 
     def complete_request(future):
       data = future.result()
-      self.updating_weather = False
-      self.last_updated = datetime.now(timezone.utc)
-
       if data:
         self.hourly_forecast = data.get("hourly")
         self.last_gps_position = gps_position
@@ -143,7 +135,6 @@ class WeatherChecker:
 
     def make_request():
       if not is_url_pingable("https://api.openweathermap.org"):
-        self.weather_id = WEATHER_CATEGORIES["CLEAR"]["ranges"][0][0]
         return None
 
       params = {

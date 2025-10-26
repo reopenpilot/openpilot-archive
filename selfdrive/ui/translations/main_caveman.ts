@@ -1183,7 +1183,7 @@
     </message>
     <message>
         <source>openpilot Crashes</source>
-        <translation type="gpt-5-generated"></translation>
+        <translation type="gpt-5-generated" />
     </message>
     <message>
         <source>This Is Fine Moments</source>
@@ -2592,6 +2592,22 @@
         <source>Are you sure you want to remove your key?</source>
         <translation type="gpt-5-generated">You sure want remove key?</translation>
     </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">TEST</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Me test...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Key good!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Error happen: %1</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotManageControl</name>
@@ -3219,6 +3235,50 @@ It reset in %1 hour and %2 minute.</translation>
         <source>Completed!</source>
         <translation type="gpt-5-generated">Done!</translation>
     </message>
+    <message>
+        <source>&lt;b&gt;Manage your Public Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Manage your Public Mapbox Key.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>TEST</source>
+        <translation type="gpt-5-generated">TEST</translation>
+    </message>
+    <message>
+        <source>Remove your Public Mapbox Key?</source>
+        <translation type="gpt-5-generated">Remove your Public Mapbox Key? Me remove now?</translation>
+    </message>
+    <message>
+        <source>Enter your Public Mapbox Key</source>
+        <translation type="gpt-5-generated">Enter your Public Mapbox Key. Me need it.</translation>
+    </message>
+    <message>
+        <source>Testing...</source>
+        <translation type="gpt-5-generated">Me test...</translation>
+    </message>
+    <message>
+        <source>Key is valid!</source>
+        <translation type="gpt-5-generated">Key good!</translation>
+    </message>
+    <message>
+        <source>Key is invalid!</source>
+        <translation type="gpt-5-generated">Key bad!</translation>
+    </message>
+    <message>
+        <source>An error occurred: %1</source>
+        <translation type="gpt-5-generated">Error happen: %1</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Manage your Secret Mapbox Key.&lt;/b&gt;</source>
+        <translation type="gpt-5-generated">&lt;b&gt;Me manage secret Mapbox key.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Remove your Secret Mapbox Key?</source>
+        <translation type="gpt-5-generated">Remove your Secret Mapbox Key?</translation>
+    </message>
+    <message>
+        <source>Enter your Secret Mapbox Key</source>
+        <translation type="gpt-5-generated">Enter secret Mapbox key</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotOnroadWindow</name>
@@ -3440,7 +3500,7 @@ Developer - Many custom setting for seasoned enthusiast</translation>
     </message>
     <message>
         <source>FrogPilot Alerts</source>
-        <translation type="gpt-5-generated"></translation>
+        <translation type="gpt-5-generated" />
     </message>
     <message>
         <source>&lt;b&gt;Optional FrogPilot alerts&lt;/b&gt; that highlight driving events in a more noticeable way.</source>
