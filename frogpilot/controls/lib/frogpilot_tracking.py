@@ -56,8 +56,8 @@ class FrogPilotTracking:
     self.previous_events = set()
     self.previous_random_events = set()
 
+    self.previous_state = State.disabled
     self.sound = FrogPilotAudibleAlert.none
-    self.state = State.disabled
 
     self.model_name = clean_model_name(dict(zip(frogpilot_toggles.available_models.split(","), frogpilot_toggles.available_model_names.split(",")))[frogpilot_toggles.model])
 
