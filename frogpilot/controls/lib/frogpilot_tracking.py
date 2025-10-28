@@ -3,7 +3,7 @@ import json
 
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_MDL
-from openpilot.selfdrive.controls.controlsd import EventName, FrogPilotEventName, State
+from openpilot.selfdrive.controls.controlsd import ACTIVE_STATES, EventName, FrogPilotEventName, State
 from openpilot.selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
 from openpilot.selfdrive.ui.soundd import FrogPilotAudibleAlert
 
@@ -101,21 +101,21 @@ class FrogPilotTracking:
       self.distance_since_override += v_ego * DT_MDL
       self.frogpilot_stats["LongestDistanceWithoutOverride"] = max(self.distance_since_override, self.frogpilot_stats.get("LongestDistanceWithoutOverride", 0))
 
-    if sm["controlsState"].state != self.state:
-      if sm["controlsState"].state == State.disabled:
-        self.frogpilot_stats["Disengages"] = self.frogpilot_stats.get("Disengages", 0) + 1
-
-        if frogpilot_toggles.sound_pack == "frog":
-          self.frogpilot_stats["FrogSqueaks"] = self.frogpilot_stats.get("FrogSqueaks", 0) + 1
-      elif sm["controlsState"].state == State.enabled:
+    if sm["controlsState"].state != self.previous_state:
+      if sm["controlsState"].state in ACTIVE_STATES and self.previous_state not in ACTIVE_STATES:
         self.frogpilot_stats["Engages"] = self.frogpilot_stats.get("Engages", 0) + 1
-
         if frogpilot_toggles.sound_pack == "frog":
           self.frogpilot_stats["FrogChirps"] = self.frogpilot_stats.get("FrogChirps", 0) + 1
-      elif sm["controlsState"].state == State.overriding:
+
+      elif sm["controlsState"].state == State.disabled and self.previous_state in ACTIVE_STATES:
+        self.frogpilot_stats["Disengages"] = self.frogpilot_stats.get("Disengages", 0) + 1
+        if frogpilot_toggles.sound_pack == "frog":
+          self.frogpilot_stats["FrogSqueaks"] = self.frogpilot_stats.get("FrogSqueaks", 0) + 1
+
+      if sm["controlsState"].state == State.overriding and self.previous_state != State.overriding:
         self.frogpilot_stats["Overrides"] = self.frogpilot_stats.get("Overrides", 0) + 1
 
-      self.state = sm["controlsState"].state
+      self.previous_state = sm["controlsState"].state
 
     current_events = {event for event in self.frogpilot_events.event_names}
     if len(current_events) > 0:
