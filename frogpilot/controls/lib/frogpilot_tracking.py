@@ -37,6 +37,14 @@ class FrogPilotTracking:
 
     self.frogpilot_stats = {key: value for key, value in self.frogpilot_stats.items() if not key.startswith("Total")}
 
+    if "ResetStats" not in self.frogpilot_stats:
+      self.frogpilot_stats["Disengages"] = 0
+      self.frogpilot_stats["Engages"] = 0
+      self.frogpilot_stats["FrogChirps"] = 0
+      self.frogpilot_stats["FrogSqueaks"] = 0
+      self.frogpilot_stats["Overrides"] = 0
+      self.frogpilot_stats["ResetStats"] = True
+
     params.put("FrogPilotStats", json.dumps(self.frogpilot_stats))
 
     self.drive_added = False
