@@ -12,7 +12,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.system.hardware import HARDWARE
 from openpilot.system.version import get_build_metadata
 
-from openpilot.frogpilot.common.frogpilot_utilities import clean_model_name, run_cmd
+from openpilot.frogpilot.common.frogpilot_utilities import clean_model_name
 from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles, params
 
 BASE_URL = "https://nominatim.openstreetmap.org"
