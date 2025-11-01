@@ -2,9 +2,6 @@ import json
 import os
 import random
 import requests
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "third_party"))
 
 from collections import Counter
 from datetime import datetime, timezone

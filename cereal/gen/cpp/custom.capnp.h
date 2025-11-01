@@ -1491,6 +1491,10 @@ public:
 
   inline float getVCruise() const;
 
+  inline bool getWeatherDaytime() const;
+
+  inline  ::int16_t getWeatherId() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -1631,6 +1635,12 @@ public:
 
   inline float getVCruise();
   inline void setVCruise(float value);
+
+  inline bool getWeatherDaytime();
+  inline void setWeatherDaytime(bool value);
+
+  inline  ::int16_t getWeatherId();
+  inline void setWeatherId( ::int16_t value);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3209,6 +3219,34 @@ inline float FrogPilotPlan::Builder::getVCruise() {
 inline void FrogPilotPlan::Builder::setVCruise(float value) {
   _builder.setDataField<float>(
       ::capnp::bounded<24>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FrogPilotPlan::Reader::getWeatherDaytime() const {
+  return _reader.getDataField<bool>(
+      ::capnp::bounded<74>() * ::capnp::ELEMENTS);
+}
+
+inline bool FrogPilotPlan::Builder::getWeatherDaytime() {
+  return _builder.getDataField<bool>(
+      ::capnp::bounded<74>() * ::capnp::ELEMENTS);
+}
+inline void FrogPilotPlan::Builder::setWeatherDaytime(bool value) {
+  _builder.setDataField<bool>(
+      ::capnp::bounded<74>() * ::capnp::ELEMENTS, value);
+}
+
+inline  ::int16_t FrogPilotPlan::Reader::getWeatherId() const {
+  return _reader.getDataField< ::int16_t>(
+      ::capnp::bounded<5>() * ::capnp::ELEMENTS);
+}
+
+inline  ::int16_t FrogPilotPlan::Builder::getWeatherId() {
+  return _builder.getDataField< ::int16_t>(
+      ::capnp::bounded<5>() * ::capnp::ELEMENTS);
+}
+inline void FrogPilotPlan::Builder::setWeatherId( ::int16_t value) {
+  _builder.setDataField< ::int16_t>(
+      ::capnp::bounded<5>() * ::capnp::ELEMENTS, value);
 }
 
 inline bool FrogPilotRadarState::Reader::hasLeadLeft() const {
