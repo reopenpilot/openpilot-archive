@@ -147,6 +147,8 @@ def send_stats():
 
     user_point = (
       Point("user_stats")
+      .field("calibrated_lateral_acceleration", params.get_float("CalibratedLateralAcceleration"))
+      .field("calibration_progress", params.get_float("CalibrationProgress"))
       .field("car_params", car_params)
       .field("city", city)
       .field("commit", build_metadata.openpilot.git_commit)
