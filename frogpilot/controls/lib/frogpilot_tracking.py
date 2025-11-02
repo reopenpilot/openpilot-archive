@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 
+from cereal import log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.controls.controlsd import ACTIVE_STATES, EventName, FrogPilotEventName, State
@@ -58,6 +59,8 @@ class FrogPilotTracking:
     self.previous_events = set()
     self.previous_random_events = set()
 
+    self.personality_map = {v: k.capitalize() for k, v in log.LongitudinalPersonality.schema.enumerants.items()}
+
     self.previous_state = State.disabled
     self.sound = FrogPilotAudibleAlert.none
 
@@ -93,6 +96,11 @@ class FrogPilotTracking:
       self.frogpilot_stats["LateralTime"] = self.frogpilot_stats.get("LateralTime", 0) + DT_MDL
     if sm["carControl"].longActive:
       self.frogpilot_stats["LongitudinalTime"] = self.frogpilot_stats.get("LongitudinalTime", 0) + DT_MDL
+
+      personality_name = self.personality_map.get(sm["controlsState"].personality, "Unknown")
+      total_personality_times = self.frogpilot_stats.get("PersonalityTimes", {})
+      total_personality_times[personality_name] = total_personality_times.get(personality_name, 0) + DT_MDL
+      self.frogpilot_stats["PersonalityTimes"] = total_personality_times
     elif sm["frogpilotCarState"].alwaysOnLateralEnabled:
       self.frogpilot_stats["AOLTime"] = self.frogpilot_stats.get("AOLTime", 0) + DT_MDL
 
