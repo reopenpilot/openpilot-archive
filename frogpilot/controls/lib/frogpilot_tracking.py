@@ -9,6 +9,7 @@ from openpilot.selfdrive.ui.soundd import FrogPilotAudibleAlert
 
 from openpilot.frogpilot.common.frogpilot_utilities import clean_model_name
 from openpilot.frogpilot.common.frogpilot_variables import params
+from openpilot.frogpilot.controls.lib.weather_checker import WEATHER_CATEGORIES
 
 RANDOM_EVENTS = {
   FrogPilotEventName.accel30: "accel30",
@@ -28,6 +29,7 @@ RANDOM_EVENTS = {
 class FrogPilotTracking:
   def __init__(self, frogpilot_planner, frogpilot_toggles):
     self.frogpilot_events = frogpilot_planner.frogpilot_events
+    self.frogpilot_weather = frogpilot_planner.frogpilot_weather
 
     self.frogpilot_stats = json.loads(params.get("FrogPilotStats") or "{}")
     self.frogpilot_stats.setdefault("AOLTime", self.frogpilot_stats.get("TotalAOLTime", 0))
@@ -147,6 +149,29 @@ class FrogPilotTracking:
         self.frogpilot_stats["RandomEvents"] = total_random_events
 
     self.previous_random_events = current_random_events
+
+    if self.frogpilot_weather.is_daytime:
+      self.frogpilot_stats["DayTime"] = self.frogpilot_stats.get("DayTime", 0) + DT_MDL
+    else:
+      self.frogpilot_stats["NightTime"] = self.frogpilot_stats.get("NightTime", 0) + DT_MDL
+
+    weather_api_calls = self.frogpilot_stats.get("WeatherAPICalls", {})
+    weather_api_calls["2.5"] = weather_api_calls.get("2.5", 0) + self.frogpilot_weather.api_25_calls
+    weather_api_calls["3.0"] = weather_api_calls.get("3.0", 0) + self.frogpilot_weather.api_3_calls
+    self.frogpilot_stats["WeatherAPICalls"] = weather_api_calls
+
+    self.frogpilot_weather.api_25_calls = 0
+    self.frogpilot_weather.api_3_calls = 0
+
+    suffix = "unknown"
+    for category in WEATHER_CATEGORIES.values():
+      if any(start <= self.frogpilot_weather.weather_id <= end for start, end in category["ranges"]):
+        suffix = category["suffix"]
+        break
+
+    weather_times = self.frogpilot_stats.get("WeatherTimes", {})
+    weather_times[suffix] = weather_times.get(suffix, 0) + DT_MDL
+    self.frogpilot_stats["WeatherTimes"] = weather_times
 
     if self.tracked_time > 60 and sm["carState"].standstill and self.enabled:
       if time_validated:
