@@ -150,10 +150,11 @@ class FrogPilotTracking:
 
     self.previous_random_events = current_random_events
 
-    if self.frogpilot_weather.is_daytime:
-      self.frogpilot_stats["DayTime"] = self.frogpilot_stats.get("DayTime", 0) + DT_MDL
-    else:
-      self.frogpilot_stats["NightTime"] = self.frogpilot_stats.get("NightTime", 0) + DT_MDL
+    if self.frogpilot_weather.sunrise != 0 and self.frogpilot_weather.sunset != 0:
+      if self.frogpilot_weather.is_daytime:
+        self.frogpilot_stats["DayTime"] = self.frogpilot_stats.get("DayTime", 0) + DT_MDL
+      else:
+        self.frogpilot_stats["NightTime"] = self.frogpilot_stats.get("NightTime", 0) + DT_MDL
 
     weather_api_calls = self.frogpilot_stats.get("WeatherAPICalls", {})
     weather_api_calls["2.5"] = weather_api_calls.get("2.5", 0) + self.frogpilot_weather.api_25_calls
