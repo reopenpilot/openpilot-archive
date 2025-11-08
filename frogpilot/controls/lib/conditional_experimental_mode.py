@@ -34,8 +34,8 @@ class ConditionalExperimentalMode:
       self.stop_light_filter.x = 0
 
   def check_conditions(self, v_ego, sm, frogpilot_toggles):
-    below_speed = v_ego >= 1 and not self.frogpilot_planner.frogpilot_following.following_lead and v_ego < frogpilot_toggles.conditional_limit
-    below_speed_with_lead = v_ego >= 1 and self.frogpilot_planner.frogpilot_following.following_lead and v_ego < frogpilot_toggles.conditional_limit_lead
+    below_speed = not self.frogpilot_planner.frogpilot_following.following_lead and 1 <= v_ego < frogpilot_toggles.conditional_limit
+    below_speed_with_lead = self.frogpilot_planner.frogpilot_following.following_lead and 1 <= v_ego < frogpilot_toggles.conditional_limit_lead
     if below_speed or below_speed_with_lead:
       self.status_value = 3 if self.frogpilot_planner.frogpilot_following.following_lead else 4
       return True
