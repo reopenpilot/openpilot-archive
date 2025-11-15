@@ -253,6 +253,14 @@
         <source>TORQUE %</source>
         <translation type="gpt-5-generated">TORQUE %</translation>
     </message>
+    <message>
+        <source>DANGER FACTOR</source>
+        <translation type="gpt-5-generated">DANGER FACTOR, ye scallywag</translation>
+    </message>
+    <message>
+        <source>DANGER %</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DevicePanel</name>
@@ -965,6 +973,14 @@
     <message>
         <source>% of </source>
         <translation type="gpt-5-generated">% o’</translation>
+    </message>
+    <message>
+        <source>Driving Personalities:</source>
+        <translation type="gpt-5-generated">Sailin’ Personalities:</translation>
+    </message>
+    <message>
+        <source>Time Spent in Weather:</source>
+        <translation type="gpt-5-generated">Time Spent in Thar Weather:</translation>
     </message>
 </context>
 <context>
@@ -2606,6 +2622,10 @@
         <source>An error occurred: %1</source>
         <translation type="gpt-5-generated">Arr, an error befall'd: %1</translation>
     </message>
+    <message>
+        <source>Characters: 0/%1</source>
+        <translation type="gpt-5-generated">Characters: 0/%1</translation>
+    </message>
 </context>
 <context>
     <name>FrogPilotManageControl</name>
@@ -3216,10 +3236,6 @@ It’ll reset in %1 hours ‘n %2 minutes.</translation>
     <message>
         <source>Enter your %1</source>
         <translation type="gpt-5-generated">Avast! Enter yer %1</translation>
-    </message>
-    <message>
-        <source>Inputted key is invalid or too short!</source>
-        <translation type="gpt-5-generated">Arr, the key ye entered be invalid or too short!</translation>
     </message>
     <message>
         <source>Remove your %1?</source>
@@ -5023,6 +5039,10 @@ Developer - Highly customizable riggin’s fer seasoned enthusiasts</translation
     <message>
         <source>&lt;b&gt;Set the road-edge thickness.&lt;/b&gt;&lt;br&gt;&lt;br&gt;Default matches half of the MUTCD lane-line width standard of 10 centimeters.</source>
         <translation type="gpt-5-generated">&lt;b&gt;Set th’ road-edge thickness, ye landlubber.&lt;/b&gt;&lt;br&gt;&lt;br&gt;Default be half o’ the MUTCD lane-line width standard o’ 10 centimeters.</translation>
+    </message>
+    <message>
+        <source>Longitudinal MPC: Danger Factor</source>
+        <translation type="gpt-5-generated">Longitudinal MPC: Peril Factor</translation>
     </message>
 </context>
 <context>
