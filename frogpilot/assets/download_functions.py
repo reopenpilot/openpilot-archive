@@ -2,7 +2,7 @@
 import requests
 import tempfile
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from openpilot.frogpilot.common.frogpilot_utilities import delete_file, is_url_pingable

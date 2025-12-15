@@ -870,7 +870,13 @@ class Controls:
     dat.valid = CS.canValid
     controlsState = dat.controlsState
     if current_alert:
-      controlsState.alertText1 = current_alert.alert_text_1
+      alert_text_1 = current_alert.alert_text_1
+      if not isinstance(alert_text_1, str):
+        sentry.set_tag("bad_alert_event_type", str(current_alert.alert_type))
+        sentry.set_tag("bad_alert_content", str(alert_text_1))
+        sentry.capture_exception(Exception(f"Invalid alertText1 type: {type(alert_text_1)}"))
+      else:
+        controlsState.alertText1 = current_alert.alert_text_1
       controlsState.alertText2 = current_alert.alert_text_2
       controlsState.alertSize = current_alert.alert_size
       controlsState.alertStatus = current_alert.alert_status
@@ -941,7 +947,13 @@ class Controls:
     current_frogpilot_alert = self.frogpilot_AM.process_alerts(self.sm.frame, clear_event_types)
 
     if current_frogpilot_alert:
-      frogpilotControlsState.alertText1 = current_frogpilot_alert.alert_text_1
+      alert_text_1 = current_frogpilot_alert.alert_text_1
+      if not isinstance(alert_text_1, str):
+        sentry.set_tag("bad_alert_event_type", str(current_frogpilot_alert.alert_type))
+        sentry.set_tag("bad_alert_content", str(alert_text_1))
+        sentry.capture_exception(Exception(f"Invalid alertText1 type: {type(alert_text_1)}"))
+      else:
+        frogpilotControlsState.alertText1 = current_frogpilot_alert.alert_text_1
       frogpilotControlsState.alertText2 = current_frogpilot_alert.alert_text_2
       frogpilotControlsState.alertSize = current_frogpilot_alert.alert_size
       frogpilotControlsState.alertStatus = current_frogpilot_alert.alert_status
