@@ -327,7 +327,7 @@ def update_maps(now):
 
 def update_openpilot():
   def update_available():
-    run_cmd(["pkill", "-SIGUSR1", "-f", "system.updated.updated"], "Updater check signal sent", "Failed to send updater check signal", report=False)
+    run_cmd(["pkill", "-SIGUSR1", "-f", "system.updated.updated"], "Checking for updates...", "Failed to check for update...", report=False)
 
     while params.get("UpdaterState", encoding="utf-8") != "checking...":
       time.sleep(1)
@@ -338,10 +338,10 @@ def update_openpilot():
     if not params.get_bool("UpdaterFetchAvailable"):
       return False
 
-    while params.get("UpdaterState", encoding="utf-8") != "idle":
+    while params.get_bool("IsOnroad") or running_threads.get("lock_doors", threading.Thread()).is_alive():
       time.sleep(60)
 
-    run_cmd(["pkill", "-SIGHUP", "-f", "system.updated.updated"], "Updater refresh signal sent", "Failed to send updater refresh signal", report=False)
+    run_cmd(["pkill", "-SIGHUP", "-f", "system.updated.updated"], "Update available, downloading...", "Failed to download update...", report=False)
 
     while not params.get_bool("UpdateAvailable"):
       time.sleep(60)
@@ -354,7 +354,7 @@ def update_openpilot():
   if not update_available():
     return
 
-  while params.get_bool("IsOnroad") or params_memory.get_bool("UpdateSpeedLimits") or running_threads.get("lock_doors", threading.Thread()).is_alive():
+  while params.get_bool("IsOnroad") or running_threads.get("lock_doors", threading.Thread()).is_alive():
     time.sleep(60)
 
   while True:
