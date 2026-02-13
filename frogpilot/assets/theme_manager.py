@@ -262,13 +262,8 @@ class ThemeManager:
     if "~" in base:
       base, creator = base.split("~", 1)
 
-    parts = base.replace("_", "-").split("-")
-    capitalized_parts = [part.capitalize() for part in parts if part]
-
-    if len(capitalized_parts) > 1 and component != "steering_wheels":
-      display = f"{capitalized_parts[0]} ({' '.join(capitalized_parts[1:])})"
-    else:
-      display = " ".join(capitalized_parts)
+    parts = base.replace("_", " ").replace("-", " ").split()
+    display = " ".join(part.capitalize() for part in parts)
 
     if creator:
       return f"{display} - by: {creator}"
@@ -317,7 +312,7 @@ class ThemeManager:
       "fourth_of_july": date(year, 7, 4),
       "halloween_week": date(year, 10, 31),
       "thanksgiving_week": ThemeManager.calculate_thanksgiving(year),
-      "christmas_week": date(year, 12, 21)
+      "christmas_week": date(year, 12, 25)
     }
 
   def handle_verification_failure(self, extension, theme_component, theme_name, asset_param, theme_path, download_path, frogpilot_toggles):

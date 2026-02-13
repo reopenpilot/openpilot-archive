@@ -12,23 +12,23 @@ FrogPilotAnnotatedCameraWidget::FrogPilotAnnotatedCameraWidget(QWidget *parent) 
   mapDataIcon = loadPixmap("../../frogpilot/assets/other_images/offline_maps_icon.png", {btn_size / 2, btn_size / 2});
   navigationIcon = loadPixmap("../../frogpilot/assets/other_images/navigation_icon.png", {btn_size / 2, btn_size / 2});
   nextMapsIcon = loadPixmap("../../frogpilot/assets/other_images/next_maps_icon.png", {btn_size / 2, btn_size / 2});
-  pausedIcon = loadPixmap("../../frogpilot/assets/other_images/paused_icon.png", {btn_size / 2, btn_size / 2});
-  speedIcon = loadPixmap("../../frogpilot/assets/other_images/speed_icon.png", {btn_size / 2, btn_size / 2});
+  pausedIcon = loadPixmap("../../frogpilot/assets/other_images/paused_icon.png", {widget_size, widget_size});
+  speedIcon = loadPixmap("../../frogpilot/assets/other_images/speed_icon.png", {widget_size, widget_size});
   stopSignImg = loadPixmap("../../frogpilot/assets/other_images/stop_sign.png", {btn_size, btn_size});
-  turnIcon = loadPixmap("../../frogpilot/assets/other_images/turn_icon.png", {btn_size / 2, btn_size / 2});
+  turnIcon = loadPixmap("../../frogpilot/assets/other_images/turn_icon.png", {widget_size, widget_size});
 
-  loadGif("../../frogpilot/assets/other_images/curve_icon.gif", cemCurveIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/lead_icon.gif", cemLeadIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/speed_icon.gif", cemSpeedIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/light_icon.gif", cemStopIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/turn_icon.gif", cemTurnIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/chill_mode_icon.gif", chillModeIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/experimental_mode_icon.gif", experimentalModeIcon, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/weather_clear_day.gif", weatherClearDay, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/weather_clear_night.gif", weatherClearNight, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/weather_low_visibility.gif", weatherLowVisibility, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/weather_rain.gif", weatherRain, QSize(btn_size / 2, btn_size / 2), this);
-  loadGif("../../frogpilot/assets/other_images/weather_snow.gif", weatherSnow, QSize(btn_size / 2, btn_size / 2), this);
+  loadGif("../../frogpilot/assets/other_images/curve_icon.gif", cemCurveIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/lead_icon.gif", cemLeadIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/speed_icon.gif", cemSpeedIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/light_icon.gif", cemStopIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/turn_icon.gif", cemTurnIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/chill_mode_icon.gif", chillModeIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/experimental_mode_icon.gif", experimentalModeIcon, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/weather_clear_day.gif", weatherClearDay, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/weather_clear_night.gif", weatherClearNight, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/weather_low_visibility.gif", weatherLowVisibility, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/weather_rain.gif", weatherRain, QSize(widget_size, widget_size), this);
+  loadGif("../../frogpilot/assets/other_images/weather_snow.gif", weatherSnow, QSize(widget_size, widget_size), this);
 
   QObject::connect(animationTimer, &QTimer::timeout, [this] {
     animationFrameIndex = (animationFrameIndex + 1) % totalFrames;
@@ -1008,15 +1008,13 @@ void FrogPilotAnnotatedCameraWidget::paintWeather(QPainter &p, const cereal::Fro
   p.setPen(QPen(blackColor(), 10));
   p.drawRoundedRect(weatherRect, 24, 24);
 
-  QSharedPointer<QMovie> icon = weatherClearDay;
+  QSharedPointer<QMovie> icon = frogpilotPlan.getWeatherDaytime() ? weatherClearDay : weatherClearNight;
   if ((weatherId >= 200 && weatherId <= 232) || (weatherId >= 300 && weatherId <= 321) || (weatherId >= 500 && weatherId <= 531)) {
     icon = weatherRain;
   } else if (weatherId >= 600 && weatherId <= 622) {
     icon = weatherSnow;
   } else if (weatherId >= 701 && weatherId <= 762) {
     icon = weatherLowVisibility;
-  } else if (weatherId == 800) {
-    icon = frogpilotPlan.getWeatherDaytime() ? weatherClearDay : weatherClearNight;
   }
 
   p.drawPixmap(weatherRect, icon->currentPixmap());
