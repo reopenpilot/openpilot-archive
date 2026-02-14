@@ -262,10 +262,10 @@ def flash_panda():
   params_memory.remove("FlashPanda")
 
 def get_frogpilot_api_info():
-  api_token = Params().get("FrogPilotApiToken", encoding="utf-8")
+  api_token = params.get("FrogPilotApiToken", encoding="utf-8")
   build_metadata = dataclasses.asdict(get_build_metadata())
   device_type = HARDWARE.get_device_type()
-  dongle_id = Params().get("FrogPilotDongleId", encoding="utf-8")
+  dongle_id = params.get("FrogPilotDongleId", encoding="utf-8")
 
   return api_token, build_metadata, device_type, dongle_id
 
