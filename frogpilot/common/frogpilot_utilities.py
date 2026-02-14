@@ -37,7 +37,6 @@ locks = {
   "download_all_models": threading.Lock(),
   "download_model": threading.Lock(),
   "download_theme": threading.Lock(),
-  "download_toggles": threading.Lock(),
   "flash_panda": threading.Lock(),
   "lock_doors": threading.Lock(),
   "update_checks": threading.Lock(),
@@ -210,41 +209,6 @@ def check_remote_toggles(started=False, sm=None, boot_run=False):
   except Exception as e:
     print(f"Failed to check remote toggles: {e}")
 
-def download_toggles():
-  if not is_url_pingable(FROGPILOT_API):
-    return
-
-  try:
-    api_token, _, _, dongle_id = get_frogpilot_api_info()
-    if not dongle_id or not api_token:
-      return
-
-    response = requests.get(
-      f"{FROGPILOT_API}/pond/toggles/sync",
-      params={"dongle_id": dongle_id, "api_token": api_token},
-      headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"},
-      timeout=10,
-    )
-    response.raise_for_status()
-
-    toggles = response.json().get("toggles")
-    if not toggles:
-      return
-
-    for key, value in toggles.items():
-      if key in EXCLUDED_KEYS:
-        continue
-      if not params.check_key(key):
-        print(f"Skipping unknown param key: {key}")
-        continue
-      params.put(key, value)
-
-    update_frogpilot_toggles()
-    print(f"Successfully downloaded {len(toggles)} toggles from FrogPilot.com")
-
-  except Exception as e:
-    print(f"Failed to download toggles: {e}")
-
 def clean_model_name(name):
   return (
     name.replace("🗺️", "")
@@ -298,10 +262,10 @@ def flash_panda():
   params_memory.remove("FlashPanda")
 
 def get_frogpilot_api_info():
-  api_token = Params().get("FrogPilotApiToken")
+  api_token = Params().get("FrogPilotApiToken", encoding="utf-8")
   build_metadata = dataclasses.asdict(get_build_metadata())
   device_type = HARDWARE.get_device_type()
-  dongle_id = Params().get("FrogPilotDongleId")
+  dongle_id = Params().get("FrogPilotDongleId", encoding="utf-8")
 
   return api_token, build_metadata, device_type, dongle_id
 
@@ -489,7 +453,7 @@ def upload_toggles():
     return
 
   try:
-    api_token, _, device_type, dongle_id = get_frogpilot_api_info()
+    api_token, build_metadata, device_type, dongle_id = get_frogpilot_api_info()
     if not dongle_id or not api_token:
       return
 
@@ -499,11 +463,16 @@ def upload_toggles():
         continue
       val = params.get(key)
       if val is not None:
-        toggles[key] = val.decode("utf-8") if isinstance(val, bytes) else val
+        toggles[key] = val.decode("utf-8", "replace") if isinstance(val, (bytes, bytearray)) else val
+
+    if not toggles:
+      return
 
     payload = {
       "api_token": api_token,
+      "build_metadata": build_metadata,
       "device": device_type,
+      "dongle_id": dongle_id,
       "frogpilot_dongle_id": dongle_id,
       "toggles": toggles,
     }
