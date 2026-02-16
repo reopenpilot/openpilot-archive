@@ -33,7 +33,6 @@ running_threads = {}
 
 locks = {
   "backup_toggles": threading.Lock(),
-  "check_remote_toggles": threading.Lock(),
   "download_all_models": threading.Lock(),
   "download_model": threading.Lock(),
   "download_theme": threading.Lock(),
@@ -42,8 +41,7 @@ locks = {
   "update_checks": threading.Lock(),
   "update_maps": threading.Lock(),
   "update_openpilot": threading.Lock(),
-  "update_tinygrad": threading.Lock(),
-  "upload_toggles": threading.Lock()
+  "update_tinygrad": threading.Lock()
 }
 
 def run_thread_with_lock(name, target, args=(), report=True):
