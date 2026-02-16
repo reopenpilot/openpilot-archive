@@ -452,7 +452,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PedalsOnUI", PERSISTENT},
     {"PersonalizeOpenpilot", PERSISTENT},
     {"PondPaired", PERSISTENT},
-    {"PondUploadPending", PERSISTENT},
     {"PreferredSchedule", PERSISTENT},
     {"PreviousSpeedLimit", PERSISTENT},
     {"PromptDistractedVolume", PERSISTENT},

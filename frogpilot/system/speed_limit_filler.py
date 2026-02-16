@@ -211,9 +211,6 @@ class MapSpeedLogger:
     current_latitude = self.sm["liveLocationKalman"].positionGeodetic.value[0]
     current_longitude = self.sm["liveLocationKalman"].positionGeodetic.value[1]
 
-    if current_latitude == 0 and current_longitude == 0:
-      return
-
     if self.previous_coordinates is None:
       self.previous_coordinates = {"latitude": current_latitude, "longitude": current_longitude}
       return

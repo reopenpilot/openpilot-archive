@@ -22,7 +22,7 @@ from openpilot.system.hardware import HARDWARE
 
 from openpilot.frogpilot.assets.model_manager import ModelManager
 from openpilot.frogpilot.assets.theme_manager import ThemeManager
-from openpilot.frogpilot.common.frogpilot_utilities import delete_file, is_url_pingable, run_cmd, run_thread_with_lock, use_konik_server
+from openpilot.frogpilot.common.frogpilot_utilities import check_remote_toggles, delete_file, is_url_pingable, run_cmd, run_thread_with_lock, upload_toggles, use_konik_server
 from openpilot.frogpilot.common.frogpilot_variables import (
   ERROR_LOGS_PATH, EXCLUDED_KEYS, FROGPILOT_API, HD_LOGS_PATH, KONIK_LOGS_PATH, MODELS_PATH, SCREEN_RECORDINGS_PATH,
   THEME_SAVE_PATH, VIDEO_CACHE_PATH, FrogPilotVariables, frogpilot_default_params, get_frogpilot_toggles, params
@@ -115,7 +115,7 @@ def backup_toggles(params_cache):
         changes_found = True
 
   if changes_found:
-    params.put_bool("PondUploadPending", True)
+    run_thread_with_lock("upload_toggles", upload_toggles)
 
   backup_path = Path("/data/toggle_backups")
   maximum_backups = 5
@@ -178,6 +178,8 @@ def frogpilot_boot_functions(build_metadata, params_cache):
 
     backup_frogpilot(build_metadata)
     backup_toggles(params_cache)
+
+    check_remote_toggles(boot_run=True)
 
     send_stats()
 

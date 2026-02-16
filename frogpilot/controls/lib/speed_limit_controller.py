@@ -78,9 +78,7 @@ class SpeedLimitController:
     return next((offset for low, high, offset in offset_map if low < self.target < high), 0)
 
   def get_mapbox_speed_limit(self, gps_position, now, time_validated, v_ego, sm):
-    latitude = gps_position.get("latitude", 0) if gps_position else 0
-    longitude = gps_position.get("longitude", 0) if gps_position else 0
-    if not gps_position or (latitude == 0 and longitude == 0) or not self.mapbox_token or (sm["carState"].steeringAngleDeg - sm["liveParameters"].angleOffsetDeg) >= 45:
+    if not gps_position or not self.mapbox_token or (sm["carState"].steeringAngleDeg - sm["liveParameters"].angleOffsetDeg) >= 45:
       self.mapbox_limit = 0
       self.segment_distance = 0
       return
@@ -308,8 +306,6 @@ class SpeedLimitController:
 
   def update_map_speed_limit(self, gps_position, v_ego):
     if not gps_position:
-      return
-    if gps_position.get("latitude", 0) == 0 and gps_position.get("longitude", 0) == 0:
       return
 
     self.map_speed_limit = params_memory.get_float("MapSpeedLimit")

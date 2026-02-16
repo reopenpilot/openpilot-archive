@@ -32,7 +32,6 @@ class FrogPilotPlanner:
     self.tracking_lead_filter = FirstOrderFilter(0, 0.5, DT_MDL)
 
     self.driving_in_curve = False
-    self.gps_valid = False
     self.lateral_check = False
     self.model_stopped = False
     self.road_curvature_detected = False
@@ -78,12 +77,10 @@ class FrogPilotPlanner:
         "longitude": sm["liveLocationKalman"].positionGeodetic.value[1],
         "bearing": math.degrees(sm["liveLocationKalman"].calibratedOrientationNED.value[2])
       }
-      self.gps_valid = gps_position["latitude"] != 0 or gps_position["longitude"] != 0
 
       params_memory.put("LastGPSPosition", json.dumps(gps_position))
     else:
       gps_position = None
-      self.gps_valid = False
 
       params_memory.remove("LastGPSPosition")
 
@@ -115,7 +112,7 @@ class FrogPilotPlanner:
 
     self.v_cruise = self.frogpilot_vcruise.update(gps_position, now, time_validated, v_cruise, v_ego, sm, frogpilot_toggles)
 
-    if self.gps_valid and time_validated and frogpilot_toggles.weather_presets:
+    if gps_position and time_validated and frogpilot_toggles.weather_presets:
       self.frogpilot_weather.update_weather(gps_position, now, frogpilot_toggles)
     else:
       self.frogpilot_weather.weather_id = 0
