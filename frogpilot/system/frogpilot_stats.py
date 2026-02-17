@@ -12,7 +12,6 @@ GITHUB_API_URL = "https://api.github.com/repos/FrogAi/FrogPilot/commits"
 MINIMUM_POPULATION = 100_000
 
 TRACKED_BRANCHES = ["FrogPilot", "FrogPilot-Staging", "FrogPilot-Testing"]
-API_HEADERS = {"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"}
 
 def get_branch_commits():
   commits = []
@@ -112,32 +111,6 @@ def get_city_center(latitude, longitude):
     print(f"Falling back to (0, 0) for {latitude}, {longitude}")
     return float(0.0), float(0.0), "N/A", "N/A", "N/A"
 
-def refresh_api_credentials(build_metadata, device_type):
-  payload = {
-    "build_metadata": build_metadata,
-    "device": device_type,
-    "dongle_id": params.get("DongleId", encoding="utf8"),
-    "frogpilot_dongle_id": params.get("FrogPilotDongleId", encoding="utf8"),
-  }
-
-  try:
-    response = requests.post(f"{FROGPILOT_API}/register", json=payload, headers=API_HEADERS, timeout=10)
-    response.raise_for_status()
-
-    data = response.json() or {}
-    api_token = data.get("api_token")
-    dongle_id = data.get("frogpilot_dongle_id")
-
-    if api_token and dongle_id:
-      params.put("FrogPilotApiToken", api_token)
-      params.put("FrogPilotDongleId", dongle_id)
-      print(f"Refreshed API credentials for dongle {dongle_id[:8]}...")
-      return api_token, dongle_id
-  except Exception as exception:
-    print(f"Failed to refresh API credentials: {exception}")
-
-  return None, None
-
 def send_stats():
   if not is_url_pingable(FROGPILOT_API):
     return
@@ -149,11 +122,6 @@ def send_stats():
       return
 
     api_token, build_metadata, device_type, dongle_id = get_frogpilot_api_info()
-    if not api_token or not dongle_id:
-      api_token, dongle_id = refresh_api_credentials(build_metadata, device_type)
-      if not api_token or not dongle_id:
-        print("Failed to send FrogPilot stats: Missing API credentials")
-        return
 
     car_params = "{}"
     msg_bytes = params.get("CarParamsPersistent")
@@ -215,22 +183,9 @@ def send_stats():
           "score": int(score),
         })
 
-    for attempt in range(2):
-      payload["api_token"] = api_token
-      payload["user_stats"]["frogpilot_dongle_id"] = dongle_id
-
-      response = requests.post(f"{FROGPILOT_API}/stats", json=payload, headers=API_HEADERS, timeout=30)
-
-      if response.status_code == 401 and attempt == 0:
-        refreshed_token, refreshed_dongle_id = refresh_api_credentials(build_metadata, device_type)
-        if refreshed_token and refreshed_dongle_id:
-          api_token, dongle_id = refreshed_token, refreshed_dongle_id
-          print("Retrying stats upload with refreshed API credentials...")
-          continue
-
-      response.raise_for_status()
-      print("Successfully sent FrogPilot stats!")
-      return
+    response = requests.post(f"{FROGPILOT_API}/stats", json=payload, headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"}, timeout=30)
+    response.raise_for_status()
+    print("Successfully sent FrogPilot stats!")
 
   except Exception as exception:
     print(f"Failed to send FrogPilot stats: {exception}")
