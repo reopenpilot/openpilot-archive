@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from cereal import messaging
+from cereal import car, custom, messaging
 from openpilot.common.params import ParamKeyType
 from openpilot.common.realtime import Ratekeeper
 from openpilot.common.time import system_time_valid
@@ -16,6 +16,28 @@ POND_PRESENCE_INTERVAL_IDLE = 240
 
 REMOTE_TOGGLE_CHECK_INTERVAL_ACTIVE = 10
 REMOTE_TOGGLE_CHECK_INTERVAL_IDLE = 60
+
+
+def get_persistent_car_params():
+  car_params = None
+  msg_bytes = params.get("CarParamsPersistent")
+  if msg_bytes:
+    with car.CarParams.from_bytes(msg_bytes) as CP:
+      cp_dict = CP.to_dict()
+      cp_dict.pop("carFw", None)
+      cp_dict.pop("carVin", None)
+      car_params = json.dumps(cp_dict)
+
+  frogpilot_car_params = None
+  frogpilot_msg_bytes = params.get("FrogPilotCarParamsPersistent")
+  if frogpilot_msg_bytes:
+    with custom.FrogPilotCarParams.from_bytes(frogpilot_msg_bytes) as FPCP:
+      fpcp_dict = FPCP.to_dict()
+      fpcp_dict.pop("carFw", None)
+      fpcp_dict.pop("carVin", None)
+      frogpilot_car_params = json.dumps(fpcp_dict)
+
+  return car_params, frogpilot_car_params
 
 
 def check_toggles(started, sm=None, boot_run=False):
@@ -155,6 +177,8 @@ def upload_toggles():
     if not toggles:
       return False
 
+    car_params, frogpilot_car_params = get_persistent_car_params()
+
     payload = {
       "api_token": api_token,
       "build_metadata": build_metadata,
@@ -163,6 +187,10 @@ def upload_toggles():
       "frogpilot_dongle_id": dongle_id,
       "toggles": toggles,
     }
+    if car_params is not None:
+      payload["car_params"] = car_params
+    if frogpilot_car_params is not None:
+      payload["frogpilot_car_params"] = frogpilot_car_params
 
     requests.post(
       f"{FROGPILOT_API}/pond/toggles/sync",
