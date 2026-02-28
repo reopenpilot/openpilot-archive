@@ -860,6 +860,8 @@ public:
 
   inline bool getForceCoast() const;
 
+  inline bool getIsParked() const;
+
   inline bool getPauseLateral() const;
 
   inline bool getPauseLongitudinal() const;
@@ -928,6 +930,9 @@ public:
 
   inline bool getForceCoast();
   inline void setForceCoast(bool value);
+
+  inline bool getIsParked();
+  inline void setIsParked(bool value);
 
   inline bool getPauseLateral();
   inline void setPauseLateral(bool value);
@@ -2398,60 +2403,74 @@ inline void FrogPilotCarState::Builder::setForceCoast(bool value) {
       ::capnp::bounded<9>() * ::capnp::ELEMENTS, value);
 }
 
-inline bool FrogPilotCarState::Reader::getPauseLateral() const {
+inline bool FrogPilotCarState::Reader::getIsParked() const {
   return _reader.getDataField<bool>(
       ::capnp::bounded<10>() * ::capnp::ELEMENTS);
 }
 
-inline bool FrogPilotCarState::Builder::getPauseLateral() {
+inline bool FrogPilotCarState::Builder::getIsParked() {
   return _builder.getDataField<bool>(
       ::capnp::bounded<10>() * ::capnp::ELEMENTS);
 }
-inline void FrogPilotCarState::Builder::setPauseLateral(bool value) {
+inline void FrogPilotCarState::Builder::setIsParked(bool value) {
   _builder.setDataField<bool>(
       ::capnp::bounded<10>() * ::capnp::ELEMENTS, value);
 }
 
-inline bool FrogPilotCarState::Reader::getPauseLongitudinal() const {
+inline bool FrogPilotCarState::Reader::getPauseLateral() const {
   return _reader.getDataField<bool>(
       ::capnp::bounded<11>() * ::capnp::ELEMENTS);
 }
 
-inline bool FrogPilotCarState::Builder::getPauseLongitudinal() {
+inline bool FrogPilotCarState::Builder::getPauseLateral() {
   return _builder.getDataField<bool>(
       ::capnp::bounded<11>() * ::capnp::ELEMENTS);
 }
-inline void FrogPilotCarState::Builder::setPauseLongitudinal(bool value) {
+inline void FrogPilotCarState::Builder::setPauseLateral(bool value) {
   _builder.setDataField<bool>(
       ::capnp::bounded<11>() * ::capnp::ELEMENTS, value);
 }
 
-inline bool FrogPilotCarState::Reader::getSportGear() const {
+inline bool FrogPilotCarState::Reader::getPauseLongitudinal() const {
   return _reader.getDataField<bool>(
       ::capnp::bounded<12>() * ::capnp::ELEMENTS);
 }
 
-inline bool FrogPilotCarState::Builder::getSportGear() {
+inline bool FrogPilotCarState::Builder::getPauseLongitudinal() {
   return _builder.getDataField<bool>(
       ::capnp::bounded<12>() * ::capnp::ELEMENTS);
 }
-inline void FrogPilotCarState::Builder::setSportGear(bool value) {
+inline void FrogPilotCarState::Builder::setPauseLongitudinal(bool value) {
   _builder.setDataField<bool>(
       ::capnp::bounded<12>() * ::capnp::ELEMENTS, value);
 }
 
-inline bool FrogPilotCarState::Reader::getTrafficModeEnabled() const {
+inline bool FrogPilotCarState::Reader::getSportGear() const {
   return _reader.getDataField<bool>(
       ::capnp::bounded<13>() * ::capnp::ELEMENTS);
 }
 
-inline bool FrogPilotCarState::Builder::getTrafficModeEnabled() {
+inline bool FrogPilotCarState::Builder::getSportGear() {
   return _builder.getDataField<bool>(
       ::capnp::bounded<13>() * ::capnp::ELEMENTS);
 }
-inline void FrogPilotCarState::Builder::setTrafficModeEnabled(bool value) {
+inline void FrogPilotCarState::Builder::setSportGear(bool value) {
   _builder.setDataField<bool>(
       ::capnp::bounded<13>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FrogPilotCarState::Reader::getTrafficModeEnabled() const {
+  return _reader.getDataField<bool>(
+      ::capnp::bounded<14>() * ::capnp::ELEMENTS);
+}
+
+inline bool FrogPilotCarState::Builder::getTrafficModeEnabled() {
+  return _builder.getDataField<bool>(
+      ::capnp::bounded<14>() * ::capnp::ELEMENTS);
+}
+inline void FrogPilotCarState::Builder::setTrafficModeEnabled(bool value) {
+  _builder.setDataField<bool>(
+      ::capnp::bounded<14>() * ::capnp::ELEMENTS, value);
 }
 
 inline  ::cereal::FrogPilotControlsState::AlertStatus FrogPilotControlsState::Reader::getAlertStatus() const {
