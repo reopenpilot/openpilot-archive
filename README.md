@@ -8053,6 +8053,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > > </details>
 > >
 > 
+> > <details><summary>20250228-1900</summary>
+> >
+> > #### fp-FrogPilot-Staging-20250228-1900
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20250228-1900
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20250228-1900
+> > ```
+> >
+> > </details>
+> >
+> 
 > > <details><summary>20250303-0341</summary>
 > >
 > > #### fp-FrogPilot-Staging-20250303-0341
