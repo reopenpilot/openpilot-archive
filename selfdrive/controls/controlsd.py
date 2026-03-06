@@ -240,6 +240,11 @@ class Controls:
       return str(proc.exe)
     return str(proc.name)
 
+  @staticmethod
+  def _enum_to_int(value) -> int:
+    raw_value = getattr(value, "raw", value)
+    return int(raw_value)
+
   def _summarize_process(self, proc, pid_to_proc: dict[int, object] | None = None) -> dict[str, object]:
     parent_chain = []
     if pid_to_proc is not None:
@@ -351,7 +356,7 @@ class Controls:
         "free_space_percent": round(float(device.freeSpacePercent), 2),
         "gpu_usage_percent": int(device.gpuUsagePercent),
         "avg_cpu_usage_percent": round(sum(cpu_usage) / len(cpu_usage), 2) if len(cpu_usage) > 0 else 0.0,
-        "thermal_status": int(device.thermalStatus),
+        "thermal_status": self._enum_to_int(device.thermalStatus),
         "max_temp_c": round(float(device.maxTempC), 2),
         "network_metered": bool(device.networkMetered),
         "started": bool(device.started),
@@ -482,7 +487,7 @@ class Controls:
         "memory_usage_percent": int(device.memoryUsagePercent),
         "free_space_percent": round(float(device.freeSpacePercent), 2),
         "gpu_usage_percent": int(device.gpuUsagePercent),
-        "thermal_status": int(device.thermalStatus),
+        "thermal_status": self._enum_to_int(device.thermalStatus),
         "max_temp_c": round(float(device.maxTempC), 2),
         "started": bool(device.started),
       },
