@@ -482,6 +482,7 @@ class Controls:
 
     return {
       "trigger": {
+        "reason": "low_memory_threshold",
         "frame": int(self.sm.frame),
         "branch": self.branch,
         "memory_usage_percent": int(device.memoryUsagePercent),

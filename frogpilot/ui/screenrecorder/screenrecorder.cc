@@ -29,13 +29,33 @@ void ScreenRecorder::updateState() {
   }
 
   if (QDateTime::currentMSecsSinceEpoch() - startedTime > MAX_DURATION) {
-    stopRecording();
-    startRecording();
+    // Rotate to a new file segment without destroying the OMX encoder.
+    // Destroying/recreating the OMX hardware encoder leaks kernel threads and DMA buffers.
+    recording = false;
+    if (encodingThread.joinable()) {
+      encodingThread.join();
+    }
+    imageQueue.clear();
+
+    if (encoder) {
+      encoder->encoder_close();
+      encoder->encoder_open((QDateTime::currentDateTime().toString("MMMM_dd_yyyy-hh-mmAP").toStdString() + ".mp4").c_str());
+      if (!encoder->is_open) {
+        encoder.reset();
+        return;
+      }
+    }
+
+    recording = true;
+    frameCount = 0;
+    startedTime = QDateTime::currentMSecsSinceEpoch();
+    encodingThread = std::thread(&ScreenRecorder::encodeImage, this);
     return;
   }
 
   if (frameCount % 2 == 0) {
-    imageQueue.push(rootWidget->grab().toImage());
+    // Use try_push to avoid blocking the UI thread if the encoding thread has exited
+    imageQueue.try_push(rootWidget->grab().toImage());
   }
 
   frameCount += 1;
@@ -69,6 +89,9 @@ void ScreenRecorder::stopRecording() {
   if (encodingThread.joinable()) {
     encodingThread.join();
   }
+
+  // Drain any remaining QImage objects to free their pixel data (~9 MB each)
+  imageQueue.clear();
 
   if (encoder) {
     encoder->encoder_close();

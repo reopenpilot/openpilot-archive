@@ -4,7 +4,7 @@ import math
 import requests
 import time
 
-from collections import OrderedDict, deque
+from collections import deque
 from datetime import datetime, timedelta, timezone
 
 from cereal import log, messaging
@@ -16,8 +16,8 @@ from openpilot.frogpilot.common.frogpilot_variables import params, params_memory
 NetworkType = log.DeviceState.NetworkType
 
 BOUNDING_BOX_RADIUS_DEGREE = 0.1
-MAX_ENTRIES = 1_000_000
-MAX_OVERPASS_DATA_BYTES = 1_073_741_824
+MAX_ENTRIES = 100_000
+MAX_OVERPASS_DATA_BYTES = 104_857_600  # 100 MB
 MAX_OVERPASS_REQUESTS = 10_000
 METERS_PER_DEG_LAT = 111_320
 VETTING_INTERVAL_DAYS = 7
@@ -54,8 +54,21 @@ class MapSpeedLogger:
     return self.sm["deviceState"].started or not params_memory.get_bool("UpdateSpeedLimits")
 
   @staticmethod
+  def _dedup_key(item):
+    """Build a lightweight hashable key for deduplication without JSON serialization."""
+    coords = item.get("start_coordinates", {})
+    if "segment_id" in item:
+      return (item.get("segment_id"), item.get("source"), item.get("speed_limit"))
+    return (
+      coords.get("latitude"), coords.get("longitude"),
+      item.get("source"), item.get("speed_limit"),
+      item.get("road_name"), item.get("bearing"),
+    )
+
+  @staticmethod
   def cleanup_dataset(dataset):
-    cleaned_data = OrderedDict()
+    seen = set()
+    result = deque(maxlen=MAX_ENTRIES)
 
     for item in dataset:
       if "last_vetted" in item:
@@ -66,13 +79,12 @@ class MapSpeedLogger:
       if not required.issubset(item.keys()):
         continue
 
-      entry_copy = item.copy()
-      entry_copy.pop("last_vetted", None)
+      key = MapSpeedLogger._dedup_key(item)
+      if key not in seen:
+        seen.add(key)
+        result.append(item)
 
-      key = json.dumps(entry_copy, sort_keys=True)
-      cleaned_data[key] = item
-
-    return deque(cleaned_data.values(), maxlen=MAX_ENTRIES)
+    return result
 
   @staticmethod
   def meters_to_deg_lat(meters):
@@ -254,10 +266,11 @@ class MapSpeedLogger:
 
   def process_new_entries(self, dataset, filtered_dataset):
     existing_segment_ids = {entry["segment_id"] for entry in filtered_dataset if "segment_id" in entry}
-    entries_to_process = list(dataset)
-    total_entries = len(entries_to_process)
+    total_entries = len(dataset)
+    processed = 0
 
-    for i, entry in enumerate(entries_to_process):
+    # Process by popping from the left instead of list() copy + O(n) remove
+    while dataset:
       self.sm.update()
 
       if self.should_stop_processing:
@@ -268,13 +281,13 @@ class MapSpeedLogger:
         time.sleep(5)
         break
 
-      params_memory.put("UpdateSpeedLimitsStatus", f"Processing: {i + 1} / {total_entries}")
+      entry = dataset.popleft()
+      processed += 1
+      params_memory.put("UpdateSpeedLimitsStatus", f"Processing: {processed} / {total_entries}")
 
       start_coords = entry["start_coordinates"]
       self.update_cached_segments(start_coords["latitude"], start_coords["longitude"])
       segments = self.filter_segments_for_entry(entry)
-
-      dataset.remove(entry)
 
       for segment in segments:
         segment_id = segment["segment_id"]
@@ -295,7 +308,7 @@ class MapSpeedLogger:
         })
         existing_segment_ids.add(segment_id)
 
-      if i % 100 == 0:
+      if processed % 100 == 0:
         self.update_params(dataset, filtered_dataset)
 
   def process_speed_limits(self):
@@ -337,24 +350,26 @@ class MapSpeedLogger:
             }
 
   def vet_entries(self, filtered_dataset):
-    dataset_list = list(filtered_dataset)
     total_to_vet = len(filtered_dataset)
     vetted_entries = deque(maxlen=MAX_ENTRIES)
+    i = 0
 
-    for i, entry in enumerate(dataset_list):
+    while filtered_dataset:
       self.sm.update()
 
       if self.should_stop_processing:
-        vetted_entries.extend(dataset_list[i:])
+        vetted_entries.extend(filtered_dataset)
         break
 
       if not self.can_make_overpass_request:
         params_memory.put("UpdateSpeedLimitsStatus", "Hit API limit...")
         time.sleep(5)
-        vetted_entries.extend(dataset_list[i:])
+        vetted_entries.extend(filtered_dataset)
         break
 
-      params_memory.put("UpdateSpeedLimitsStatus", f"Vetting: {i + 1} / {total_to_vet}")
+      entry = filtered_dataset.popleft()
+      i += 1
+      params_memory.put("UpdateSpeedLimitsStatus", f"Vetting: {i} / {total_to_vet}")
 
       last_vetted_time = datetime.fromisoformat(entry["last_vetted"])
       if datetime.now(timezone.utc) - last_vetted_time < timedelta(days=VETTING_INTERVAL_DAYS):
@@ -369,7 +384,7 @@ class MapSpeedLogger:
         entry["last_vetted"] = datetime.now(timezone.utc).isoformat()
         vetted_entries.append(entry)
 
-    return self.cleanup_dataset(list(vetted_entries))
+    return self.cleanup_dataset(vetted_entries)
 
 def main():
   logger = MapSpeedLogger()

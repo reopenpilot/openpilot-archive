@@ -547,13 +547,11 @@ void OmxEncoder::encoder_close() {
     av_write_trailer(ofmt_ctx);
     ofmt_ctx->duration = out_stream->duration;
     avio_closep(&ofmt_ctx->pb);
+    // avformat_free_context frees out_stream and its codecpar, so we must not
+    // access out_stream after this call — the previous code was a use-after-free.
     avformat_free_context(ofmt_ctx);
     ofmt_ctx = nullptr;
-  }
-
-  if (out_stream && out_stream->codecpar && out_stream->codecpar->extradata) {
-    av_free(out_stream->codecpar->extradata);
-    out_stream->codecpar->extradata = nullptr;
+    out_stream = nullptr;
   }
 
   if (lock_path[0] != '\0') {
