@@ -13,6 +13,7 @@ from urllib.parse import quote_plus
 from openpilot.frogpilot.assets.download_functions import GITLAB_URL, download_file, get_repository_url, handle_error, handle_request_error, verify_download
 from openpilot.frogpilot.common.frogpilot_utilities import delete_file, extract_zip, load_json_file, update_json_file
 from openpilot.frogpilot.common.frogpilot_variables import ACTIVE_THEME_PATH, RANDOM_EVENTS_PATH, RESOURCES_REPO, THEME_SAVE_PATH, params, params_memory
+from openpilot.system.sentry import memory_breadcrumb
 
 CANCEL_DOWNLOAD_PARAM = "CancelThemeDownload"
 DOWNLOAD_PROGRESS_PARAM = "ThemeDownloadProgress"
@@ -134,6 +135,8 @@ class ThemeManager:
       if verify_download(theme_path, theme_url, self.session):
         print(f"Theme {theme_name} downloaded and verified successfully from GitHub!")
         self.update_theme_size(theme_component, theme_name, theme_path.stat().st_size)
+        memory_breadcrumb(f"theme downloaded: {theme_name}/{theme_component}",
+                          data={"size_bytes": theme_path.stat().st_size, "source": "github"})
 
         if extension == ".zip":
           params_memory.put(DOWNLOAD_PROGRESS_PARAM, "Unpacking theme...")
@@ -410,6 +413,8 @@ class ThemeManager:
     return random.choice(candidates) if candidates else "stock"
 
   def update_active_theme(self, time_validated, frogpilot_toggles, boot_run=False, randomize_theme=False):
+    memory_breadcrumb("update_active_theme called",
+                      data={"boot_run": boot_run, "randomize": randomize_theme})
     if time_validated and frogpilot_toggles.holiday_themes:
       self.holiday_theme = self.update_holiday()
     else:

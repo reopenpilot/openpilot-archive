@@ -13,14 +13,13 @@ from openpilot.system.hardware import HARDWARE, PC
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.version import get_build_metadata, get_version
 
-from openpilot.frogpilot.common.frogpilot_utilities import get_sentry_dsn
 from openpilot.frogpilot.common.frogpilot_variables import ERROR_LOGS_PATH, params
 
 class SentryProject(Enum):
   # python project
-  SELFDRIVE = "https://6f3c7076c1e14b2aa10f5dde6dda0cc4@o33823.ingest.sentry.io/77924"
+  SELFDRIVE = "https://7ba43fba4cfcf1a6c0eff83d40374e43@o4505034923769856.ingest.us.sentry.io/4505034930651136"
   # native project
-  SELFDRIVE_NATIVE = "https://3e4b586ed21a4479ad5d85083b639bc6@o33823.ingest.sentry.io/157615"
+  SELFDRIVE_NATIVE = "https://7ba43fba4cfcf1a6c0eff83d40374e43@o4505034923769856.ingest.us.sentry.io/4505034930651136"
 
 
 def report_tombstone(fn: str, message: str, contents: str) -> None:
@@ -243,6 +242,151 @@ def _write_low_memory_report(report: dict[str, object]) -> str | None:
     return None
 
 
+def _capture_proc_attachments(pid: int, label: str, timestamp: str) -> list[tuple[str, str]]:
+  """Copy /proc/<pid>/{maps,smaps,status} + pmap output to attachable files.
+  Returns list of (path, filename) tuples for Sentry add_attachment()."""
+  if pid <= 0:
+    return []
+  attachments: list[tuple[str, str]] = []
+  try:
+    ERROR_LOGS_PATH.mkdir(parents=True, exist_ok=True)
+  except Exception:
+    return attachments
+
+  for proc_file in ("maps", "smaps", "status"):
+    src = f"/proc/{pid}/{proc_file}"
+    dst = ERROR_LOGS_PATH / f"{timestamp}-{label}-{pid}-{proc_file}.txt"
+    try:
+      with open(src, "rb") as f:
+        data = f.read()
+      dst.write_bytes(data)
+      attachments.append((str(dst), f"{label}-{pid}-{proc_file}.txt"))
+    except OSError:
+      pass
+
+  try:
+    pmap_result = subprocess.run(
+      ["pmap", "-x", str(pid)],
+      capture_output=True, text=True, timeout=5, check=False,
+    )
+    if pmap_result.returncode == 0 and pmap_result.stdout:
+      pmap_path = ERROR_LOGS_PATH / f"{timestamp}-{label}-{pid}-pmap.txt"
+      pmap_path.write_text(pmap_result.stdout, encoding="utf-8")
+      attachments.append((str(pmap_path), f"{label}-{pid}-pmap.txt"))
+  except (subprocess.SubprocessError, OSError):
+    pass
+
+  return attachments
+
+
+def _latest_heap_profile_for_pid(pid: int) -> tuple[str, str] | None:
+  """Return (path, filename) of the newest jemalloc heap profile for the given
+  pid. Profiles are produced automatically via MALLOC_CONF lg_prof_interval.
+  Returns None if no profile file exists yet."""
+  if pid <= 0:
+    return None
+  try:
+    candidates = sorted(
+      ERROR_LOGS_PATH.glob(f"jeprof.{pid}.*.heap"),
+      key=lambda p: p.stat().st_mtime,
+      reverse=True,
+    )
+  except Exception:
+    return None
+  if not candidates:
+    return None
+  p = candidates[0]
+  return (str(p), p.name)
+
+
+def _capture_self_malloc_info(timestamp: str) -> tuple[str, str] | None:
+  """Dump glibc malloc_info() for the calling process (controlsd). Not the UI —
+  that needs a separate hook from C++ (Layer 2 jemalloc prof.dump)."""
+  try:
+    import ctypes
+    libc = ctypes.CDLL("libc.so.6")
+    if not hasattr(libc, "malloc_info"):
+      return None
+
+    # Use libc.fopen directly so we hold the only FILE* — avoids the double-free
+    # that results from Python's open() + fdopen() on the same fd.
+    libc.fopen.restype = ctypes.c_void_p
+    libc.fopen.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    libc.fclose.argtypes = [ctypes.c_void_p]
+    libc.malloc_info.argtypes = [ctypes.c_int, ctypes.c_void_p]
+
+    path = ERROR_LOGS_PATH / f"{timestamp}-controlsd-malloc_info.xml"
+    fp = libc.fopen(str(path).encode("utf-8"), b"w")
+    if not fp:
+      return None
+    try:
+      libc.malloc_info(0, fp)
+    finally:
+      libc.fclose(fp)
+    return (str(path), "controlsd-malloc_info.xml")
+  except Exception:
+    cloudlog.exception("malloc_info capture failed")
+    return None
+
+
+def report_abnormal_exit(proc_name: str, pid: int, exitcode: int,
+                          signal_name: str = "",
+                          attachments: list[tuple[str, str]] | None = None) -> None:
+  """Fire a Sentry event for a managed process that died with a non-zero /
+  signal exit status. Called from system/manager/process.py:check_abnormal_exit.
+
+  The event groups by proc_name + signal so related crashes cluster. For the
+  ui, we also attach the /data/error_logs/ui_crash_*.txt written by the
+  in-process signal handler (gives a Qt-thread backtrace that tombstoned
+  can't see)."""
+  try:
+    with sentry_sdk.push_scope() as scope:
+      scope.set_tag("proc_name", proc_name)
+      scope.set_tag("exit_signal", signal_name or "none")
+      scope.set_extra("pid", pid)
+      scope.set_extra("exitcode", exitcode)
+      if attachments:
+        _attach_files_to_scope(scope, attachments)
+      title = f"Process Abnormal Exit: {proc_name}"
+      if signal_name:
+        title += f" ({signal_name})"
+      else:
+        title += f" (code {exitcode})"
+      sentry_sdk.capture_message(title, level="error")
+      sentry_sdk.flush()
+  except Exception:
+    cloudlog.exception("failed to report abnormal exit")
+
+
+def memory_breadcrumb(message: str, data: dict | None = None) -> None:
+  """Add a breadcrumb that'll surface inside the Low Memory Report v3 event's
+  recent-action trail. Use for significant lifecycle events that might precede
+  memory pressure (theme changes, model downloads, asset fetches, widget load)."""
+  try:
+    sentry_sdk.add_breadcrumb(
+      category="memory",
+      message=message,
+      level="info",
+      data=data or {},
+    )
+  except Exception:
+    pass
+
+
+def _attach_files_to_scope(scope, attachments: list[tuple[str, str]]) -> None:
+  """Attach the given files to the current Sentry scope.
+  Skips files > 19 MB (Sentry's per-attachment limit is 20 MB)."""
+  MAX_BYTES = 19 * 1024 * 1024
+  for path, filename in attachments:
+    try:
+      if os.path.getsize(path) > MAX_BYTES:
+        cloudlog.warning(f"skipping oversized attachment {filename}")
+        continue
+      scope.add_attachment(path=path, filename=filename)
+    except Exception:
+      cloudlog.exception(f"failed to attach {filename}")
+
+
 def _compact_report_context(report_context: dict[str, object] | None) -> dict[str, object] | None:
   if report_context is None:
     return None
@@ -335,6 +479,52 @@ def capture_memory_usage(report_context: dict[str, object] | None = None) -> Non
     report_path = _write_low_memory_report(report)
     compact_context = _compact_report_context(report_context)
 
+    timestamp = datetime.now().astimezone().strftime("%Y-%m-%d--%H-%M-%S")
+    attachments: list[tuple[str, str]] = []
+
+    # Attach /proc dumps for the top 5 RSS processes — covers ui, frogpilot_process,
+    # speed_limit_filler, classic_modeld, mapd in typical cases. Each attachment is
+    # a few hundred KB max; well under Sentry's 20 MB / attachment limit.
+    ui_pid = 0
+    for row in ps_snapshot[:5]:
+      pid = int(row.get("pid", 0))
+      if pid <= 0:
+        continue
+      args = row.get("args", "").strip()
+      # Detect the ui process for heap-profile attachment.
+      if args == "./ui" or args.endswith("/ui"):
+        ui_pid = pid
+      label = args
+      # Slugify: keep basename, strip paths/args, clamp to 40 chars.
+      label = label.split()[0].split("/")[-1] if label else f"pid{pid}"
+      label = "".join(c if c.isalnum() or c in "._-" else "_" for c in label)[:40]
+      if not label:
+        label = f"pid{pid}"
+      attachments.extend(_capture_proc_attachments(pid, label, timestamp))
+
+    # If ui wasn't in the top 5 but is running, still grab its heap profile.
+    if ui_pid <= 0:
+      try:
+        ui_pid_result = subprocess.run(
+          ["pgrep", "-x", "ui"], capture_output=True, text=True, timeout=2, check=False,
+        )
+        if ui_pid_result.returncode == 0 and ui_pid_result.stdout.strip():
+          ui_pid = int(ui_pid_result.stdout.strip().split("\n")[0])
+      except (subprocess.SubprocessError, ValueError, OSError):
+        pass
+
+    # Attach the newest jemalloc heap profile for the ui process.
+    # jeprof --text /data/openpilot/selfdrive/ui/ui <file> gives stack-level
+    # allocation attribution. The profile is 50-100 KB typically.
+    heap = _latest_heap_profile_for_pid(ui_pid) if ui_pid > 0 else None
+    if heap is not None:
+      attachments.append(heap)
+
+    # glibc malloc_info() for controlsd itself (the process calling us).
+    mi = _capture_self_malloc_info(timestamp)
+    if mi is not None:
+      attachments.append(mi)
+
     with sentry_sdk.push_scope() as scope:
       scope.set_extra("memory_usage", formatted_output)
       scope.set_extra("total_memory_usage_percent", f"{total_memory_usage_percent:.1f}%")
@@ -346,7 +536,9 @@ def capture_memory_usage(report_context: dict[str, object] | None = None) -> Non
         scope.set_extra("low_memory_context", compact_context)
       if report_path is not None:
         scope.set_extra("low_memory_report_path", report_path)
-      sentry_sdk.capture_message("Low Memory Detected", level="warning")
+      scope.set_extra("attachment_filenames", [filename for _, filename in attachments])
+      _attach_files_to_scope(scope, attachments)
+      sentry_sdk.capture_message("Low Memory Report v3", level="warning")
       sentry_sdk.flush()
 
   except Exception:
@@ -400,7 +592,7 @@ def init(project: SentryProject) -> bool:
   if project == SentryProject.SELFDRIVE:
     integrations.append(ThreadingIntegration(propagate_hub=True))
 
-  sentry_sdk.init(get_sentry_dsn(),
+  sentry_sdk.init(project.value,
                   default_integrations=False,
                   release=get_version(),
                   integrations=integrations,

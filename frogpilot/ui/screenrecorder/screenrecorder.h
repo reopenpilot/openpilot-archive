@@ -24,11 +24,11 @@ private:
   void encodeImage();
   void updateState();
 
-  bool recording;
+  bool recording = false;
 
-  int frameCount;
+  int frameCount = 0;
 
-  qint64 startedTime;
+  qint64 startedTime = 0;
 
   std::thread encodingThread;
 

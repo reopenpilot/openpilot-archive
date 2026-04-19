@@ -12,6 +12,7 @@ from urllib.parse import quote_plus
 from openpilot.common.basedir import BASEDIR
 from openpilot.frogpilot.assets.download_functions import GITLAB_URL, download_file, get_remote_file_size, get_repository_url, handle_error, handle_request_error, verify_download
 from openpilot.frogpilot.common.frogpilot_utilities import delete_file, extract_tar, load_json_file, update_json_file
+from openpilot.system.sentry import memory_breadcrumb
 from openpilot.frogpilot.common.frogpilot_variables import (
   DEFAULT_MODEL, DEFAULT_MODEL_NAME, DEFAULT_MODEL_VERSION, MODELS_PATH, RESOURCES_REPO, TINYGRAD_FILES,
   params, params_default, params_memory, update_frogpilot_toggles
@@ -210,6 +211,8 @@ class ModelManager:
       if verify_download(model_path, model_url, self.session):
         print(f"Model {model_to_download} downloaded and verified successfully!")
         self.update_model_size(model_path)
+        memory_breadcrumb(f"model downloaded: {model_to_download}",
+                          data={"size_bytes": model_path.stat().st_size, "source": "github"})
 
         params_memory.put(DOWNLOAD_PROGRESS_PARAM, "Downloaded!")
         params_memory.remove(MODEL_DOWNLOAD_PARAM)

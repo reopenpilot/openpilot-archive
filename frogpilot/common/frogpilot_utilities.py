@@ -273,23 +273,6 @@ def get_lock_status(can_parser, can_sock):
   can_parser.update_strings(can_msgs)
   return can_parser.vl["DOOR_LOCKS"]["LOCK_STATUS"]
 
-def get_sentry_dsn():
-  try:
-    api_token, build_metadata, device_type, dongle_id = get_frogpilot_api_info()
-
-    payload = {
-      "api_token": api_token,
-      "build_metadata": build_metadata,
-      "device": device_type,
-      "frogpilot_dongle_id": dongle_id,
-    }
-
-    response = requests.post(f"{FROGPILOT_API}/sentry", json=payload, headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"}, timeout=10)
-    response.raise_for_status()
-    return response.json().get("dsn", "")
-  except Exception:
-    return ""
-
 
 def is_url_pingable(url):
   if not url:
