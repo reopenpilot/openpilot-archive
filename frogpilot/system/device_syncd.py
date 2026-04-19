@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+import json
+import requests
 import time
 
-import requests
+from functools import cache
 
 from cereal import car, custom, messaging
 from openpilot.common.params import ParamKeyType
@@ -9,13 +11,51 @@ from openpilot.common.realtime import Ratekeeper
 from openpilot.common.time import system_time_valid
 
 from openpilot.frogpilot.common.frogpilot_utilities import get_frogpilot_api_info, is_url_pingable
-from openpilot.frogpilot.common.frogpilot_variables import EXCLUDED_KEYS, FROGPILOT_API, frogpilot_default_params, params, update_frogpilot_toggles
+from openpilot.frogpilot.common.frogpilot_variables import EXCLUDED_KEYS, FROGPILOT_API, params, update_frogpilot_toggles
+from openpilot.frogpilot.ui.layouts.settings import toggle_metadata
 
 POND_PRESENCE_INTERVAL_ACTIVE = 60
 POND_PRESENCE_INTERVAL_IDLE = 240
 
 REMOTE_TOGGLE_CHECK_INTERVAL_ACTIVE = 10
 REMOTE_TOGGLE_CHECK_INTERVAL_IDLE = 60
+
+
+@cache
+def get_toggle_metadata_params():
+  ToggleDefinition = toggle_metadata.ToggleDefinition
+  ToggleType = toggle_metadata.ToggleType
+  metadata_params = set()
+
+  def is_valid_param_key(key):
+    if not key or key in EXCLUDED_KEYS:
+      return False
+    try:
+      return params.check_key(key)
+    except Exception:
+      return False
+
+  def collect_param_key(key):
+    if is_valid_param_key(key):
+      metadata_params.add(key)
+
+  def collect_params(definition):
+    if not isinstance(definition, ToggleDefinition):
+      return
+    collect_param_key(definition.param)
+    if definition.toggle_type != ToggleType.BUTTON_PARAM:
+      for option in definition.button_options or []:
+        collect_param_key(option)
+
+  for value in vars(toggle_metadata).values():
+    if isinstance(value, ToggleDefinition):
+      collect_params(value)
+      continue
+    if isinstance(value, tuple):
+      for item in value:
+        collect_params(item)
+
+  return tuple(sorted(metadata_params))
 
 
 def get_persistent_car_params():
@@ -54,7 +94,7 @@ def check_toggles(started, sm=None, boot_run=False):
       return None
 
   try:
-    api_token, _, device_type, dongle_id = get_frogpilot_api_info()
+    api_token, build_metadata, device_type, dongle_id = get_frogpilot_api_info()
     if not dongle_id or not api_token:
       return None
 
@@ -105,6 +145,7 @@ def check_toggles(started, sm=None, boot_run=False):
       f"{FROGPILOT_API}/pond/toggles/ack",
       json={
         "api_token": api_token,
+        "build_metadata": build_metadata,
         "device": device_type,
         "frogpilot_dongle_id": dongle_id,
       },
@@ -164,7 +205,7 @@ def upload_toggles():
       return False
 
     toggles = {}
-    for key, _, _, _ in frogpilot_default_params:
+    for key in get_toggle_metadata_params():
       if key in EXCLUDED_KEYS or params.get_key_flag(key) & ParamKeyType.DONT_LOG:
         continue
 
