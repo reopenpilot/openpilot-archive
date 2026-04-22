@@ -50,22 +50,6 @@ def launcher(proc: str, name: str) -> None:
 def nativelauncher(pargs: list[str], cwd: str, name: str) -> None:
   os.environ['MANAGER_DAEMON'] = name
 
-  # Enable jemalloc heap profiling for the ui process.
-  #   lg_prof_sample:21      — 1 stack sample per 2 MB allocated (<1 % CPU)
-  #   lg_prof_interval:28    — auto-dump a heap profile every 256 MB of
-  #                            cumulative allocation. Produces steady state
-  #                            of ~3-4 .heap files per drive; capture_memory_usage
-  #                            attaches the newest one to the Sentry event.
-  #                            Qt/wayland eats signals so we can't rely on
-  #                            SIGUSR2-triggered dumps.
-  # Offline analysis:
-  #   jeprof --text /data/openpilot/selfdrive/ui/ui heap.prof | head -20
-  if name == "ui":
-    os.environ["MALLOC_CONF"] = (
-      "prof:true,prof_active:true,lg_prof_sample:21,lg_prof_interval:28,"
-      "prof_prefix:/data/error_logs/jeprof"
-    )
-
   # exec the process
   os.chdir(cwd)
   os.execvp(pargs[0], pargs)
@@ -91,9 +75,6 @@ class ManagerProcess(ABC):
   watchdog_max_dt: int | None = None
   watchdog_seen = False
   shutting_down = False
-  # Tracks the last exitcode we already reported to Sentry so we don't spam
-  # repeats during shutdown churn. Reset whenever a new process is spawned.
-  _reported_exit_pid: int | None = None
 
   @abstractmethod
   def prepare(self) -> None:
@@ -106,54 +87,6 @@ class ManagerProcess(ABC):
   def restart(self) -> None:
     self.stop(sig=signal.SIGKILL)
     self.start()
-
-  def check_abnormal_exit(self) -> None:
-    """If the managed process has exited with a non-zero or signal status and
-    we haven't reported it yet, fire a Sentry 'Process Abnormal Exit' event.
-    Called every manager loop so crashes get reported within ~seconds.
-
-    For the ui process specifically, attach the newest ui_crash_*.txt written
-    by the in-process fatal-signal handler in selfdrive/ui/main.cc (covers
-    both tombstoned-visible crashes and process-level-only exits)."""
-    if self.proc is None or self.proc.exitcode is None or self.shutting_down:
-      return
-    ec = self.proc.exitcode
-    if ec == 0:
-      return
-    pid = self.proc.pid
-    if pid == self._reported_exit_pid:
-      return
-    self._reported_exit_pid = pid
-
-    try:
-      from openpilot.system import sentry as _sentry
-      import glob
-      # exitcode < 0 => killed by -exitcode; > 0 => process returned exitcode.
-      signal_num = -ec if ec < 0 else 0
-      signame = ""
-      if signal_num:
-        try:
-          signame = signal.Signals(signal_num).name
-        except Exception:
-          signame = f"sig{signal_num}"
-
-      # Find the newest ui_crash_*.txt for the ui process (matches the epoch
-      # suffix we wrote in the signal handler).
-      attachments = []
-      if self.name == "ui":
-        crash_files = sorted(
-          glob.glob("/data/error_logs/ui_crash_*.txt"),
-          key=os.path.getmtime, reverse=True,
-        )
-        if crash_files:
-          attachments.append((crash_files[0], os.path.basename(crash_files[0])))
-
-      _sentry.report_abnormal_exit(
-        proc_name=self.name, pid=pid, exitcode=ec, signal_name=signame,
-        attachments=attachments,
-      )
-    except Exception:
-      cloudlog.exception(f"failed to report abnormal exit for {self.name}")
 
   def check_watchdog(self, started: bool) -> None:
     if self.watchdog_max_dt is None or self.proc is None:
@@ -353,7 +286,6 @@ def ensure_running(procs: ValuesView[ManagerProcess], started: bool, params=None
       p.stop(block=False)
 
     p.check_watchdog(started)
-    p.check_abnormal_exit()
 
   for p in running:
     p.start()
