@@ -165,6 +165,7 @@ def frogpilot_thread():
 
       theme_manager.update_active_theme(time_validated, frogpilot_toggles)
       run_thread_with_lock("update_checks", update_checks, (model_manager, now, theme_manager, frogpilot_toggles, True))
+
     rate_keeper.keep_time()
 
 def main():

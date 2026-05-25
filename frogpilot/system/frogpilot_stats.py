@@ -4,7 +4,7 @@ import requests
 
 from cereal import car, custom
 
-from openpilot.frogpilot.common.frogpilot_utilities import clean_model_name, get_frogpilot_api_info, is_url_pingable
+from openpilot.frogpilot.common.frogpilot_utilities import clean_model_name, get_frogpilot_api_info
 from openpilot.frogpilot.common.frogpilot_variables import FROGPILOT_API, get_frogpilot_toggles, params
 
 BASE_URL = "https://nominatim.openstreetmap.org"
@@ -112,9 +112,6 @@ def get_city_center(latitude, longitude):
     return float(0.0), float(0.0), "N/A", "N/A", "N/A"
 
 def send_stats():
-  if not is_url_pingable(FROGPILOT_API):
-    return
-
   try:
     frogpilot_toggles = get_frogpilot_toggles()
 

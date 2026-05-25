@@ -142,71 +142,6 @@ def capture_report(discord_user, report, frogpilot_toggles):
   except requests.exceptions.RequestException as exception:
     print(f"Error sending report: {exception}")
 
-def check_remote_toggles(started=False, sm=None, boot_run=False):
-  if not boot_run:
-    if started and sm["carState"].gearShifter != GearShifter.park:
-      return
-    if sm["deviceState"].screenBrightnessPercent == 0:
-      return
-
-  if not params.get_bool("PondPaired"):
-    return
-
-  if not is_url_pingable(FROGPILOT_API):
-    return
-
-  try:
-    api_token = params.get("FrogPilotApiToken", encoding="utf-8")
-    dongle_id = params.get("FrogPilotDongleId", encoding="utf-8")
-
-    if not dongle_id or not api_token:
-      return
-
-    response = requests.get(
-      f"{FROGPILOT_API}/pond/toggles/pending",
-      params={"dongle_id": dongle_id, "api_token": api_token},
-      headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"},
-      timeout=10,
-    )
-    response.raise_for_status()
-
-    data = response.json()
-
-    if data.get("paired") is False:
-      params.put_bool("PondPaired", False)
-      print("Device was unpaired remotely")
-      return
-
-    toggles = data.get("toggles")
-    if not toggles:
-      return
-
-    for key, value in toggles.items():
-      if key in EXCLUDED_KEYS:
-        continue
-      if not params.check_key(key):
-        print(f"Skipping unknown param key: {key}")
-        continue
-      params.put(key, value)
-
-    update_frogpilot_toggles()
-
-    requests.post(
-      f"{FROGPILOT_API}/pond/toggles/ack",
-      json={
-        "api_token": api_token,
-        "device": HARDWARE.get_device_type(),
-        "frogpilot_dongle_id": dongle_id,
-      },
-      headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"},
-      timeout=10,
-    ).raise_for_status()
-
-    print(f"Successfully applied {len(toggles)} remote toggles")
-
-  except Exception as e:
-    print(f"Failed to check remote toggles: {e}")
-
 def clean_model_name(name):
   return (
     name.replace("🗺️", "")
@@ -267,12 +202,10 @@ def get_frogpilot_api_info():
 
   return api_token, build_metadata, device_type, dongle_id
 
-
 def get_lock_status(can_parser, can_sock):
   can_msgs = messaging.drain_sock_raw(can_sock, wait_for_one=True)
   can_parser.update_strings(can_msgs)
   return can_parser.vl["DOOR_LOCKS"]["LOCK_STATUS"]
-
 
 def is_url_pingable(url):
   if not url:
@@ -428,47 +361,6 @@ def update_openpilot():
       break
 
   HARDWARE.reboot()
-
-def upload_toggles():
-  if not is_url_pingable(FROGPILOT_API):
-    return
-
-  try:
-    api_token, build_metadata, device_type, dongle_id = get_frogpilot_api_info()
-    if not dongle_id or not api_token:
-      return
-
-    toggles = {}
-    for key, _, _, _ in frogpilot_default_params:
-      if key in EXCLUDED_KEYS or params.get_key_flag(key) & ParamKeyType.DONT_LOG:
-        continue
-      val = params.get(key)
-      if val is not None:
-        toggles[key] = val.decode("utf-8", "replace") if isinstance(val, (bytes, bytearray)) else val
-
-    if not toggles:
-      return
-
-    payload = {
-      "api_token": api_token,
-      "build_metadata": build_metadata,
-      "device": device_type,
-      "dongle_id": dongle_id,
-      "frogpilot_dongle_id": dongle_id,
-      "toggles": toggles,
-    }
-
-    requests.post(
-      f"{FROGPILOT_API}/pond/toggles/sync",
-      json=payload,
-      headers={"Content-Type": "application/json", "User-Agent": "frogpilot-api/1.0"},
-      timeout=10,
-    ).raise_for_status()
-
-    print("Successfully uploaded toggles to FrogPilot.com")
-
-  except Exception as e:
-    print(f"Failed to upload toggles: {e}")
 
 @cache
 def use_konik_server():

@@ -3,7 +3,7 @@ run-name: "Check scheduled FrogPilot release"
 
 on:
   schedule:
-    - cron: "30 11 * * *"
+    - cron: "0 11 * * 6"
       timezone: America/Phoenix
 
 permissions:

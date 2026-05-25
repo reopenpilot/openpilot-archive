@@ -114,9 +114,6 @@ def backup_toggles(params_cache):
       if key not in EXCLUDED_KEYS:
         changes_found = True
 
-  if changes_found:
-    params.put_bool("PondUploadPending", True)
-
   backup_path = Path("/data/toggle_backups")
   maximum_backups = 5
 
@@ -168,8 +165,6 @@ def frogpilot_boot_functions(build_metadata, params_cache):
       params.put("DongleId", params.get("KonikDongleId", encoding="utf8"))
   elif params.get("DongleId", encoding="utf8") == params.get("KonikDongleId", encoding="utf8"):
     params.remove("DongleId")
-
-  params.put("BuildMetadata", json.dumps(dataclasses.asdict(build_metadata)))
 
   def boot_thread():
     while not system_time_valid():
