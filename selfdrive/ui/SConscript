@@ -3,7 +3,7 @@ import json
 Import('qt_env', 'arch', 'common', 'messaging', 'visionipc', 'transformations')
 
 base_libs = [common, messaging, visionipc, transformations,
-             'm', 'OpenCL', 'ssl', 'crypto', 'pthread', 'avcodec', 'avformat', 'avutil', 'yuv', 'OmxCore'] + qt_env["LIBS"]
+             'm', 'OpenCL', 'ssl', 'crypto', 'pthread', 'avcodec', 'avformat', 'avutil', 'yuv'] + qt_env["LIBS"]
 
 if arch == 'larch64':
   base_libs.append('EGL')
@@ -57,7 +57,9 @@ frogpilot_src = ["../../frogpilot/ui/frogpilot_ui.cc", "../../frogpilot/ui/qt/of
                  "../../frogpilot/ui/qt/onroad/frogpilot_buttons.cc", "../../frogpilot/ui/qt/onroad/frogpilot_onroad.cc",
                  "../../frogpilot/ui/qt/widgets/developer_sidebar.cc", "../../frogpilot/ui/qt/widgets/drive_stats.cc",
                  "../../frogpilot/ui/qt/widgets/drive_summary.cc", "../../frogpilot/ui/qt/widgets/model_reviewer.cc",
-                 "../../frogpilot/ui/qt/widgets/navigation_functions.cc", "../../frogpilot/ui/screenrecorder/omx_encoder.cc",
+                 "../../frogpilot/ui/qt/widgets/navigation_functions.cc",
+                 "../../frogpilot/ui/screenrecorder/screen_encoder.cc",
+                 "../../frogpilot/ui/screenrecorder/recorder_engine.cc",
                  "../../frogpilot/ui/screenrecorder/screenrecorder.cc"]
 
 qt_src += frogpilot_src
@@ -96,33 +98,13 @@ qt_env.SharedLibrary("qt/python_helpers", ["qt/qt_window.cc"], LIBS=qt_libs)
 qt_env.Program("_text", ["qt/text.cc"], LIBS=qt_libs)
 qt_env.Program("_spinner", ["qt/spinner.cc"], LIBS=qt_libs)
 
-qt_env['CPPPATH'] += ["../../frogpilot/ui/screenrecorder/openmax/include/"]
-
-# Heap-profiling — only on-device (larch64) where we bundled libjemalloc_pic.a
-# built against this platform's glibc. See third_party/jemalloc/ and the
-# selfdrive/ui/jemalloc_config.cc comment for background.
-ui_env = qt_env.Clone()
-ui_src = qt_src + ["jemalloc_config.cc"]
-ui_libs = list(qt_libs)
-if arch == 'larch64':
-  ui_env['CPPPATH'] += ['#third_party/jemalloc/include']
-  ui_env['CPPDEFINES'] += ['ENABLE_JEMALLOC_PROFILING']
-  # --whole-archive ensures jemalloc's malloc/free symbols win over glibc's
-  # regardless of link order. --no-whole-archive right after scopes it back.
-  ui_env.Append(LINKFLAGS=[
-    '-Wl,--whole-archive',
-    File('#third_party/jemalloc/larch64/lib/libjemalloc_pic.a').abspath,
-    '-Wl,--no-whole-archive',
-  ])
-  # jemalloc's background-thread support calls dlsym().
-  ui_libs += ['dl']
-
 # build main UI
-ui_env.Program("ui", ui_src + [asset_obj], LIBS=ui_libs)
+qt_env.Program("ui", qt_src + [asset_obj], LIBS=qt_libs)
 if GetOption('extras'):
   qt_src.remove("main.cc")  # replaced by test_runner
   qt_env.Program('tests/test_translations', [asset_obj, 'tests/test_runner.cc', 'tests/test_translations.cc'] + qt_src, LIBS=qt_libs)
   qt_env.Program('tests/ui_snapshot', [asset_obj, "tests/ui_snapshot.cc"] + qt_src, LIBS=qt_libs)
+
 
 if GetOption('extras') and arch != "Darwin":
   # setup and factory resetter
