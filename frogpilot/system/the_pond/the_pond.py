@@ -83,57 +83,6 @@ def _allowed_hosts():
     hosts.add(self_host)
   return hosts
 
-_START_MONOTONIC = time.monotonic()
-_VERSION_CACHE = None
-
-def _version():
-  global _VERSION_CACHE
-  if _VERSION_CACHE is None:
-    try:
-      _VERSION_CACHE = get_build_metadata().openpilot.git_commit[:9] or "unknown"
-    except Exception:
-      _VERSION_CACHE = "unknown"
-  return _VERSION_CACHE
-
-WATCHDOG_FN = "/dev/shm/wd_"
-_WATCHDOG_INTERVAL = 2.0
-_WATCHDOG_PROBE_TIMEOUT = 3.0
-
-def _watchdog_path():
-  return WATCHDOG_FN + str(os.getpid())
-
-def _watchdog_write():
-  with open(_watchdog_path(), "wb") as f:
-    f.write(struct.pack("Q", time.monotonic_ns()))
-
-def _lock_probe_ok(timeout=_WATCHDOG_PROBE_TIMEOUT):
-  if not _PARAMS_LOCK.acquire(timeout=timeout):
-    return False
-  _PARAMS_LOCK.release()
-  return True
-
-def _watchdog_probe_ok(port, timeout=_WATCHDOG_PROBE_TIMEOUT):
-  try:
-    if requests.get(f"http://127.0.0.1:{port}/healthz", timeout=timeout).status_code != 200:
-      return False
-  except requests.RequestException:
-    return False
-  return _lock_probe_ok(timeout)
-
-def _watchdog_cycle(port, timeout=_WATCHDOG_PROBE_TIMEOUT):
-  if not _watchdog_probe_ok(port, timeout):
-    return False
-  try:
-    _watchdog_write()
-    return True
-  except OSError:
-    return False
-
-def _watchdog_loop(port):
-  while True:
-    _watchdog_cycle(port)
-    time.sleep(_WATCHDOG_INTERVAL)
-
 def _car_params():
   cp_bytes = params.get("CarParamsPersistent")
   if not cp_bytes:
@@ -234,20 +183,6 @@ def setup(app):
   @app.route("/api/onroad", methods=["GET"])
   def onroad_status():
     return jsonify({"onroad": _drive_locked()})
-
-  @app.route("/healthz", methods=["GET"])
-  def healthz():
-    try:
-      free_gb = round(shutil.disk_usage(Paths.log_root()).free / (1024 ** 3), 1)
-    except OSError:
-      free_gb = None
-    return jsonify({
-      "ok": True,
-      "version": _version(),
-      "uptime_s": round(time.monotonic() - _START_MONOTONIC, 1),
-      "onroad": params.get_bool("IsOnroad"),
-      "disk_free_gb": free_gb,
-    })
 
   @app.route("/api/doors_available", methods=["GET"])
   def doors_available():
@@ -1930,7 +1865,6 @@ def main():
 
   if not PC:
     threading.Thread(target=_gear_monitor, daemon=True, name="the_pond_gear").start()
-    threading.Thread(target=_watchdog_loop, args=(port,), daemon=True, name="the_pond_watchdog").start()
     threading.Thread(target=_mdns_responder, daemon=True, name="the_pond_mdns").start()
     _ensure_port80_redirect(port)
     threading.Thread(target=_self_check, args=(port,), daemon=True, name="the_pond_selfcheck").start()

@@ -56,45 +56,6 @@ def capture_exception(*args, crash_log=True, **kwargs) -> None:
     cloudlog.exception("sentry exception")
 
 
-def save_watchdog_timeout(name: str, dt: float, exitcode, pid, diagnostics: dict | None = None) -> None:
-  try:
-    ERROR_LOGS_PATH.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now().astimezone().strftime("%Y-%m-%d--%H-%M-%S")
-    sections = [
-      f"Watchdog timeout: {name}",
-      f"time: {timestamp}",
-      f"dt: {round(dt, 3)}s",
-      f"exitcode: {exitcode}",
-      f"pid: {pid}",
-    ]
-    for filename, content in (diagnostics or {}).items():
-      if content:
-        sections.append(f"\n===== {filename} =====\n{content}")
-    (ERROR_LOGS_PATH / f"{timestamp}--watchdog-{name}.log").write_text("\n".join(sections))
-  except Exception:
-    cloudlog.exception("failed to save watchdog timeout log")
-
-
-def capture_watchdog_timeout(name: str, dt: float, exitcode, pid, diagnostics: dict | None = None) -> None:
-  save_watchdog_timeout(name, dt, exitcode, pid, diagnostics)
-  try:
-    with sentry_sdk.push_scope() as scope:
-      scope.set_tag("watchdog_process", name)
-      scope.set_extra("watchdog_dt", round(dt, 3))
-      scope.set_extra("exitcode", exitcode)
-      scope.set_extra("pid", pid)
-      for filename, content in (diagnostics or {}).items():
-        if content:
-          try:
-            scope.add_attachment(bytes=content.encode(), filename=filename)
-          except Exception:
-            scope.set_extra(filename, content[:8000])
-      sentry_sdk.capture_message(f"Watchdog timeout: {name}", level="error")
-      sentry_sdk.flush(timeout=2.0)
-  except Exception:
-    cloudlog.exception("failed to capture watchdog timeout")
-
-
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
 

@@ -118,7 +118,7 @@ procs = [
   PythonProcess("frogpilot_telemetry", "frogpilot.system.frogpilot_telemetry", run_frogpilot_telemetry, enabled=not PC),
   PythonProcess("mapd", "frogpilot.navigation.mapd", always_run),
   PythonProcess("speed_limit_filler", "frogpilot.system.speed_limit_filler", run_speed_limit_filler),
-  PythonProcess("the_pond", "frogpilot.system.the_pond.the_pond", always_run, watchdog_max_dt=(30 if not PC else None)),
+  PythonProcess("the_pond", "frogpilot.system.the_pond.the_pond", always_run),
   PythonProcess("tinygrad_modeld", "frogpilot.tinygrad_modeld.tinygrad_modeld", run_tinygrad_modeld),
 ]
 
