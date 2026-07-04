@@ -57,7 +57,7 @@ We have detailed instructions for [how to install the harness and device in a ca
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/FrogAi/FrogPilot)
 [![Discord](https://img.shields.io/discord/1137853399715549214?label=Discord)](https://discord.frogpilot.com)
-[![Last Updated](https://img.shields.io/badge/Last%20Updated-February%2028th%2C%202025-brightgreen)](https://github.com/FrogAi/FrogPilot/releases/latest)
+[![Last Updated](https://img.shields.io/badge/Last%20Updated-July%204th%2C%202026-brightgreen)](https://github.com/FrogAi/FrogPilot/releases/latest)
 [![Wiki](https://img.shields.io/badge/Wiki-FrogPilot-blue?logo=wiki)](https://frogpilot.com/wiki/)
 
 </div>
