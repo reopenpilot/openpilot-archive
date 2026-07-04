@@ -64,7 +64,7 @@ class WeatherChecker:
     else:
       self.check_interval = 15 * 60
 
-    self.api_token, self.build_metadata, self.device_type, self.dongle_id = get_frogpilot_api_info()
+    self.api_info = get_frogpilot_api_info()
 
     self.session = requests.Session()
     self.session.headers.update({"Accept-Language": "en", "User-Agent": "frogpilot-api/1.0"})
@@ -92,10 +92,10 @@ class WeatherChecker:
   def update_weather(self, gps_position, now, frogpilot_toggles):
     if self.last_gps_position and self.last_updated:
       distance = calculate_distance_to_point(
-        self.last_gps_position["latitude"] * CV.DEG_TO_RAD,
-        self.last_gps_position["longitude"] * CV.DEG_TO_RAD,
-        gps_position.get("latitude") * CV.DEG_TO_RAD,
-        gps_position.get("longitude") * CV.DEG_TO_RAD
+        self.last_gps_position["latitude"],
+        self.last_gps_position["longitude"],
+        gps_position.get("latitude"),
+        gps_position.get("longitude")
       )
       if distance / 1000 > CACHE_DISTANCE:
         self.hourly_forecast = None
@@ -140,10 +140,10 @@ class WeatherChecker:
     def make_request():
       payload = {
         "api_key": self.user_api_key,
-        "api_token": self.api_token,
-        "build_metadata": self.build_metadata,
-        "device": self.device_type,
-        "frogpilot_dongle_id": self.dongle_id,
+        "api_token": self.api_info.api_token,
+        "build_metadata": self.api_info.build_metadata,
+        "device": self.api_info.device_type,
+        "frogpilot_dongle_id": self.api_info.dongle_id,
         "lat": gps_position["latitude"],
         "lon": gps_position["longitude"],
       }

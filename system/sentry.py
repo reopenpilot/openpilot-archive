@@ -1,6 +1,5 @@
 """Install exception handler for process crash."""
 import sentry_sdk
-import subprocess
 import traceback
 from datetime import datetime
 from enum import Enum
@@ -57,40 +56,6 @@ def capture_exception(*args, crash_log=True, **kwargs) -> None:
     cloudlog.exception("sentry exception")
 
 
-def capture_memory_usage() -> None:
-  try:
-    memory_available = 0
-    total_memory = 0
-
-    with open("/proc/meminfo", "r") as f:
-      for line in f:
-        if "MemTotal" in line:
-          total_memory = int(line.split()[1])
-        elif "MemAvailable" in line:
-          memory_available = int(line.split()[1])
-        if total_memory and memory_available:
-          break
-
-    if not total_memory:
-      cloudlog.error("Failed to read memory info")
-      return
-
-    used_memory = total_memory - memory_available
-    total_memory_usage_percent = (used_memory / total_memory) * 100
-
-    output = subprocess.check_output(["ps", "-eo", "rss,%mem,pid,args", "--sort=-rss"], encoding="utf-8")
-    formatted_output = "\n".join(output.split('\n')[:21])
-
-    with sentry_sdk.push_scope() as scope:
-      scope.set_extra("memory_usage", formatted_output)
-      scope.set_extra("total_memory_usage_percent", f"{total_memory_usage_percent:.1f}%")
-      sentry_sdk.capture_message("Low Memory Detected", level="warning")
-      sentry_sdk.flush()
-
-  except Exception:
-    cloudlog.exception("failed to capture memory usage")
-
-
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
 
@@ -111,8 +76,9 @@ def save_exception(exc_text: str, crash_log) -> None:
 
 def init(project: SentryProject) -> bool:
   build_metadata = get_build_metadata()
-  FrogPilot = "frogai" in build_metadata.openpilot.git_origin.lower()
-  if not FrogPilot or PC:
+  # forks like to mess with this, so double check
+  frogpilot_remote = "frogai" in build_metadata.openpilot.git_origin.lower()
+  if not frogpilot_remote or build_metadata.openpilot.is_dirty or PC:
     return False
 
   short_branch = build_metadata.channel
@@ -125,14 +91,10 @@ def init(project: SentryProject) -> bool:
     env = "Release"
   elif short_branch == "FrogPilot-Testing":
     env = "Testing"
-  elif build_metadata.tested_channel:
+  elif short_branch == "FrogPilot-Staging":
     env = "Staging"
   else:
     env = short_branch
-
-  dongle_id = params.get("DongleId", encoding="utf-8")
-  installed = params.get("InstallDate", encoding="utf-8")
-  updated = params.get("Updated", encoding="utf-8")
 
   integrations = []
   if project == SentryProject.SELFDRIVE:
@@ -146,12 +108,14 @@ def init(project: SentryProject) -> bool:
                   max_value_length=8192,
                   environment=env)
 
-  sentry_sdk.set_user({"id": dongle_id})
+  params = Params()
+
+  sentry_sdk.set_user({"id": params.get("DongleId", encoding="utf-8")})
   sentry_sdk.set_tag("origin", build_metadata.openpilot.git_origin)
   sentry_sdk.set_tag("branch", short_branch)
   sentry_sdk.set_tag("commit", build_metadata.openpilot.git_commit)
-  sentry_sdk.set_tag("updated", updated)
-  sentry_sdk.set_tag("installed", installed)
+  sentry_sdk.set_tag("updated", params.get("Updated", encoding="utf-8"))
+  sentry_sdk.set_tag("installed", params.get("InstallDate", encoding="utf-8"))
 
   if project == SentryProject.SELFDRIVE:
     sentry_sdk.Hub.current.start_session()
