@@ -279,7 +279,7 @@ class SpeedLimitFiller:
       return
 
     bearing = math.degrees(location.calibratedOrientationNED.value[2])
-    latitude, longitude = location.positionGeodetic.value[:2]
+    latitude, longitude = location.positionGeodetic.value[0], location.positionGeodetic.value[1]
 
     if self.logged_position is not None and calculate_distance_to_point(*self.logged_position, latitude, longitude) < 1:
       return
