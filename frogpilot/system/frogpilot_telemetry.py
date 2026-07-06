@@ -196,7 +196,12 @@ class FrogPilotTelemetry:
       return
 
     for rlog in pending:
-      if not upload_log(rlog):
+      try:
+        uploaded = upload_log(rlog)
+      except FileNotFoundError:
+        continue
+
+      if not uploaded:
         time.sleep(self.backoff * random.uniform(0.5, 1.5))
         self.backoff = min(self.backoff * 2, 120)
         return
