@@ -616,6 +616,7 @@ class FrogPilotVariables:
     has_sng = CP.autoResumeSng
     toggle.has_zss = toggle.car_make == "toyota" and bool(FPCP.fpFlags & ToyotaFrogPilotFlags.ZSS.value)
     honda_nidec = CP.safetyConfigs[0].safetyModel == SafetyModel.hondaNidec
+    hyundai_canfd = CP.safetyConfigs[-1].safetyModel == SafetyModel.hyundaiCanfd
     is_angle_car = CP.steerControlType == car.CarParams.SteerControlType.angle
     latAccelFactor = CP.lateralTuning.torque.latAccelFactor
     longitudinalActuatorDelay = CP.longitudinalActuatorDelay
@@ -627,8 +628,7 @@ class FrogPilotVariables:
     steerKp = CP.lateralTuning.torque.kp
     steerRatio = CP.steerRatio
     toggle.stoppingDecelRate = CP.stoppingDecelRate
-    taco_hacks_allowed = CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd
-    toggle.use_lkas_for_aol = not toggle.openpilot_longitudinal and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd
+    toggle.use_lkas_for_aol = not toggle.openpilot_longitudinal and hyundai_canfd
     toggle.vEgoStarting = CP.vEgoStarting
     toggle.vEgoStopping = CP.vEgoStopping
 
@@ -1041,7 +1041,7 @@ class FrogPilotVariables:
 
     toggle.subaru_sng = toggle.car_make == "subaru" and not (CP.flags & SubaruFlags.GLOBAL_GEN2 or CP.flags & SubaruFlags.HYBRID) and (params.get_bool("SubaruSNG") if toggle.tuning_level >= level["SubaruSNG"] else default.get_bool("SubaruSNG"))
 
-    toggle.taco_tune_hacks = taco_hacks_allowed and (params.get_bool("TacoTuneHacks") if toggle.tuning_level >= level["TacoTuneHacks"] else default.get_bool("TacoTuneHacks"))
+    toggle.taco_tune_hacks = hyundai_canfd and (params.get_bool("TacoTuneHacks") if toggle.tuning_level >= level["TacoTuneHacks"] else default.get_bool("TacoTuneHacks"))
 
     toggle.tethering_config = params.get_int("TetheringEnabled")
 
