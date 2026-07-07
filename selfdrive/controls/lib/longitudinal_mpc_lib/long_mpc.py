@@ -333,10 +333,9 @@ class LongitudinalMpc:
     return lead_xv
 
   def process_radar_lead(self, radar_lead, radar_only=False):
+    radar_backed = not radar_only or (radar_lead is not None and (radar_lead.radar or radar_lead.radarTrackId >= 0))
     v_ego = self.x0[1]
 
-    radar_backed = not radar_only or (radar_lead is not None and
-                                      (radar_lead.radar or radar_lead.radarTrackId >= 0))
     if radar_lead is not None and radar_lead.status and radar_backed:
       x_lead = radar_lead.dRel
       v_lead = radar_lead.vLead
