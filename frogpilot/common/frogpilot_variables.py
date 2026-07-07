@@ -204,8 +204,8 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("CENavigationIntersections", "0", 2, "0"),
   ("CENavigationLead", "1", 2, "0"),
   ("CENavigationTurns", "1", 2, "0"),
-  ("CESignalSpeed", "55", 2, "0"),
   ("CESignalLaneDetection", "1", 2, "0"),
+  ("CESignalSpeed", "55", 2, "0"),
   ("CESlowerLead", "0", 1, "0"),
   ("CESpeed", "0", 1, "0"),
   ("CESpeedLead", "0", 1, "0"),
@@ -236,8 +236,8 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("DeveloperSidebarMetric5", "5", 3, "0"),
   ("DeveloperSidebarMetric6", "6", 3, "0"),
   ("DeveloperSidebarMetric7", "7", 3, "0"),
-  ("DeveloperWidgets", "1", 3, "0"),
   ("DeveloperUI", "0", 3, "0"),
+  ("DeveloperWidgets", "1", 3, "0"),
   ("DeviceManagement", "1", 1, "0"),
   ("DeviceShutdown", "9", 1, "33"),
   ("DisableOnroadUploads", "0", 2, "0"),
@@ -290,14 +290,14 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("HumanFollowing", "1", 2, "0"),
   ("HumanLaneChanges", "1", 2, "0"),
   ("IncreasedStoppedDistance", "0", 1, "0"),
-  ("IncreaseFollowingLowVisibility", "0", 2, "0"),
-  ("IncreaseFollowingRain", "0", 2, "0"),
-  ("IncreaseFollowingRainStorm", "0", 2, "0"),
-  ("IncreaseFollowingSnow", "0", 2, "0"),
   ("IncreasedStoppedDistanceLowVisibility", "0", 2, "0"),
   ("IncreasedStoppedDistanceRain", "0", 2, "0"),
   ("IncreasedStoppedDistanceRainStorm", "0", 2, "0"),
   ("IncreasedStoppedDistanceSnow", "0", 2, "0"),
+  ("IncreaseFollowingLowVisibility", "0", 2, "0"),
+  ("IncreaseFollowingRain", "0", 2, "0"),
+  ("IncreaseFollowingRainStorm", "0", 2, "0"),
+  ("IncreaseFollowingSnow", "0", 2, "0"),
   ("IncreaseThermalLimits", "0", 2, "0"),
   ("IsLdwEnabled", "0", 0, "0"),
   ("IsMetric", "0", 0, "0"),
@@ -438,8 +438,6 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("SpeedLimitFiller", "0", 0, "0"),
   ("SpeedLimitSources", "0", 3, "0"),
   ("SshEnabled", "0", 0, "0"),
-  ("StartupMessageBottom", "Human-tested, frog-approved 🐸", 0, "Always keep hands on wheel and eyes on road"),
-  ("StartupMessageTop", "Hop in and buckle up!", 0, "Be ready to take over at any time"),
   ("StandardFollow", "1.45", 2, "1.45"),
   ("StandardJerkAcceleration", "100", 3, "100"),
   ("StandardJerkDanger", "100", 3, "100"),
@@ -450,6 +448,8 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("StandbyMode", "0", 1, "0"),
   ("StartAccel", "", 3, ""),
   ("StartAccelStock", "", 3, ""),
+  ("StartupMessageBottom", "Human-tested, frog-approved 🐸", 0, "Always keep hands on wheel and eyes on road"),
+  ("StartupMessageTop", "Hop in and buckle up!", 0, "Be ready to take over at any time"),
   ("StaticPedalsOnUI", "0", 1, "0"),
   ("SteerDelay", "", 3, ""),
   ("SteerDelayStock", "", 3, ""),
@@ -463,9 +463,9 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("SteerRatioStock", "", 3, ""),
   ("StopAccel", "", 3, ""),
   ("StopAccelStock", "", 3, ""),
+  ("StoppedTimer", "0", 1, "0"),
   ("StoppingDecelRate", "", 3, ""),
   ("StoppingDecelRateStock", "", 3, ""),
-  ("StoppedTimer", "0", 1, "0"),
   ("SubaruSNG", "1", 2, "0"),
   ("TacoTune", "0", 2, "0"),
   ("TacoTuneHacks", "0", 2, "0"),
@@ -623,10 +623,10 @@ class FrogPilotVariables:
     toggle.openpilot_longitudinal = CP.openpilotLongitudinalControl and not toggle.disable_openpilot_long
     pcm_cruise = CP.pcmCruise
     startAccel = CP.startAccel
-    stopAccel = CP.stopAccel
     steerActuatorDelay = CP.steerActuatorDelay
     steerKp = CP.lateralTuning.torque.kp
     steerRatio = CP.steerRatio
+    stopAccel = CP.stopAccel
     toggle.stoppingDecelRate = CP.stoppingDecelRate
     toggle.use_lkas_for_aol = not toggle.openpilot_longitudinal and hyundai_canfd
     toggle.vEgoStarting = CP.vEgoStarting
