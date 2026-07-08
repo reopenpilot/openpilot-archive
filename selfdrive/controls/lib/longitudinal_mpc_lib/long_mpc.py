@@ -332,29 +332,21 @@ class LongitudinalMpc:
     lead_xv = np.column_stack((x_lead_traj, v_lead_traj))
     return lead_xv
 
-  def process_lead(self, model_lead, radar_lead, frogpilot_toggles, traffic_mode_active, use_model_lead=True):
+  @staticmethod
+  def model_lead_trajectory_valid(x_lead_traj, v_lead_traj):
+    if (x_lead_traj is None or v_lead_traj is None or
+            len(x_lead_traj) != len(LEAD_T_IDXS_MODEL) or
+            len(v_lead_traj) != len(LEAD_T_IDXS_MODEL) or
+            not np.all(np.isfinite(x_lead_traj)) or
+            not np.all(np.isfinite(v_lead_traj))):
+      return False
+
+    lead_t_diffs = np.diff(LEAD_T_IDXS_MODEL, prepend=[0.])
+    expected_x_lead = x_lead_traj[0] + np.cumsum(lead_t_diffs * np.clip(v_lead_traj, 0.0, 1e8))
+    return np.all(np.abs(x_lead_traj - expected_x_lead) < STOP_DISTANCE)
+
+  def extrapolate_radar_lead(self, radar_lead):
     v_ego = self.x0[1]
-
-    if use_model_lead and (frogpilot_toggles.human_following or traffic_mode_active):
-      if model_lead.prob > frogpilot_toggles.lead_detection_probability and radar_lead.status:
-        x_lead_traj = float(radar_lead.dRel) + (np.asarray(model_lead.x, dtype=np.float64) - model_lead.x[0])
-        v_lead_traj = float(radar_lead.vLead) + (np.asarray(model_lead.v, dtype=np.float64) - model_lead.v[0])
-      else:
-        # Fake a fast lead car, so mpc can keep running in the same mode
-        x_lead_traj = 50.0 + (v_ego + 10.0) * LEAD_T_IDXS_MODEL
-        v_lead_traj = np.full_like(LEAD_T_IDXS_MODEL, v_ego + 10.0)
-
-      # MPC will not converge if immediate crash is expected
-      # Clip lead distance to what is still possible to brake for
-      v_lead_0 = v_lead_traj[0]
-      min_x_lead = MIN_X_LEAD_FACTOR * (v_ego + v_lead_0) * (v_ego - v_lead_0) / (-ACCEL_MIN * 2)
-      x_lead_traj[0] = max(x_lead_traj[0], min_x_lead)
-      v_lead_traj = np.clip(v_lead_traj, 0.0, 1e8)
-
-      x_lead_mpc = np.maximum.accumulate(np.interp(T_IDXS, LEAD_T_IDXS_MODEL, x_lead_traj))
-      v_lead_mpc = np.interp(T_IDXS, LEAD_T_IDXS_MODEL, v_lead_traj)
-      return np.column_stack((x_lead_mpc, v_lead_mpc))
-
     if radar_lead is not None and radar_lead.status:
       x_lead = radar_lead.dRel
       v_lead = radar_lead.vLead
@@ -375,6 +367,40 @@ class LongitudinalMpc:
     a_lead = np.clip(a_lead, -10., 5.)
     return self.extrapolate_lead(x_lead, v_lead, a_lead, a_lead_tau)
 
+  def process_lead(self, model_lead, radar_lead, frogpilot_toggles, traffic_mode_active):
+    v_ego = self.x0[1]
+    radar_lead_xv = self.extrapolate_radar_lead(radar_lead)
+
+    if frogpilot_toggles.human_following or traffic_mode_active:
+      if model_lead.prob > frogpilot_toggles.lead_detection_probability and radar_lead.status:
+        model_x = np.asarray(model_lead.x, dtype=np.float64)
+        model_v = np.asarray(model_lead.v, dtype=np.float64)
+        if len(model_x) == len(LEAD_T_IDXS_MODEL) and len(model_v) == len(LEAD_T_IDXS_MODEL):
+          x_lead_traj = float(radar_lead.dRel) + (model_x - model_x[0])
+          v_lead_traj = float(radar_lead.vLead) + (model_v - model_v[0])
+        else:
+          x_lead_traj = v_lead_traj = None
+      else:
+        # Fake a fast lead car, so mpc can keep running in the same mode
+        x_lead_traj = 50.0 + (v_ego + 10.0) * LEAD_T_IDXS_MODEL
+        v_lead_traj = np.full_like(LEAD_T_IDXS_MODEL, v_ego + 10.0)
+
+      if self.model_lead_trajectory_valid(x_lead_traj, v_lead_traj):
+        # MPC will not converge if immediate crash is expected
+        # Clip lead distance to what is still possible to brake for
+        v_lead_0 = v_lead_traj[0]
+        min_x_lead = MIN_X_LEAD_FACTOR * (v_ego + v_lead_0) * (v_ego - v_lead_0) / (-ACCEL_MIN * 2)
+        x_lead_traj[0] = max(x_lead_traj[0], min_x_lead)
+        v_lead_traj = np.clip(v_lead_traj, 0.0, 1e8)
+
+        x_lead_mpc = np.maximum.accumulate(np.interp(T_IDXS, LEAD_T_IDXS_MODEL, x_lead_traj))
+        v_lead_mpc = np.interp(T_IDXS, LEAD_T_IDXS_MODEL, v_lead_traj)
+        lead_xv = np.column_stack((x_lead_mpc, v_lead_mpc))
+        if np.all(lead_xv[:,0] <= radar_lead_xv[:,0]):
+          return lead_xv
+
+    return radar_lead_xv
+
   def update(self, v_cruise, modelV2, radarstate, x, v, a, j, t_follow, accel_min, accel_max, frogpilot_toggles, traffic_mode_active, personality=log.LongitudinalPersonality.standard):
     v_ego = self.x0[1]
     model_leads = modelV2.leadsV3
@@ -382,7 +408,6 @@ class LongitudinalMpc:
 
     lead_xv_0 = self.process_lead(model_leads[0], radarstate.leadOne, frogpilot_toggles, traffic_mode_active)
     lead_xv_1 = self.process_lead(model_leads[1], radarstate.leadTwo, frogpilot_toggles, traffic_mode_active)
-    fcw_lead_xv_0 = self.process_lead(model_leads[0], radarstate.leadOne, frogpilot_toggles, traffic_mode_active, use_model_lead=False)
     self.lead_xv_0 = lead_xv_0
     self.lead_xv_1 = lead_xv_1
 
@@ -444,7 +469,7 @@ class LongitudinalMpc:
     self.params[:,4] = t_follow
 
     self.run()
-    if (np.any(fcw_lead_xv_0[FCW_IDXS,0] - self.x_sol[FCW_IDXS,0] < CRASH_DISTANCE) and
+    if (np.any(lead_xv_0[FCW_IDXS,0] - self.x_sol[FCW_IDXS,0] < CRASH_DISTANCE) and
             radarstate.leadOne.modelProb > 0.9):
       self.crash_cnt += 1
     else:
