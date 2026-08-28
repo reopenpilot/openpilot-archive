@@ -190,7 +190,11 @@ class FrogPilotTelemetry:
       "size_bytes": len(data),
     }, self.session)
 
-    if upload := submission.get("upload"):
+    if "upload" not in submission:
+      raise frogpilot_api.FrogPilotAPIError("Telemetry upload response is invalid")
+
+    upload = submission["upload"]
+    if upload is not None:
       frogpilot_api.put_upload(upload, data, log_path.name, self.session)
 
   def can_upload(self):
@@ -209,6 +213,11 @@ class FrogPilotTelemetry:
       try:
         self.upload(log_path, drive_id)
         setxattr(log_path, UPLOAD_ATTR_NAME, drive_id.encode())
+      except frogpilot_api.FrogPilotAPIUnavailableError:
+        return
+      except frogpilot_api.FrogPilotAPIError as error:
+        sentry.capture_exception(error, crash_log=False)
+        return
       except Exception as error:
         sentry.capture_exception(error, crash_log=False)
 
