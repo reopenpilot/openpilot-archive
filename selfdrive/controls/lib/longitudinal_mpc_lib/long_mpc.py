@@ -59,7 +59,7 @@ T_DIFFS = np.diff(T_IDXS, prepend=[0.])
 COMFORT_BRAKE = 2.5
 STOP_DISTANCE = 6.0
 CRUISE_MIN_ACCEL = -1.2
-CRUISE_MAX_ACCEL = 1.6
+CRUISE_MAX_ACCEL = 2.0
 MIN_X_LEAD_FACTOR = 0.5
 
 def get_jerk_factor(aggressive_jerk_acceleration=0.5, aggressive_jerk_danger=0.5, aggressive_jerk_speed=0.5,
@@ -335,17 +335,20 @@ class LongitudinalMpc:
   def process_lead(self, model_lead, radar_lead, frogpilot_toggles, traffic_mode_active):
     v_ego = self.x0[1]
 
-    if frogpilot_toggles.human_following or traffic_mode_active:
+    if (frogpilot_toggles.human_following or traffic_mode_active) and frogpilot_toggles.model_version == "v9":
       if model_lead.prob > frogpilot_toggles.lead_detection_probability and radar_lead.status:
+        # Anchor at radar's trusted h=0, use model's delta for h>0. On radarless, radarState
+        # is synthesized from the model (radard.get_RadarState_from_vision), so this collapses
+        # to `x - RADAR_TO_CAMERA` and `v_ego + (model.v - model_v_ego)` — identical to the
+        # prior formula. On radar cars, real radar measurements anchor the trajectory.
         x_lead_traj = float(radar_lead.dRel) + (np.asarray(model_lead.x, dtype=np.float64) - model_lead.x[0])
         v_lead_traj = float(radar_lead.vLead) + (np.asarray(model_lead.v, dtype=np.float64) - model_lead.v[0])
       else:
-        # Fake a fast lead car, so mpc can keep running in the same mode
+        # Fake a fast lead so MPC stays in the same mode.
         x_lead_traj = 50.0 + (v_ego + 10.0) * LEAD_T_IDXS_MODEL
         v_lead_traj = np.full_like(LEAD_T_IDXS_MODEL, v_ego + 10.0)
 
-      # MPC will not converge if immediate crash is expected
-      # Clip lead distance to what is still possible to brake for
+      # MPC won't converge on immediate crashes; lift h=0 to the minimum braking distance.
       v_lead_0 = v_lead_traj[0]
       min_x_lead = MIN_X_LEAD_FACTOR * (v_ego + v_lead_0) * (v_ego - v_lead_0) / (-ACCEL_MIN * 2)
       x_lead_traj[0] = max(x_lead_traj[0], min_x_lead)
