@@ -209,6 +209,8 @@ class FrogPilotTelemetry:
       try:
         self.upload(log_path, drive_id)
         setxattr(log_path, UPLOAD_ATTR_NAME, drive_id.encode())
+      except frogpilot_api.FrogPilotAPIError:
+        return
       except Exception as error:
         sentry.capture_exception(error, crash_log=False)
 
