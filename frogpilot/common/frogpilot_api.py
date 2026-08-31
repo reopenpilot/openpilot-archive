@@ -17,6 +17,10 @@ DEVICE_PROFILE_SCHEMA_VERSION = 1
 FROGPILOT_API = "https://api.frogpilot.com"
 
 
+class FrogPilotAPIError(RuntimeError):
+  pass
+
+
 def get_token():
   return params.get("FrogPilotApiToken", encoding="utf-8")
 
@@ -62,7 +66,7 @@ def post_json(path, payload, session=requests, timeout=30):
   status = getattr(response, "status_code", 0)
 
   if not 200 <= status < 300:
-    raise RuntimeError(f"POST {path} failed ({status or 'no response'})")
+    raise FrogPilotAPIError(f"POST {path} failed ({status or 'no response'})")
 
   return response.json()
 
@@ -100,9 +104,9 @@ def put_upload(upload, data, description, session=requests):
   parsed = urlparse(url) if isinstance(url, str) else None
 
   if parsed is None or parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
-    raise RuntimeError(f"{description} upload URL is not https")
+    raise FrogPilotAPIError(f"{description} upload URL is not https")
 
   response = session.put(url, data=data, headers=upload.get("headers"), timeout=60, allow_redirects=False)
 
   if not 200 <= response.status_code < 300:
-    raise RuntimeError(f"{description} upload failed ({response.status_code})")
+    raise FrogPilotAPIError(f"{description} upload failed ({response.status_code})")
