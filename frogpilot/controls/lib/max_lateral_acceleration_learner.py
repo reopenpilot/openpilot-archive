@@ -31,7 +31,6 @@ class MaxLateralAccelerationLearner:
     valid &= sm["liveLocationKalman"].angularVelocityCalibrated.valid and len(sm["liveLocationKalman"].angularVelocityCalibrated.value) > 2
     valid &= sm["carState"].vEgo > CRUISING_SPEED and not sm["carState"].steeringPressed
     valid &= not (sm["carState"].leftBlinker or sm["carState"].rightBlinker)
-    valid &= not sm["carState"].espActive
 
     if valid:
       roll_compensation = sm["liveParameters"].roll * ACCELERATION_DUE_TO_GRAVITY
