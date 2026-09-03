@@ -19,23 +19,23 @@ MAP_MATCH_MAX_AGE_NS = 2_000_000_000
 SPEED_LIMIT_CONFIRMATION_TIMEOUT = 30
 
 OFFSET_MAP_IMPERIAL = [
-  (25 * CV.MPH_TO_MS, "speed_limit_offset1"),   # 0-24 mph
-  (35 * CV.MPH_TO_MS, "speed_limit_offset2"),   # 25-34
-  (45 * CV.MPH_TO_MS, "speed_limit_offset3"),   # 35-44
-  (55 * CV.MPH_TO_MS, "speed_limit_offset4"),   # 45-54
-  (65 * CV.MPH_TO_MS, "speed_limit_offset5"),   # 55-64
-  (75 * CV.MPH_TO_MS, "speed_limit_offset6"),   # 65-74
-  (100 * CV.MPH_TO_MS, "speed_limit_offset7"),  # 75-99
+  (25, "speed_limit_offset1"),   # 0-24 mph
+  (35, "speed_limit_offset2"),   # 25-34
+  (45, "speed_limit_offset3"),   # 35-44
+  (55, "speed_limit_offset4"),   # 45-54
+  (65, "speed_limit_offset5"),   # 55-64
+  (75, "speed_limit_offset6"),   # 65-74
+  (100, "speed_limit_offset7"),  # 75-99
 ]
 
 OFFSET_MAP_METRIC = [
-  (30 * CV.KPH_TO_MS, "speed_limit_offset1"),   # 0-29 km/h
-  (50 * CV.KPH_TO_MS, "speed_limit_offset2"),   # 30-49
-  (60 * CV.KPH_TO_MS, "speed_limit_offset3"),   # 50-59
-  (80 * CV.KPH_TO_MS, "speed_limit_offset4"),   # 60-79
-  (100 * CV.KPH_TO_MS, "speed_limit_offset5"),  # 80-99
-  (120 * CV.KPH_TO_MS, "speed_limit_offset6"),  # 100-119
-  (141 * CV.KPH_TO_MS, "speed_limit_offset7"),  # 120-140
+  (30, "speed_limit_offset1"),   # 0-29 km/h
+  (50, "speed_limit_offset2"),   # 30-49
+  (60, "speed_limit_offset3"),   # 50-59
+  (80, "speed_limit_offset4"),   # 60-79
+  (100, "speed_limit_offset5"),  # 80-99
+  (120, "speed_limit_offset6"),  # 100-119
+  (141, "speed_limit_offset7"),  # 120-140
 ]
 
 class SpeedLimitController:
@@ -66,7 +66,7 @@ class SpeedLimitController:
     self.previous_target = params.get_float("PreviousSpeedLimit")
 
   def close(self):
-    self.mapbox_executor.shutdown(cancel_futures=True, wait=False)
+    self.mapbox_executor.shutdown()
     self.mapbox_session.close()
 
   def invalidate_mapbox(self):
@@ -96,10 +96,12 @@ class SpeedLimitController:
   def offset(self):
     if self.frogpilot_toggles.is_metric:
       offset_map = OFFSET_MAP_METRIC
+      displayed_speed_limit = round(self.target * CV.MS_TO_KPH)
     else:
       offset_map = OFFSET_MAP_IMPERIAL
+      displayed_speed_limit = round(self.target * CV.MS_TO_MPH)
 
-    return next((getattr(self.frogpilot_toggles, offset) for upper_bound, offset in offset_map if 0 < self.target < upper_bound), 0)
+    return next((getattr(self.frogpilot_toggles, offset) for upper_bound, offset in offset_map if 0 < displayed_speed_limit < upper_bound), 0)
 
   def handle_limit_change(self, desired_source, desired_target, sm):
     if desired_source == "None" or self.target == 0:
@@ -208,6 +210,7 @@ class SpeedLimitController:
       self.speed_limit_changed_timer = 0
 
       self.source = desired_source
+      self.target = desired_target
     elif abs(desired_target - self.denied_target) < 1:
       self.unconfirmed_speed_limit = 0
 
@@ -225,7 +228,8 @@ class SpeedLimitController:
         params.put_float_nonblocking("PreviousSpeedLimit", self.target)
 
   def update_mapbox_speed_limit(self, gps_position, now, time_validated, v_ego, desired_target):
-    if not self.frogpilot_toggles.slc_mapbox_filler or not self.mapbox_access_token or not gps_position or not time_validated:
+    mapbox_enabled = self.frogpilot_toggles.slc_mapbox_filler or self.frogpilot_toggles.speed_limit_filler
+    if not mapbox_enabled or not self.mapbox_access_token or not gps_position or not time_validated:
       self.invalidate_mapbox()
       return
 

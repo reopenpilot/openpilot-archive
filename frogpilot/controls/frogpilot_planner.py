@@ -146,6 +146,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerkStock = J_EGO_COST * self.frogpilot_following.speed_jerk
     frogpilotPlan.tFollow = self.frogpilot_following.t_follow
 
+    frogpilotPlan.cscActive = self.frogpilot_vcruise.csc_active
     frogpilotPlan.cscControllingSpeed = self.frogpilot_vcruise.csc_controlling_speed
     frogpilotPlan.cscMaxLateralAcceleration = self.frogpilot_vcruise.csc.max_limit
     frogpilotPlan.cscSpeed = self.frogpilot_vcruise.csc_target

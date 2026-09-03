@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import json
+
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_GRAVITY
 
@@ -18,9 +20,17 @@ class MaxLateralAccelerationLearner:
 
     self.tracking_time = 0
 
+    self.car_fingerprint = None
+
   def update(self, sm, frogpilot_toggles):
     if not self.initialized:
-      self.csc.max_limit = max(frogpilot_toggles.maxLateralAccel, params.get_float("MaxLateralAcceleration"))
+      learned_limit = 0.0
+      learned_profile = json.loads(params.get("MaxLateralAcceleration") or "{}")
+      if learned_profile.get("car_fingerprint") == frogpilot_toggles.car_model:
+        learned_limit = learned_profile.get("value", 0.0)
+
+      self.car_fingerprint = frogpilot_toggles.car_model
+      self.csc.max_limit = max(frogpilot_toggles.maxLateralAccel, learned_limit)
 
       self._update_profile()
 
@@ -31,7 +41,6 @@ class MaxLateralAccelerationLearner:
     valid &= sm["liveLocationKalman"].angularVelocityCalibrated.valid and len(sm["liveLocationKalman"].angularVelocityCalibrated.value) > 2
     valid &= sm["carState"].vEgo > CRUISING_SPEED and not sm["carState"].steeringPressed
     valid &= not (sm["carState"].leftBlinker or sm["carState"].rightBlinker)
-    valid &= not sm["carState"].espActive
 
     if valid:
       roll_compensation = sm["liveParameters"].roll * ACCELERATION_DUE_TO_GRAVITY
@@ -59,4 +68,7 @@ class MaxLateralAccelerationLearner:
       self.csc.max_limit = min(self.csc.max_limit + LEARNING_RATE * DT_MDL, demonstrated_limit)
 
   def _update_profile(self):
-    params.put_float_nonblocking("MaxLateralAcceleration", self.csc.max_limit)
+    params.put_nonblocking("MaxLateralAcceleration", json.dumps({
+      "car_fingerprint": self.car_fingerprint,
+      "value": self.csc.max_limit,
+    }))

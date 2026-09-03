@@ -62,7 +62,11 @@ def backup_directory(backup, destination, success_message, fail_message, minimum
 
     tar_file.unlink(missing_ok=True)
 
-    compressed_file.rename(destination_compressed)
+    try:
+      compressed_file.rename(destination_compressed)
+    except FileNotFoundError:
+      print(fail_message)
+      return
     print(f"Backup saved: {destination_compressed}")
 
     compressed_backup_size = destination_compressed.stat().st_size
@@ -145,6 +149,17 @@ def backup_toggles(params_cache):
 def convert_params(params_cache):
   print("Starting to convert params")
 
+  for param_store in (params, params_cache):
+    value = param_store.get("MaxLateralAcceleration")
+    if value is not None:
+      try:
+        value = json.loads(value)
+      except (json.JSONDecodeError, TypeError):
+        value = None
+
+      if not isinstance(value, dict):
+        param_store.remove("MaxLateralAcceleration")
+
   if Path("/cache/tracking").exists():
     params_tracking = Params("/cache/tracking")
 
@@ -180,6 +195,8 @@ def frogpilot_boot_functions(build_metadata, params_cache):
       params.put("DongleId", params.get("KonikDongleId", encoding="utf8"))
   elif params.get("DongleId", encoding="utf8") == params.get("KonikDongleId", encoding="utf8"):
     params.remove("DongleId")
+
+  shutil.rmtree("/data/restore_temp", ignore_errors=True)
 
   def boot_thread():
     while not system_time_valid():

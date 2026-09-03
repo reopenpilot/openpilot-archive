@@ -39,14 +39,16 @@ def assets_checks(model_manager, theme_manager, frogpilot_toggles):
     if asset_to_download:
       run_thread_with_lock("download_theme", theme_manager.download_theme, (asset_type, asset_to_download, asset_param, frogpilot_toggles))
 
-def update_checks(model_manager, now, theme_manager, frogpilot_toggles, boot_run=False):
+def update_checks(model_manager, now, theme_manager, sm, frogpilot_toggles, boot_run=False):
   while not (is_url_pingable("https://github.com") or is_url_pingable("https://gitlab.com")):
     time.sleep(60)
 
   model_manager.update_models(boot_run)
-  theme_manager.update_themes(frogpilot_toggles, boot_run)
+  if not sm["deviceState"].networkMetered:
+    theme_manager.update_themes(frogpilot_toggles, boot_run)
 
-  run_thread_with_lock("update_maps", update_maps, (now,))
+  if not sm["deviceState"].networkMetered:
+    run_thread_with_lock("update_maps", update_maps, (now,))
 
   if frogpilot_toggles.automatic_updates:
     run_thread_with_lock("update_openpilot", update_openpilot)
@@ -155,7 +157,7 @@ def frogpilot_thread():
 
     if run_update_checks:
       theme_manager.update_active_theme(time_validated, frogpilot_toggles)
-      run_thread_with_lock("update_checks", update_checks, (model_manager, now, theme_manager, frogpilot_toggles))
+      run_thread_with_lock("update_checks", update_checks, (model_manager, now, theme_manager, sm, frogpilot_toggles))
 
       run_update_checks = False
     elif not time_validated:
@@ -164,7 +166,7 @@ def frogpilot_thread():
         continue
 
       theme_manager.update_active_theme(time_validated, frogpilot_toggles)
-      run_thread_with_lock("update_checks", update_checks, (model_manager, now, theme_manager, frogpilot_toggles, True))
+      run_thread_with_lock("update_checks", update_checks, (model_manager, now, theme_manager, sm, frogpilot_toggles, True))
 
     rate_keeper.keep_time()
 

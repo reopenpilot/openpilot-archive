@@ -36,7 +36,6 @@ class CurveSpeedProfileLearner:
     valid &= sm["liveParameters"].valid and sm["liveLocationKalman"].angularVelocityCalibrated.valid
     valid &= len(sm["liveLocationKalman"].angularVelocityCalibrated.value) > 2
     valid &= not long_control_active and not sm["carState"].cruiseState.enabled and not sm["radarState"].leadOne.status
-    valid &= not sm["carState"].espActive
     valid &= self.csc.frogpilot_planner.frogpilot_weather.weather_id == 0 or self.csc.frogpilot_planner.frogpilot_weather.reduce_lateral_acceleration == 0
     valid &= self.csc.frogpilot_planner.road_curvature_detected
 

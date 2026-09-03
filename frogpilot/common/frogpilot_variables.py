@@ -368,7 +368,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("MapsSelected", "", 0, ""),
   ("MapStyle", "1", 2, "0"),
   ("MaxDesiredAcceleration", "4.0", 3, "2.0"),
-  ("MaxLateralAcceleration", "0", 3, "0"),
+  ("MaxLateralAcceleration", "{}", 3, "{}"),
   ("MinimumLaneChangeSpeed", str(LANE_CHANGE_SPEED_MIN / CV.MPH_TO_MS), 2, str(LANE_CHANGE_SPEED_MIN / CV.MPH_TO_MS)),
   ("Model", DEFAULT_MODEL + "_default", 1, DEFAULT_MODEL + "_default"),
   ("ModelDrivesAndScores", "", 2, ""),
@@ -642,9 +642,12 @@ class FrogPilotVariables:
       CarInterface, _, _ = interfaces[MOCK.MOCK]
       FPCP = CarInterface.get_frogpilot_params(MOCK.MOCK, gen_empty_fingerprint(), [], CP, toggle)
 
+    selected_car_model = params.get("CarModel", encoding="utf-8")
+    toggle.force_fingerprint = (params.get_bool("ForceFingerprint") if toggle.tuning_level >= level["ForceFingerprint"] else default.get_bool("ForceFingerprint")) and bool(selected_car_model)
+
     toggle.always_on_lateral_set = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
     toggle.car_make = CP.carName
-    toggle.car_model = CP.carFingerprint
+    toggle.car_model = selected_car_model if toggle.force_fingerprint else CP.carFingerprint
     toggle.disable_openpilot_long = params.get_bool("DisableOpenpilotLongitudinal") if toggle.tuning_level >= level["DisableOpenpilotLongitudinal"] else default.get_bool("DisableOpenpilotLongitudinal")
     friction = CP.lateralTuning.torque.friction
     has_auto_tune = toggle.car_make in {"hyundai", "toyota"} and CP.lateralTuning.which() == "torque"
@@ -730,8 +733,6 @@ class FrogPilotVariables:
     toggle.always_on_lateral_pause_speed = params.get_int("PauseAOLOnBrake") * speed_conversion if toggle.always_on_lateral_set and toggle.tuning_level >= level["PauseAOLOnBrake"] else default.get_int("PauseAOLOnBrake") * CV.MPH_TO_MS
 
     toggle.automatic_updates = (params.get_bool("AutomaticUpdates") if toggle.tuning_level >= level["AutomaticUpdates"] and (self.release_branch or self.vetting_branch) else default.get_bool("AutomaticUpdates")) and not BACKUP_PATH.is_file()
-
-    toggle.car_model = params.get("CarModel", encoding="utf-8") or toggle.car_model
 
     toggle.cluster_offset = params.get_float("ClusterOffset") if toggle.car_make == "toyota" and toggle.tuning_level >= level["ClusterOffset"] else default.get_float("ClusterOffset")
 
@@ -872,8 +873,6 @@ class FrogPilotVariables:
     toggle.stoppingDecelRate = 0.3 if toggle.experimental_gm_tune else toggle.stoppingDecelRate
     toggle.vEgoStarting = 0.15 if toggle.experimental_gm_tune else toggle.vEgoStarting
     toggle.vEgoStopping = 0.15 if toggle.experimental_gm_tune else toggle.vEgoStopping
-
-    toggle.force_fingerprint = (params.get_bool("ForceFingerprint") if toggle.tuning_level >= level["ForceFingerprint"] else default.get_bool("ForceFingerprint")) and bool(params.get("CarModel", encoding="utf-8"))
 
     toggle.frogpilot_telemetry = params.get_bool("FrogPilotTelemetry") if toggle.tuning_level >= level["FrogPilotTelemetry"] else default.get_bool("FrogPilotTelemetry")
 
