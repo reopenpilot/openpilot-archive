@@ -1,29 +1,22 @@
-function showSnackbar(msg, level, timeout = 3500) {
-  const wrapper = document.getElementById("snackbar_wrapper")
-  wrapper.setAttribute("role", "status")
-  wrapper.setAttribute("aria-live", "polite")
-
-  if (wrapper.children.length >= 2) {
-    const first = wrapper.children[0]
-    first.style.opacity = 0
-    setTimeout(() => first.remove(), 1000)
+export function showSnackbar(message, level, timeout = 3500) {
+  const wrapper = document.getElementById("snackbar_wrapper");
+  while (wrapper.children.length >= 2) {
+    wrapper.firstElementChild.remove();
   }
 
-  const snackbar = document.createElement("div")
-  snackbar.textContent = msg
-  snackbar.className = "snackbar show"
-
+  const snackbar = document.createElement("div");
+  snackbar.className = "snackbar show";
+  snackbar.textContent = message;
   if (level === "error") {
-    snackbar.style.backgroundColor = "#f44336"
-    snackbar.setAttribute("role", "alert")
+    snackbar.style.backgroundColor = "#f44336";
+    snackbar.setAttribute("role", "alert");
   } else if (level === "success") {
-    snackbar.style.backgroundColor = "var(--success-bg)"
+    snackbar.style.backgroundColor = "var(--success-bg)";
   }
 
-  wrapper.appendChild(snackbar)
-
+  wrapper.append(snackbar);
   setTimeout(() => {
-    snackbar.style.opacity = 0
-    setTimeout(() => snackbar.remove(), 1000)
-  }, timeout)
+    snackbar.style.opacity = "0";
+    setTimeout(() => snackbar.remove(), 500);
+  }, timeout);
 }

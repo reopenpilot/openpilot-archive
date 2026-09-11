@@ -2,11 +2,9 @@ import json
 
 from cereal import car, custom
 
-from openpilot.frogpilot.assets.city_lookup import get_location
-from openpilot.frogpilot.common import frogpilot_api, frogpilot_utilities
-
-
-STATS_PAYLOAD_SCHEMA_VERSION = 1
+from openpilot.frogpilot.common import frogpilot_utilities
+from openpilot.frogpilot.common.frogpilot_api import API_VERSION
+from openpilot.frogpilot.system.city_lookup import get_location
 
 
 def get_car_params(params):
@@ -48,7 +46,7 @@ def get_model_scores(params):
   return model_scores
 
 
-def send_stats(params, frogpilot_toggles):
+def send_stats(params, frogpilot_toggles, frogpilot_api):
   if not frogpilot_toggles.frogpilot_telemetry:
     return
 
@@ -57,11 +55,9 @@ def send_stats(params, frogpilot_toggles):
 
   city, country, state = get_location(params.get("LastGPSPosition"))
 
-  using_default_model = (params.get("Model", encoding="utf-8") or "").endswith("_default")
-
   response = frogpilot_api.post("/v1/stats", json={
     "model_scores": get_model_scores(params),
-    "stats_schema_version": STATS_PAYLOAD_SCHEMA_VERSION,
+    "stats_schema_version": API_VERSION,
     "user_stats": {
       "calibrated_lateral_acceleration": params.get_float("CalibratedLateralAcceleration"),
       "car_params": get_car_params(params),
@@ -71,7 +67,7 @@ def send_stats(params, frogpilot_toggles):
       "frogpilot_stats": json.loads(params.get("FrogPilotStats") or "{}"),
       "state": state,
       "toggles": vars(frogpilot_toggles),
-      "using_default_model": using_default_model,
+      "using_default_model": (params.get("Model", encoding="utf-8") or "").endswith("_default"),
     },
   })
 

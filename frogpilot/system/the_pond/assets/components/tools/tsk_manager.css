@@ -41,10 +41,9 @@
   transform: var(--hover-scale-base);
 }
 
-.tskkeys-btn.disabled {
+.tskkeys-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
-  pointer-events: none;
 }
 
 .tskkeys-btn:hover {
@@ -154,12 +153,8 @@
   font-size: var(--font-size-sm);
 }
 
-.tskkeys-status {
-  margin-top: var(--padding-xs);
-  min-height: var(--gap-lg);
-}
-
 .tskkeys-title {
+  margin-top: 0;
   background-color: var(--sidebar-active-bg);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);

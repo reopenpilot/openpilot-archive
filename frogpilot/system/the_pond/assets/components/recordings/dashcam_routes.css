@@ -1,90 +1,76 @@
-.recording-card {
-  position: relative;
-}
+@import url("/assets/components/recordings/screen_recordings.css");
 
-.preserved-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1;
+.recording-card .preserved-icon {
+  align-items: center;
   appearance: none;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+  background: rgba(0, 0, 0, 0.3);
+  border: 0;
+  border-radius: 50%;
   color: white;
+  cursor: pointer;
+  display: flex;
   font-size: 1.5rem;
+  height: 44px;
+  justify-content: center;
+  position: absolute;
+  right: 6px;
   text-shadow: 0 0 5px black;
+  top: 6px;
+  width: 44px;
 }
 
-.preserved-icon .bi-heart-fill {
+.preserved-icon .bi {
+  display: flex;
+  transform: translateY(1px);
+}
+
+.preserved-icon .bi-heart-fill,
+.preserved-icon:hover .bi-heart {
   color: red;
 }
 
-.preserved-icon .bi-heart:hover {
-  color: red;
+.preserved-icon:focus-visible {
+  outline: 3px solid var(--main-fg);
 }
 
-.preserved-icon .bi-heart-fill:hover {
-  color: white;
+.media-preservation-note {
+  font-size: var(--font-size-sm);
+  margin: var(--margin-base) 0;
+  overflow-wrap: anywhere;
 }
 
-.show-preserved-button {
-  background-color: var(--input-bg);
-  border: none;
-  border-radius: var(--border-radius-lg);
+.include-preserved {
+  align-items: center;
+  display: flex;
+  gap: var(--gap-sm);
+  justify-content: center;
+  margin: var(--margin-base) 0;
+  min-height: 44px;
+}
+
+.include-preserved input {
+  accent-color: var(--main-fg);
+  height: 20px;
+  width: 20px;
+}
+
+.include-preserved + .dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);
+  justify-content: center;
+}
+
+.include-preserved + .dialog-buttons button {
+  background: var(--color-gray-700);
+  border: 0;
+  border-radius: var(--border-radius-md);
   color: var(--text-color);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-demi-bold);
-  margin-top: var(--margin-sm);
-  padding: var(--padding-sm) var(--padding-base);
-  text-align: center;
-  transition:
-    background-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
-  width: auto;
-}
-
-.show-preserved-button:hover {
-  background-color: var(--success-bg);
-  box-shadow: var(--shadow-md);
-  transform: var(--hover-scale-sm);
-}
-
-.show-preserved-button[disabled] {
-  cursor: not-allowed;
-  opacity: var(--disabled-opacity);
-}
-
-.delete-all-button {
-  margin-left: var(--margin-sm);
-}
-
-.btn-cancel,
-.btn-del {
-  border: none;
-  border-radius: var(--border-radius-sm);
-  padding: var(--padding-sm) var(--padding-base);
-  font-weight: var(--font-weight-demi-bold);
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
   cursor: pointer;
+  min-height: 44px;
+  padding: var(--padding-sm) var(--padding-base);
 }
 
-.btn-cancel {
-  background-color: var(--main-fg);
-  color: var(--text-on-surface);
-}
-.dialog-buttons .btn-del {
-  background-color: var(--danger-bg);
-  color: var(--text-on-surface);
-}
-
-.btn-cancel:hover {
-  background-color: var(--main-fg);
-  transform: var(--hover-scale-sm);
-}
-.dialog-buttons .btn-del:hover {
-  background-color: var(--danger-hover-bg);
-  transform: var(--hover-scale-sm);
+.include-preserved + .dialog-buttons .btn-del {
+  background: var(--danger-bg);
 }

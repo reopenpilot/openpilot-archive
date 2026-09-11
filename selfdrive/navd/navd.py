@@ -134,8 +134,13 @@ class RouteEngine:
       self.recompute_countdown = max(0, self.recompute_countdown - 1)
 
   def calculate_route(self, destination):
+    self.nav_speed_limit = 0
+
+    fp_msg = messaging.new_message('frogpilotNavigation', valid=False)
+    fp_msg.frogpilotNavigation.navigationSpeedLimit = self.nav_speed_limit
+    self.pm.send('frogpilotNavigation', fp_msg)
+
     cloudlog.warning(f"Calculating route {self.last_position} -> {destination}")
-    self.nav_destination = destination
 
     lang = self.params.get('LanguageSetting', encoding='utf8')
     if lang is not None:
@@ -178,6 +183,9 @@ class RouteEngine:
       if resp.status_code != 200:
         cloudlog.event("API request failed", status_code=resp.status_code, text=resp.text, error=True)
       resp.raise_for_status()
+
+      self.clear_route()
+      self.nav_destination = destination
 
       r = resp.json()
       r1 = resp.json()
@@ -234,15 +242,11 @@ class RouteEngine:
         self.route_geometry = []
 
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
-        if self.frogpilot_toggles.conditional_navigation_intersections:
-          self.stop_signal = []
-          self.stop_coord = []
-
-          for step in self.route:
-            for intersection in step["intersections"]:
-              if "stop_sign" in intersection or "traffic_signal" in intersection:
-                self.stop_signal.append(intersection["geometry_index"])
-                self.stop_coord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
+        for step in self.route:
+          for intersection in step["intersections"]:
+            if intersection.get("stop_sign") or intersection.get("traffic_signal"):
+              self.stop_signal.append(intersection["geometry_index"])
+              self.stop_coord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
 
         maxspeed_idx = 0
         maxspeeds = chosen_route['legs'][0]['annotation']['maxspeed']
@@ -283,7 +287,7 @@ class RouteEngine:
 
   def send_instruction(self):
     msg = messaging.new_message('navInstruction', valid=True)
-    fp_msg = messaging.new_message('frogpilotNavigation', valid=True)
+    fp_msg = messaging.new_message('frogpilotNavigation', valid=False)
 
     if self.step_idx is None:
       msg.valid = False
@@ -362,10 +366,12 @@ class RouteEngine:
       if along_geometry < distance_along_geometry(geometry, geometry[closest_idx]):
         closest = geometry[closest_idx - 1]
 
+    closest_leg_idx = closest_idx + sum(len(path) - 1 for path in self.route_geometry[:self.step_idx])
+    route_valid = self.localizer_valid and self.sm.all_checks(service_list=["liveLocationKalman"]) and not self.off_route()
     if ('maxspeed' in closest.annotations) and self.localizer_valid:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
       self.nav_speed_limit = closest.annotations['maxspeed']
-    if not self.localizer_valid or ('maxspeed' not in closest.annotations) or self.off_route():
+    if not route_valid or ('maxspeed' not in closest.annotations):
       self.nav_speed_limit = 0
 
     # Speed limit sign type
@@ -398,13 +404,14 @@ class RouteEngine:
           self.params.remove("NavDestination")
           self.clear_route()
 
-    if self.frogpilot_toggles.conditional_navigation:
+    fp_msg.valid = self.step_idx is not None and route_valid
+    if fp_msg.valid and self.frogpilot_toggles.conditional_navigation:
       v_ego = self.sm['carState'].vEgo
       seconds_to_stop = interp(v_ego, [0, 22.5, 45], [5, 10, 10])
 
-      closest_condition_indices = [idx for idx in self.stop_signal if idx >= closest_idx]
+      closest_condition_indices = [idx for idx in self.stop_signal if idx >= closest_leg_idx]
       if closest_condition_indices:
-        closest_condition_index = min(closest_condition_indices, key=lambda idx: abs(closest_idx - idx))
+        closest_condition_index = min(closest_condition_indices)
         index = self.stop_signal.index(closest_condition_index)
 
         distance_to_condition = self.last_position.distance_to(self.stop_coord[index])
@@ -412,7 +419,10 @@ class RouteEngine:
       else:
         self.approaching_intersection = False
 
-      self.approaching_turn = self.frogpilot_toggles.conditional_navigation_turns and distance_to_maneuver_along_geometry < max((seconds_to_stop * v_ego), 25)
+      turning = (msg.navInstruction.maneuverType not in ("arrive", "depart") and
+                 msg.navInstruction.maneuverModifier in ("left", "right", "sharp left", "sharp right", "slight left", "slight right", "uturn"))
+      self.approaching_turn = (self.frogpilot_toggles.conditional_navigation_turns and turning and
+                              distance_to_maneuver_along_geometry < max((seconds_to_stop * v_ego), 25))
     else:
       self.approaching_intersection = False
       self.approaching_turn = False
@@ -439,6 +449,11 @@ class RouteEngine:
     self.route_geometry = None
     self.step_idx = None
     self.nav_destination = None
+    self.approaching_intersection = False
+    self.approaching_turn = False
+    self.nav_speed_limit = 0
+    self.stop_coord = []
+    self.stop_signal = []
 
   def reset_recompute_limits(self):
     self.recompute_backoff = 0
@@ -491,7 +506,7 @@ class RouteEngine:
 
 def main():
   pm = messaging.PubMaster(['navInstruction', 'navRoute', 'frogpilotNavigation'])
-  sm = messaging.SubMaster(['carState', 'liveLocationKalman', 'managerState', 'frogpilotPlan'])
+  sm = messaging.SubMaster(['carState', 'liveLocationKalman', 'managerState', 'frogpilotPlan'], frequency=1.0)
 
   rk = Ratekeeper(1.0)
   route_engine = RouteEngine(sm, pm)

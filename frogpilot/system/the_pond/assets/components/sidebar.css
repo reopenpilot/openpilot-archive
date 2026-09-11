@@ -42,9 +42,10 @@
   width: 50px;
 }
 
-.menu-item-link {
+.sidebar li .menu-item-link {
   align-items: center;
   border-radius: var(--border-radius-sm);
+  box-sizing: border-box;
   color: inherit;
   display: flex;
   flex-direction: row;
@@ -214,6 +215,11 @@
     left: calc(-1 * var(--sidebar-width));
     overflow-y: scroll;
     transition: var(--transition-fast);
+    visibility: hidden;
+  }
+
+  .sidebar.visible {
+    visibility: visible;
   }
 
   .sidebar .title {

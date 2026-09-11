@@ -1,13 +1,3 @@
-.cancel-button {
-  background-color: var(--danger-bg);
-  border: none;
-  border-radius: var(--border-radius-base);
-  color: var(--color-white);
-  cursor: pointer;
-  margin-top: var(--padding-base);
-  padding: var(--padding-sm) var(--padding-base);
-}
-
 .tmux-block {
   margin-left: -1.5rem;
 }
@@ -46,21 +36,12 @@
   width: auto;
 }
 
-.tmux-log-selector-wrapper {
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: var(--z-modal);
+dialog.tmux-log-dialog {
+  max-width: min(95vw, var(--width-xxl));
+  width: 95vw;
 }
 
-.tmux-log-selector-wrapper #fileList {
+.tmux-log-dialog #fileList {
   background-color: var(--sidebar-bg);
   border-radius: var(--border-radius-lg);
   box-sizing: border-box;
@@ -72,43 +53,45 @@
   padding: var(--padding-base);
   scrollbar-color: var(--thumb-color) var(--track-color);
   scrollbar-width: auto;
-  width: 85%;
+  width: 100%;
 }
 
-.tmux-log-selector-wrapper #fileList .fileEntry {
+.tmux-log-dialog #fileList .fileEntry {
   align-items: center;
+  background: transparent;
+  border: 0;
   border-bottom: var(--border-width-thin) var(--border-style-base) var(--border-color-base);
+  color: inherit;
   cursor: pointer;
   display: grid;
+  font: inherit;
   gap: var(--gap-md);
-  grid-template-columns: 1fr 250px 250px;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 1fr) minmax(100px, 1fr);
   padding: var(--padding-sm) var(--padding-base);
+  text-align: left;
+  width: 100%;
 }
 
-.tmux-log-selector-wrapper #fileList .fileEntry p {
+.tmux-log-dialog #fileList .fileEntry span {
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.tmux-log-selector-wrapper #fileList .fileEntry.header {
+.tmux-log-dialog #fileList .fileEntry.header {
   background-color: var(--secondary-bg);
   cursor: default;
   font-weight: var(--font-weight-bold);
 }
 
-.tmux-log-selector-wrapper #fileList .fileEntry:hover {
+.tmux-log-dialog #fileList .fileEntry:hover {
   background-color: var(--sidebar-active-bg);
 }
 
-.tmux-log-selector-wrapper #fileList .fileEntry:focus-visible {
+.tmux-log-dialog #fileList .fileEntry:focus-visible {
   outline: 2px solid var(--thumb-color);
   outline-offset: -2px;
-}
-
-.tmux-log-selector-wrapper #fileList .fileEntry p .label {
-  display: none;
 }
 
 .tmux-wrapper {
@@ -157,29 +140,11 @@
   .tmux-wrapper {
     height: 65vh;
   }
-  .tmux-log-selector-wrapper #fileList .fileEntry {
+  .tmux-log-dialog #fileList .fileEntry {
     grid-template-columns: 1fr;
     gap: 0;
   }
-  .tmux-log-selector-wrapper #fileList .fileEntry.header {
+  .tmux-log-dialog #fileList .fileEntry.header {
     display: none;
-  }
-  .tmux-log-selector-wrapper #fileList .fileEntry p {
-    display: flex;
-    justify-content: space-between;
-    overflow: hidden;
-    width: 100%;
-  }
-  .tmux-log-selector-wrapper #fileList .fileEntry p .label {
-    display: inline;
-    font-weight: bold;
-    margin-right: 1em;
-  }
-  .tmux-log-selector-wrapper #fileList .fileEntry p .value {
-    flex-grow: 1;
-    overflow: hidden;
-    text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }

@@ -39,6 +39,7 @@
 }
 
 .download-speed-limits-title {
+  margin: 0;
   background-color: var(--input-bg);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);

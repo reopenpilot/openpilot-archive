@@ -37,6 +37,8 @@ jobs:
         with:
           fetch-depth: 2
           ref: refs/heads/${{ env.BRANCH_STAGING }}
+          sparse-checkout: .github
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Schedule staging release handoff
         run: |
@@ -55,6 +57,6 @@ jobs:
           fi
 
           GIT_COMMITTER_DATE="$(git log -1 --format=%cI)" \
-            git -c user.name="$GIT_NAME" -c user.email="${GIT_EMAIL:?GIT_EMAIL is required}" commit --amend --no-edit
+            git -c user.name="$GIT_NAME" -c user.email="${GIT_EMAIL:?GIT_EMAIL is required}" commit --amend --no-edit --author="$GIT_NAME <$GIT_EMAIL>"
 
           git push --force-with-lease origin "HEAD:refs/heads/$BRANCH_STAGING"

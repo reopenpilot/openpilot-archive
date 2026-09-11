@@ -18,7 +18,7 @@ from openpilot.selfdrive.car.interfaces import CarInterfaceBase
 from openpilot.selfdrive.controls.lib.events import Events
 
 from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles, update_frogpilot_toggles
-from openpilot.frogpilot.controls.frogpilot_card import FrogPilotCard
+from openpilot.frogpilot.selfdrive.car.frogpilot_card import FrogPilotCard
 
 REPLAY = "REPLAY" in os.environ
 

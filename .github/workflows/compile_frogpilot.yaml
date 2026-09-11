@@ -1,5 +1,10 @@
 name: Compile FrogPilot
-run-name: Compile ${{ github.ref_name }}
+run-name: >-
+  Compile ${{ inputs.publish_custom_branch ||
+    inputs.publish_frogpilot && 'FrogPilot' ||
+    inputs.publish_staging && 'FrogPilot-Staging' ||
+    inputs.publish_testing && 'FrogPilot-Testing' ||
+    inputs.source_branch != 'Custom' && inputs.source_branch || inputs.custom_source_branch }}
 
 on:
   workflow_dispatch:
@@ -7,8 +12,15 @@ on:
       not_vetted:
         description: This branch is not vetted
         type: boolean
-      publish_custom_branch:
-        description: Custom branch name
+      source_branch:
+        default: FrogPilot-Vetting
+        description: Source branch
+        options:
+          - FrogPilot-Vetting
+          - Custom
+        type: choice
+      custom_source_branch:
+        description: Custom source branch
         type: string
       publish_frogpilot:
         description: Push to FrogPilot
@@ -19,6 +31,9 @@ on:
       publish_testing:
         description: Push to FrogPilot-Testing
         type: boolean
+      publish_custom_branch:
+        description: Custom target branch
+        type: string
       runner:
         default: c3
         description: Select runner
@@ -27,7 +42,6 @@ on:
 
 env:
   BUILD_DIR: /data/openpilot
-  SOURCE_DIR: /data/frogpilot_source
 
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}
   GIT_NAME: ${{ vars.GIT_NAME }}
@@ -36,6 +50,7 @@ env:
   BRANCH_STAGING: ${{ vars.BRANCH_STAGING }}
   BRANCH_TESTING: ${{ vars.BRANCH_TESTING }}
   CUSTOM_BRANCH: ${{ inputs.publish_custom_branch }}
+  SOURCE_BRANCH: ${{ inputs.source_branch != 'Custom' && inputs.source_branch || inputs.custom_source_branch }}
 
   COMPILE_COMMIT: ${{ vars.COMPILE_COMMIT }}
 
@@ -53,27 +68,17 @@ jobs:
     timeout-minutes: 180
     defaults: {run: {shell: bash}}
     steps:
-      - name: Set up source
+      - name: Build release
         run: |
           : "${COMPILE_COMMIT:?COMPILE_COMMIT is required}" "${GIT_NAME:?GIT_NAME is required}" "${GIT_EMAIL:?GIT_EMAIL is required}"
 
-          sudo rm -rf "$BUILD_DIR" "$SOURCE_DIR" /data/scons_cache
-          mkdir -p "$SOURCE_DIR"
+          sudo rm -rf "$BUILD_DIR" /data/scons_cache
+
           git clone --filter=blob:none --no-checkout --no-tags "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" "$BUILD_DIR"
 
           cd "$BUILD_DIR"
-          git checkout -B "$GITHUB_REF_NAME" "refs/remotes/origin/$GITHUB_REF_NAME"
-          if [[ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
-            echo "$GITHUB_REF_NAME moved since dispatch — dispatch again."
-            exit 1
-          fi
 
-          if [[ ! -f release/release_files.py ]]; then
-            echo "No release/release_files.py — source branch already compiled?"
-            exit 1
-          fi
-
-          targets=("$GITHUB_REF_NAME")
+          targets=("$SOURCE_BRANCH")
           ${{ inputs.publish_frogpilot }} && targets+=("$BRANCH_RELEASE")
           ${{ inputs.publish_staging }} && targets+=("$BRANCH_STAGING")
           ${{ inputs.publish_testing }} && targets+=("$BRANCH_TESTING")
@@ -87,36 +92,29 @@ jobs:
             printf '%s\t%s\n' "$target" "$(git rev-parse --verify --quiet "refs/remotes/origin/$target")"
           done | sort -u > "$RUNNER_TEMP/targets"
 
-          if ! { [[ " ${targets[*]} " == *" $BRANCH_STAGING "* ]] &&
-                 git show "refs/remotes/origin/$BRANCH_STAGING:.github/update_date" > "$RUNNER_TEMP/update_date" 2>/dev/null; }
-          then
-            rm -f "$RUNNER_TEMP/update_date"
+          git checkout -B "$SOURCE_BRANCH" "refs/remotes/origin/$SOURCE_BRANCH"
+
+          if [[ "$GITHUB_REF" == "refs/heads/$SOURCE_BRANCH" && "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
+            echo "$SOURCE_BRANCH moved since dispatch; dispatch again."
+            exit 1
           fi
 
-      - name: Build source
-        run: |
+          if [[ ! -f release/prepare_release.py ]]; then
+            echo "No release/prepare_release.py; source branch already compiled?"
+            exit 1
+          fi
+
           source /etc/profile
           unset CERT DEBUG ENABLE_SPI FINAL_PROVISIONING H723 RELEASE USBGPU
-
-          cd "$BUILD_DIR"
           export PYTHONPATH="$BUILD_DIR"
 
-          jobs=$(nproc)
-          scons -j"$jobs" --minimal || scons -j"$((jobs / 2))" --minimal || scons -j1 --minimal
+          scons -j"$(nproc)" --minimal || scons -j1 --minimal
+          python3 -B release/prepare_release.py "$BUILD_DIR"
 
-      - name: Prepare release
-        run: |
-          find "$BUILD_DIR" -mindepth 1 -maxdepth 1 ! -name .git -exec mv -t "$SOURCE_DIR" {} +
-
-          source /etc/profile
-          python3 "$SOURCE_DIR/release/prepare_release.py" "$SOURCE_DIR" "$BUILD_DIR"
-
-          if [[ -f "$RUNNER_TEMP/update_date" ]]; then
-            cp -p "$RUNNER_TEMP/update_date" "$BUILD_DIR/.github/update_date"
+          if [[ " ${targets[*]} " == *" $BRANCH_STAGING "* ]]; then
+            git show "refs/remotes/origin/$BRANCH_STAGING:.github/update_date" > .github/update_date 2>/dev/null || rm -f .github/update_date
           fi
 
-          cd "$BUILD_DIR"
-          rm -f not_vetted
           if ${{ inputs.not_vetted }}; then
             touch not_vetted
           fi
@@ -141,9 +139,5 @@ jobs:
             -c remote.origin.pushurl="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" \
             push --atomic "${leases[@]}" origin "${refspecs[@]}"
 
-          awk -F'\t' 'BEGIN { print "### Published" } { print "- `" $1 "`" ($2 ? " (was " substr($2, 1, 7) ")" : " (created)") }' \
+          awk -F'\t' 'BEGIN { print "### Published" } { print "- `" $1 "`" }' \
             "$RUNNER_TEMP/targets" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Cleanup
-        if: always()
-        run: rm -rf "$SOURCE_DIR"

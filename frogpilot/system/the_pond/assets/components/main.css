@@ -113,18 +113,6 @@
   --snackbar-width: 300px;
 }
 
-a.button {
-  background-color: var(--sidebar-active-bg);
-  border: none;
-  border-radius: var(--border-radius-base);
-  color: var(--main-fg);
-  display: inline-block;
-  margin: var(--margin-base) 0;
-  padding: var(--padding-sm) var(--padding-base);
-  text-align: center;
-  text-decoration: none;
-}
-
 a[href],
 button,
 [role="button"],
@@ -132,7 +120,6 @@ input[type="button"],
 input[type="submit"],
 input[type="checkbox"],
 input[type="radio"],
-.manage-keys-link,
 .sidebar .menu_section > li > ul > li {
   cursor: pointer;
 }
@@ -154,14 +141,16 @@ h3 {
   padding: var(--padding-base) 0 var(--heading-bottom);
 }
 
-.hidden     { display: none; }
+.hidden,
+[hidden] {
+  display: none !important;
+}
 html        { cursor: default; }
 .no_scroll  { overflow: hidden; }
 
 html,
 body {
   background-color: var(--main-bg);
-  font-family: var(--font-body);
   margin: 0;
   min-height: 100dvh;
   overflow-x: hidden;
@@ -226,6 +215,7 @@ a {
   bottom: var(--snackbar-offset);
   left: var(--sidebar-width);
   margin: 0 auto;
+  pointer-events: none;
   position: fixed;
   right: 0;
   width: min(var(--snackbar-width), 70%);
@@ -253,7 +243,6 @@ a {
 @media only screen and (max-width: 768px) and (orientation: portrait) {
   .content {
     box-sizing: border-box;
-    margin-left: 0;
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -273,10 +262,6 @@ a {
 
 .onroad-overlay {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   inset: 0;
   z-index: var(--z-onroad);
   display: flex;
