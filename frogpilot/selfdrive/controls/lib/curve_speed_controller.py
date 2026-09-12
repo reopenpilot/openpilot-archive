@@ -49,10 +49,14 @@ class CurveSpeedController:
 
     if sm["controlsState"].lateralControlState.which() == "angleState":
       self.max_limit_learner.update(sm, frogpilot_toggles)
+
       max_limit = self.max_limit
+
+      learned = True
     elif sm["controlsState"].lateralControlState.which() == "torqueState" and sm.all_checks(["liveTorqueParameters"]):
       if (sm["liveTorqueParameters"].useParams or frogpilot_toggles.force_auto_tune) and sm["liveTorqueParameters"].latAccelFactorFiltered > 0:
         max_limit = sm["liveTorqueParameters"].latAccelFactorFiltered
+
         learned = True
       else:
         max_limit = frogpilot_toggles.maxLateralAccel

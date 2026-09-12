@@ -20,8 +20,6 @@ class MaxLateralAccelerationLearner:
 
     self.tracking_time = 0
 
-    self.car_fingerprint = None
-
   def update(self, sm, frogpilot_toggles):
     if not self.initialized:
       learned_limit = 0.0
@@ -29,10 +27,7 @@ class MaxLateralAccelerationLearner:
       if learned_profile.get("car_fingerprint") == frogpilot_toggles.car_model:
         learned_limit = learned_profile.get("value", 0.0)
 
-      self.car_fingerprint = frogpilot_toggles.car_model
       self.csc.max_limit = max(frogpilot_toggles.maxLateralAccel, learned_limit)
-
-      self._update_profile()
 
       self.initialized = True
 
@@ -59,16 +54,7 @@ class MaxLateralAccelerationLearner:
     if valid:
       self.tracking_time += DT_MDL
     else:
-      if self.tracking_time >= MIN_LEARNING_TIME:
-        self._update_profile()
-
       self.tracking_time = 0.0
 
     if self.tracking_time >= MIN_LEARNING_TIME:
       self.csc.max_limit = min(self.csc.max_limit + LEARNING_RATE * DT_MDL, demonstrated_limit)
-
-  def _update_profile(self):
-    params.put_nonblocking("MaxLateralAcceleration", json.dumps({
-      "car_fingerprint": self.car_fingerprint,
-      "value": self.csc.max_limit,
-    }))
