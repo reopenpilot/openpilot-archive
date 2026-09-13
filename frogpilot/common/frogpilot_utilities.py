@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import math
+import numpy as np
 import requests
 import subprocess
 import tarfile
@@ -14,7 +15,7 @@ from pathlib import Path
 
 import openpilot.system.sentry as sentry
 
-from openpilot.frogpilot.common.frogpilot_variables import EARTH_RADIUS, KONIK_PATH
+from openpilot.frogpilot.common.frogpilot_variables import CRUISING_SPEED, DECEL_TIME_MARGIN, EARTH_RADIUS, KONIK_PATH, MINIMUM_PLANNED_SPEED
 
 running_threads = {}
 
@@ -50,6 +51,10 @@ def run_thread_with_lock(name, target, args=(), report=True):
       thread.start()
       running_threads[name] = thread
 
+def calculate_curve_speed(road_curvature, lateral_acceleration, roll_compensation):
+  geometric_lateral_acceleration = np.maximum(lateral_acceleration + np.sign(road_curvature) * roll_compensation, 0)
+  return np.maximum(np.sqrt(geometric_lateral_acceleration / np.maximum(np.abs(road_curvature), 1e-6)), CRUISING_SPEED)
+
 def calculate_distance_to_point(lat1, lon1, lat2, lon2):
   lat1_rad = math.radians(lat1)
   lon1_rad = math.radians(lon1)
@@ -64,6 +69,24 @@ def calculate_distance_to_point(lat1, lon1, lat2, lon2):
 
   angular_distance = 2 * math.atan2(math.sqrt(haversine), math.sqrt(1 - haversine))
   return EARTH_RADIUS * angular_distance
+
+def calculate_lane_width(lane, current_lane, road_edge=None):
+  current_x = np.asarray(current_lane.x)
+  current_y = np.asarray(current_lane.y)
+
+  lane_y_interp = np.interp(current_x, np.asarray(lane.x), np.asarray(lane.y))
+  distance_to_lane = np.median(np.abs(current_y - lane_y_interp))
+
+  if road_edge is None:
+    return float(distance_to_lane)
+
+  road_edge_y_interp = np.interp(current_x, np.asarray(road_edge.x), np.asarray(road_edge.y))
+  distance_to_road_edge = np.median(np.abs(current_y - road_edge_y_interp))
+
+  if distance_to_road_edge < distance_to_lane:
+    return 0.0
+
+  return float(distance_to_lane)
 
 def delete_file(path, print_error=True, report=True):
   path = Path(path)
@@ -160,6 +183,26 @@ def run_cmd(cmd, success_message, fail_message, env=None, report=True):
     if report:
       sentry.capture_exception(exception)
     return None
+
+def select_road_curvature(model_data, v_ego, allowed_lateral_acceleration, roll_compensation):
+  velocity = np.asarray(model_data.velocity.x)
+
+  road_curvature = np.where(velocity >= MINIMUM_PLANNED_SPEED, np.asarray(model_data.orientationRate.z) / np.maximum(velocity, 1), 0)
+  absolute_curvature = np.abs(road_curvature)
+
+  distance_to_point = np.concatenate(([0], np.cumsum(np.hypot(np.diff(model_data.position.x), np.diff(model_data.position.y)))))
+  time_to_point = np.maximum(distance_to_point / max(v_ego, CRUISING_SPEED), 1)
+
+  curve_speed = calculate_curve_speed(road_curvature, allowed_lateral_acceleration, roll_compensation)
+  required_deceleration = (v_ego - curve_speed) / np.maximum(time_to_point - DECEL_TIME_MARGIN, 1)
+  if required_deceleration.max() > 0:
+    index = np.argmax(required_deceleration)
+  elif roll_compensation != 0:
+    index = np.argmin(curve_speed)
+  else:
+    index = np.argmax(absolute_curvature)
+
+  return float(road_curvature[index]), float(time_to_point[index]), float(absolute_curvature.max())
 
 def update_json_file(path, data):
   with open(path, "w") as file:
