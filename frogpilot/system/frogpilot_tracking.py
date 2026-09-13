@@ -204,10 +204,12 @@ class FrogPilotTracking:
     weather_api_calls = self.frogpilot_stats.get("WeatherAPICalls", {})
     weather_api_calls["2.5"] = weather_api_calls.get("2.5", 0) + self.frogpilot_weather.api_25_calls
     weather_api_calls["3.0"] = weather_api_calls.get("3.0", 0) + self.frogpilot_weather.api_3_calls
+    weather_api_calls["4.0"] = weather_api_calls.get("4.0", 0) + self.frogpilot_weather.api_4_calls
     self.frogpilot_stats["WeatherAPICalls"] = weather_api_calls
 
     self.frogpilot_weather.api_25_calls = 0
     self.frogpilot_weather.api_3_calls = 0
+    self.frogpilot_weather.api_4_calls = 0
 
     weather_times = self.frogpilot_stats.get("WeatherTimes", {})
     category = weather_category(self.frogpilot_weather.weather_id)

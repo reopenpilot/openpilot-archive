@@ -29,8 +29,7 @@ class FrogPilotVCruise:
     v_ego_diff = v_ego_cluster - v_ego
 
     # FrogsGoMoo's Curve Speed Controller
-    self.csc.update_lateral_acceleration(frogpilot_toggles)
-    self.csc.update_max_limit(sm, frogpilot_toggles)
+    self.csc.max_limit_learner.update(sm, frogpilot_toggles)
 
     self.csc.profile_learner.update(sm["carControl"].longActive, sm)
 
