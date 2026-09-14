@@ -2,8 +2,8 @@ import json
 
 from cereal import car, custom
 
-from openpilot.frogpilot.common import frogpilot_utilities
 from openpilot.frogpilot.common.frogpilot_api import API_VERSION
+from openpilot.frogpilot.selfdrive.modeld.model_helpers import clean_model_name
 from openpilot.frogpilot.system.city_lookup import get_location
 
 
@@ -39,7 +39,7 @@ def get_model_scores(params):
 
     model_scores.append({
       "drives": drives,
-      "model_name": frogpilot_utilities.clean_model_name(model_name),
+      "model_name": clean_model_name(model_name),
       "score": int(model_data.get("Score", 0) or 0),
     })
 

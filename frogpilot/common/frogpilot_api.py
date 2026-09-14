@@ -12,6 +12,7 @@ import time
 import uuid
 
 from contextlib import contextmanager
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
@@ -83,16 +84,17 @@ class FrogPilotAPI:
       if current_token and current_token != failed_token:
         return current_token
 
-      if not system_time_valid():
-        return None
-
       for attempt in range(2):
+        if not system_time_valid():
+          return None
+
         api_token = self.generate_token()
         response = self.signed_post("/v1/token", {"api_token_hash": hashlib.sha256(api_token.encode()).hexdigest()}, session=session)
 
         if response is not None and 200 <= response.status_code < 300:
-          self.params.put("FrogPilotApiToken", api_token)
-          return api_token
+          if self.params.put("FrogPilotApiToken", api_token) == 0:
+            return api_token
+          break
 
         if response is None or response.status_code != 409 or attempt:
           break
@@ -107,9 +109,6 @@ class FrogPilotAPI:
 
   def register_device(self, build_metadata):
     def register_thread():
-      while not system_time_valid():
-        time.sleep(1)
-
       profile = {
         "build_metadata": dataclasses.asdict(build_metadata),
         "device_type": HARDWARE.get_device_type(),
@@ -117,10 +116,14 @@ class FrogPilotAPI:
         "profile_schema_version": API_VERSION,
       }
 
+      save_failed = False
       while True:
+        while not system_time_valid():
+          time.sleep(1)
+
         with self.credential_lock():
           api_token = self.get_token()
-          if api_token:
+          if api_token and not save_failed:
             payload = {**profile, "api_token_hash": hashlib.sha256(api_token.encode()).hexdigest()}
             digest = self.body_digest(payload)
             if self.params.get("FrogPilotDongleId", encoding="utf-8") and self.params.get("FrogPilotRegistration", encoding="utf-8") == digest:
@@ -140,11 +143,13 @@ class FrogPilotAPI:
               except (KeyError, TypeError, ValueError):
                 break
 
-              self.params.put("FrogPilotApiToken", api_token)
-              self.params.put("FrogPilotDongleId", frogpilot_dongle_id)
-              self.params.put("FrogPilotRegistration", digest)
-              return
-            elif response.status_code not in (409, 429) and response.status_code < 500:
+              for key, value in (("FrogPilotApiToken", api_token), ("FrogPilotDongleId", frogpilot_dongle_id), ("FrogPilotRegistration", digest)):
+                if self.params.put(key, value) != 0:
+                  save_failed = True
+                  break
+              else:
+                return
+            elif response.status_code not in (408, 409, 429) and response.status_code < 500:
               break
 
         time.sleep(60)
@@ -192,18 +197,37 @@ class FrogPilotAPI:
       return None
 
     body = json.dumps({**payload, "public_key": public_key}, separators=(",", ":"), sort_keys=True)
+    body_sha256 = hashlib.sha256(body.encode()).hexdigest()
     now = int(time.time())
-    token = jwt.encode({
-      "aud": "api.frogpilot.com",
-      "auth_version": API_VERSION,
-      "body_sha256": hashlib.sha256(body.encode()).hexdigest(),
-      "exp": now + 2 * 60,
-      "iat": now,
-      "method": "POST",
-      "path": path,
-    }, private_key, algorithm=algorithm)
+    signed_at = time.monotonic()
+    for attempt in range(2):
+      token = jwt.encode({
+        "aud": "api.frogpilot.com",
+        "auth_version": API_VERSION,
+        "body_sha256": body_sha256,
+        "exp": now + 2 * 60,
+        "iat": now,
+        "method": "POST",
+        "path": path,
+      }, private_key, algorithm=algorithm)
 
-    return self._post(path, session=session, timeout=20, data=body, headers={"Authorization": f"JWT {token}", "Content-Type": "application/json"})
+      response = self._post(path, session=session, timeout=20, data=body, headers={"Authorization": f"JWT {token}", "Content-Type": "application/json"})
+      received_at = time.monotonic()
+      if response is None or response.status_code != 403 or attempt:
+        return response
+
+      try:
+        server_date = parsedate_to_datetime(response.headers.get("Date", ""))
+        if server_date.tzinfo is None:
+          return response
+        server_time = server_date.timestamp()
+      except (TypeError, ValueError, OverflowError):
+        return response
+
+      if abs(server_time - (now + received_at - signed_at)) <= 5:
+        return response
+
+      now = int(server_time + time.monotonic() - received_at)
 
   def put_upload(self, upload, data, description, session=requests):
     if not upload["url"].lower().startswith("https://"):

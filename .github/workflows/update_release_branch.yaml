@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: "0 11 * * *"
 
-permissions: {contents: write}
+permissions: {}
 
 env:
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}

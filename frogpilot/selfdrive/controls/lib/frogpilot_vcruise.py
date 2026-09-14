@@ -29,8 +29,7 @@ class FrogPilotVCruise:
     v_ego_diff = v_ego_cluster - v_ego
 
     # FrogsGoMoo's Curve Speed Controller
-    self.csc.update_lateral_acceleration(frogpilot_toggles)
-    self.csc.update_max_limit(sm, frogpilot_toggles)
+    self.csc.max_limit_learner.update(sm, frogpilot_toggles)
 
     self.csc.profile_learner.update(sm["carControl"].longActive, sm)
 
@@ -100,7 +99,7 @@ class FrogPilotVCruise:
       return
 
     if stop_detected:
-      model_stop_distance = next((distance for distance, velocity in zip(sm["modelV2"].position.x, sm["modelV2"].velocity.x) if velocity < 1), self.frogpilot_planner.model_length)
+      model_stop_distance = next((distance for distance, velocity in zip(sm["modelV2"].position.x, sm["modelV2"].velocity.x) if velocity < 0.05), self.frogpilot_planner.model_length)
 
     if self.forcing_stop:
       self.stop_distance = max(self.stop_distance - v_ego * DT_MDL, 0)

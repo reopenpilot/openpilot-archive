@@ -120,6 +120,8 @@ WHITELIST_FIELDS = {
 }
 
 def filter_log(data):
+  car_fingerprint = None
+
   filtered_data = bytearray()
 
   try:
@@ -131,6 +133,9 @@ def filter_log(data):
 
       if which in EXCLUDED_MESSAGE_TYPES or which.endswith("DEPRECATED"):
         continue
+
+      if which == "carParams":
+        car_fingerprint = event.carParams.carFingerprint
 
       builder = event.as_builder()
 
@@ -168,7 +173,7 @@ def filter_log(data):
   except capnp.KjException:
     pass
 
-  return filtered_data
+  return filtered_data, car_fingerprint
 
 class FrogPilotTelemetry:
   def __init__(self):
@@ -226,9 +231,11 @@ class FrogPilotTelemetry:
         yield log_path, drive_ids[route]
 
   def upload(self, log_path, drive_id):
-    data = self.compressor.compress(filter_log(log_path.read_bytes()))
+    filtered_data, car_fingerprint = filter_log(log_path.read_bytes())
+    data = self.compressor.compress(filtered_data)
 
     submission = self.frogpilot_api.post_json("/v1/telemetry", {
+      "car_fingerprint": car_fingerprint,
       "route_id": drive_id,
       "segment": int(log_path.parent.name.rpartition("--")[2]),
       "sha256": hashlib.sha256(data).hexdigest(),

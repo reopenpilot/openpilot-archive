@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-import json
-
 from openpilot.common.realtime import DT_MDL
-from openpilot.selfdrive.controls.lib.drive_helpers import MAX_LATERAL_ACCEL_NO_ROLL
 
-from openpilot.frogpilot.common.frogpilot_variables import CRUISING_SPEED, CURVE_SPEED_PROFILES, DECEL_TIME_MARGIN, DEFAULT_LATERAL_ACCELERATION, params
+from openpilot.frogpilot.common.frogpilot_utilities import calculate_curve_speed
+from openpilot.frogpilot.common.frogpilot_variables import CURVE_SPEED_PROFILES, DECEL_TIME_MARGIN, DEFAULT_LATERAL_ACCELERATION
 from openpilot.frogpilot.selfdrive.controls.lib.curve_speed_profile_learner import CurveSpeedProfileLearner
 from openpilot.frogpilot.selfdrive.controls.lib.max_lateral_acceleration_learner import MaxLateralAccelerationLearner
 
@@ -13,7 +11,6 @@ CURVE_SPEED_LATERAL_ACCELERATIONS = {
   CURVE_SPEED_PROFILES["STANDARD"]: DEFAULT_LATERAL_ACCELERATION
 }
 
-MAX_LIMIT_STORE_THRESHOLD = 0.05
 TARGET_RISE_RATE = 1.2
 
 class CurveSpeedController:
@@ -25,7 +22,6 @@ class CurveSpeedController:
 
     self.enable_training = False
 
-    self.stored_max_limit = None
     self.target = None
 
     self.max_limit_learner = MaxLateralAccelerationLearner(self)
@@ -44,36 +40,8 @@ class CurveSpeedController:
     if self.frogpilot_planner.frogpilot_weather.weather_id != 0:
       self.lateral_acceleration -= self.lateral_acceleration * self.frogpilot_planner.frogpilot_weather.reduce_lateral_acceleration
 
-  def update_max_limit(self, sm, frogpilot_toggles):
-    learned = False
-
-    if sm["controlsState"].lateralControlState.which() == "angleState":
-      self.max_limit_learner.update(sm, frogpilot_toggles)
-
-      max_limit = self.max_limit
-
-      learned = True
-    elif sm["controlsState"].lateralControlState.which() == "torqueState" and sm.all_checks(["liveTorqueParameters"]):
-      if (sm["liveTorqueParameters"].useParams or frogpilot_toggles.force_auto_tune) and sm["liveTorqueParameters"].latAccelFactorFiltered > 0:
-        max_limit = sm["liveTorqueParameters"].latAccelFactorFiltered
-
-        learned = True
-      else:
-        max_limit = frogpilot_toggles.maxLateralAccel
-    else:
-      max_limit = frogpilot_toggles.maxLateralAccel
-
-    self.max_limit = min(max_limit, MAX_LATERAL_ACCEL_NO_ROLL)
-
-    if learned and (self.stored_max_limit is None or abs(self.max_limit - self.stored_max_limit) >= MAX_LIMIT_STORE_THRESHOLD):
-      self.stored_max_limit = self.max_limit
-      params.put_nonblocking("MaxLateralAcceleration", json.dumps({
-        "car_fingerprint": frogpilot_toggles.car_model,
-        "value": self.max_limit,
-      }))
-
   def update_target(self, v_cruise, v_ego):
-    csc_speed = max((self.lateral_acceleration / max(abs(self.frogpilot_planner.road_curvature), 1e-6))**0.5, CRUISING_SPEED)
+    csc_speed = float(calculate_curve_speed(self.frogpilot_planner.road_curvature, self.lateral_acceleration, self.frogpilot_planner.roll_compensation))
 
     if self.target is None:
       self.target = max(v_ego, csc_speed)
@@ -82,7 +50,7 @@ class CurveSpeedController:
       decel_rate = max(v_ego - csc_speed, 0) / max(self.frogpilot_planner.time_to_curve - DECEL_TIME_MARGIN, 1)
 
       self.target = max(min(self.target, v_ego) - decel_rate * DT_MDL, csc_speed)
-    elif abs(self.frogpilot_planner.lateral_acceleration) < self.lateral_acceleration:
+    elif abs(self.frogpilot_planner.lateral_acceleration - self.frogpilot_planner.roll_compensation) < self.lateral_acceleration:
       self.target = min(self.target + TARGET_RISE_RATE * DT_MDL, csc_speed)
 
       if self.target >= v_cruise:
