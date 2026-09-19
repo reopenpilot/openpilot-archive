@@ -9,7 +9,7 @@ on:
         required: true
         type: string
 
-permissions: {contents: write}
+permissions: {}
 
 env:
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}

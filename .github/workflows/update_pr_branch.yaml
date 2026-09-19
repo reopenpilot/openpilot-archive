@@ -6,7 +6,7 @@ on:
     branches: [FrogPilot-Testing]
   workflow_dispatch:
 
-permissions: {contents: write}
+permissions: {}
 
 env:
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}

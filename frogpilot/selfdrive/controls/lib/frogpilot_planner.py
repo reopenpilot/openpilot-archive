@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import math
-import numpy as np
 
 import cereal.messaging as messaging
 
@@ -11,9 +10,10 @@ from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import A_CHANGE_COST, DANGER_ZONE_COST, J_EGO_COST, STOP_DISTANCE
+from openpilot.selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_GRAVITY
 
-from openpilot.frogpilot.common.frogpilot_variables import CRUISING_SPEED, DECEL_TIME_MARGIN, MINIMUM_LATERAL_ACCELERATION, MINIMUM_PLANNED_SPEED
-from openpilot.frogpilot.common.frogpilot_variables import PLANNER_TIME, THRESHOLD, params_memory
+from openpilot.frogpilot.common.frogpilot_utilities import calculate_lane_width, select_road_curvature
+from openpilot.frogpilot.common.frogpilot_variables import CRUISING_SPEED, MINIMUM_LATERAL_ACCELERATION, PLANNER_TIME, THRESHOLD, params_memory
 from openpilot.frogpilot.selfdrive.controls.lib.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.frogpilot.selfdrive.controls.lib.frogpilot_acceleration import FrogPilotAcceleration
 from openpilot.frogpilot.selfdrive.controls.lib.frogpilot_events import FrogPilotEvents
@@ -23,39 +23,6 @@ from openpilot.frogpilot.selfdrive.controls.lib.weather_checker import WeatherCh
 
 CURVE_DETECTION_ENTER = 1.0
 CURVE_DETECTION_EXIT = 0.7
-
-def calculate_lane_width(lane, current_lane, road_edge=None):
-  current_x = np.asarray(current_lane.x)
-  current_y = np.asarray(current_lane.y)
-
-  lane_y_interp = np.interp(current_x, np.asarray(lane.x), np.asarray(lane.y))
-  distance_to_lane = np.median(np.abs(current_y - lane_y_interp))
-
-  if road_edge is None:
-    return float(distance_to_lane)
-
-  road_edge_y_interp = np.interp(current_x, np.asarray(road_edge.x), np.asarray(road_edge.y))
-  distance_to_road_edge = np.median(np.abs(current_y - road_edge_y_interp))
-
-  if distance_to_road_edge < distance_to_lane:
-    return 0.0
-
-  return float(distance_to_lane)
-
-def select_road_curvature(model_data, v_ego, allowed_lateral_acceleration):
-  velocity = np.asarray(model_data.velocity.x)
-
-  road_curvature = np.where(velocity >= MINIMUM_PLANNED_SPEED, np.asarray(model_data.orientationRate.z) / np.maximum(velocity, 1), 0)
-  absolute_curvature = np.abs(road_curvature)
-
-  distance_to_point = np.concatenate(([0], np.cumsum(np.hypot(np.diff(model_data.position.x), np.diff(model_data.position.y)))))
-  time_to_point = np.maximum(distance_to_point / max(v_ego, CRUISING_SPEED), 1)
-
-  curve_speed = np.maximum(np.sqrt(allowed_lateral_acceleration / np.maximum(absolute_curvature, 1e-6)), CRUISING_SPEED)
-  required_deceleration = (v_ego - curve_speed) / np.maximum(time_to_point - DECEL_TIME_MARGIN, 1)
-  index = np.argmax(required_deceleration if required_deceleration.max() > 0 else absolute_curvature)
-
-  return float(road_curvature[index]), float(time_to_point[index]), float(absolute_curvature.max())
 
 class FrogPilotPlanner:
   def __init__(self, error_log, ThemeManager, frogpilot_api):
@@ -80,6 +47,7 @@ class FrogPilotPlanner:
     self.lateral_acceleration = 0
     self.model_length = 0
     self.road_curvature = 0
+    self.roll_compensation = 0
     self.time_to_curve = 0
     self.v_cruise = 0
 
@@ -146,7 +114,16 @@ class FrogPilotPlanner:
 
     self.model_stopped = self.model_length < CRUISING_SPEED * PLANNER_TIME
 
-    self.road_curvature, self.time_to_curve, road_curvature_peak = select_road_curvature(sm["modelV2"], v_ego, self.frogpilot_vcruise.csc.lateral_acceleration)
+    if sm["controlsState"].lateralControlState.which() == "angleState":
+      self.roll_compensation = sm["liveParameters"].roll * ACCELERATION_DUE_TO_GRAVITY
+    else:
+      self.roll_compensation = 0
+
+    self.frogpilot_vcruise.csc.update_lateral_acceleration(frogpilot_toggles)
+
+    self.road_curvature, self.time_to_curve, road_curvature_peak = select_road_curvature(
+      sm["modelV2"], v_ego, self.frogpilot_vcruise.csc.lateral_acceleration, self.roll_compensation
+    )
 
     self.road_curvature_detected = v_ego**2 * road_curvature_peak > (CURVE_DETECTION_EXIT if self.road_curvature_detected else CURVE_DETECTION_ENTER)
     self.road_curvature_detected &= v_ego > CRUISING_SPEED
