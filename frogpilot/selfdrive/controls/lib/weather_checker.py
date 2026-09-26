@@ -48,7 +48,10 @@ WEATHER_OFFSETS = (
 
 
 def weather_category(weather_id):
-  return next((category["suffix"] for category in WEATHER_CATEGORIES.values() if any(start <= weather_id <= end for start, end in category["ranges"])), "unknown")
+  return next(
+    (category["suffix"] for category in WEATHER_CATEGORIES.values() if any(start <= weather_id <= end for start, end in category["ranges"])),
+    "unknown",
+  )
 
 
 class WeatherChecker:
@@ -60,6 +63,7 @@ class WeatherChecker:
 
     self.api_25_calls = 0
     self.api_3_calls = 0
+    self.api_4_calls = 0
     self.increase_following_distance = 0
     self.increase_stopped_distance = 0
     self.next_request = 0
@@ -70,8 +74,10 @@ class WeatherChecker:
     self.sunset = 0
     self.weather_id = 0
 
-    self.api_25_key = None
     self.last_position = None
+    self.personal_api_key = None
+
+    self.personal_api_version = "4.0"
 
     self.frogpilot_api = frogpilot_api
 
@@ -123,15 +129,25 @@ class WeatherChecker:
       except (FrogPilotAPIError, IndexError, KeyError, TypeError, ValueError, requests.RequestException):
         return
 
+      if not isinstance(data, dict) or not isinstance(data.get("api_version"), str):
+        return
+      if not all(type(data.get(key)) is int for key in ("sunrise", "sunset", "weather_id")):
+        return
+
+      using_personal_key = data.get("using_personal_key", False)
+      if not isinstance(using_personal_key, bool):
+        return
+
       if data.get("api_version") == "2.5":
         self.api_25_calls += 1
-        self.api_25_key = api_key
-      else:
+      elif data.get("api_version") == "3.0":
         self.api_3_calls += 1
+      elif data.get("api_version") == "4.0":
+        self.api_4_calls += 1
 
       self.last_position = position
 
-      self.next_request = timestamp + (PERSONAL_KEY_UPDATE_INTERVAL if data.get("using_personal_key", bool(api_key)) else DEFAULT_UPDATE_INTERVAL)
+      self.next_request = timestamp + (PERSONAL_KEY_UPDATE_INTERVAL if using_personal_key else DEFAULT_UPDATE_INTERVAL)
 
       self.sunrise = data.get("sunrise", 0)
       self.sunset = data.get("sunset", 0)
@@ -141,39 +157,55 @@ class WeatherChecker:
       self.update_offsets(frogpilot_toggles)
 
     def make_request():
-      if self.api_25_key != api_key:
-        self.api_25_key = None
+      if self.personal_api_key != api_key:
+        self.personal_api_key = api_key
+        self.personal_api_version = "4.0"
 
-      if not api_key:
-        return self.frogpilot_api.post_json("/v1/weather", {"latitude": position[0], "longitude": position[1]}, session=self.session, timeout=30)
+      if api_key:
+        endpoints = {"4.0": "4.0/onecall/current", "3.0": "3.0/onecall", "2.5": "2.5/weather"}
+        api_versions = tuple(endpoints)
+        try:
+          for api_version in api_versions[api_versions.index(self.personal_api_version):]:
+            query = {"appid": api_key, "lat": position[0], "lon": position[1]}
+            if api_version == "3.0":
+              query["exclude"] = "alerts,daily,hourly,minutely"
 
-      query = {"appid": api_key, "exclude": "alerts,daily,hourly,minutely", "lat": position[0], "lon": position[1]}
+            url = f"https://api.openweathermap.org/data/{endpoints[api_version]}"
+            with self.session.get(url, params=query, timeout=30, allow_redirects=False) as response:
+              if response.status_code in (401, 403, 404, 410):
+                continue
+              if not 200 <= response.status_code < 300:
+                break
+              data = response.json()
 
-      api_version = "2.5"
-      if self.api_25_key != api_key:
-        with self.session.get("https://api.openweathermap.org/data/3.0/onecall", params=query, timeout=30, allow_redirects=False) as response:
-          if response.status_code not in (401, 403):
-            response.raise_for_status()
-            data = response.json()["current"]
+            if api_version == "4.0":
+              data = data["data"][0]
+              sun_data = data
+            elif api_version == "3.0":
+              data = data["current"]
+              sun_data = data
+            else:
+              sun_data = data["sys"]
 
-            api_version = "3.0"
-            sun_data = data
+            if not isinstance(sun_data, dict):
+              raise ValueError("Invalid personal weather data")
 
-      if api_version == "2.5":
-        query.pop("exclude")
+            weather = {
+              "api_version": api_version,
+              "sunrise": sun_data.get("sunrise", 0),
+              "sunset": sun_data.get("sunset", 0),
+              "using_personal_key": True,
+              "weather_id": data["weather"][0]["id"],
+            }
+            if not all(type(weather[key]) is int for key in ("sunrise", "sunset", "weather_id")):
+              raise ValueError("Invalid personal weather data")
 
-        with self.session.get("https://api.openweathermap.org/data/2.5/weather", params=query, timeout=30, allow_redirects=False) as response:
-          response.raise_for_status()
-          data = response.json()
+            self.personal_api_version = api_version
+            return weather
+        except (IndexError, KeyError, TypeError, ValueError, requests.RequestException):
+          pass
 
-        sun_data = data["sys"]
-
-      return {
-        "api_version": api_version,
-        "sunrise": sun_data.get("sunrise", 0),
-        "sunset": sun_data.get("sunset", 0),
-        "weather_id": data["weather"][0]["id"],
-      }
+      return self.frogpilot_api.post_json("/v1/weather", {"latitude": position[0], "longitude": position[1]}, session=self.session, timeout=30)
 
     future = self.executor.submit(make_request)
     future.add_done_callback(complete_request)

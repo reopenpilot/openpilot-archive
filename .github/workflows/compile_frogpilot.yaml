@@ -4,7 +4,7 @@ run-name: >-
     inputs.publish_frogpilot && 'FrogPilot' ||
     inputs.publish_staging && 'FrogPilot-Staging' ||
     inputs.publish_testing && 'FrogPilot-Testing' ||
-    inputs.source_branch != 'Custom' && inputs.source_branch || inputs.custom_source_branch }}
+    'private build' }}
 
 on:
   workflow_dispatch:
@@ -17,6 +17,7 @@ on:
         description: Source branch
         options:
           - FrogPilot-Vetting
+          - FrogPilot-Development
           - Custom
         type: choice
       custom_source_branch:
@@ -42,6 +43,8 @@ on:
 
 env:
   BUILD_DIR: /data/openpilot
+  BUILD_LOG: /data/frogpilot-build.log
+  SOURCE_DIR: /data/frogpilot_source
 
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}
   GIT_NAME: ${{ vars.GIT_NAME }}
@@ -50,7 +53,8 @@ env:
   BRANCH_STAGING: ${{ vars.BRANCH_STAGING }}
   BRANCH_TESTING: ${{ vars.BRANCH_TESTING }}
   CUSTOM_BRANCH: ${{ inputs.publish_custom_branch }}
-  SOURCE_BRANCH: ${{ inputs.source_branch != 'Custom' && inputs.source_branch || inputs.custom_source_branch }}
+  CUSTOM_SOURCE_BRANCH: ${{ inputs.custom_source_branch }}
+  SOURCE_BRANCH: ${{ inputs.source_branch }}
 
   COMPILE_COMMIT: ${{ vars.COMPILE_COMMIT }}
 
@@ -60,61 +64,97 @@ concurrency: compile-frogpilot
 
 jobs:
   build_and_push:
+    if: github.repository == 'FrogAi/FrogPilot'
     name: Compile FrogPilot
     concurrency:
       group: frogpilot-branch-push
       queue: max
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     timeout-minutes: 180
+    env:
+      WORKFLOW_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      GIT_TERMINAL_PROMPT: '0'
+      GIT_CONFIG_COUNT: '2'
+      GIT_CONFIG_KEY_0: credential.helper
+      GIT_CONFIG_VALUE_0: ''
+      GIT_CONFIG_KEY_1: credential.helper
+      GIT_CONFIG_VALUE_1: >-
+        !f() { if [ "$1" = get ]; then printf 'username=x-access-token\npassword=%s\n' "$WORKFLOW_TOKEN"; fi; }; f
     defaults: {run: {shell: bash}}
     steps:
-      - name: Build release
+      - name: Set up source
         run: |
+          umask 077
+          : > "$BUILD_LOG"
+          exec >> "$BUILD_LOG" 2>&1
+          if [[ "$SOURCE_BRANCH" == "Custom" ]]; then
+            SOURCE_BRANCH="$CUSTOM_SOURCE_BRANCH"
+          fi
+          if [[ -z "$SOURCE_BRANCH" || "$(git check-ref-format --branch "$SOURCE_BRANCH")" != "$SOURCE_BRANCH" ]]; then
+            echo "Invalid source branch: $SOURCE_BRANCH" >&2
+            exit 1
+          fi
+
           : "${COMPILE_COMMIT:?COMPILE_COMMIT is required}" "${GIT_NAME:?GIT_NAME is required}" "${GIT_EMAIL:?GIT_EMAIL is required}"
+          : "${WORKFLOW_TOKEN:?PERSONAL_ACCESS_TOKEN is required}"
 
-          sudo rm -rf "$BUILD_DIR" /data/scons_cache
-
-          git clone --filter=blob:none --no-checkout --no-tags "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" "$BUILD_DIR"
+          sudo rm -rf "$BUILD_DIR" "$SOURCE_DIR" /data/scons_cache
+          mkdir -p "$SOURCE_DIR"
+          git clone --filter=blob:none --no-checkout --no-tags "$GITHUB_SERVER_URL/FrogAi/FrogPilot-Development.git" "$BUILD_DIR"
 
           cd "$BUILD_DIR"
+          git checkout -B "$SOURCE_BRANCH" "refs/remotes/origin/$SOURCE_BRANCH"
+          printf '%s\n' "$SOURCE_BRANCH" > "$RUNNER_TEMP/source_branch"
+          git rev-parse HEAD > "$RUNNER_TEMP/source_sha"
+          git remote add public "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
 
-          targets=("$SOURCE_BRANCH")
+          if [[ ! -f release/build_frogpilot.sh ]]; then
+            echo "No release/build_frogpilot.sh — source branch already compiled or missing its build helper?"
+            exit 1
+          fi
+
+          targets=()
           ${{ inputs.publish_frogpilot }} && targets+=("$BRANCH_RELEASE")
           ${{ inputs.publish_staging }} && targets+=("$BRANCH_STAGING")
           ${{ inputs.publish_testing }} && targets+=("$BRANCH_TESTING")
           [[ -n "$CUSTOM_BRANCH" ]] && targets+=("$CUSTOM_BRANCH")
+
+          if (( ${#targets[@]} )); then
+            git fetch --filter=blob:none --no-tags public '+refs/heads/*:refs/remotes/public/*'
+          fi
 
           for target in "${targets[@]}"; do
             if [[ -z "$target" || "$(git check-ref-format --branch "$target")" != "$target" ]]; then
               echo "Invalid branch name: $target" >&2
               exit 1
             fi
-            printf '%s\t%s\n' "$target" "$(git rev-parse --verify --quiet "refs/remotes/origin/$target")"
+            if [[ "$target" == FrogPilot-Development || "$target" == FrogPilot-Vetting ]]; then
+              echo "Development and Vetting branches must remain private: $target" >&2
+              exit 1
+            fi
+            printf '%s\t%s\n' "$target" "$(git rev-parse --verify --quiet "refs/remotes/public/$target")"
           done | sort -u > "$RUNNER_TEMP/targets"
 
-          git checkout -B "$SOURCE_BRANCH" "refs/remotes/origin/$SOURCE_BRANCH"
-
-          if [[ "$GITHUB_REF" == "refs/heads/$SOURCE_BRANCH" && "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
-            echo "$SOURCE_BRANCH moved since dispatch; dispatch again."
-            exit 1
+          if ! { [[ " ${targets[*]} " == *" $BRANCH_STAGING "* ]] &&
+                 git show "refs/remotes/public/$BRANCH_STAGING:.github/update_date" > "$RUNNER_TEMP/update_date" 2>/dev/null; }
+          then
+            rm -f "$RUNNER_TEMP/update_date"
           fi
 
-          if [[ ! -f release/prepare_release.py ]]; then
-            echo "No release/prepare_release.py; source branch already compiled?"
-            exit 1
+      - name: Build source
+        run: |
+          exec >> "$BUILD_LOG" 2>&1
+          bash "$BUILD_DIR/release/build_frogpilot.sh"
+
+      - name: Prepare release
+        run: |
+          exec >> "$BUILD_LOG" 2>&1
+          if [[ -f "$RUNNER_TEMP/update_date" ]]; then
+            cp -p "$RUNNER_TEMP/update_date" "$BUILD_DIR/.github/update_date"
           fi
 
-          source /etc/profile
-          unset CERT DEBUG ENABLE_SPI FINAL_PROVISIONING H723 RELEASE USBGPU
-          export PYTHONPATH="$BUILD_DIR"
-
-          scons -j"$(nproc)" --minimal || scons -j1 --minimal
-          python3 -B release/prepare_release.py "$BUILD_DIR"
-
-          if [[ " ${targets[*]} " == *" $BRANCH_STAGING "* ]]; then
-            git show "refs/remotes/origin/$BRANCH_STAGING:.github/update_date" > .github/update_date 2>/dev/null || rm -f .github/update_date
-          fi
-
+          cd "$BUILD_DIR"
+          rm -f build.json not_vetted
           if ${{ inputs.not_vetted }}; then
             touch not_vetted
           fi
@@ -123,21 +163,41 @@ jobs:
             commit -m "$COMPILE_COMMIT"
 
       - name: Publish release
-        env:
-          WORKFLOW_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
+          exec >> "$BUILD_LOG" 2>&1
+          cd "$BUILD_DIR"
+          source_branch="$(<"$RUNNER_TEMP/source_branch")"
+          source_sha="$(<"$RUNNER_TEMP/source_sha")"
+          compiled_sha="$(git rev-parse HEAD)"
+          {
+            echo '### Publication plan'
+            echo "- Source: \`$source_sha\`"
+            echo "- Compiled: \`$compiled_sha\`"
+            echo "- Private source branch: saved on the runner (was \`$source_sha\`)"
+            awk -F'\t' '{ print "- Public: `FrogAi/FrogPilot:" $1 "`" ($2 ? " (was " $2 ")" : " (created)") }' "$RUNNER_TEMP/targets"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+          git push "--force-with-lease=refs/heads/$source_branch:$source_sha" origin "$compiled_sha:refs/heads/$source_branch"
+          echo 'Private publication succeeded.' | tee -a "$GITHUB_STEP_SUMMARY"
+
+          if [[ ! -s "$RUNNER_TEMP/targets" ]]; then
+            exit 0
+          fi
+
           leases=()
           refspecs=()
           while IFS=$'\t' read -r target expected_ref; do
             leases+=("--force-with-lease=refs/heads/$target:$expected_ref")
-            refspecs+=("HEAD:refs/heads/$target")
+            refspecs+=("$compiled_sha:refs/heads/$target")
           done < "$RUNNER_TEMP/targets"
 
-          git -C "$BUILD_DIR" \
-            -c credential.helper= \
-            -c "credential.helper=!f() { printf 'username=x-access-token\npassword=%s\n' \"\$WORKFLOW_TOKEN\"; }; f" \
-            -c remote.origin.pushurl="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" \
-            push --atomic "${leases[@]}" origin "${refspecs[@]}"
+          git push --atomic "${leases[@]}" public "${refspecs[@]}"
 
-          awk -F'\t' 'BEGIN { print "### Published" } { print "- `" $1 "`" }' \
+          awk -F'\t' 'BEGIN { print "### Published" } { print "- `" $1 "`" ($2 ? " (was " substr($2, 1, 7) ")" : " (created)") }' \
             "$RUNNER_TEMP/targets" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "Private build diagnostics remain on the runner at $BUILD_LOG." >> "$GITHUB_STEP_SUMMARY"
+          rm -rf "$SOURCE_DIR"

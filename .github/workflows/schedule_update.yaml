@@ -9,7 +9,7 @@ on:
         required: true
         type: string
 
-permissions: {contents: write}
+permissions: {}
 
 env:
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}
@@ -25,6 +25,7 @@ concurrency: schedule-frogpilot-update
 
 jobs:
   schedule_update:
+    if: github.repository == 'FrogAi/FrogPilot'
     name: Schedule staging release handoff
     concurrency:
       group: frogpilot-branch-push

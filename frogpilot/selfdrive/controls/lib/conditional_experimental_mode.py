@@ -35,19 +35,23 @@ class ConditionalExperimentalMode:
       self.slow_lead(v_ego, sm, frogpilot_toggles)
       self.stop_sign_and_light(v_ego, sm, frogpilot_toggles.conditional_model_stop_time)
 
-    if self.status_value not in (1, 2) and not sm["carState"].standstill:
-      self.experimental_mode = self.check_conditions(v_ego, sm, frogpilot_toggles)
+    if self.status_value in (1, 2):
+      self.experimental_mode = self.status_value == 2
+      self.stop_light_detected = False
+    else:
+      if sm["carState"].standstill:
+        self.experimental_mode &= self.frogpilot_planner.model_stopped or self.frogpilot_planner.frogpilot_vcruise.forcing_stop
+
+        if frogpilot_toggles.conditional_model_stop_time != 0 and not sm["frogpilotCarState"].trafficModeEnabled and sm["modelV2"].action.shouldStop:
+          self.experimental_mode = True
+          self.status_value = 11 if not self.frogpilot_planner.frogpilot_vcruise.forcing_stop else 12
+      else:
+        self.experimental_mode = self.check_conditions(v_ego, sm, frogpilot_toggles)
 
       params_memory.put_int("CEStatus", self.status_value if self.experimental_mode else 0)
-    else:
-      stop_required = self.frogpilot_planner.model_stopped or self.frogpilot_planner.frogpilot_vcruise.forcing_stop
-      self.experimental_mode = self.status_value == 2 or sm["carState"].standstill and self.experimental_mode and stop_required
-      self.experimental_mode &= self.status_value != 1
 
-      self.stop_light_detected &= self.status_value not in (1, 2)
-
-      if sm["carState"].standstill:
-        self.stop_light_filter.x = 0
+    if sm["carState"].standstill:
+      self.stop_light_filter.x = 0
 
   def check_conditions(self, v_ego, sm, frogpilot_toggles):
     below_speed = not self.frogpilot_planner.frogpilot_following.following_lead and 1 <= v_ego < frogpilot_toggles.conditional_limit

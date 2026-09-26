@@ -5,13 +5,12 @@ on:
   pull_request_target:
     types: [edited, opened, reopened]
 
-permissions:
-  pull-requests: write
+permissions: {}
 
 env:
   BRANCH_PR_TARGET: ${{ vars.BRANCH_PR_TARGET }}
 
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 concurrency:
   cancel-in-progress: true
