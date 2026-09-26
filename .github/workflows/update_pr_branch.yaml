@@ -22,10 +22,6 @@ concurrency: update-pr-branch
 
 jobs:
   sync:
-    if: github.repository == 'FrogAi/FrogPilot'
-    concurrency:
-      group: frogpilot-branch-push
-      queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

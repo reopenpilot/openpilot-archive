@@ -25,7 +25,6 @@ concurrency: schedule-frogpilot-update
 
 jobs:
   schedule_update:
-    if: github.repository == 'FrogAi/FrogPilot'
     name: Schedule staging release handoff
     concurrency:
       group: frogpilot-branch-push

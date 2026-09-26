@@ -15,14 +15,12 @@ env:
   BRANCH_RELEASE: ${{ vars.BRANCH_RELEASE }}
   BRANCH_STAGING: ${{ vars.BRANCH_STAGING }}
 
-  BASE_COMMIT: FrogPilot 0.9.7
-  COMPILE_COMMIT: ${{ vars.COMPILE_COMMIT }}
+  BASE_COMMIT: ${{ vars.BASE_COMMIT }}
 
   TZ: UTC
 
 jobs:
   update_release:
-    if: github.repository == 'FrogAi/FrogPilot'
     name: Promote scheduled staging release
     concurrency:
       group: frogpilot-branch-push
@@ -95,22 +93,9 @@ jobs:
           git config user.name "$GIT_NAME"
           git config user.email "${GIT_EMAIL:?GIT_EMAIL is required}"
 
-          compile_commit="$(
-            git log --first-parent --format='%H %s' |
-              awk -v want="${COMPILE_COMMIT:?COMPILE_COMMIT is required}" '!found {
-                h = $1
-                sub(/^[^ ]+ +/, "")
-                if ($0 == want) { print h; found = 1 }
-              }'
-          )"
-          if [[ -z "$compile_commit" ]]; then
-            echo "No \"$COMPILE_COMMIT\" commit found; cannot recover release source."
-            exit 1
-          fi
-
-          squashed="$(git commit-tree "$(git rev-parse "$compile_commit^1^{tree}")" -p "$layer_base^" \
+          squashed="$(git commit-tree "$(git rev-parse 'HEAD~1^{tree}')" -p "$layer_base^" \
             -m "FrogPilot v$(cut -d'"' -f2 common/version.h) release")"
-          release="$(git commit-tree "$(git write-tree)" -p "$squashed" -m "$COMPILE_COMMIT")"
+          release="$(git commit-tree "$(git write-tree)" -p "$squashed" -m "$(git log -1 --format=%s HEAD)")"
 
           delay=$(( $(date -d "$release_timestamp" +%s) - $(date +%s) ))
           if (( delay > 0 )); then
