@@ -14,7 +14,7 @@ on:
         type: boolean
       source_branch:
         default: FrogPilot-Vetting
-        description: Source branch
+        description: Source branch (run Development from the private repo on AGNOS 12.8; Vetting from the public repo on AGNOS 10.1)
         options:
           - FrogPilot-Vetting
           - FrogPilot-Development
@@ -35,11 +35,6 @@ on:
       publish_custom_branch:
         description: Custom target branch
         type: string
-      runner:
-        default: c3
-        description: Select runner
-        options: [c3, c3x]
-        type: choice
 
 env:
   BUILD_DIR: /data/openpilot
@@ -64,12 +59,12 @@ concurrency: compile-frogpilot
 
 jobs:
   build_and_push:
-    if: github.repository == 'FrogAi/FrogPilot'
+    if: github.repository == 'FrogAi/FrogPilot' || github.repository == 'FrogAi/FrogPilot-Development'
     name: Compile FrogPilot
     concurrency:
       group: frogpilot-branch-push
       queue: max
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    runs-on: [self-hosted, "${{ github.repository == 'FrogAi/FrogPilot' && 'c3' || 'c3x' }}"]
     timeout-minutes: 180
     env:
       WORKFLOW_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -106,7 +101,7 @@ jobs:
           git checkout -B "$SOURCE_BRANCH" "refs/remotes/origin/$SOURCE_BRANCH"
           printf '%s\n' "$SOURCE_BRANCH" > "$RUNNER_TEMP/source_branch"
           git rev-parse HEAD > "$RUNNER_TEMP/source_sha"
-          git remote add public "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git remote add public "$GITHUB_SERVER_URL/FrogAi/FrogPilot.git"
 
           if [[ ! -f release/build_frogpilot.sh ]]; then
             echo "No release/build_frogpilot.sh — source branch already compiled or missing its build helper?"
