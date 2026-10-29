@@ -29,9 +29,9 @@ const ASSETS = {
 };
 
 const ACTIONS = {
-  apply: { label: "Apply to device", url: "/api/themes/apply" },
-  save: { label: "Save on device", url: "/api/themes" },
-  submit: { label: "Submit for community use", url: "/api/themes/submit" },
+  apply: { label: "Apply to device", progress: "applying", url: "/api/themes/apply" },
+  save: { label: "Save on device", progress: "saving", url: "/api/themes" },
+  submit: { label: "Submit for community use", progress: "submitting", url: "/api/themes/submit" },
 };
 
 // Files stay in this intentional draft, outside Arrow's recursive object proxies.
@@ -225,13 +225,13 @@ export function mount(container) {
         return;
       }
 
-      if (!sound && !/\.(png|jpe?g|gif)$/i.test(file.name)) {
-        showSnackbar("Choose a PNG, JPEG or GIF image.", "error");
+      if (!sound && !/\.(png|jpe?g|gif|svg)$/i.test(file.name)) {
+        showSnackbar("Choose a PNG, JPEG, GIF, or SVG image.", "error");
         return;
       }
 
       if (sequence && /\.gif$/i.test(file.name)) {
-        showSnackbar("Sequential frames support PNG and JPEG images. GIFs can be used as a single image.", "error");
+        showSnackbar("Sequential frames support PNG, JPEG, and SVG images. GIFs can be used as a single image.", "error");
         return;
       }
     }
@@ -254,10 +254,16 @@ export function mount(container) {
 
   function fileRow([field, label], sound = false) {
     const id = `theme-file-${field}`;
+
+    let accept = ".png,.jpg,.jpeg,.gif,.svg";
+    if (sound) {
+      accept = "audio/*";
+    }
+
     return html`<div class="${() => `theme-asset-row${sound ? " theme-sound-row" : ""}`}">
       <div class="file-upload-label">
         <span class="file-upload-text">${() => label}</span>
-        <input id="${() => id}" class="file-upload-input" type="file" accept="${() => sound ? "audio/*" : ".png,.jpg,.jpeg,.gif"}"
+        <input id="${() => id}" class="file-upload-input" type="file" accept="${() => accept}"
           @change="${event => selectFiles(event, field)}" />
         <button type="button" class="file-upload-button" @click="${() => container.querySelector(`#${id}`).click()}">Choose File</button>
         ${() => {
@@ -280,7 +286,9 @@ export function mount(container) {
 
         return html`<div class="theme-asset-preview">
           ${() => sound ? html`<audio controls preload="none" src="${() => preview(asset)}" aria-label="${() => `Preview ${label}`}"
-            @error="${() => showSnackbar("This browser cannot preview this sound. The device will validate it when used.", "error")}"></audio>`
+            @error="${() => {
+              showSnackbar("This browser can't preview this sound. It will be checked when you save, apply, or submit.", "error");
+            }}"></audio>`
           : html`<img src="${() => preview(asset)}" alt="${() => `${label} preview`}" />`}
           <span title="${() => asset.label ? `${asset.label} — ${asset.file.name}` : asset.file.name}">
             ${() => asset.label ? `${asset.label} — ${asset.file.name}` : asset.file.name}</span>
@@ -358,7 +366,12 @@ export function mount(container) {
             event.preventDefault();
             event.currentTarget.classList.remove("drop-before");
 
-            moveFrame(draggedFrame, index);
+            let target = index;
+            if (draft.frames.indexOf(draggedFrame) < index) {
+              target = index - 1;
+            }
+
+            moveFrame(draggedFrame, target);
             draggedFrame = null;
           }}">
           <img class="sequential-image-preview" src="${() => preview(frame)}" alt="${() => frame.file.name}" />
@@ -442,7 +455,7 @@ export function mount(container) {
     const content = html`<form class="theme-action-form" @submit="${event => {
       event.preventDefault();
 
-      act(action, async () => {
+      act(ACTIONS[action].progress, async () => {
         if (!selected.size) {
           throw new Error("Select at least one component.");
         }
@@ -547,6 +560,10 @@ export function mount(container) {
       return;
     }
 
+    if (category !== "colors" && !Object.values(incoming.assets).some(Boolean) && !incoming.frames?.length) {
+      throw new Error(`This theme has no ${COMPONENTS[category].label.toLowerCase()} to load.`);
+    }
+
     stopPlayback();
     Object.assign(draft.assets, incoming.assets);
     if (category === "colors") {
@@ -577,7 +594,7 @@ export function mount(container) {
 
     const deadline = Date.now() + 180000;
     while (!controller.signal.aborted) {
-      const progress = await readFile("/api/params_memory?key=ThemeDownloadProgress");
+      const progress = await readFile("/api/themes/download_progress");
       state.progress = progress;
       if (/Downloaded!/i.test(progress)) {
         await loadCatalog();
@@ -696,7 +713,7 @@ export function mount(container) {
         }
 
         return html`<div class="theme-sequence-controls">
-          <input id="theme-sequence-files" class="file-upload-input" type="file" multiple accept=".png,.jpg,.jpeg"
+          <input id="theme-sequence-files" class="file-upload-input" type="file" multiple accept=".png,.jpg,.jpeg,.svg"
           @change="${event => selectFiles(event, "turnSignal", true)}" />
           <button class="file-upload-button" type="button" @click="${() => container.querySelector("#theme-sequence-files").click()}">Add frames</button>
           <span>${() => {
@@ -739,11 +756,11 @@ export function mount(container) {
           <div class="upload-section">${ASSETS.distance_icons.map(field => fileRow(field))}</div>`)}
         ${card("icons", html`<p class="theme-guidance">Home: 250×250. Settings: 169×104.</p>
           <div class="upload-section">${ASSETS.icons.map(field => fileRow(field))}</div>`)}
-        ${card("sounds", html`<p class="theme-guidance">Preview supported sounds here. Files are converted for the device when used.</p>
+        ${card("sounds", html`<p class="theme-guidance">Preview supported sounds here. Files are converted to WAV when you save, apply, or submit.</p>
           <div class="upload-section">${ASSETS.sounds.map(field => fileRow(field, true))}</div>`)}
         ${card("steering_wheel", html`<p class="theme-guidance">Recommended image size: 250×250.</p>${fileRow(ASSETS.steering_wheel[0])}`)}
         ${card("turn_signals", signalEditor())}
-      </div><p class="theme-guidance">PNG, JPEG or GIF images; PNG/JPEG sequence frames. Up to 5 MiB per upload and 32 MiB per request.</p>
+      </div><p class="theme-guidance">PNG, JPEG, GIF, or SVG images; PNG, JPEG, or SVG sequence frames. Up to 5 MiB per upload and 32 MiB per request.</p>
       <p class="theme-progress" role="status">${() => state.busy ? `${state.busy[0].toUpperCase()}${state.busy.slice(1)}...` : ""}</p>
       <div class="save-button-wrapper">
         <button class="apply-button" type="button" disabled="${() => !!state.busy}" @click="${() => chooseAction("apply")}">Apply to device</button>

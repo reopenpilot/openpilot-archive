@@ -2,7 +2,7 @@ import os
 import capnp
 import numpy as np
 from cereal import log
-from openpilot.frogpilot.selfdrive.modeld.classic.constants import ModelConstants, Plan, Meta
+from openpilot.frogpilot.selfdrive.modeld.classic.constants import ModelConstants, Plan
 
 SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
 
@@ -43,7 +43,7 @@ def fill_xyvat(builder, t, x, y, v, a, x_std=None, y_std=None, v_std=None, a_std
 
 def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, np.ndarray], publish_state: PublishState,
                    vipc_frame_id: int, vipc_frame_id_extra: int, frame_id: int, frame_drop: float,
-                   timestamp_eof: int, timestamp_llk: int, model_execution_time: float, valid: bool, nav_enabled: bool) -> None:
+                   timestamp_eof: int, model_execution_time: float, valid: bool, nav_enabled: bool, meta_slices: type) -> None:
   frame_age = frame_id - vipc_frame_id if frame_id > vipc_frame_id else 0
   msg.valid = valid
 
@@ -92,19 +92,10 @@ def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, 
     PLAN_T_IDXS[xidx] = p * ModelConstants.T_IDXS[tidx+1] + (1 - p) * ModelConstants.T_IDXS[tidx]
 
   # lane lines
-  modelV2.init('laneLines', 6)
-  for i in range(6):
+  modelV2.init('laneLines', 4)
+  for i in range(4):
     lane_line = modelV2.laneLines[i]
-    if i < 4:
-      fill_xyzt(lane_line, PLAN_T_IDXS, np.array(ModelConstants.X_IDXS), net_output_data['lane_lines'][0,i,:,0], net_output_data['lane_lines'][0,i,:,1])
-    elif i == 4:
-      leftLane_x = 0.5 * (net_output_data['lane_lines'][0,0,:,0] + net_output_data['lane_lines'][0,1,:,0])
-      leftLane_y = 0.5 * (net_output_data['lane_lines'][0,0,:,1] + net_output_data['lane_lines'][0,1,:,1])
-      fill_xyzt(lane_line, PLAN_T_IDXS, np.array(ModelConstants.X_IDXS), leftLane_x, leftLane_y)
-    elif i == 5:
-      rightLane_x = 0.5 * (net_output_data['lane_lines'][0,2,:,0] + net_output_data['lane_lines'][0,3,:,0])
-      rightLane_y = 0.5 * (net_output_data['lane_lines'][0,2,:,1] + net_output_data['lane_lines'][0,3,:,1])
-      fill_xyzt(lane_line, PLAN_T_IDXS, np.array(ModelConstants.X_IDXS), rightLane_x, rightLane_y)
+    fill_xyzt(lane_line, PLAN_T_IDXS, np.array(ModelConstants.X_IDXS), net_output_data['lane_lines'][0,i,:,0], net_output_data['lane_lines'][0,i,:,1])
   modelV2.laneLineStds = net_output_data['lane_lines_stds'][0,:,0,0].tolist()
   modelV2.laneLineProbs = net_output_data['lane_lines_prob'][0,1::2].tolist()
 
@@ -127,21 +118,21 @@ def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, 
   meta = modelV2.meta
   meta.desireState = net_output_data['desire_state'][0].reshape(-1).tolist()
   meta.desirePrediction = net_output_data['desire_pred'][0].reshape(-1).tolist()
-  meta.engagedProb = net_output_data['meta'][0,Meta.ENGAGED].item()
+  meta.engagedProb = net_output_data['meta'][0,meta_slices.ENGAGED].item()
   meta.init('disengagePredictions')
   disengage_predictions = meta.disengagePredictions
   disengage_predictions.t = ModelConstants.META_T_IDXS
-  disengage_predictions.brakeDisengageProbs = net_output_data['meta'][0,Meta.BRAKE_DISENGAGE].tolist()
-  disengage_predictions.gasDisengageProbs = net_output_data['meta'][0,Meta.GAS_DISENGAGE].tolist()
-  disengage_predictions.steerOverrideProbs = net_output_data['meta'][0,Meta.STEER_OVERRIDE].tolist()
-  disengage_predictions.brake3MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_3].tolist()
-  disengage_predictions.brake4MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_4].tolist()
-  disengage_predictions.brake5MetersPerSecondSquaredProbs = net_output_data['meta'][0,Meta.HARD_BRAKE_5].tolist()
+  disengage_predictions.brakeDisengageProbs = net_output_data['meta'][0,meta_slices.BRAKE_DISENGAGE].tolist()
+  disengage_predictions.gasDisengageProbs = net_output_data['meta'][0,meta_slices.GAS_DISENGAGE].tolist()
+  disengage_predictions.steerOverrideProbs = net_output_data['meta'][0,meta_slices.STEER_OVERRIDE].tolist()
+  disengage_predictions.brake3MetersPerSecondSquaredProbs = net_output_data['meta'][0,meta_slices.HARD_BRAKE_3].tolist()
+  disengage_predictions.brake4MetersPerSecondSquaredProbs = net_output_data['meta'][0,meta_slices.HARD_BRAKE_4].tolist()
+  disengage_predictions.brake5MetersPerSecondSquaredProbs = net_output_data['meta'][0,meta_slices.HARD_BRAKE_5].tolist()
 
   publish_state.prev_brake_5ms2_probs[:-1] = publish_state.prev_brake_5ms2_probs[1:]
-  publish_state.prev_brake_5ms2_probs[-1] = net_output_data['meta'][0,Meta.HARD_BRAKE_5][0]
+  publish_state.prev_brake_5ms2_probs[-1] = net_output_data['meta'][0,meta_slices.HARD_BRAKE_5][0]
   publish_state.prev_brake_3ms2_probs[:-1] = publish_state.prev_brake_3ms2_probs[1:]
-  publish_state.prev_brake_3ms2_probs[-1] = net_output_data['meta'][0,Meta.HARD_BRAKE_3][0]
+  publish_state.prev_brake_3ms2_probs[-1] = net_output_data['meta'][0,meta_slices.HARD_BRAKE_3][0]
   hard_brake_predicted = (publish_state.prev_brake_5ms2_probs > ModelConstants.FCW_THRESHOLDS_5MS2).all() and \
     (publish_state.prev_brake_3ms2_probs > ModelConstants.FCW_THRESHOLDS_3MS2).all()
   meta.hardBrakePredicted = hard_brake_predicted.item()
@@ -156,9 +147,9 @@ def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, 
   # confidence
   if vipc_frame_id % (2*ModelConstants.MODEL_FREQ) == 0:
     # any disengage prob
-    brake_disengage_probs = net_output_data['meta'][0,Meta.BRAKE_DISENGAGE]
-    gas_disengage_probs = net_output_data['meta'][0,Meta.GAS_DISENGAGE]
-    steer_override_probs = net_output_data['meta'][0,Meta.STEER_OVERRIDE]
+    brake_disengage_probs = net_output_data['meta'][0,meta_slices.BRAKE_DISENGAGE]
+    gas_disengage_probs = net_output_data['meta'][0,meta_slices.GAS_DISENGAGE]
+    steer_override_probs = net_output_data['meta'][0,meta_slices.STEER_OVERRIDE]
     any_disengage_probs = 1-((1-brake_disengage_probs)*(1-gas_disengage_probs)*(1-steer_override_probs))
     # independent disengage prob for each 2s slice
     ind_disengage_probs = np.r_[any_disengage_probs[0], np.diff(any_disengage_probs) / (1 - any_disengage_probs[:-1])]

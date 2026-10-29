@@ -10,8 +10,6 @@ export function showSnackbar(message, level, timeout = 3500) {
   if (level === "error") {
     snackbar.style.backgroundColor = "#f44336";
     snackbar.setAttribute("role", "alert");
-  } else if (level === "success") {
-    snackbar.style.backgroundColor = "var(--success-bg)";
   }
 
   wrapper.append(snackbar);

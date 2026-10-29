@@ -10,7 +10,6 @@ from cereal import messaging
 from cereal.messaging import PubMaster, SubMaster
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from openpilot.common.swaglog import cloudlog
-from openpilot.common.params import Params
 from openpilot.common.realtime import set_realtime_priority
 from openpilot.frogpilot.selfdrive.modeld.classic.constants import ModelConstants
 from openpilot.frogpilot.selfdrive.modeld.classic.runners import ModelRunner, Runtime
@@ -20,8 +19,7 @@ NAV_FEATURE_LEN = 256
 NAV_DESIRE_LEN = 32
 NAV_OUTPUT_SIZE = 2*2*ModelConstants.IDX_N + NAV_DESIRE_LEN + NAV_FEATURE_LEN
 MODEL_PATHS = {
-  ModelRunner.SNPE: Path(__file__).parent / 'models/navmodel_q.dlc',
-  ModelRunner.ONNX: Path(__file__).parent / 'models/navmodel.onnx'}
+  ModelRunner.SNPE: Path(__file__).parent / 'models/navmodel_q.dlc'}
 
 class NavModelOutputXY(ctypes.Structure):
   _fields_ = [
@@ -80,6 +78,10 @@ def get_navmodel_packet(model_output: np.ndarray, valid: bool, frame_id: int, lo
 def main():
   gc.disable()
   set_realtime_priority(1)
+
+  sm = SubMaster(["driverStateV2"])
+  while not sm.seen["driverStateV2"]:
+    sm.update(100)
 
   model = ModelState()
   cloudlog.warning("models loaded, navmodeld starting")

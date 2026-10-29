@@ -4,7 +4,14 @@ import { fetchJson } from "/assets/js/api.js";
 export function mount(container) {
   const controller = new AbortController();
   const state = reactive({ data: null, error: "" });
-  const format = value => (value || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
+
+  function format(value) {
+    if (value === undefined) {
+      return "...";
+    }
+
+    return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
 
   fetchJson("/api/stats", { signal: controller.signal }).then(data => {
     state.data = data;
@@ -21,14 +28,24 @@ export function mount(container) {
         return html`<p class="error" role="alert">${() => state.error}</p>`;
       }
 
-      const diskUsage = state.data?.diskUsage || [{ used: "0 GB", size: "0 GB", usedPercentage: 0 }];
+      let diskUsage = [{ usedPercentage: 0 }];
+      if (state.data) {
+        diskUsage = state.data.diskUsage;
+      }
+
       const driveStats = state.data?.driveStats;
       const softwareInfo = state.data?.softwareInfo;
+
+      let commitHash = "...";
+      if (softwareInfo) {
+        commitHash = html`
+          <a href="${() => softwareInfo.commitUrl}" target="_blank" rel="noopener noreferrer">${() => softwareInfo.commitHash}</a>
+        `;
+      }
+
       const fields = [
         ["Branch Name", softwareInfo?.branchName || "..."], ["Build", softwareInfo?.buildEnvironment || "..."],
-        ["Commit Hash", softwareInfo ? html`
-          <a href="${() => softwareInfo.commitUrl}" target="_blank" rel="noopener noreferrer">${() => softwareInfo.commitHash}</a>
-        ` : "0".repeat(40)],
+        ["Commit Hash", commitHash],
         ["Fork Maintainer", softwareInfo?.forkMaintainer || "..."], ["Update Available", softwareInfo?.updateAvailable || "..."],
         ["Version Date", softwareInfo?.versionDate || "..."],
       ];
@@ -48,7 +65,13 @@ export function mount(container) {
         <section class="diskUsage" aria-busy="${() => !state.data}">
           ${diskUsage.map(disk => html`
             <div class="disk">
-              <p>${() => disk.used} used of ${() => disk.size}</p>
+              <p>${() => {
+                if (!state.data) {
+                  return "...";
+                }
+
+                return `${disk.used} used of ${disk.size}`;
+              }}</p>
               <div class="progress" role="meter" aria-label="Disk space used" aria-valuemin="0" aria-valuemax="100"
                 aria-valuenow="${() => parseFloat(disk.usedPercentage)}">
                 <div class="bar" style="${() => `width: ${100 - Math.min(100, Math.max(0, parseFloat(disk.usedPercentage)))}%`}"></div>

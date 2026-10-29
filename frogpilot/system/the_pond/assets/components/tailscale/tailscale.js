@@ -3,7 +3,7 @@ import { fetchJson } from "/assets/js/api.js";
 import { confirmDialog } from "/assets/components/modal.js";
 import { showSnackbar } from "/assets/js/snackbar.js";
 
-export function isValidTailscaleAuthUrl(value) {
+function isValidTailscaleAuthUrl(value) {
   if (typeof value !== "string") {
     return false;
   }
@@ -69,7 +69,7 @@ export function mount(container) {
       }
 
       showSnackbar(result.message, "success");
-      if (!uninstalling) {
+      if (!uninstalling && "auth_url" in result) {
         if (!isValidTailscaleAuthUrl(result.auth_url)) {
           throw new Error("Tailscale returned an invalid sign-in URL. Please try again.");
         }

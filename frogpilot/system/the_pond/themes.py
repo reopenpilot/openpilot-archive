@@ -1,47 +1,55 @@
+import hashlib
 import json
 import os
 import re
-import requests
 import shutil
 import subprocess
 import tempfile
+import uuid
 
 from contextlib import contextmanager
 from pathlib import Path
+from xml.etree import ElementTree
 
 from flask import Blueprint, abort, current_app, request, send_file
 from PIL import Image
 from werkzeug.utils import secure_filename
 
-from openpilot.frogpilot.selfdrive.ui.theme_manager import (
-  CANCEL_DOWNLOAD_PARAM, DOWNLOAD_PROGRESS_PARAM, HOLIDAY_THEME_PATH, POND_ACTIVE_THEME, STOCKOP_THEME_PATH, THEME_COMPONENT_PARAMS
-)
-from openpilot.frogpilot.common.frogpilot_api import ThemeAsset, ThemeSubmissionError
-from openpilot.frogpilot.common.frogpilot_variables import ACTIVE_THEME_PATH, THEME_SAVE_PATH, params, params_memory, update_frogpilot_toggles
+from openpilot.frogpilot.assets.theme_manager import ThemeManager
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_variables
+from openpilot.frogpilot.common.frogpilot_api import API_VERSION, FrogPilotAPIError
 from openpilot.frogpilot.system.the_pond.device import state
 from openpilot.frogpilot.system.the_pond.helpers import is_safe_slug, is_within, theme_asset_slug
+from openpilot.frogpilot.system.the_pond.media import processor
 
 blueprint = Blueprint("themes", __name__)
 
 COLOR_NAMES = ("LaneLines", "LeadMarker", "Path", "PathEdge", "Sidebar1", "Sidebar2", "Sidebar3")
 DISTANCE_ICONS = ("traffic", "aggressive", "standard", "relaxed")
-IMAGE_FORMATS = {".png": "PNG", ".gif": "GIF", ".jpg": "JPEG", ".jpeg": "JPEG"}
+IMAGE_FORMATS = {".png": "PNG", ".gif": "GIF", ".jpg": "JPEG", ".jpeg": "JPEG", ".svg": "SVG"}
 SOUND_NAMES = ("startup", "prompt", "engage", "disengage")
 
 COMPONENTS = {
-  "colors": ("colors", "CustomColors", "hasColors"),
-  "distance_icons": ("distance_icons", "CustomDistanceIcons", "hasDistanceIcons"),
-  "icons": ("icons", "CustomIcons", "hasIcons"),
-  "sounds": ("sounds", "CustomSounds", "hasSounds"),
+  "colors": ("colors", "ColorScheme", "hasColors"),
+  "distance_icons": ("distance_icons", "DistanceIconPack", "hasDistanceIcons"),
+  "icons": ("icons", "IconPack", "hasIcons"),
+  "sounds": ("sounds", "SoundPack", "hasSounds"),
   "steering_wheel": ("steering_wheels", "WheelIcon", "hasSteeringWheel"),
-  "turn_signals": ("signals", "CustomSignals", "hasTurnSignals"),
+  "turn_signals": ("signals", "SignalAnimation", "hasTurnSignals"),
 }
 
+MAX_SUBMISSION_BYTES = 32 * 1024 * 1024
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+SVG_DROPPED_ELEMENTS = ("desc", "metadata", "title")
+SVG_KEPT_NAMESPACES = (f"{{{SVG_NAMESPACE}}}", "{http://www.w3.org/1999/xlink}", "{http://www.w3.org/XML/1998/namespace}")
+
+ElementTree.register_namespace("", SVG_NAMESPACE)
+ElementTree.register_namespace("xlink", "http://www.w3.org/1999/xlink")
 
 
 @blueprint.errorhandler(ValueError)
-@blueprint.errorhandler(ThemeSubmissionError)
 def invalid_theme(error):
   return {"error": str(error)}, 400
 
@@ -63,14 +71,17 @@ def image_file(directory, stem):
 
 
 def check_asset_path(path):
-  if not any(is_within(root, path) for root in (ACTIVE_THEME_PATH, THEME_SAVE_PATH, HOLIDAY_THEME_PATH, STOCKOP_THEME_PATH)):
+  roots = (
+    frogpilot_paths.ACTIVE_THEME_PATH, frogpilot_paths.THEME_SAVE_PATH, frogpilot_paths.HOLIDAY_THEMES_PATH, frogpilot_paths.STOCK_THEME_PATH,
+  )
+  if not any(is_within(root, path) for root in roots):
     abort(403, description="Invalid theme asset path")
 
 
 def theme_directory(name, theme_type):
-  root = THEME_SAVE_PATH / "theme_packs"
+  root = frogpilot_paths.THEME_SAVE_PATH / "theme_packs"
   if theme_type == "holiday":
-    root = HOLIDAY_THEME_PATH
+    root = frogpilot_paths.HOLIDAY_THEMES_PATH
 
   directory = root / name
   if Path(name).name != name or directory.resolve().parent != root.resolve():
@@ -146,8 +157,8 @@ def read_theme(directory, wheel=None):
 
 @blueprint.get("/api/themes/default")
 def current_theme():
-  wheel = image_file(ACTIVE_THEME_PATH / "steering_wheel", "wheel")
-  data = read_theme(ACTIVE_THEME_PATH, wheel)
+  wheel = image_file(frogpilot_paths.ACTIVE_THEME_PATH / "steering_wheel", "wheel")
+  data = read_theme(frogpilot_paths.ACTIVE_THEME_PATH, wheel)
 
   for key, asset in data["images"].items():
     if key == "distanceIcons":
@@ -157,12 +168,12 @@ def current_theme():
   data["sounds"] = {name: item["filename"] for name, item in data["sounds"].items()}
 
   data["theme_names"] = {}
-  personalized = params.get_bool("PersonalizeOpenpilot")
+  personalized = frogpilot_variables.params.get_bool("CustomThemes")
   for component, (_, parameter, _) in COMPONENTS.items():
     key = {"distance_icons": "distanceIcons", "steering_wheel": "steeringWheel", "turn_signals": "turnSignals"}.get(component, component)
     data["theme_names"][key] = "Stock"
     if personalized:
-      data["theme_names"][key] = display_name(params.get(parameter, encoding="utf-8") or "Stock")
+      data["theme_names"][key] = display_name(frogpilot_variables.params.get(parameter, encoding="utf-8") or "Stock")
 
   return data
 
@@ -170,12 +181,12 @@ def current_theme():
 @blueprint.get("/api/themes/list")
 def list_themes():
   themes = []
-  for root, theme_type in [(THEME_SAVE_PATH / "theme_packs", "standard"), (HOLIDAY_THEME_PATH, "holiday")]:
+  for root, theme_type in [(frogpilot_paths.THEME_SAVE_PATH / "theme_packs", "standard"), (frogpilot_paths.HOLIDAY_THEMES_PATH, "holiday")]:
     if not root.is_dir():
       continue
 
     for directory in root.iterdir():
-      if not directory.is_dir() or directory.is_symlink() or directory.name == POND_ACTIVE_THEME:
+      if not directory.is_dir() or directory.is_symlink() or directory.name == frogpilot_variables.POND_ACTIVE_THEME:
         continue
 
       created = theme_type != "holiday" and directory.name.endswith("-user_created")
@@ -192,10 +203,10 @@ def list_themes():
           entry[flag] = (directory / folder).is_dir() and any((directory / folder).iterdir())
       themes.append(entry)
 
-  wheels = THEME_SAVE_PATH / "steering_wheels"
+  wheels = frogpilot_paths.THEME_SAVE_PATH / "steering_wheels"
   if wheels.is_dir():
     for wheel in wheels.iterdir():
-      if not wheel.is_file() or wheel.is_symlink() or wheel.suffix.lower() not in IMAGE_FORMATS or wheel.stem == POND_ACTIVE_THEME:
+      if not wheel.is_file() or wheel.is_symlink() or wheel.suffix.lower() not in IMAGE_FORMATS or wheel.stem == frogpilot_variables.POND_ACTIVE_THEME:
         continue
 
       themes.append({
@@ -210,7 +221,7 @@ def list_themes():
 def load_theme(theme):
   theme_type = request.args.get("type", "")
   directory = theme_directory(theme, theme_type)
-  wheel = image_file(THEME_SAVE_PATH / "steering_wheels", theme)
+  wheel = image_file(frogpilot_paths.THEME_SAVE_PATH / "steering_wheels", theme)
   if theme_type == "holiday":
     wheel = image_file(directory / "steering_wheel", "wheel")
   if not directory.is_dir() and wheel is None:
@@ -226,16 +237,17 @@ def theme_asset(theme, asset_path):
     abort(404)
 
   if theme == "__active__" or request.args.get("type") == "active":
-    root = ACTIVE_THEME_PATH
+    root = frogpilot_paths.ACTIVE_THEME_PATH
   elif relative.parts[0] == "steering_wheels":
-    root = THEME_SAVE_PATH
+    root = frogpilot_paths.THEME_SAVE_PATH
   else:
     root = theme_directory(theme, request.args.get("type", ""))
 
   path = root / relative
   if not is_within(root, path):
     # Active components are symlinks managed by ThemeManager into either of these roots.
-    if root != ACTIVE_THEME_PATH or not any(is_within(base, path) for base in (THEME_SAVE_PATH, HOLIDAY_THEME_PATH, STOCKOP_THEME_PATH)):
+    bases = (frogpilot_paths.THEME_SAVE_PATH, frogpilot_paths.HOLIDAY_THEMES_PATH, frogpilot_paths.STOCK_THEME_PATH)
+    if root != frogpilot_paths.ACTIVE_THEME_PATH or not any(is_within(base, path) for base in bases):
       abort(403)
   if not path.is_file():
     abort(404)
@@ -246,8 +258,8 @@ def theme_asset(theme, asset_path):
 def validate_theme(form, files, applying=False):
   name = secure_filename((form.get("themeName") or "").strip().replace(" ", "_"))
   if applying:
-    name = POND_ACTIVE_THEME.removesuffix("-user_created")
-  if not name or (not applying and f"{name}-user_created" == POND_ACTIVE_THEME):
+    name = frogpilot_variables.POND_ACTIVE_THEME.removesuffix("-user_created")
+  if not name or (not applying and f"{name}-user_created" == frogpilot_variables.POND_ACTIVE_THEME):
     raise ValueError("A valid theme name is required.")
 
   try:
@@ -310,10 +322,42 @@ def real_directory(path):
   path.mkdir(parents=True, exist_ok=True)
 
 
+def clean_svg(svg):
+  for element in list(svg.iter()):
+    for child in list(element):
+      if child.tag.rpartition("}")[2] in SVG_DROPPED_ELEMENTS or (child.tag.startswith("{") and not child.tag.startswith(SVG_KEPT_NAMESPACES)):
+        element.remove(child)
+
+    for name in list(element.attrib):
+      if name.startswith("{") and not name.startswith(SVG_KEPT_NAMESPACES):
+        del element.attrib[name]
+  return ElementTree.tostring(svg)
+
+
+def read_svg(upload):
+  try:
+    upload.stream.seek(0)
+    svg = ElementTree.fromstring(upload.stream.read())
+  except ElementTree.ParseError as error:
+    raise ValueError(f"File {upload.filename} is not a valid image.") from error
+  finally:
+    upload.stream.seek(0)
+
+  if svg.tag.rpartition("}")[2] != "svg":
+    raise ValueError(f"File {upload.filename} does not match its image extension.")
+  return svg
+
+
 def validate_image(upload, sequential=False):
   extension = Path(upload.filename).suffix.lower()
   if extension not in IMAGE_FORMATS or (sequential and extension == ".gif"):
-    raise ValueError("Choose a PNG or JPEG sequence frame." if sequential else "Choose a PNG, JPEG or GIF image.")
+    if sequential:
+      raise ValueError("Choose a PNG, JPEG, or SVG sequence frame.")
+    raise ValueError("Choose a PNG, JPEG, GIF, or SVG image.")
+
+  if extension == ".svg":
+    read_svg(upload)
+    return extension
 
   try:
     upload.stream.seek(0)
@@ -335,15 +379,19 @@ def save_image(upload, directory, stem, dimensions=None, sequential=False):
     remove_path(previous)
 
   path = directory / f"{stem}{extension}"
+  if extension == ".svg":
+    path.write_bytes(clean_svg(read_svg(upload)))
+    return path
+
   upload.save(path)
 
   if extension == ".gif":
     if dimensions:
       palette = directory / f"{stem}.palette.png"
       resized = directory / f"{stem}.resized.gif"
-      subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", "palettegen", "-y", str(palette)], check=True, timeout=600)
+      subprocess.run([*processor.nice, "ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", "palettegen", "-y", str(palette)], check=True, timeout=600)
       subprocess.run([
-        "ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-i", str(palette), "-lavfi",
+        *processor.nice, "ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-i", str(palette), "-lavfi",
         f"fps=20,scale={dimensions[0]}:{dimensions[1]}:flags=lanczos[x];[x][1:v]paletteuse", "-y", str(resized),
       ], check=True, timeout=600)
       palette.unlink()
@@ -369,7 +417,7 @@ def save_sound(upload, directory, name):
 
   try:
     result = subprocess.run([
-      "ffmpeg", "-nostdin", "-v", "error", "-protocol_whitelist", "file,pipe", "-i", str(source),
+      *processor.nice, "ffmpeg", "-nostdin", "-v", "error", "-protocol_whitelist", "file,pipe", "-i", str(source),
       "-map", "0:a:0", "-vn", "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le", "-y", str(directory / f"{name}.wav"),
     ], capture_output=True, timeout=600)
     if result.returncode:
@@ -395,9 +443,12 @@ def prepare_theme(stage, validated, files, merge):
       else:
         extension = validate_image(upload)
         wheel = directory / f"{name}-user_created{extension}"
-        upload.save(wheel)
+        if extension == ".svg":
+          wheel.write_bytes(clean_svg(read_svg(upload)))
+        else:
+          upload.save(wheel)
 
-      live = THEME_SAVE_PATH / "steering_wheels" / wheel.name
+      live = frogpilot_paths.THEME_SAVE_PATH / "steering_wheels" / wheel.name
       if merge:
         for previous in live.parent.glob(f"{name}-user_created.*"):
           if previous != live:
@@ -407,11 +458,11 @@ def prepare_theme(stage, validated, files, merge):
 
     relative = Path("theme_packs") / f"{name}-user_created" / folder
     directory = stage / "new" / relative
-    live = THEME_SAVE_PATH / relative
+    live = frogpilot_paths.THEME_SAVE_PATH / relative
 
     if merge:
       for parent in reversed(relative.parents):
-        real_directory(THEME_SAVE_PATH / parent)
+        real_directory(frogpilot_paths.THEME_SAVE_PATH / parent)
     if merge and os.path.lexists(live):
       if live.is_symlink() or not live.is_dir():
         raise ValueError("Existing theme components must be real directories.")
@@ -477,13 +528,13 @@ def publish_theme(stage, outputs):
 
   try:
     for staged, live in outputs:
-      for parent in reversed(live.relative_to(THEME_SAVE_PATH).parents):
-        real_directory(THEME_SAVE_PATH / parent)
+      for parent in reversed(live.relative_to(frogpilot_paths.THEME_SAVE_PATH).parents):
+        real_directory(frogpilot_paths.THEME_SAVE_PATH / parent)
       if live.is_symlink():
         raise ValueError("Existing theme assets cannot be symbolic links.")
 
       if live.exists():
-        backup = stage / "previous" / live.relative_to(THEME_SAVE_PATH)
+        backup = stage / "previous" / live.relative_to(frogpilot_paths.THEME_SAVE_PATH)
         backup.parent.mkdir(parents=True, exist_ok=True)
         live.rename(backup)
         previous.append((backup, live))
@@ -494,99 +545,47 @@ def publish_theme(stage, outputs):
 
     yield
   except Exception:
-    previous_paths = {live for _, live in previous}
-    (stage / "rollback.json").write_text(json.dumps([str(live.relative_to(THEME_SAVE_PATH)) for live in published if live not in previous_paths]))
-
     for live in reversed(published):
       remove_path(live)
     for backup, live in reversed(previous):
       backup.rename(live)
-
-    remove_path(stage / "previous")
-    (stage / "rollback.json").unlink()
     raise
-  else:
-    remove_path(stage / "previous")
-
-
-def recover_theme_updates():
-  for stage in THEME_SAVE_PATH.glob(".theme_*_in_progress"):
-    if stage.is_symlink() or not stage.is_dir():
-      raise ValueError("Invalid unfinished theme update.")
-
-    rolling_back = (stage / "rollback.json").is_file()
-    if rolling_back:
-      if (stage / "rollback.json").is_symlink():
-        raise ValueError("Invalid unfinished theme update.")
-
-      for relative in json.loads((stage / "rollback.json").read_text()):
-        target = THEME_SAVE_PATH / relative
-        if Path(relative).is_absolute() or ".." in Path(relative).parts or not is_within(THEME_SAVE_PATH, target):
-          raise ValueError("Invalid unfinished theme update path.")
-        remove_path(target)
-
-    # Existing releases used one pack backup; retain their interrupted-update recovery.
-    legacy_name = next((path.name for path in (stage / "theme_packs").glob("*")), None)
-    if legacy_name and (stage / "previous_theme").is_dir():
-      live = THEME_SAVE_PATH / "theme_packs" / legacy_name
-      if not os.path.lexists(live):
-        (stage / "previous_theme").rename(live)
-
-    backups = list((stage / "previous/theme_packs").glob("*/*"))
-    backups.extend((stage / "previous/steering_wheels").glob("*"))
-    for backup in backups:
-      live = THEME_SAVE_PATH / backup.relative_to(stage / "previous")
-      if rolling_back:
-        remove_path(live)
-      if not os.path.lexists(live):
-        live.parent.mkdir(parents=True, exist_ok=True)
-        backup.rename(live)
-
-    for backup in (stage / "previous_wheels").glob("*"):
-      live = THEME_SAVE_PATH / "steering_wheels" / backup.name
-      if not os.path.lexists(live):
-        live.parent.mkdir(parents=True, exist_ok=True)
-        backup.rename(live)
-
-    remove_path(stage)
 
 
 def save_theme(form, files, applying=False):
   validated = validate_theme(form, files, applying)
   with state.theme_lock:
-    real_directory(THEME_SAVE_PATH)
-    recover_theme_updates()
+    real_directory(frogpilot_paths.THEME_SAVE_PATH)
+    for stale_stage in frogpilot_paths.THEME_SAVE_PATH.glob(".theme_*_in_progress"):
+      remove_path(stale_stage)
 
-    stage = Path(tempfile.mkdtemp(prefix=".theme_", suffix="_in_progress", dir=THEME_SAVE_PATH))
+    stage = Path(tempfile.mkdtemp(prefix=".theme_", suffix="_in_progress", dir=frogpilot_paths.THEME_SAVE_PATH))
     try:
       outputs = prepare_theme(stage, validated, files, merge=True)
       with publish_theme(stage, outputs):
         if applying:
-          selections = {COMPONENTS[component][1]: params.get(COMPONENTS[component][1]) for component in validated[1]}
-          selections["PersonalizeOpenpilot"] = params.get("PersonalizeOpenpilot")
+          selections = {COMPONENTS[component][1]: frogpilot_variables.params.get(COMPONENTS[component][1]) for component in validated[1]}
+          selections["CustomThemes"] = frogpilot_variables.params.get("CustomThemes")
 
           try:
             for parameter in selections:
-              if parameter == "PersonalizeOpenpilot":
-                params.put_bool(parameter, True)
+              if parameter == "CustomThemes":
+                frogpilot_variables.params.put_bool(parameter, True)
               else:
-                params.put(parameter, POND_ACTIVE_THEME)
+                frogpilot_variables.params.put(parameter, frogpilot_variables.POND_ACTIVE_THEME)
 
-            params_memory.put_bool("UseActiveTheme", True)
-            update_frogpilot_toggles()
+            state.send_request("refreshTheme")
           except Exception:
             for parameter, value in selections.items():
               if value is None:
-                params.remove(parameter)
+                frogpilot_variables.params.remove(parameter)
               else:
-                params.put(parameter, value)
+                frogpilot_variables.params.put(parameter, value)
             raise
 
-      params.remove("ThemesDownloaded")
+      frogpilot_variables.params.remove("ThemesDownloaded")
     finally:
-      # Keep backups if rollback itself fails; do not erase the last good assets.
-      if not (stage / "previous").exists() and not (stage / "rollback.json").exists():
-        remove_path(stage)
+      remove_path(stage)
 
 
 @blueprint.post("/api/themes")
@@ -608,21 +607,21 @@ def delete_theme(theme):
     abort(403, description="Holiday themes cannot be deleted.")
 
   with state.theme_lock:
-    if params.get_bool("RandomThemes"):
+    if frogpilot_variables.params.get_bool("RandomThemes"):
       return {"error": "Disable Random Themes before deleting theme assets."}, 409
 
     if theme_type == "steering_wheel":
-      root = THEME_SAVE_PATH / "steering_wheels"
+      root = frogpilot_paths.THEME_SAVE_PATH / "steering_wheels"
       target = root / theme
-      if target.resolve().parent != root.resolve() or target.stem == POND_ACTIVE_THEME:
+      if target.resolve().parent != root.resolve() or target.stem == frogpilot_variables.POND_ACTIVE_THEME:
         abort(403)
 
-      selected = params.get("WheelIcon", encoding="utf-8") or ""
+      selected = frogpilot_variables.params.get("WheelIcon", encoding="utf-8") or ""
       if theme_asset_slug(selected) == theme_asset_slug(target.stem):
         return {"error": "Select a different steering wheel before deleting this one."}, 409
     else:
       target = theme_directory(theme, theme_type)
-      if target.name == POND_ACTIVE_THEME:
+      if target.name == frogpilot_variables.POND_ACTIVE_THEME:
         abort(403)
 
       component = request.args.get("component", "")
@@ -634,7 +633,7 @@ def delete_theme(theme):
       if component:
         selected_folders = {component: folders[component]}
       for parameter in selected_folders.values():
-        selected = params.get(parameter, encoding="utf-8") or ""
+        selected = frogpilot_variables.params.get(parameter, encoding="utf-8") or ""
         if theme_asset_slug(selected) == theme_asset_slug(theme):
           return {"error": "Select a different theme component before deleting this one."}, 409
       if component:
@@ -644,14 +643,14 @@ def delete_theme(theme):
       abort(404, description="Theme component not found.")
 
     if theme_type == "steering_wheel":
-      active = image_file(ACTIVE_THEME_PATH / "steering_wheel", "wheel")
+      active = image_file(frogpilot_paths.ACTIVE_THEME_PATH / "steering_wheel", "wheel")
       if active and active.resolve() == target.resolve():
         return {"error": "Select a different steering wheel before deleting the active one."}, 409
-    elif any(is_within(target, ACTIVE_THEME_PATH / folder) for folder, _, _ in COMPONENTS.values() if folder != "steering_wheels"):
+    elif any(is_within(target, frogpilot_paths.ACTIVE_THEME_PATH / folder) for folder, _, _ in COMPONENTS.values() if folder != "steering_wheels"):
       return {"error": "Select a different theme component before deleting the active one."}, 409
 
     remove_path(target)
-    params.remove("ThemesDownloaded")
+    frogpilot_variables.params.remove("ThemesDownloaded")
 
   return {"message": "Theme component deleted."}
 
@@ -667,20 +666,49 @@ def submit_theme():
     stage = Path(temporary)
     outputs = prepare_theme(stage, validated, request.files, merge=False)
 
-    assets = []
+    assets = {}
     for staged, _ in outputs:
       if staged.is_dir():
-        kind = staged.name
-        archive = shutil.make_archive(str(stage / kind), "zip", staged)
-        assets.append(ThemeAsset(kind, "application/zip", archive))
+        archive = shutil.make_archive(str(stage / staged.name), "zip", staged)
+        assets[staged.name] = ("application/zip", Path(archive).read_bytes())
       else:
-        content_type = {".png": "image/png", ".gif": "image/gif", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}[staged.suffix]
-        assets.append(ThemeAsset("steering_wheel", content_type, staged))
+        content_type = {".png": "image/png", ".gif": "image/gif", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".svg": "image/svg+xml"}[staged.suffix]
+        assets["steering_wheel"] = (content_type, staged.read_bytes())
 
-    with requests.Session() as session:
-      current_app.extensions["frogpilot_api"].submit_theme_assets(request.form["themeName"].strip(), username, assets, session)
+  if not assets:
+    raise ValueError("No valid theme assets")
+  if sum(len(data) for _, data in assets.values()) > MAX_SUBMISSION_BYTES:
+    raise ValueError("Theme submission exceeds the 32 MiB limit")
+
+  try:
+    submit_theme_assets(current_app.extensions["frogpilot_api"], request.form["themeName"].strip(), username, assets)
+  except FrogPilotAPIError:
+    return {"error": "Theme submission failed. Please try again later."}, 502
 
   return {"message": "Submission accepted for community review."}
+
+
+def submit_theme_assets(frogpilot_api, theme_name, discord_username, assets):
+  manifest = []
+  for kind, (content_type, data) in sorted(assets.items()):
+    manifest.append({"content_type": content_type, "kind": kind, "sha256": hashlib.sha256(data).hexdigest(), "size_bytes": len(data)})
+
+  submission = frogpilot_api.post_json("/v1/theme-submissions", {
+    "assets": manifest,
+    "client_submission_id": str(uuid.uuid4()),
+    "discord_username": discord_username,
+    "schema_version": API_VERSION,
+    "theme_name": theme_name,
+  })
+
+  completed_assets = []
+  for asset in submission["assets"]:
+    data = assets[asset["kind"]][1]
+    if "upload" in asset:
+      frogpilot_api.put_upload(asset["upload"], data, f"Theme {asset['kind']}")
+    completed_assets.append({"asset_id": asset["asset_id"], "sha256": hashlib.sha256(data).hexdigest(), "size_bytes": len(data)})
+
+  frogpilot_api.post_json(f"/v1/theme-submissions/{submission['submission_id']}/complete", {"assets": completed_assets, "schema_version": API_VERSION})
 
 
 @blueprint.post("/api/themes/download_asset")
@@ -691,17 +719,19 @@ def download_asset():
 
   component = data["component"].strip()
   component = {"steering_wheel": "steering_wheels", "turn_signals": "signals"}.get(component, component)
-  parameter = THEME_COMPONENT_PARAMS.get(component)
-  slug = theme_asset_slug(data["name"].strip())
-  if parameter is None or not is_safe_slug(slug):
+  slug = ThemeManager.unformat_name(data["name"].strip())
+  if component not in frogpilot_variables.DOWNLOADABLE_PARAMS or not is_safe_slug(slug):
     raise ValueError("Invalid theme component or name.")
 
   with state.theme_lock:
-    if any(params_memory.get(key) for key in THEME_COMPONENT_PARAMS.values()):
+    if state.theme_download_running():
       return {"error": "A theme download is already running."}, 409
 
-    params_memory.remove(CANCEL_DOWNLOAD_PARAM)
-    params_memory.put(DOWNLOAD_PROGRESS_PARAM, "Downloading...")
-    params_memory.put(parameter, slug)
+    state.download_theme(component, slug)
 
-  return {"message": "Download started", "component": component, "param": parameter, "slug": slug}
+  return {"message": "Download started"}
+
+
+@blueprint.get("/api/themes/download_progress")
+def download_progress():
+  return state.theme_download_progress()

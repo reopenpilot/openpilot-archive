@@ -9,7 +9,6 @@ USE_SNPE = int(os.getenv('USE_SNPE', str(int(TICI))))
 class ModelRunner(RunModel):
   THNEED = 'THNEED'
   SNPE = 'SNPE'
-  ONNX = 'ONNX'
 
   def __new__(cls, paths, *args, **kwargs):
     if ModelRunner.THNEED in paths and USE_THNEED:
@@ -18,9 +17,6 @@ class ModelRunner(RunModel):
     elif ModelRunner.SNPE in paths and USE_SNPE:
       from openpilot.frogpilot.selfdrive.modeld.classic.runners.snpemodel_pyx import SNPEModel as Runner
       runner_type = ModelRunner.SNPE
-    elif ModelRunner.ONNX in paths:
-      from openpilot.frogpilot.selfdrive.modeld.classic.runners.onnxmodel import ONNXModel as Runner
-      runner_type = ModelRunner.ONNX
     else:
       raise Exception("Couldn't select a model runner, make sure to pass at least one valid model path")
 

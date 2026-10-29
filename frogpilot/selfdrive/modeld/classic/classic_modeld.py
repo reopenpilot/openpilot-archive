@@ -21,18 +21,16 @@ from openpilot.selfdrive.controls.lib.desire_helper import DesireHelper
 from openpilot.frogpilot.selfdrive.modeld.classic.runners import ModelRunner, Runtime
 from openpilot.frogpilot.selfdrive.modeld.classic.parse_model_outputs import Parser
 from openpilot.frogpilot.selfdrive.modeld.classic.fill_model_msg import fill_model_msg, fill_pose_msg, PublishState
-from openpilot.frogpilot.selfdrive.modeld.classic.constants import ModelConstants
+from openpilot.frogpilot.selfdrive.modeld.classic.constants import ModelConstants, Meta, MetaStride8
 from openpilot.frogpilot.selfdrive.modeld.classic.models.commonmodel_pyx import ModelFrame, CLContext
 
-from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles
-from openpilot.frogpilot.selfdrive.modeld.model_helpers import METADATAS_PATH, MODELS_PATH
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
 
-PROCESS_NAME = "frogpilot.classic_modeld.classic_modeld"
+PROCESS_NAME = "frogpilot.selfdrive.modeld.classic.classic_modeld"
 SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
 
 MODEL_PATHS = {
-  ModelRunner.THNEED: Path(__file__).parent / 'models/supercombo.thneed',
-  ModelRunner.ONNX: Path(__file__).parent / 'models/supercombo.onnx'}
+  ModelRunner.THNEED: Path(__file__).parent / 'models/supercombo.thneed'}
 
 class FrameMeta:
   frame_id: int = 0
@@ -53,14 +51,14 @@ class ModelState:
 
   def __init__(self, context: CLContext, model: str, model_version: str):
     # FrogPilot variables
-    MODEL_PATHS[ModelRunner.THNEED] = MODELS_PATH / f'{model}.thneed'
+    MODEL_PATHS[ModelRunner.THNEED] = frogpilot_paths.MODELS_PATH / f'{model}.thneed'
 
-    with open(METADATAS_PATH / f'supercombo_metadata_{model_version}.pkl', 'rb') as f:
+    with open(frogpilot_paths.METADATAS_PATH / f'supercombo_metadata_{model_version}.pkl', 'rb') as f:
       model_metadata = pickle.load(f)
 
     input_shapes = model_metadata.get('input_shapes')
     self.navigation = 'nav_features' in input_shapes and 'nav_instructions' in input_shapes
-    self.radarless = 'radar_tracks' in input_shapes
+    self.radar_tracks = 'radar_tracks' in input_shapes
 
     self.frame = ModelFrame(context)
     self.wide_frame = ModelFrame(context)
@@ -73,10 +71,12 @@ class ModelState:
       **({'nav_features': np.zeros(ModelConstants.NAV_FEATURE_LEN, dtype=np.float32),
           'nav_instructions': np.zeros(ModelConstants.NAV_INSTRUCTION_LEN, dtype=np.float32)} if self.navigation else {}),
       'features_buffer': np.zeros(ModelConstants.HISTORY_BUFFER_LEN * ModelConstants.FEATURE_LEN, dtype=np.float32),
-      **({'radar_tracks': np.zeros(ModelConstants.RADAR_TRACKS_LEN * ModelConstants.RADAR_TRACKS_WIDTH, dtype=np.float32)} if self.radarless else {}),
+      **({'radar_tracks': np.zeros(ModelConstants.RADAR_TRACKS_LEN * ModelConstants.RADAR_TRACKS_WIDTH, dtype=np.float32)} if self.radar_tracks else {}),
     }
 
     self.output_slices = model_metadata['output_slices']
+    meta_slice = self.output_slices['meta']
+    self.meta_slices = MetaStride8 if meta_slice.stop - meta_slice.start == 53 else Meta
     net_output_size = model_metadata['output_shapes']['outputs'][1]
     self.output = np.zeros(net_output_size, dtype=np.float32)
     self.parser = Parser()
@@ -108,7 +108,7 @@ class ModelState:
       self.inputs['nav_features'][:] = inputs['nav_features']
       self.inputs['nav_instructions'][:] = inputs['nav_instructions']
 
-    if self.radarless:
+    if self.radar_tracks:
       self.inputs['radar_tracks'][:] = inputs['radar_tracks']
 
     # if getCLBuffer is not None, frame will be None
@@ -131,10 +131,10 @@ class ModelState:
 
 def main(demo=False):
   # FrogPilot variables
-  frogpilot_toggles = get_frogpilot_toggles()
+  frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles()
 
   model_name = frogpilot_toggles.model
-  model_version = frogpilot_toggles.model_version
+  model_version = frogpilot_utilities.get_model_version(model_name)
 
   cloudlog.warning("classic_modeld init")
 
@@ -174,7 +174,7 @@ def main(demo=False):
 
   # messaging
   pm = PubMaster(["modelV2", "cameraOdometry", "frogpilotModelV2"])
-  sm = SubMaster(["deviceState", "carState", "roadCameraState", "liveCalibration", "driverMonitoringState", "navModel", "navInstruction", "carControl", "liveTracks", "liveDelay", "frogpilotPlan"])
+  sm = SubMaster(["deviceState", "carState", "roadCameraState", "liveCalibration", "driverMonitoringState", "navModel", "navInstruction", "carControl", "controlsState", "liveTracks", "frogpilotPlan"])
 
   publish_state = PublishState()
   params = Params()
@@ -190,6 +190,7 @@ def main(demo=False):
   live_calib_seen = False
   nav_features = np.zeros(ModelConstants.NAV_FEATURE_LEN, dtype=np.float32)
   nav_instructions = np.zeros(ModelConstants.NAV_INSTRUCTION_LEN, dtype=np.float32)
+  radar_tracks = np.zeros(ModelConstants.RADAR_TRACKS_LEN * ModelConstants.RADAR_TRACKS_WIDTH, dtype=np.float32)
   buf_main, buf_extra = None, None
   meta_main = FrameMeta()
   meta_extra = FrameMeta()
@@ -241,7 +242,7 @@ def main(demo=False):
     desire = DH.desire
     is_rhd = sm["driverMonitoringState"].isRHD
     frame_id = sm["roadCameraState"].frameId
-    steer_delay = sm["liveDelay"].lateralDelay + .2
+    steer_delay = frogpilot_toggles.steerActuatorDelay + frogpilot_variables.LATERAL_DELAY_OFFSET
     lateral_control_params = np.array([sm["carState"].vEgo, steer_delay], dtype=np.float32)
     if sm.updated["liveCalibration"] and sm.seen['roadCameraState'] and sm.seen['deviceState']:
       device_from_calib_euler = np.array(sm["liveCalibration"].rpyCalib, dtype=np.float32)
@@ -258,9 +259,8 @@ def main(demo=False):
       vec_desire[desire] = 1
 
     # Enable/disable nav features
-    timestamp_llk = sm["navModel"].locationMonoTime
-    nav_valid = sm.valid["navModel"] # and (nanos_since_boot() - timestamp_llk < 1e9)
-    nav_enabled = nav_valid and model.navigation
+    nav_valid = sm.valid["navModel"]
+    nav_enabled = nav_valid and model.navigation and sm["controlsState"].experimentalMode
 
     if not nav_enabled:
       nav_features[:] = 0
@@ -281,8 +281,8 @@ def main(demo=False):
         if 0 <= distance_idx < 50:
           nav_instructions[distance_idx*3 + direction_idx] = 1
 
-    radar_tracks = np.zeros(ModelConstants.RADAR_TRACKS_LEN * ModelConstants.RADAR_TRACKS_WIDTH, dtype=np.float32)
     if sm.updated["liveTracks"]:
+      radar_tracks[:] = 0
       for i, track in enumerate(sm["liveTracks"]):
         if i >= ModelConstants.RADAR_TRACKS_LEN:
           break
@@ -307,7 +307,7 @@ def main(demo=False):
       'traffic_convention': traffic_convention,
       'lateral_control_params': lateral_control_params,
       **({'nav_features': nav_features, 'nav_instructions': nav_instructions} if model.navigation else {}),
-      **({'radar_tracks': radar_tracks} if model.radarless else {}),
+      **({'radar_tracks': radar_tracks} if model.radar_tracks else {}),
     }
 
     mt1 = time.perf_counter()
@@ -320,7 +320,7 @@ def main(demo=False):
       frogpilot_modelv2_send = messaging.new_message('frogpilotModelV2')
       posenet_send = messaging.new_message('cameraOdometry')
       fill_model_msg(modelv2_send, model_output, publish_state, meta_main.frame_id, meta_extra.frame_id, frame_id, frame_drop_ratio,
-                      meta_main.timestamp_eof, timestamp_llk, model_execution_time, live_calib_seen, nav_enabled)
+                      meta_main.timestamp_eof, model_execution_time, live_calib_seen, nav_enabled, model.meta_slices)
 
       desire_state = modelv2_send.modelV2.meta.desireState
       l_lane_change_prob = desire_state[log.Desire.laneChangeLeft]
@@ -340,8 +340,7 @@ def main(demo=False):
     last_vipc_frame_id = meta_main.frame_id
 
     # Update FrogPilot variables
-    if sm['frogpilotPlan'].togglesUpdated:
-      frogpilot_toggles = get_frogpilot_toggles()
+    frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles(sm)
 
 if __name__ == "__main__":
   try:

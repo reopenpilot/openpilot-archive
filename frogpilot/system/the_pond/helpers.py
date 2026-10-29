@@ -1,9 +1,19 @@
+import hashlib
+import hmac
 import ipaddress
+import json
 import re
+import secrets
 
+from datetime import datetime
 from flask import abort, request
 from pathlib import Path
 from urllib.parse import urlsplit
+
+from openpilot.frogpilot.common import frogpilot_variables
+
+PAIRING_COOKIE = "the_pond"
+PAIRING_COOKIE_AGE = 10 * 365 * 24 * 60 * 60
 
 
 def json_body(fields=None, max_size=None):
@@ -28,7 +38,7 @@ def is_safe_display_name(name):
 
 
 def is_safe_slug(value):
-  return isinstance(value, str) and re.fullmatch(r"[a-z0-9_'~.-]+", value) is not None and ".." not in value
+  return isinstance(value, str) and re.fullmatch(r"[a-z0-9_'.-]+(~[A-Za-z0-9_'.-]+)?", value) is not None and ".." not in value
 
 
 def theme_asset_slug(name):
@@ -92,3 +102,30 @@ def referer_allowed(referer, scheme, host, ports):
     return origin_allowed(f"{parsed.scheme}://{parsed.netloc}", scheme, host, ports)
   except ValueError:
     return False
+
+
+def is_paired():
+  if not frogpilot_variables.params.get_bool("ThePondPairing"):
+    return True
+
+  token = request.cookies.get(PAIRING_COOKIE)
+  authorization = request.headers.get("Authorization", "")
+  if authorization.startswith("Bearer "):
+    token = authorization.removeprefix("Bearer ")
+  if token is None:
+    return False
+
+  browsers = json.loads(frogpilot_variables.params.get("ThePondPairedBrowsers") or b"[]")
+  token_hash = hashlib.sha256(token.encode()).hexdigest()
+  return any(hmac.compare_digest(browser["hash"], token_hash) for browser in browsers)
+
+
+def pair_browser():
+  token = secrets.token_urlsafe(32)
+
+  browsers = json.loads(frogpilot_variables.params.get("ThePondPairedBrowsers") or b"[]")
+  browsers.append({"hash": hashlib.sha256(token.encode()).hexdigest(), "id": secrets.token_hex(4),
+                   "name": request.headers.get("User-Agent", "")[:200], "paired": int(datetime.now().timestamp())})
+  frogpilot_variables.params.put("ThePondPairedBrowsers", json.dumps(browsers))
+
+  return PAIRING_COOKIE, token, {"httponly": True, "max_age": PAIRING_COOKIE_AGE, "samesite": "Strict"}

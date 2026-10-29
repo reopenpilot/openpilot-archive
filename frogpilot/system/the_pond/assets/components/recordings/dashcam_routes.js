@@ -1,8 +1,8 @@
 import { html, reactive } from "/assets/vendor/arrow.mjs";
-import { fetchEvents, fetchJson } from "/assets/js/api.js";
+import { fetchJson } from "/assets/js/api.js";
 import { showSnackbar } from "/assets/js/snackbar.js";
 import { confirmDialog, openDialog } from "/assets/components/modal.js";
-import { formatMediaDate, mediaCard, stopPreviews } from "/assets/components/recordings/screen_recordings.js";
+import { MEDIA_NAME_PATTERN, formatMediaDate, loadPreviews, mediaCard, stopPreviews } from "/assets/components/recordings/screen_recordings.js";
 
 function routeTitle(route) {
   if (route.is_custom_name) {
@@ -14,7 +14,8 @@ function routeTitle(route) {
 
 export function mount(container) {
   const controller = new AbortController();
-  const state = reactive({ busy: false, error: "", loading: true, preservedOnly: false, routes: [], total: 0 });
+  const state = reactive({ busy: false, error: "", loading: true, preservedOnly: false, routes: [] });
+  const stopLoading = loadPreviews(container);
   let player = null;
   let bulkDialog = null;
 
@@ -26,18 +27,9 @@ export function mount(container) {
     state.loading = true;
     state.error = "";
     state.routes = [];
-    state.total = 0;
 
     try {
-      await fetchEvents("/api/routes", data => {
-        if (data.routes) {
-          state.routes.push(...data.routes);
-        }
-
-        if (data.total !== undefined) {
-          state.total = data.total;
-        }
-      }, { signal: controller.signal });
+      state.routes = await fetchJson("/api/routes", { signal: controller.signal });
     } catch (error) {
       if (!controller.signal.aborted) {
         state.error = error.message;
@@ -84,10 +76,10 @@ export function mount(container) {
       let url = "/api/routes/clear_name";
       let body = { name: route.name };
       if (!reset) {
-        const name = await confirmDialog("Rename route", "Choose a display name for this drive.", {
-          confirmText: "Save", inputValue: routeTitle(route),
+        const name = await confirmDialog("Rename route", "Choose a display name for this drive. Use letters, numbers, spaces, and hyphens.", {
+          confirmText: "Save", inputValue: routeTitle(route), pattern: MEDIA_NAME_PATTERN,
         });
-        if (typeof name !== "string" || !name.trim() || controller.signal.aborted) {
+        if (typeof name !== "string" || !name.trim() || name === routeTitle(route) || controller.signal.aborted) {
           return;
         }
 
@@ -153,11 +145,39 @@ export function mount(container) {
     }
 
     const selection = reactive({ includePreserved: false });
-    const count = () => state.routes.filter(route => selection.includePreserved || !route.is_preserved).length;
+    const count = () => {
+      let selected = 0;
+      for (const route of state.routes) {
+        if (route.recording) {
+          continue;
+        }
+
+        if (selection.includePreserved || !route.is_preserved) {
+          selected += 1;
+        }
+      }
+
+      return selected;
+    };
+
+    const description = () => {
+      let message = `Delete ${count()} unpreserved routes? Preserved routes will be kept. This cannot be undone.`;
+      if (selection.includePreserved) {
+        message = `Delete all ${count()} routes, including preserved routes? This cannot be undone.`;
+      }
+
+      for (const route of state.routes) {
+        if (route.recording) {
+          message += " The route being recorded is kept.";
+          break;
+        }
+      }
+
+      return message;
+    };
+
     const dialog = openDialog("Delete dashcam routes", html`
-      <p>${() => selection.includePreserved
-        ? `Delete all ${count()} routes, including preserved routes? This cannot be undone.`
-        : `Delete ${count()} unpreserved routes? Preserved routes will be kept. This cannot be undone.`}</p>
+      <p>${description}</p>
       <label class="include-preserved">
         <input type="checkbox" @change="${event => {
           selection.includePreserved = event.currentTarget.checked;
@@ -223,7 +243,7 @@ export function mount(container) {
           }
 
           if (playback.loading) {
-            return "Recorded segment 0 of 0";
+            return "...";
           }
 
           return `Recorded segment ${playback.index + 1} of ${segmentUrls().length}`;
@@ -327,7 +347,12 @@ export function mount(container) {
     });
     video.addEventListener("error", () => {
       videoContainer.setAttribute("aria-busy", "false");
-      playback.error = "This segment is unavailable. Try another segment or camera, or download the route.";
+      let message = "This segment is unavailable. Try another segment or camera, or download the route.";
+      if (route.recording) {
+        message = "This segment is unavailable. Try another segment or camera.";
+      }
+
+      playback.error = message;
     });
 
     dialog.addEventListener("close", () => {
@@ -406,20 +431,10 @@ export function mount(container) {
               @click="${() => setPreserved(route, route.preservation !== "route")}">
               <i class="${() => route.is_preserved ? "bi bi-heart-fill" : "bi bi-heart"}" aria-hidden="true"></i>
             </button>`))}
-          ${() => {
-            if (!state.loading) {
-              return "";
-            }
-
-            const count = Math.min(6, Math.max(0, state.total - state.routes.length));
-
-            return Array.from({ length: count }, () => html`<article class="recording-card" aria-hidden="true">
-              <span class="recording-preview-container" aria-busy="true"></span>
-              <span class="recording-filename">...</span>
-            </article>`);
-          }}
         </div>
-        <button type="button" class="delete-all-button" hidden="${() => !state.routes.length && !(state.loading && state.total)}"
+        <button type="button" class="delete-all-button" hidden="${() => {
+          return !state.routes.length;
+        }}"
           disabled="${() => state.loading || state.busy}" @click="${removeAll}">Delete Routes</button>
       </section>
     </div>
@@ -429,6 +444,7 @@ export function mount(container) {
 
   return () => {
     controller.abort();
+    stopLoading();
     player?.close();
     bulkDialog?.close();
     container.querySelectorAll("img").forEach(image => image.removeAttribute("src"));

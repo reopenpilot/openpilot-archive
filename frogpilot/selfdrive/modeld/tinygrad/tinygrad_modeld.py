@@ -2,10 +2,6 @@
 import os
 from openpilot.system.hardware import TICI
 os.environ['DEV'] = 'QCOM' if TICI else 'LLVM'
-USBGPU = "USBGPU" in os.environ
-if USBGPU:
-  os.environ['DEV'] = 'AMD'
-  os.environ['AMD_IFACE'] = 'USB'
 from tinygrad.tensor import Tensor
 from tinygrad.dtype import dtypes
 import time
@@ -13,7 +9,6 @@ import pickle
 import numpy as np
 import cereal.messaging as messaging
 from cereal import car, log
-from pathlib import Path
 from cereal.messaging import PubMaster, SubMaster
 from msgq.visionipc import VisionIpcClient, VisionStreamType, VisionBuf
 from openpilot.common.swaglog import cloudlog
@@ -24,49 +19,71 @@ from openpilot.common.transformations.camera import DEVICE_CAMERAS
 from openpilot.common.transformations.model import get_warp_matrix
 from openpilot.selfdrive.car.car_helpers import get_demo_car_params
 from openpilot.selfdrive.controls.lib.desire_helper import DesireHelper
-from openpilot.selfdrive.controls.lib.drive_helpers import get_accel_from_plan, smooth_value, get_curvature_from_plan
+from openpilot.selfdrive.controls.lib.drive_helpers import curv_from_psis, get_accel_from_plan, smooth_value
 from openpilot.frogpilot.selfdrive.modeld.tinygrad.parse_model_outputs import Parser
 from openpilot.frogpilot.selfdrive.modeld.tinygrad.fill_model_msg import fill_model_msg, fill_pose_msg, PublishState
-from openpilot.frogpilot.selfdrive.modeld.tinygrad.constants import LAT_SMOOTH_SECONDS, ModelConstants, Plan
+from openpilot.frogpilot.selfdrive.modeld.tinygrad.constants import ModelConstants, Plan
 from openpilot.frogpilot.selfdrive.modeld.tinygrad.models.commonmodel_pyx import DrivingModelFrame, CLContext
 from openpilot.frogpilot.selfdrive.modeld.tinygrad.runners.tinygrad_helpers import qcom_tensor_from_opencl_address
 
-from openpilot.frogpilot.selfdrive.modeld.model_helpers import MODELS_PATH
-from openpilot.frogpilot.common.frogpilot_variables import get_frogpilot_toggles
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
 
 
-PROCESS_NAME = "frogpilot.tinygrad_modeld.tinygrad_modeld"
+PROCESS_NAME = "frogpilot.selfdrive.modeld.tinygrad.tinygrad_modeld"
 SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
-
-VISION_PKL_PATH = Path(__file__).parent / 'models/driving_vision_tinygrad.pkl'
-POLICY_PKL_PATH = Path(__file__).parent / 'models/driving_policy_tinygrad.pkl'
-VISION_METADATA_PATH = Path(__file__).parent / 'models/driving_vision_metadata.pkl'
-POLICY_METADATA_PATH = Path(__file__).parent / 'models/driving_policy_metadata.pkl'
 
 LONG_SMOOTH_SECONDS = 0.3
 MIN_LAT_CONTROL_SPEED = 0.3
+MIN_STABLE_DELAY = 0.3
+V_EGO_STOPPING = 0.3
 
+
+def get_current_speed_accel_from_plan(speeds, accels, action_t, min_stable_delay):
+  v_now = speeds[0]
+  if action_t < min_stable_delay:
+    v_target = v_now + (action_t / min_stable_delay) * (np.interp(min_stable_delay, ModelConstants.T_IDXS, speeds) - v_now)
+  else:
+    v_target = np.interp(action_t, ModelConstants.T_IDXS, speeds)
+
+  a_target = 2 * (v_target - v_now) / action_t - accels[0]
+  should_stop = v_now < V_EGO_STOPPING and a_target < 0.1
+  return a_target, should_stop
+
+def get_stable_curvature_from_plan(yaws, yaw_rates, v_ego, action_t, min_stable_delay):
+  if action_t < min_stable_delay:
+    psi_target = (action_t / min_stable_delay) * np.interp(min_stable_delay, ModelConstants.T_IDXS, yaws)
+  else:
+    psi_target = np.interp(action_t, ModelConstants.T_IDXS, yaws)
+
+  return curv_from_psis(psi_target, yaw_rates[0], v_ego, action_t)
 
 def get_action_from_model(model_output: dict[str, np.ndarray], prev_action: log.ModelDataV2.Action,
-                          lat_action_t: float, long_action_t: float, v_ego: float, use_curvature_from_plan: bool) -> log.ModelDataV2.Action:
+                          lat_action_t: float, long_action_t: float, v_ego: float, use_curvature_from_plan: bool,
+                          lat_smooth_seconds: float, current_speed_stop: bool, min_stable_delay: float) -> log.ModelDataV2.Action:
     plan = model_output['plan'][0]
-    desired_accel, should_stop = get_accel_from_plan(plan[:,Plan.VELOCITY][:,0],
-                                                     plan[:,Plan.ACCELERATION][:,0],
-                                                     ModelConstants.T_IDXS,
-                                                     action_t=long_action_t)
+    if current_speed_stop:
+      desired_accel, should_stop = get_current_speed_accel_from_plan(plan[:,Plan.VELOCITY][:,0],
+                                                                     plan[:,Plan.ACCELERATION][:,0],
+                                                                     long_action_t,
+                                                                     min_stable_delay)
+    else:
+      desired_accel, should_stop = get_accel_from_plan(plan[:,Plan.VELOCITY][:,0],
+                                                       plan[:,Plan.ACCELERATION][:,0],
+                                                       ModelConstants.T_IDXS,
+                                                       action_t=long_action_t)
     desired_accel = smooth_value(desired_accel, prev_action.desiredAcceleration, LONG_SMOOTH_SECONDS)
 
     if use_curvature_from_plan:
-      desired_curvature = get_curvature_from_plan(plan[:,Plan.T_FROM_CURRENT_EULER][:,2],
-                                                  plan[:,Plan.ORIENTATION_RATE][:,2],
-                                                  ModelConstants.T_IDXS,
-                                                  v_ego,
-                                                  lat_action_t)
+      desired_curvature = get_stable_curvature_from_plan(plan[:,Plan.T_FROM_CURRENT_EULER][:,2],
+                                                         plan[:,Plan.ORIENTATION_RATE][:,2],
+                                                         v_ego,
+                                                         lat_action_t,
+                                                         min_stable_delay)
     else:
       desired_curvature = model_output['desired_curvature'][0, 0]
 
     if v_ego > MIN_LAT_CONTROL_SPEED:
-      desired_curvature = smooth_value(desired_curvature, prev_action.desiredCurvature, LAT_SMOOTH_SECONDS)
+      desired_curvature = smooth_value(desired_curvature, prev_action.desiredCurvature, lat_smooth_seconds)
     else:
       desired_curvature = prev_action.desiredCurvature
 
@@ -133,7 +150,7 @@ class InputQueues:
         if 'img' in k:
           n_channels = shape[1] // (self.env_fps // self.model_fps + (self.n_frames_input - 1))
           out[k] = np.concatenate([self.q[k][:, s:s+n_channels] for s in np.linspace(0, shape[1] - n_channels, self.n_frames_input, dtype=int)], axis=1)
-        elif 'pulse' in k:
+        elif 'desire' in k:
           # any pulse within interval counts
           out[k] = self.q[k].reshape((shape[0], shape[1] * self.model_fps // self.env_fps, self.env_fps // self.model_fps, -1)).max(axis=2)
         else:
@@ -148,14 +165,14 @@ class ModelState:
   prev_desire: np.ndarray  # for tracking the rising edge of the pulse
 
   def __init__(self, context: CLContext, model: str):
-    with open(MODELS_PATH / f'{model}_driving_vision_metadata.pkl', 'rb') as f:
+    with open(frogpilot_paths.MODELS_PATH / f'{model}_driving_vision_metadata.pkl', 'rb') as f:
       vision_metadata = pickle.load(f)
       self.vision_input_shapes =  vision_metadata['input_shapes']
       self.vision_input_names = list(self.vision_input_shapes.keys())
       self.vision_output_slices = vision_metadata['output_slices']
       vision_output_size = vision_metadata['output_shapes']['outputs'][1]
 
-    with open(MODELS_PATH / f'{model}_driving_policy_metadata.pkl', 'rb') as f:
+    with open(frogpilot_paths.MODELS_PATH / f'{model}_driving_policy_metadata.pkl', 'rb') as f:
       policy_metadata = pickle.load(f)
       self.policy_input_shapes =  policy_metadata['input_shapes']
       self.policy_output_slices = policy_metadata['output_slices']
@@ -163,12 +180,13 @@ class ModelState:
 
     self.desire_type = 'desire_pulse' if 'desire_pulse' in self.policy_input_shapes else 'desire'
     self.use_lateral_control_params = 'lateral_control_params' in self.policy_input_shapes
+    self.use_prev_desired_curv = frogpilot_utilities.use_desired_curvature_action(model)
 
     self.frames = {name: DrivingModelFrame(context, ModelConstants.MODEL_RUN_FREQ//ModelConstants.MODEL_CONTEXT_FREQ) for name in self.vision_input_names}
     self.prev_desire = np.zeros(ModelConstants.DESIRE_LEN, dtype=np.float32)
 
     self.full_prev_desired_curv = np.zeros((1, ModelConstants.FULL_HISTORY_BUFFER_LEN, ModelConstants.PREV_DESIRED_CURV_LEN), dtype=np.float32)
-    self.temporal_idxs = slice(-1-(ModelConstants.TEMPORAL_SKIP*(ModelConstants.FULL_HISTORY_BUFFER_LEN-1)), None, ModelConstants.TEMPORAL_SKIP)
+    self.temporal_idxs = slice(-1-(ModelConstants.TEMPORAL_SKIP*(ModelConstants.INPUT_HISTORY_BUFFER_LEN-1)), None, ModelConstants.TEMPORAL_SKIP)
 
     # policy inputs
     self.numpy_inputs = {k: np.zeros(self.policy_input_shapes[k], dtype=np.float32) for k in self.policy_input_shapes}
@@ -184,10 +202,10 @@ class ModelState:
     self.policy_output = np.zeros(policy_output_size, dtype=np.float32)
     self.parser = Parser(ignore_missing=True)
 
-    with open(MODELS_PATH / f'{model}_driving_vision_tinygrad.pkl', "rb") as f:
+    with open(frogpilot_paths.MODELS_PATH / f'{model}_driving_vision_tinygrad.pkl', "rb") as f:
       self.vision_run = pickle.load(f)
 
-    with open(MODELS_PATH / f'{model}_driving_policy_tinygrad.pkl', "rb") as f:
+    with open(frogpilot_paths.MODELS_PATH / f'{model}_driving_policy_tinygrad.pkl', "rb") as f:
       self.policy_run = pickle.load(f)
 
   def slice_outputs(self, model_outputs: np.ndarray, output_slices: dict[str, slice]) -> dict[str, np.ndarray]:
@@ -200,12 +218,14 @@ class ModelState:
     inputs[self.desire_type][0] = 0
     new_desire = np.where(inputs[self.desire_type] - self.prev_desire > .99, inputs[self.desire_type], 0)
     self.prev_desire[:] = inputs[self.desire_type]
+    if self.desire_type == 'desire':
+      self.full_input_queues.enqueue({self.desire_type: new_desire})
 
     if self.use_lateral_control_params:
       self.numpy_inputs['lateral_control_params'][:] = inputs['lateral_control_params']
     imgs_cl = {name: self.frames[name].prepare(bufs[name], transforms[name].flatten()) for name in self.vision_input_names}
 
-    if TICI and not USBGPU:
+    if TICI:
       # The imgs tensors are backed by opencl memory, only need init once
       for key in imgs_cl:
         if key not in self.vision_inputs:
@@ -221,7 +241,9 @@ class ModelState:
     self.vision_output = self.vision_run(**self.vision_inputs).contiguous().realize().uop.base.buffer.numpy()
     vision_outputs_dict = self.parser.parse_vision_outputs(self.slice_outputs(self.vision_output, self.vision_output_slices))
 
-    self.full_input_queues.enqueue({'features_buffer': vision_outputs_dict['hidden_state'], self.desire_type: new_desire})
+    self.full_input_queues.enqueue({'features_buffer': vision_outputs_dict['hidden_state']})
+    if self.desire_type == 'desire_pulse':
+      self.full_input_queues.enqueue({self.desire_type: new_desire})
     for k in [self.desire_type, 'features_buffer']:
       self.numpy_inputs[k][:] = self.full_input_queues.get(k)[k]
     self.numpy_inputs['traffic_convention'][:] = inputs['traffic_convention']
@@ -233,7 +255,10 @@ class ModelState:
       # TODO model only uses last value now
       self.full_prev_desired_curv[0,:-1] = self.full_prev_desired_curv[0,1:]
       self.full_prev_desired_curv[0,-1,:] = policy_outputs_dict['desired_curvature'][0, :]
-      self.numpy_inputs['prev_desired_curv'][:] = 0*self.full_prev_desired_curv[0, self.temporal_idxs]
+      if self.use_prev_desired_curv:
+        self.numpy_inputs['prev_desired_curv'][:] = self.full_prev_desired_curv[0, self.temporal_idxs]
+      else:
+        self.numpy_inputs['prev_desired_curv'][:] = 0*self.full_prev_desired_curv[0, self.temporal_idxs]
 
     combined_outputs_dict = {**vision_outputs_dict, **policy_outputs_dict}
     if SEND_RAW_PRED:
@@ -244,18 +269,24 @@ class ModelState:
 
 def main(demo=False):
   # FrogPilot variables
-  frogpilot_toggles = get_frogpilot_toggles()
+  frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles()
 
   model_name = frogpilot_toggles.model
-  model_version = frogpilot_toggles.model_version
-  use_curvature_from_plan = frogpilot_toggles.model_version != "v7"
+  lat_smooth_seconds = frogpilot_utilities.get_model_lat_smooth_seconds(model_name)
+  use_curvature_from_plan = not frogpilot_utilities.use_desired_curvature_action(model_name)
+  current_speed_stop = frogpilot_utilities.use_current_speed_stop(model_name)
+
+  action_delay = 0
+  if frogpilot_utilities.use_action_delay(model_name):
+    action_delay = DT_MDL / 2
+
+  min_stable_delay = 0
+  if frogpilot_utilities.use_min_stable_delay(model_name):
+    min_stable_delay = MIN_STABLE_DELAY
 
   cloudlog.warning("tinygrad_modeld init")
 
-  if not USBGPU:
-    # USB GPU currently saturates a core so can't do this yet,
-    # also need to move the aux USB interrupts for good timings
-    config_realtime_process(7, 54)
+  config_realtime_process(7, 54)
 
   st = time.monotonic()
   cloudlog.warning("setting up CL context")
@@ -315,9 +346,6 @@ def main(demo=False):
       CP = msg
   cloudlog.info("tinygrad_modeld got CarParams: %s", CP.carName)
 
-  # TODO this needs more thought, use .2s extra for now to estimate other delays
-  # TODO Move smooth seconds to action function
-  long_delay = CP.longitudinalActuatorDelay + LONG_SMOOTH_SECONDS
   prev_action = log.ModelDataV2.Action()
 
   DH = DesireHelper()
@@ -360,8 +388,11 @@ def main(demo=False):
     is_rhd = sm["driverMonitoringState"].isRHD
     frame_id = sm["roadCameraState"].frameId
     v_ego = max(sm["carState"].vEgo, 0.)
-    lat_delay = sm["liveDelay"].lateralDelay + LAT_SMOOTH_SECONDS
+    lat_delay = sm["liveDelay"].lateralDelay + lat_smooth_seconds
     lateral_control_params = np.array([v_ego, lat_delay], dtype=np.float32)
+    # TODO this needs more thought, use .2s extra for now to estimate other delays
+    # TODO Move smooth seconds to action function
+    long_delay = frogpilot_toggles.longitudinalActuatorDelay + LONG_SMOOTH_SECONDS
     if sm.updated["liveCalibration"] and sm.seen['roadCameraState'] and sm.seen['deviceState']:
       device_from_calib_euler = np.array(sm["liveCalibration"].rpyCalib, dtype=np.float32)
       dc = DEVICE_CAMERAS[(str(sm['deviceState'].deviceType), str(sm['roadCameraState'].sensor))]
@@ -408,7 +439,8 @@ def main(demo=False):
       drivingdata_send = messaging.new_message('drivingModelData')
       posenet_send = messaging.new_message('cameraOdometry')
 
-      action = get_action_from_model(model_output, prev_action, lat_delay + DT_MDL, long_delay + DT_MDL, v_ego, use_curvature_from_plan)
+      action = get_action_from_model(model_output, prev_action, lat_delay + DT_MDL + action_delay, long_delay + DT_MDL + action_delay, v_ego,
+                                     use_curvature_from_plan, lat_smooth_seconds, current_speed_stop, min_stable_delay)
       prev_action = action
       fill_model_msg(drivingdata_send, modelv2_send, model_output, action,
                      publish_state, meta_main.frame_id, meta_extra.frame_id, frame_id,
@@ -434,8 +466,7 @@ def main(demo=False):
     last_vipc_frame_id = meta_main.frame_id
 
     # Update FrogPilot variables
-    if sm['frogpilotPlan'].togglesUpdated:
-      frogpilot_toggles = get_frogpilot_toggles()
+    frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles(sm)
 
 if __name__ == "__main__":
   try:

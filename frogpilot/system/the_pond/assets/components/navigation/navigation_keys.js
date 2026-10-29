@@ -4,8 +4,6 @@ import { confirmDialog } from "/assets/components/modal.js";
 import { showSnackbar } from "/assets/js/snackbar.js";
 
 const KEYS = {
-  amap1: { label: "AMap Key 1", prefix: "", length: 39, status: "amap1KeySet" },
-  amap2: { label: "AMap Key 2", prefix: "", length: 39, status: "amap2KeySet" },
   public: { label: "Public Mapbox Key", prefix: "pk.", length: 80, status: "mapboxPublic" },
   secret: { label: "Secret Mapbox Key", prefix: "sk.", length: 80, status: "mapboxSecretSet" },
 };
@@ -82,7 +80,7 @@ export function mount(container) {
 
       state.keys[kind].value = "";
       state.keys[kind].saved = !deleting;
-      if (deleting && (kind === "public" || kind === "secret")) {
+      if (deleting) {
         state.initialComplete = false;
       }
 
@@ -112,7 +110,13 @@ export function mount(container) {
           <span class="navkeys-saved" role="status">${() => state.loading || state.error ? "..." : state.keys[kind].saved ? "Saved" : "Not saved"}</span></label>
         <div class="navkeys-row">
           <input class="navkeys-input" id="${() => `${kind}-key`}" type="password" autocomplete="new-password"
-          spellcheck="false" placeholder="${() => state.keys[kind].saved ? "•••••••• — enter a replacement" : `${KEYS[kind].prefix}Enter key`}"
+          spellcheck="false" placeholder="${() => {
+            if (state.keys[kind].saved) {
+              return "•••••••• — enter a replacement";
+            }
+
+            return `${KEYS[kind].prefix}…`;
+          }}"
           value="${() => state.keys[kind].value}" disabled="${() => state.loading || state.busy || Boolean(state.error)}"
           @input="${event => {
             state.keys[kind].value = event.target.value;
@@ -145,7 +149,7 @@ export function mount(container) {
   html`<div class="navkeys-page"><div class="navkeys-progress" role="status">${() => state.busy ? "Updating key..." : ""}</div>
     ${() => state.error ? html`<p class="navkeys-error" role="alert">${() => state.error}
       <button class="navkeys-btn" type="button" @click="${load}">Retry</button></p>` : ""}
-    <div class="navkeys-wrapper navkeys-offset-top">${group("AMap Keys", ["amap1", "amap2"])}${group("Mapbox Keys", ["public", "secret"])}</div>
+    <div class="navkeys-wrapper navkeys-offset-top">${group("Mapbox Keys", ["public", "secret"])}</div>
   </div>`(container);
 
   load();

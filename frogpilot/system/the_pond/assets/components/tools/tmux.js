@@ -127,17 +127,20 @@ export function mount(container) {
       state.busy = true;
 
       try {
+        let message = "Captured log deleted!";
         if (action === "rename") {
+          message = "Captured log renamed!";
+
           let name = await confirmDialog("Rename captured log", "Choose a filename for this log.", {
-            confirmText: "Rename", inputValue: file.filename.replace(/\.json$/, ""),
+            confirmText: "Rename", inputValue: file.filename.replace(/\.(json|log)$/, ""),
           });
           if (typeof name !== "string" || !name.trim() || controller.signal.aborted) {
             return;
           }
 
           name = name.trim();
-          if (!name.endsWith(".json")) {
-            name += ".json";
+          if (!name.endsWith(".log")) {
+            name += ".log";
           }
 
           if (name === file.filename) {
@@ -157,7 +160,7 @@ export function mount(container) {
         }
 
         if (!controller.signal.aborted) {
-          showSnackbar("Captured log updated!");
+          showSnackbar(message);
         }
       } catch (error) {
         if (!controller.signal.aborted) {

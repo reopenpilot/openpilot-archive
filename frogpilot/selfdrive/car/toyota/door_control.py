@@ -5,7 +5,7 @@ from opendbc.can.parser import CANParser
 from openpilot.common.realtime import DT_DMON, DT_HW
 from openpilot.selfdrive.car.toyota.carcontroller import LOCK_CMD
 
-from openpilot.frogpilot.common.frogpilot_variables import params
+from openpilot.frogpilot.common import frogpilot_variables
 
 def create_door_command(command):
   message = messaging.new_message("sendcan", 1)
@@ -14,18 +14,25 @@ def create_door_command(command):
   message.sendcan[0].src = 0
   return message
 
-def get_lock_status(can_parser, can_sock):
-  can_msgs = messaging.drain_sock_raw(can_sock, wait_for_one=True)
-  can_parser.update_strings(can_msgs)
-  return can_parser.vl["DOOR_LOCKS"]["LOCK_STATUS"]
+def update_can_parser(can_parser, can_sock):
+  can_parser.update_strings(messaging.drain_sock_raw(can_sock, wait_for_one=True))
 
-def lock_doors(lock_doors_timer, sm):
-  wait_for_no_driver(sm, door_checks=True, time_threshold=lock_doors_timer)
+def lock_doors(lock_doors_timer):
+  sm = messaging.SubMaster(["deviceState", "driverMonitoringState", "managerState", "pandaStates"])
+  while not (sm.seen["deviceState"] and sm.seen["managerState"]):
+    sm.update()
+
+  wait_for_no_driver(sm, lock_doors_timer)
+
+  sm.update()
+  if any(ps.ignitionLine or ps.ignitionCan for ps in sm["pandaStates"] if ps.pandaType != log.PandaState.PandaType.unknown):
+    return
 
   can_parser = CANParser("toyota_nodsu_pt_generated", [("DOOR_LOCKS", 3)], bus=0)
   can_sock = messaging.sub_sock("can", timeout=100)
 
   pm = messaging.PubMaster(["sendcan"])
+  time.sleep(0.2)
 
   while True:
     sm.update()
@@ -38,11 +45,11 @@ def lock_doors(lock_doors_timer, sm):
 
     time.sleep(1)
 
-    lock_status = get_lock_status(can_parser, can_sock)
-    if lock_status == 0:
+    update_can_parser(can_parser, can_sock)
+    if can_parser.ts_nanos["DOOR_LOCKS"]["LOCK_STATUS"] > 0 and can_parser.vl["DOOR_LOCKS"]["LOCK_STATUS"] == 0:
       break
 
-def wait_for_no_driver(sm, door_checks=False, time_threshold=60):
+def wait_for_no_driver(sm, time_threshold):
   can_parser = CANParser("toyota_nodsu_pt_generated", [("BODY_CONTROL_STATE", 3)], bus=0)
   can_sock = messaging.sub_sock("can", timeout=100)
 
@@ -54,12 +61,7 @@ def wait_for_no_driver(sm, door_checks=False, time_threshold=60):
 
     time.sleep(DT_HW)
 
-  params.put_bool("IsDriverViewEnabled", True)
-
-  while not any(proc.name == "dmonitoringd" and proc.running for proc in sm["managerState"].processes):
-    sm.update()
-
-    time.sleep(DT_HW)
+  frogpilot_variables.params.put_bool("IsDriverViewEnabled", True)
 
   start_time = time.monotonic()
   while True:
@@ -72,18 +74,19 @@ def wait_for_no_driver(sm, door_checks=False, time_threshold=60):
     if any(ps.ignitionLine or ps.ignitionCan for ps in sm["pandaStates"] if ps.pandaType != log.PandaState.PandaType.unknown):
       break
 
+    if sm.updated["deviceState"] and not frogpilot_variables.params.get_bool("IsDriverViewEnabled"):
+      frogpilot_variables.params.put_bool("IsDriverViewEnabled", True)
+
     if sm["driverMonitoringState"].faceDetected or not sm.alive["driverMonitoringState"]:
       start_time = time.monotonic()
 
-    if door_checks:
-      can_msgs = messaging.drain_sock_raw(can_sock, wait_for_one=True)
-      can_parser.update_strings(can_msgs)
+    update_can_parser(can_parser, can_sock)
 
-      door_open = any([can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_FL"], can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_FR"],
-                       can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_RL"], can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_RR"]])
-      if door_open:
-        start_time = time.monotonic()
+    door_open = any([can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_FL"], can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_FR"],
+                     can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_RL"], can_parser.vl["BODY_CONTROL_STATE"]["DOOR_OPEN_RR"]])
+    if door_open:
+      start_time = time.monotonic()
 
     time.sleep(DT_DMON)
 
-  params.remove("IsDriverViewEnabled")
+  frogpilot_variables.params.remove("IsDriverViewEnabled")

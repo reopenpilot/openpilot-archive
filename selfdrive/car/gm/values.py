@@ -21,7 +21,6 @@ class CarControllerParams:
   STEER_DRIVER_FACTOR = 100
   NEAR_STOP_BRAKE_PHASE = 0.25  # m/s
   SNG_INTERCEPTOR_GAS = 18. / 255.
-  SNG_TIME = 30  # frames until the above is reached
 
   # Heartbeat for dash "Service Adaptive Cruise" and "Service Front Camera"
   ADAS_KEEPALIVE_STEP = 100
@@ -72,7 +71,7 @@ class CarControllerParams:
   # and by letting off gas and allowing car to creep, for determining
   # the positive threshold values at very low speed
   EV_GAS_BRAKE_THRESHOLD_BP = [1.29, 1.52, 1.55, 1.6, 1.7, 1.8, 2.0, 2.2, 2.5, 5.52, 9.6, 20.5, 23.5, 35.0] # [m/s]
-  EV_GAS_BRAKE_THRESHOLD_V = [0.0, -0.14, -0.16, -0.18, -0.215, -0.255, -0.32, -0.41, -0.5, -0.72, -0.895, -1.125, -1.145, -1.16] # [m/s^s]
+  EV_GAS_BRAKE_THRESHOLD_V = [0.0, -0.14, -0.16, -0.18, -0.215, -0.255, -0.32, -0.41, -0.5, -0.72, -0.895, -1.125, -1.145, -1.16] # [m/s^2]
 
   def update_ev_gas_brake_threshold(self, v_ego):
     gas_brake_threshold = interp(v_ego, self.EV_GAS_BRAKE_THRESHOLD_BP, self.EV_GAS_BRAKE_THRESHOLD_V)
@@ -115,7 +114,7 @@ class CAR(Platforms):
   )
   CHEVROLET_VOLT = GMASCMPlatformConfig(
     [GMCarDocs("Chevrolet Volt 2017-18", min_enable_speed=0, video_link="https://youtu.be/QeMCN_4TFfQ")],
-    GMCarSpecs(mass=1607, wheelbase=2.69, steerRatio=17.7, centerToFrontRatio=0.45, tireStiffnessFactor=0.469, minEnableSpeed=-1),
+    GMCarSpecs(mass=1607, wheelbase=2.69, steerRatio=17.7, centerToFrontRatio=0.45, tireStiffnessFactor=0.469),
     dbc_dict=dbc_dict('gm_global_a_powertrain_volt', 'gm_global_a_object', chassis_dbc='gm_global_a_chassis')
   )
   CADILLAC_ATS = GMASCMPlatformConfig(
@@ -175,38 +174,38 @@ class CAR(Platforms):
   # Separate car def is required when there is no ASCM
   # (for now) unless there is a way to detect it when it has been unplugged...
   CHEVROLET_VOLT_CC = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Volt 2017-18 - No-ACC", min_enable_speed=0)],
+    [GMCarDocs("Chevrolet Volt No-ACC 2017-18", "Lane Keep Assist (LKA)")],
     CHEVROLET_VOLT.specs,
   )
   CHEVROLET_BOLT_CC = GMPlatformConfig(
     [
-      GMCarDocs("Chevrolet Bolt EUV 2022-23 - No-ACC"),
-      GMCarDocs("Chevrolet Bolt EV 2017-23 - No-ACC"),
+      GMCarDocs("Chevrolet Bolt EUV No-ACC 2022-23", "Lane Keep Assist (LKA)"),
+      GMCarDocs("Chevrolet Bolt EV No-ACC 2017-23", "Lane Keep Assist (LKA)"),
     ],
     CHEVROLET_BOLT_EUV.specs,
   )
   CHEVROLET_EQUINOX_CC = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Equinox 2019-22 - No-ACC")],
+    [GMCarDocs("Chevrolet Equinox No-ACC 2019-22", "Lane Keep Assist (LKA)")],
     CHEVROLET_EQUINOX.specs,
   )
   CHEVROLET_SUBURBAN = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Suburban Premier 2016-2020")],
+    [GMCarDocs("Chevrolet Suburban Premier 2016-20")],
     CarSpecs(mass=2731, wheelbase=3.302, steerRatio=17.3, centerToFrontRatio=0.49),
   )
   CHEVROLET_SUBURBAN_CC = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Suburban Premier 2016-2020 - No-ACC")],
+    [GMCarDocs("Chevrolet Suburban Premier No-ACC 2016-20", "Lane Keep Assist (LKA)")],
     CHEVROLET_SUBURBAN.specs,
   )
   GMC_YUKON_CC = GMPlatformConfig(
-    [GMCarDocs("GMC Yukon - No-ACC")],
+    [GMCarDocs("GMC Yukon No-ACC", "Lane Keep Assist (LKA)")],
     CarSpecs(mass=2541, wheelbase=2.95, steerRatio=16.3, centerToFrontRatio=0.4),
   )
   CADILLAC_CT6_CC = GMPlatformConfig(
-    [GMCarDocs("Cadillac CT6 - No-ACC")],
+    [GMCarDocs("Cadillac CT6 No-ACC", "Lane Keep Assist (LKA)")],
     CarSpecs(mass=2358, wheelbase=3.11, steerRatio=17.7, centerToFrontRatio=0.4),
   )
   CHEVROLET_TRAILBLAZER_CC = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Trailblazer 2021-22 - No-ACC")],
+    [GMCarDocs("Chevrolet Trailblazer No-ACC 2021-22", "Lane Keep Assist (LKA)")],
     CHEVROLET_TRAILBLAZER.specs,
   )
   CADILLAC_XT4 = GMPlatformConfig(
@@ -214,7 +213,7 @@ class CAR(Platforms):
     CarSpecs(mass=1660, wheelbase=2.78, steerRatio=14.4, centerToFrontRatio=0.4),
   )
   CADILLAC_XT5_CC = GMPlatformConfig(
-    [GMCarDocs("Cadillac XT5 - No-ACC")],
+    [GMCarDocs("Cadillac XT5 No-ACC", "Lane Keep Assist (LKA)")],
     CarSpecs(mass=1810, wheelbase=2.86, steerRatio=16.34, centerToFrontRatio=0.5),
   )
   CHEVROLET_TRAVERSE = GMPlatformConfig(
@@ -226,7 +225,7 @@ class CAR(Platforms):
     CarSpecs(mass=2050, wheelbase=2.86, steerRatio=16.0, centerToFrontRatio=0.5),
   )
   CHEVROLET_MALIBU_CC = GMPlatformConfig(
-    [GMCarDocs("Chevrolet Malibu 2023 - No-ACC")],
+    [GMCarDocs("Chevrolet Malibu No-ACC 2023", "Lane Keep Assist (LKA)")],
     CarSpecs(mass=1450, wheelbase=2.8, steerRatio=15.8, centerToFrontRatio=0.4),
   )
   CHEVROLET_TRAX = GMPlatformConfig(
@@ -314,7 +313,8 @@ FW_QUERY_CONFIG = FwQueryConfig(
 )
 
 EV_CAR = {CAR.CHEVROLET_VOLT, CAR.CHEVROLET_BOLT_EUV, CAR.CHEVROLET_VOLT_CC, CAR.CHEVROLET_BOLT_CC}
-CC_ONLY_CAR = {CAR.CHEVROLET_VOLT_CC, CAR.CHEVROLET_BOLT_CC, CAR.CHEVROLET_EQUINOX_CC, CAR.CHEVROLET_SUBURBAN_CC, CAR.GMC_YUKON_CC, CAR.CADILLAC_CT6_CC, CAR.CHEVROLET_TRAILBLAZER_CC, CAR.CADILLAC_XT5_CC, CAR.CHEVROLET_MALIBU_CC}
+CC_ONLY_CAR = {CAR.CHEVROLET_VOLT_CC, CAR.CHEVROLET_BOLT_CC, CAR.CHEVROLET_EQUINOX_CC, CAR.CHEVROLET_SUBURBAN_CC, CAR.GMC_YUKON_CC, CAR.CADILLAC_CT6_CC,
+               CAR.CHEVROLET_TRAILBLAZER_CC, CAR.CADILLAC_XT5_CC, CAR.CHEVROLET_MALIBU_CC}
 # CC_ONLY_CAR = set(c for c in CAR if str(c).endswith('_CC'))
 
 # We're integrated at the Safety Data Gateway Module on these cars
@@ -322,8 +322,7 @@ SDGM_CAR = {CAR.CADILLAC_XT4, CAR.CHEVROLET_TRAVERSE, CAR.BUICK_BABYENCLAVE}
 
 # We're integrated at the camera with VOACC on these cars (instead of ASCM w/ OBD-II harness)
 CAMERA_ACC_CAR = {CAR.CHEVROLET_BOLT_EUV, CAR.CHEVROLET_SILVERADO, CAR.CHEVROLET_EQUINOX, CAR.CHEVROLET_TRAILBLAZER, CAR.CHEVROLET_TRAX}
-CAMERA_ACC_CAR.update({CAR.CHEVROLET_VOLT_CC, CAR.CHEVROLET_BOLT_CC, CAR.CHEVROLET_EQUINOX_CC, CAR.GMC_YUKON_CC, CAR.CADILLAC_CT6_CC, CAR.CHEVROLET_TRAILBLAZER_CC, CAR.CADILLAC_XT5_CC, CAR.CHEVROLET_MALIBU_CC})
-# CAMERA_ACC_CAR.update(CC_ONLY_CAR)
+CAMERA_ACC_CAR.update(CC_ONLY_CAR)
 
 STEER_THRESHOLD = 1.0
 

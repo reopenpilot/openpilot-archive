@@ -24,39 +24,6 @@ export async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-export async function fetchEvents(url, onData, options = {}) {
-  const response = await fetchResponse(url, options);
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      buffer += decoder.decode(value, { stream: !done });
-      const messages = buffer.split(/\r?\n\r?\n/);
-      buffer = messages.pop();
-
-      for (const message of messages) {
-        const data = message.split(/\r?\n/).filter(line => line.startsWith("data:")).map(line => line.slice(5).trimStart()).join("\n");
-        if (data) {
-          onData(JSON.parse(data));
-        }
-      }
-
-      if (done) {
-        break;
-      }
-    }
-  } finally {
-    try {
-      await reader.cancel();
-    } finally {
-      reader.releaseLock();
-    }
-  }
-}
-
 export function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

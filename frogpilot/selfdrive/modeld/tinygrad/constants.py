@@ -1,7 +1,5 @@
 import numpy as np
 
-LAT_SMOOTH_SECONDS = 0.1
-
 def index_function(idx, max_val=192, max_idx=32):
   return (max_val) * ((idx/max_idx)**2)
 
@@ -20,6 +18,7 @@ class ModelConstants:
   MODEL_CONTEXT_FREQ = 5 # "model_trained_fps"
   FULL_HISTORY_BUFFER_LEN = MODEL_RUN_FREQ * MODEL_CONTEXT_FREQ
   TEMPORAL_SKIP = MODEL_RUN_FREQ // MODEL_CONTEXT_FREQ
+  INPUT_HISTORY_BUFFER_LEN = FULL_HISTORY_BUFFER_LEN // TEMPORAL_SKIP
 
   FEATURE_LEN = 512
 

@@ -67,6 +67,9 @@ export function confirmDialog(title, message, options = {}) {
     input.type = "text";
     input.value = options.inputValue;
     input.required = true;
+    if (options.pattern) {
+      input.pattern = options.pattern;
+    }
     input.setAttribute("aria-label", title);
     content.append(input);
   }

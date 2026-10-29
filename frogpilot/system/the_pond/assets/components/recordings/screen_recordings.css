@@ -67,10 +67,6 @@
   transform: var(--hover-scale-base);
 }
 
-.recording-card[aria-hidden="true"] {
-  pointer-events: none;
-}
-
 .recording-open {
   appearance: none;
   background: transparent;

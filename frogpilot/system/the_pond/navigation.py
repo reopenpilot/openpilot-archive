@@ -4,22 +4,18 @@ import math
 import re
 
 from flask import Blueprint, abort, jsonify, request, send_from_directory
-from pathlib import Path
 
-from openpilot.frogpilot.common.frogpilot_variables import params
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_variables
 from openpilot.frogpilot.system.the_pond.device import state
 from openpilot.frogpilot.system.the_pond.helpers import is_safe_display_name, json_body
 
 blueprint = Blueprint("navigation", __name__)
 
 KEYS = {
-  "amap1": ("AMapKey1", "", 39, "AMap key #1"),
-  "amap2": ("AMapKey2", "", 39, "AMap key #2"),
   "public": ("MapboxPublicKey", "pk.", 80, "Public key"),
   "secret": ("MapboxSecretKey", "sk.", 80, "Secret key"),
 }
 MAPBOX_HELP_IMAGES = {"both_keys_set.png", "no_keys_set.png", "public_key_set.png", "setup_completed.png"}
-NAVIGATION_TRAINING_PATH = Path(__file__).parents[2] / "selfdrive/assets/navigation/navigation_training"
 
 
 def valid_coordinate(value, minimum, maximum):
@@ -36,7 +32,7 @@ def favorite_id(favorite):
 
 
 def favorites():
-  stored = json.loads(params.get("FavoriteDestinations") or b"[]")
+  stored = json.loads(frogpilot_variables.params.get("FavoriteDestinations") or b"[]")
   if not isinstance(stored, list) or any(not isinstance(favorite, dict) for favorite in stored):
     raise ValueError("Saved favorites are invalid")
 
@@ -68,7 +64,7 @@ def favorite_data(fields):
 def navigation():
   if request.method == "GET":
     try:
-      position = json.loads(params.get("LastGPSPosition") or b"{}")
+      position = json.loads(frogpilot_variables.params.get("LastGPSPosition") or b"{}")
     except ValueError:
       position = {}
 
@@ -76,32 +72,32 @@ def navigation():
     if isinstance(position, dict) and valid_coordinate(position.get("latitude"), -90, 90) and valid_coordinate(position.get("longitude"), -180, 180):
       last_position = {"latitude": str(position["latitude"]), "longitude": str(position["longitude"])}
 
-    public_key = params.get("MapboxPublicKey", encoding="utf8") or ""
+    public_key = frogpilot_variables.params.get("MapboxPublicKey", encoding="utf8") or ""
     if not valid_mapbox_key(public_key, "pk."):
       public_key = ""
 
     return {
-      "amap1KeySet": bool(params.get("AMapKey1")),
-      "amap2KeySet": bool(params.get("AMapKey2")),
-      "destination": params.get("NavDestination", encoding="utf8") or "",
-      "isMetric": params.get_bool("IsMetric"),
+      "destination": frogpilot_variables.params.get("NavDestination", encoding="utf8") or "",
+      "isMetric": frogpilot_variables.params.get_bool("IsMetric"),
       "lastPosition": last_position,
       "mapboxPublic": public_key,
-      "mapboxSecretSet": bool(params.get("MapboxSecretKey")),
-      "previousDestinations": params.get("ApiCache_NavDestinations", encoding="utf8") or "",
+      "mapboxSecretSet": bool(frogpilot_variables.params.get("MapboxSecretKey")),
+      "previousDestinations": frogpilot_variables.params.get("ApiCache_NavDestinations", encoding="utf8") or "",
     }
 
   if request.method == "DELETE":
-    params.remove("NavDestination")
-    params.remove("NavDestinationWaypoints")
+    frogpilot_variables.params.remove("NavDestination")
+    frogpilot_variables.params.remove("NavDestinationWaypoints")
     return {"message": "Destination cleared"}
 
-  destination = favorite_data({"latitude", "longitude", "name"})
+  destination = json_body({"latitude", "longitude", "place_name"}, 4096)
+  if destination.get("place_name") is not None and not is_safe_display_name(destination["place_name"]):
+    abort(400, "Invalid destination name")
   if not valid_coordinate(destination.get("latitude"), -90, 90) or not valid_coordinate(destination.get("longitude"), -180, 180):
     abort(400, "Invalid destination coordinates")
 
-  params.remove("NavDestinationWaypoints")
-  params.put("NavDestination", json.dumps(destination))
+  frogpilot_variables.params.remove("NavDestinationWaypoints")
+  frogpilot_variables.params.put("NavDestination", json.dumps(destination))
 
   return {"message": "Destination sent to FrogPilot"}
 
@@ -141,7 +137,7 @@ def favorite_destinations():
 
       message = "Destination added to favorites!"
 
-    params.put("FavoriteDestinations", json.dumps(saved))
+    frogpilot_variables.params.put("FavoriteDestinations", json.dumps(saved))
 
   return {"message": message}
 
@@ -182,7 +178,7 @@ def rename_favorite():
       else:
         target.pop(field, None)
 
-    params.put("FavoriteDestinations", json.dumps(saved))
+    frogpilot_variables.params.put("FavoriteDestinations", json.dumps(saved))
 
   return {"message": "Favorite updated successfully!"}
 
@@ -194,7 +190,7 @@ def navigation_keys():
     if key is None:
       abort(400, "Unknown key type")
 
-    params.remove(key[0])
+    frogpilot_variables.params.remove(key[0])
     return {"message": f"{key[3]} deleted successfully!"}
 
   data = json_body(set(KEYS))
@@ -208,9 +204,9 @@ def navigation_keys():
     if not value:
       continue
 
-    if prefix and not value.startswith(("pk.", "sk.")):
+    if not value.startswith(("pk.", "sk.")):
       value = prefix + value
-    if prefix and not valid_mapbox_key(value, prefix):
+    if not valid_mapbox_key(value, prefix):
       abort(400, f"Enter a valid {label.lower()} starting with {prefix}")
     if len(value) < length:
       abort(400, f"{label} is invalid or too short")
@@ -220,7 +216,7 @@ def navigation_keys():
     abort(400, "Nothing to update")
 
   for parameter, value, _ in updates:
-    params.put(parameter, value)
+    frogpilot_variables.params.put(parameter, value)
 
   return {"message": f"{', '.join(label for _, _, label in updates)} saved successfully!"}
 
@@ -230,4 +226,4 @@ def mapbox_help(filename):
   if filename not in MAPBOX_HELP_IMAGES:
     abort(404)
 
-  return send_from_directory(NAVIGATION_TRAINING_PATH, filename)
+  return send_from_directory(frogpilot_paths.NAVIGATION_TRAINING_PATH, filename)

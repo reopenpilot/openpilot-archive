@@ -7,7 +7,6 @@ const sections = {
   Recordings: [["Dashcam Routes", "/dashcam_routes", "camera-reels"], ["Screen Recordings", "/screen_recordings", "record-circle"]],
   Tailscale: [["Tailscale", "/manage_tailscale", "wifi"]],
   Tools: [
-    ["Download Speed Limits", "/download_speed_limits", "download"],
     ["Error Logs", "/manage_error_logs", "exclamation-triangle"],
     ["Lock/Unlock Doors", "/lock_or_unlock_doors", "door-closed"],
     ["Theme Maker", "/theme_maker", "palette-fill"],
@@ -23,7 +22,7 @@ export function mountSidebar(container) {
     <nav id="sidebar" class="sidebar" aria-label="Main">
       <div>
         <div class="title">
-          <img class="logo" src="/assets/images/main_logo.png" alt="FrogPilot logo">
+          <img class="logo" src="/assets/images/main_logo-192x192.png" alt="FrogPilot logo">
           <div class="title_text sidebar_header">
             <p>The Pond</p>
             <a href="https://github.com/Aidenir" target="_blank" rel="noopener noreferrer">by Aidenir</a>
@@ -51,7 +50,7 @@ export function mountSidebar(container) {
   });
 }
 
-export function toggleSidebar(visible) {
+function toggleSidebar(visible) {
   document.getElementById("sidebar").classList.toggle("visible", visible);
   document.getElementById("sidebarUnderlay").classList.toggle("hidden", !visible);
   document.documentElement.classList.toggle("no_scroll", visible);

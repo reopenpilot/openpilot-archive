@@ -11,7 +11,7 @@
   background-color: var(--danger-bg);
 }
 
-.navkeys-btn.delete:hover {
+.navkeys-btn.delete:hover:not(:disabled) {
   background-color: var(--danger-hover-bg);
   transform: var(--hover-scale-base);
 }
@@ -72,6 +72,7 @@
   cursor: text;
   flex: 1;
   font-size: var(--font-size-base);
+  min-width: 0;
   padding: var(--padding-xs) var(--padding-sm);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
@@ -153,10 +154,6 @@
   font-size: var(--font-size-xs);
   font-weight: normal;
   margin-left: var(--gap-sm);
-}
-
-.navkeys-input {
-  min-width: 0;
 }
 
 @media (max-width: 480px) {

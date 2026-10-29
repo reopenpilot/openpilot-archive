@@ -3,43 +3,48 @@ import time
 
 from openpilot.system.hardware import HARDWARE
 
-from openpilot.frogpilot.common.frogpilot_utilities import run_cmd, running_threads
-from openpilot.frogpilot.common.frogpilot_variables import params
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
 
 def update_openpilot():
-  def update_available():
-    run_cmd(["pkill", "-SIGUSR1", "-f", "system.updated.updated"], "Checking for updates...", "Failed to check for update...", report=False)
+  params = frogpilot_variables.params
 
-    while params.get("UpdaterState", encoding="utf-8") != "checking...":
-      time.sleep(1)
+  def run_updater(signal, success_message, fail_message):
+    failed_count = params.get("UpdateFailedCount")
+    last_update_time = params.get("LastUpdateTime")
 
-    while params.get("UpdaterState", encoding="utf-8") == "checking...":
-      time.sleep(1)
-
-    if not params.get_bool("UpdaterFetchAvailable"):
+    if frogpilot_utilities.run_cmd(["pkill", signal, "-f", "system.updated.updated"], success_message, fail_message, report=False) is None:
       return False
 
-    while params.get_bool("IsOnroad") or running_threads.get("lock_doors", threading.Thread()).is_alive():
-      time.sleep(60)
-
-    run_cmd(["pkill", "-SIGHUP", "-f", "system.updated.updated"], "Update available, downloading...", "Failed to download update...", report=False)
-
-    while not params.get_bool("UpdateAvailable"):
-      time.sleep(60)
+    while params.get("LastUpdateTime") == last_update_time:
+      if params.get("UpdateFailedCount") not in (failed_count, b"0"):
+        return False
+      time.sleep(1)
 
     return True
+
+  def wait_for_offroad():
+    while params.get_bool("IsOnroad") or frogpilot_utilities.running_threads.get("lock_doors", threading.Thread()).is_alive():
+      time.sleep(60)
 
   if params.get("UpdaterState", encoding="utf-8") != "idle":
     return
 
-  while params.get_bool("IsOnroad") or running_threads.get("lock_doors", threading.Thread()).is_alive():
-    time.sleep(60)
+  wait_for_offroad()
 
-  if not update_available():
+  if not run_updater("-SIGUSR1", "Checking for updates...", "Failed to check for update..."):
     return
 
-  while True:
-    if not update_available():
-      break
+  if params.get_bool("UpdaterFetchAvailable"):
+    wait_for_offroad()
+
+    if not run_updater("-SIGHUP", "Update available, downloading...", "Failed to download update...") or params.get_bool("UpdaterFetchAvailable"):
+      return
+  elif not params.get_bool("UpdateAvailable"):
+    return
+
+  wait_for_offroad()
+
+  if frogpilot_paths.BACKUP_PATH.is_file():
+    return
 
   HARDWARE.reboot()

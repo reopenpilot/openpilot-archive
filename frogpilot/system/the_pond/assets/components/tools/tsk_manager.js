@@ -36,11 +36,14 @@ export function mount(container) {
     state.error = "";
 
     const name = state.keyName.trim();
-    const keys = state.keys.filter(key => key.name !== state.selectedName).map(key => ({ name: key.name }));
+    let entry = { name, rename_from: state.selectedName };
     if (state.keyValue) {
-      keys.push({ name, value: state.keyValue });
-    } else {
-      keys.push({ name, rename_from: state.selectedName });
+      entry = { name, value: state.keyValue };
+    }
+
+    const keys = state.keys.map(key => key.name === state.selectedName ? entry : { name: key.name });
+    if (!state.selectedName) {
+      keys.push(entry);
     }
 
     try {

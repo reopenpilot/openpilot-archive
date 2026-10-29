@@ -34,6 +34,19 @@
         <i class="bi bi-car-front-fill onroad-icon" aria-hidden="true"></i>
         <h1 id="lock_title">Connecting to your device...</h1>
         <p id="lock_message">The Pond is checking whether it is safe to unlock.</p>
+        <form id="pairing_form" hidden>
+          <div class="code-boxes" role="group" aria-label="Pairing code">
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 1" autocomplete="one-time-code">
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 2" autocomplete="one-time-code">
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 3" autocomplete="one-time-code">
+            <span class="gap"></span>
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 4" autocomplete="one-time-code">
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 5" autocomplete="one-time-code">
+            <input type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 6" autocomplete="one-time-code">
+          </div>
+          <p id="pairing_message" class="pairing-message" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary">Pair</button>
+        </form>
       </div>
     </div>
     <button id="menu_button" type="button" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false" inert>

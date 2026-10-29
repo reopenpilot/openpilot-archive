@@ -32,10 +32,6 @@
   z-index: var(--z-overlay);
 }
 
-.hidden {
-  display: none;
-}
-
 .logo {
   height: 50px;
   margin-left: var(--margin-xs);
@@ -183,7 +179,6 @@
 
 .sidebar_header a:last-of-type {
   color: var(--color-gray-300);
-  font-size: var(--font-size-xs);
   font-style: italic;
   font-weight: var(--font-weight-demi-bold);
 }
@@ -191,7 +186,6 @@
 .sidebar_header p {
   color: var(--success-text);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
 }
 
 .sidebar_widget {

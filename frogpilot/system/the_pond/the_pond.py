@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import threading
 import time
 
@@ -9,11 +10,13 @@ from openpilot.common.params import Params
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.hardware import PC
 
-from openpilot.frogpilot.common.frogpilot_api import FrogPilotAPI
+from openpilot.frogpilot.common import frogpilot_api
 from openpilot.frogpilot.system.the_pond import device, discovery, helpers, logs, media, navigation, tailscale, themes
 
+OPEN_PATHS = {"/api/onroad", "/api/pair"}
+
 PAGE_PATHS = {
-  "/", "/dashcam_routes", "/download_speed_limits", "/lock_or_unlock_doors", "/manage_error_logs", "/manage_navigation_keys",
+  "/", "/dashcam_routes", "/lock_or_unlock_doors", "/manage_error_logs", "/manage_navigation_keys",
   "/manage_tailscale", "/manage_tmux", "/manage_toggles", "/screen_recordings", "/set_navigation_destination", "/theme_maker", "/tsk_manager",
 }
 
@@ -59,7 +62,7 @@ def locked_stream(source):
 
 def create_app():
   app = Flask(__name__, static_folder="assets", static_url_path="/assets")
-  app.extensions["frogpilot_api"] = FrogPilotAPI(Params())
+  app.extensions["frogpilot_api"] = frogpilot_api.FrogPilotAPI(Params())
   app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
   app.config["POND_PORTS"] = PORTS
 
@@ -83,8 +86,12 @@ def create_app():
       if not allowed:
         abort(403, "Cross-origin request blocked")
 
-    if not shell_request() and device.is_driving():
-      abort(423, "Unavailable while driving. Shift into Park or go offroad to use The Pond.")
+    if not shell_request() and request.path not in OPEN_PATHS:
+      if device.is_driving():
+        abort(423, "Unavailable while driving. Shift into Park or go offroad to use The Pond.")
+
+      if not helpers.is_paired():
+        abort(401, "Pair this browser to use The Pond.")
 
   @app.after_request
   def complete_response(response):
@@ -132,6 +139,7 @@ def main():
     threading.Thread(target=discovery.mdns_responder, name="pond_discovery", daemon=True).start()
     discovery.redirect_port(PORT)
 
+  logging.getLogger("werkzeug").setLevel(logging.WARNING)
   app.run(host="0.0.0.0", port=PORT, threaded=True, debug=False)
 
 

@@ -1,6 +1,3 @@
-import math
-
-from cereal import log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.car import make_can_msg
@@ -178,8 +175,8 @@ def create_lka_icon_command(bus, active, critical, steer):
   return make_can_msg(0x104c006c, dat, bus)
 
 
-def create_gm_cc_spam_command(packer, controller, CS, actuators):
-  if controller.params_.get_bool("IsMetric"):
+def create_gm_cc_spam_command(packer, controller, CS, actuators, is_metric):
+  if is_metric:
     _CV = CV.MS_TO_KPH
     RATE_UP_MAX = 0.04
     RATE_DOWN_MAX = 0.04
@@ -192,9 +189,8 @@ def create_gm_cc_spam_command(packer, controller, CS, actuators):
   speedSetPoint = int(round(CS.out.cruiseState.speed * _CV))
 
   cruiseBtn = CruiseButtons.INIT
-  if speedSetPoint == CS.CP.minEnableSpeed and accel < -1:
+  if speedSetPoint <= int(round(CS.CP.minEnableSpeed * _CV)) and accel < -1:
     cruiseBtn = CruiseButtons.CANCEL
-    controller.apply_speed = 0
     rate = 0.04
   elif accel < 0:
     cruiseBtn = CruiseButtons.DECEL_SET
@@ -202,16 +198,13 @@ def create_gm_cc_spam_command(packer, controller, CS, actuators):
       rate = RATE_DOWN_MAX
     else:
       rate = max(-1 / accel, RATE_DOWN_MAX)
-    controller.apply_speed = speedSetPoint - 1
   elif accel > 0:
     cruiseBtn = CruiseButtons.RES_ACCEL
     if speedSetPoint < (CS.out.vEgo * _CV) - 3.0:
       rate = RATE_UP_MAX
     else:
       rate = max(1 / accel, RATE_UP_MAX)
-    controller.apply_speed = speedSetPoint + 1
   else:
-    controller.apply_speed = speedSetPoint
     rate = float('inf')
 
   # Check rlogs closely - our message shouldn't show up on the pt bus for us

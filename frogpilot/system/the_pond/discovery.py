@@ -4,6 +4,7 @@ import subprocess
 
 from openpilot.common.swaglog import cloudlog
 
+HOTSPOT_SUBNET = "192.168.43.0/24"
 MDNS_GROUP = "224.0.0.251"
 MDNS_HOSTNAME = "ThePond.local"
 MDNS_PORT = 5353
@@ -27,37 +28,50 @@ def mdns_responder():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
       sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       sock.bind(("", MDNS_PORT))
-      sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, socket.inet_aton(MDNS_GROUP) + socket.inet_aton("0.0.0.0"))
-
-      while True:
-        data, source = sock.recvfrom(2048)
-        if len(data) < 12 or data[2] & 0x80 or name.lower() not in data[12:].lower():
+      for index, _ in socket.if_nameindex():
+        try:
+          sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4s4si", socket.inet_aton(MDNS_GROUP), socket.inet_aton("0.0.0.0"), index))
+        except OSError:
           continue
 
-        address = local_ip_for(source[0])
-        if address is not None:
-          if source[1] == MDNS_PORT:
-            sock.sendto(header + record + socket.inet_aton(address), (MDNS_GROUP, MDNS_PORT))
-          else:
-            question = data[12:12 + len(name) + 4]
-            if data[4:6] != b"\0\1" or len(question) != len(name) + 4 or question[:-4].lower() != name.lower():
-              continue
+      while True:
+        try:
+          data, source = sock.recvfrom(2048)
+          if len(data) < 12 or data[2] & 0x80 or name.lower() not in data[12:].lower():
+            continue
 
-            query_type, query_class = struct.unpack(">HH", question[-4:])
-            if query_type not in (1, 255) or query_class & 0x7FFF not in (1, 255):
-              continue
+          address = local_ip_for(source[0])
+          if address is not None:
+            if source[1] == MDNS_PORT:
+              sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(address))
+              sock.sendto(header + record + socket.inet_aton(address), (MDNS_GROUP, MDNS_PORT))
+            else:
+              question = data[12:12 + len(name) + 4]
+              if data[4:6] != b"\0\1" or len(question) != len(name) + 4 or question[:-4].lower() != name.lower():
+                continue
 
-            response_header = data[:2] + struct.pack(">HHHHH", 0x8400, 1, 1, 0, 0)
-            response_record = name + struct.pack(">HHIH", 1, 1, 10, 4)
-            sock.sendto(response_header + question + response_record + socket.inet_aton(address), source)
+              query_type, query_class = struct.unpack(">HH", question[-4:])
+              if query_type not in (1, 255) or query_class & 0x7FFF not in (1, 255):
+                continue
+
+              response_header = data[:2] + struct.pack(">HHHHH", 0x8400, 1, 1, 0, 0)
+              response_record = name + struct.pack(">HHIH", 1, 1, 10, 4)
+              sock.sendto(response_header + question + response_record + socket.inet_aton(address), source)
+        except OSError:
+          cloudlog.exception("The Pond: local discovery could not answer a query")
   except OSError:
     cloudlog.exception("The Pond: local discovery stopped")
 
 
 def redirect_port(port):
+  forwarded = ["-p", "tcp", "--dport", "80", "-s", HOTSPOT_SUBNET, "!", "-d", HOTSPOT_SUBNET, "-j", "RETURN"]
   rule = ["PREROUTING", "-p", "tcp", "--dport", "80", "-j", "REDIRECT", "--to-ports", str(port)]
 
   try:
+    result = subprocess.run(["sudo", "iptables", "-t", "nat", "-C", "PREROUTING", *forwarded], capture_output=True, timeout=10)
+    if result.returncode:
+      subprocess.run(["sudo", "iptables", "-t", "nat", "-I", "PREROUTING", "1", *forwarded], capture_output=True, check=True, timeout=10)
+
     result = subprocess.run(["sudo", "iptables", "-t", "nat", "-C", *rule], capture_output=True, timeout=10)
     if result.returncode:
       subprocess.run(["sudo", "iptables", "-t", "nat", "-A", *rule], capture_output=True, check=True, timeout=10)

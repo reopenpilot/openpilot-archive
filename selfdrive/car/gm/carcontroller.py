@@ -3,7 +3,6 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.numpy_fast import interp, clip
 from openpilot.common.realtime import DT_CTRL
-from openpilot.common.params_pyx import Params
 from opendbc.can.packer import CANPacker
 from openpilot.selfdrive.car import apply_driver_steer_torque_limits, create_gas_interceptor_command
 from openpilot.selfdrive.car.gm import gmcan
@@ -15,8 +14,6 @@ from openpilot.selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_G
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 NetworkLocation = car.CarParams.NetworkLocation
 LongCtrlState = car.CarControl.Actuators.LongControlState
-GearShifter = car.CarState.GearShifter
-TransmissionType = car.CarParams.TransmissionType
 
 # Camera cancels up to 0.1s after brake is pressed, ECM allows 0.5s
 CAMERA_CANCEL_DELAY_FRAMES = 10
@@ -35,39 +32,30 @@ class CarController(CarControllerBase):
     self.apply_steer_last = 0
     self.apply_gas = 0
     self.apply_brake = 0
-    self.apply_speed = 0
     self.frame = 0
     self.last_steer_frame = 0
     self.last_button_frame = 0
     self.cancel_counter = 0
-    self.pedal_steady = 0.
 
     self.lka_steering_cmd_counter = 0
     self.lka_icon_status_last = (False, False)
 
     self.params = CarControllerParams(self.CP)
-    self.params_ = Params()
 
     self.packer_pt = CANPacker(DBC[self.CP.carFingerprint]['pt'])
     self.packer_obj = CANPacker(DBC[self.CP.carFingerprint]['radar'])
     self.packer_ch = CANPacker(DBC[self.CP.carFingerprint]['chassis'])
 
     # FrogPilot variables
-    self.accel_g = 0.0
-
     self.pitch = FirstOrderFilter(0., 0.09 * 4, DT_CTRL * 4)  # runs at 25 Hz
 
   @staticmethod
-  def calc_pedal_command(accel: float, long_active: bool) -> float:
-    if not long_active: return 0.
-
-    zero = 0.15625  # 40/256
-    if accel > 0.:
-      # Scales the accel from 0-1 to 0.156-1
-      pedal_gas = clip(((1 - zero) * accel + zero), 0., 1.)
+  def calc_pedal_command(accel: float, v_ego: float) -> float:
+    if accel < -0.5:
+      pedal_gas = 0
     else:
-      # if accel is negative, -0.1 -> 0.015625
-      pedal_gas = clip(zero + accel, 0., zero)  # Make brake the same size as gas, but clip to regen
+      pedaloffset = interp(v_ego, [0., 3, 6, 30], [0.10, 0.175, 0.240, 0.240])
+      pedal_gas = clip((pedaloffset + accel * 0.6), 0.0, 1.0)
 
     return pedal_gas
 
@@ -124,11 +112,12 @@ class CarController(CarControllerBase):
 
         # Pitch compensated acceleration;
         # TODO: include future pitch (sm['modelDataV2'].orientation.y) to account for long actuator delay
-        if frogpilot_toggles.long_pitch and len(CC.orientationNED) > 1:
+        if len(CC.orientationNED) == 3:
           self.pitch.update(CC.orientationNED[1])
-          self.accel_g = ACCELERATION_DUE_TO_GRAVITY * apply_deadzone(self.pitch.x, PITCH_DEADZONE) # driving uphill is positive pitch
-          accel += self.accel_g
-          brake_accel = actuators.accel + self.accel_g * interp(CS.out.vEgo, BRAKE_PITCH_FACTOR_BP, BRAKE_PITCH_FACTOR_V)
+          if frogpilot_toggles.long_pitch:
+            accel_due_to_pitch = ACCELERATION_DUE_TO_GRAVITY * apply_deadzone(self.pitch.x, PITCH_DEADZONE) # driving uphill is positive pitch
+            accel += accel_due_to_pitch
+            brake_accel += accel_due_to_pitch * interp(CS.out.vEgo, BRAKE_PITCH_FACTOR_BP, BRAKE_PITCH_FACTOR_V)
 
         at_full_stop = CC.longActive and CS.out.standstill
         near_stop = CC.longActive and (CS.out.vEgo < self.params.NEAR_STOP_BRAKE_PHASE)
@@ -155,7 +144,7 @@ class CarController(CarControllerBase):
             self.apply_gas = self.params.INACTIVE_REGEN
           if self.CP.carFingerprint in CC_ONLY_CAR:
             # gas interceptor only used for full long control on cars without ACC
-            interceptor_gas_cmd = self.calc_pedal_command(actuators.accel, CC.longActive)
+            interceptor_gas_cmd = self.calc_pedal_command(actuators.accel, CS.out.vEgo)
 
         if self.CP.enableGasInterceptor and self.apply_gas > self.params.INACTIVE_REGEN and CS.out.cruiseState.standstill:
           # "Tap" the accelerator pedal to re-engage ACC
@@ -168,14 +157,14 @@ class CarController(CarControllerBase):
         if self.CP.flags & GMFlags.CC_LONG.value:
           if CC.longActive and CS.out.vEgo > self.CP.minEnableSpeed:
             # Using extend instead of append since the message is only sent intermittently
-            can_sends.extend(gmcan.create_gm_cc_spam_command(self.packer_pt, self, CS, actuators))
+            can_sends.extend(gmcan.create_gm_cc_spam_command(self.packer_pt, self, CS, actuators, frogpilot_toggles.is_metric))
         if self.CP.enableGasInterceptor:
           can_sends.append(create_gas_interceptor_command(self.packer_pt, interceptor_gas_cmd, idx))
         if self.CP.carFingerprint not in CC_ONLY_CAR:
           friction_brake_bus = CanBus.CHASSIS
           # GM Camera exceptions
           # TODO: can we always check the longControlState?
-          if self.CP.networkLocation == NetworkLocation.fwdCamera and self.CP.carFingerprint not in CC_ONLY_CAR:
+          if self.CP.networkLocation == NetworkLocation.fwdCamera:
             at_full_stop = at_full_stop and stopping
             friction_brake_bus = CanBus.POWERTRAIN
 
@@ -198,13 +187,10 @@ class CarController(CarControllerBase):
           send_fcw = hud_alert == VisualAlert.fcw
           can_sends.append(gmcan.create_acc_dashboard_command(self.packer_pt, CanBus.POWERTRAIN, CC.enabled,
                                                               hud_v_cruise * CV.MS_TO_KPH, hud_control, send_fcw))
-      else:
-        # to keep accel steady for logs when not sending gas
-        accel += self.accel_g
 
       # Radar needs to know current speed and yaw rate (50hz),
       # and that ADAS is alive (10hz)
-      if not self.CP.radarUnavailable:
+      if not self.CP.radarUnavailable and self.CP.networkLocation == NetworkLocation.gateway:
         tt = self.frame * DT_CTRL
         time_and_headlights_step = 10
         if self.frame % time_and_headlights_step == 0:
@@ -250,12 +236,10 @@ class CarController(CarControllerBase):
         can_sends.append(gmcan.create_pscm_status(self.packer_pt, CanBus.CAMERA, CS.pscm_status))
 
     new_actuators = actuators.as_builder()
-    new_actuators.accel = accel
     new_actuators.steer = self.apply_steer_last / self.params.STEER_MAX
     new_actuators.steerOutputCan = self.apply_steer_last
     new_actuators.gas = self.apply_gas
     new_actuators.brake = self.apply_brake
-    new_actuators.speed = self.apply_speed
 
     self.frame += 1
     return new_actuators, can_sends

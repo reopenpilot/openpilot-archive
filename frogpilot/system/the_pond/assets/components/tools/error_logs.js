@@ -87,15 +87,19 @@ export function mount(container) {
     }
 
     state.busy = true;
+    let title = "Delete error logs";
     let message = "Delete all error logs? This cannot be undone.";
+    let success = "Error logs deleted!";
     let target = "delete_all";
     if (filename) {
+      title = "Delete error log";
       message = `Delete “${filename}”? This cannot be undone.`;
+      success = "Error log deleted!";
       target = encodeURIComponent(filename);
     }
 
     try {
-      const confirmed = await confirmDialog("Delete error logs", message, { confirmText: "Delete", danger: true });
+      const confirmed = await confirmDialog(title, message, { confirmText: "Delete", danger: true });
       if (!confirmed || controller.signal.aborted) {
         return;
       }
@@ -108,7 +112,7 @@ export function mount(container) {
       state.files = state.files.filter(file => filename && file.filename !== filename);
 
       if (!controller.signal.aborted) {
-        showSnackbar("Error logs deleted!");
+        showSnackbar(success);
       }
     } catch (error) {
       if (!controller.signal.aborted) {

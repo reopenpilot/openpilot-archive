@@ -10,27 +10,27 @@ import stat
 import subprocess
 import tempfile
 import threading
+import time
 
 from contextlib import ExitStack, contextmanager
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
 
-from flask import Blueprint, Response, abort, request, send_file, stream_with_context
+from flask import Blueprint, abort, jsonify, request, send_file
 from werkzeug.utils import secure_filename
 
 from openpilot.common.swaglog import cloudlog
-from openpilot.system.hardware.hw import Paths
-from openpilot.system.loggerd.deleter import PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE, PRESERVE_COUNT, PRESERVE_ROUTE_ATTR_NAME, has_preserve_attr
+from openpilot.system.loggerd.deleter import PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE, PRESERVE_COUNT
 
-from openpilot.frogpilot.common.frogpilot_variables import SCREEN_RECORDINGS_PATH, VIDEO_CACHE_PATH, params
-from openpilot.frogpilot.system.the_pond.device import logger_running
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.system.the_pond.device import is_driving, logger_running
 from openpilot.frogpilot.system.the_pond.helpers import is_within
 
 blueprint = Blueprint("media", __name__)
 
 CAMERAS = {"forward": "fcamera.hevc", "wide": "ecamera.hevc", "driver": "dcamera.hevc"}
-FOOTAGE_PATHS = tuple(dict.fromkeys((Paths.log_root(HD=True, raw=True), Paths.log_root(konik=True, raw=True), Paths.log_root(raw=True))))
+FOOTAGE_PATHS = frogpilot_utilities.get_log_roots()
 LOG_FILES = ("rlog", "rlog.bz2", "raw_log.bz2", "qlog", "qlog.bz2")
 PROTECTED_SUFFIXES = (".hevc", ".ts", ".png", ".gif", ".lock")
 SEGMENT_PATTERN = re.compile(r"([0-9a-fA-F]{8}--[0-9a-fA-F]{10})--(\d+)")
@@ -51,7 +51,6 @@ class MediaProcessor:
 
     self.cache_mutex = threading.Lock()
     self.cache_reserved = 0
-    self.duration_cache = {}
 
     self.nice = []
     if shutil.which("nice") and shutil.which("ionice"):
@@ -78,16 +77,27 @@ class MediaProcessor:
     if not self.ffmpeg_slots.acquire(timeout=MEDIA_WAIT):
       abort(503, "Media processing is busy; try again shortly")
     try:
-      subprocess.run([*self.nice, "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", *arguments],
-                     stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True, timeout=MEDIA_TIMEOUT)
+      command = [*self.nice, "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", *arguments]
+      with subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE) as process:
+        deadline = time.monotonic() + MEDIA_TIMEOUT
+        while True:
+          try:
+            _, stderr = process.communicate(timeout=1)
+            break
+          except subprocess.TimeoutExpired:
+            if is_driving():
+              process.kill()
+              abort(423, "Unavailable while driving. Shift into Park or go offroad to use The Pond.")
+            if time.monotonic() > deadline:
+              process.kill()
+              raise subprocess.TimeoutExpired(command, MEDIA_TIMEOUT) from None
+
+      if process.returncode:
+        raise subprocess.CalledProcessError(process.returncode, command, stderr=stderr)
     finally:
       self.ffmpeg_slots.release()
 
-  def video_duration(self, source, identity):
-    with self.cache_mutex:
-      if identity in self.duration_cache:
-        return self.duration_cache[identity]
-
+  def video_duration(self, source):
     if not self.ffprobe_slots.acquire(timeout=MEDIA_WAIT):
       abort(503, "Media processing is busy; try again shortly")
     try:
@@ -101,17 +111,12 @@ class MediaProcessor:
     finally:
       self.ffprobe_slots.release()
 
-    with self.cache_mutex:
-      if len(self.duration_cache) >= 512:
-        self.duration_cache.pop(next(iter(self.duration_cache)))
-      self.duration_cache[identity] = duration
-
     return duration
 
   def create_preview(self, source, output):
     scale = "scale='min(640,iw)':-1:flags=lanczos"
     if output.suffix.lower() == ".png":
-      midpoint = self.video_duration(source, source_identity(source)) / 2
+      midpoint = self.video_duration(source) / 2
       options = ["-vf", scale, "-frames:v", "1", "-y", str(output)]
       self.run_ffmpeg(["-ss", str(midpoint), "-i", source_path(source), *options])
       if output.stat().st_size == 0:
@@ -125,24 +130,24 @@ class MediaProcessor:
         self.run_ffmpeg(["-i", str(accelerated), "-vf", filters, "-loop", "0", "-y", str(output)])
 
   def trim_cache(self, incoming_bytes=0, required_free=0):
-    entries = [(path, path.stat()) for path in VIDEO_CACHE_PATH.glob("*.mp4")]
+    entries = [(path, path.stat()) for path in frogpilot_paths.VIDEO_CACHE_PATH.glob("*.mp4")]
     entries.sort(key=lambda item: item[1].st_atime)
     size = sum(metadata.st_size for _, metadata in entries)
     allowance = CACHE_MAX_BYTES - min(incoming_bytes, CACHE_MAX_BYTES)
 
     for path, metadata in entries:
-      if size <= allowance and shutil.disk_usage(VIDEO_CACHE_PATH).free >= CACHE_MIN_FREE + required_free:
+      if size <= allowance and shutil.disk_usage(frogpilot_paths.VIDEO_CACHE_PATH).free >= CACHE_MIN_FREE + required_free:
         break
       path.unlink()
       size -= metadata.st_size
 
-    if size > allowance or shutil.disk_usage(VIDEO_CACHE_PATH).free < CACHE_MIN_FREE + required_free:
+    if size > allowance or shutil.disk_usage(frogpilot_paths.VIDEO_CACHE_PATH).free < CACHE_MIN_FREE + required_free:
       abort(503, "Not enough free storage to prepare this video")
 
   @contextmanager
   def reserve_cache(self, size):
     with self.cache_mutex:
-      VIDEO_CACHE_PATH.mkdir(parents=True, exist_ok=True)
+      frogpilot_paths.VIDEO_CACHE_PATH.mkdir(parents=True, exist_ok=True)
       self.trim_cache(size, self.cache_reserved + size)
       self.cache_reserved += size
 
@@ -155,7 +160,7 @@ class MediaProcessor:
   def convert_video(self, files):
     identities = [(str(path), source_identity(source)) for path, source in files]
     key = hashlib.sha256(json.dumps(identities).encode()).hexdigest()
-    output = VIDEO_CACHE_PATH / f"{key}.mp4"
+    output = frogpilot_paths.VIDEO_CACHE_PATH / f"{key}.mp4"
 
     with self.output_lock(output):
       with self.cache_mutex:
@@ -163,7 +168,7 @@ class MediaProcessor:
           return open_source(output)
 
       size = sum(os.fstat(source.fileno()).st_size for _, source in files)
-      with self.reserve_cache(size), tempfile.TemporaryDirectory(prefix=".video-", dir=VIDEO_CACHE_PATH) as temporary:
+      with self.reserve_cache(size), tempfile.TemporaryDirectory(prefix=".video-", dir=frogpilot_paths.VIDEO_CACHE_PATH) as temporary:
         temporary = Path(temporary)
         converted = temporary / "video.mp4"
         if len(files) == 1:
@@ -176,7 +181,7 @@ class MediaProcessor:
         try:
           tail = ["-movflags", "+faststart", "-y", str(converted)]
           try:
-            self.run_ffmpeg([*inputs, "-c", "copy", *tail])
+            self.run_ffmpeg([*inputs, "-c", "copy", "-tag:v", "hvc1", *tail])
           except subprocess.CalledProcessError:
             self.run_ffmpeg([*inputs, "-c:v", "libx264", *tail])
         except subprocess.SubprocessError:
@@ -225,34 +230,7 @@ def storage_lock(path, exclusive=False):
 
 @contextmanager
 def recording_lock(exclusive=False):
-  path = SCREEN_RECORDINGS_PATH.with_suffix(".lock")
-  staging = Path(f"{SCREEN_RECORDINGS_PATH}.in_progress")
-  if staging.is_symlink():
-    abort(500, "Invalid screen-recording staging directory")
-
-  staged = list(staging.glob("*.mp4.ready"))
-  if staged:
-    with storage_lock(path, True):
-      for ready in staged:
-        if not ready.is_file() or ready.is_symlink():
-          continue
-
-        destination = SCREEN_RECORDINGS_PATH / ready.name.removesuffix(".ready")
-        candidate = destination
-        suffix = 0
-        while True:
-          try:
-            os.link(ready, candidate)
-            break
-          except FileExistsError:
-            if os.path.samefile(ready, candidate):
-              break
-            suffix += 1
-            candidate = destination.with_name(f"{destination.stem}-{suffix}.mp4")
-
-        ready.unlink()
-
-  with storage_lock(path, exclusive):
+  with storage_lock(frogpilot_paths.SCREEN_RECORDINGS_PATH.with_suffix(".lock"), exclusive):
     yield
 
 
@@ -293,15 +271,6 @@ def send_media(source, filename, attachment=False):
     raise
 
 
-def stream_list(key, items):
-  def generate():
-    yield f"data: {json.dumps({'progress': 0, 'total': len(items)})}\n\n"
-    for processed, item in enumerate(items, 1):
-      yield f"data: {json.dumps({key: [item]})}\n\ndata: {json.dumps({'progress': processed, 'total': len(items)})}\n\n"
-
-  return Response(stream_with_context(generate()), mimetype="text/event-stream")
-
-
 def recording_metadata(path, metadata=None):
   if metadata is None:
     metadata = path.stat()
@@ -309,11 +278,11 @@ def recording_metadata(path, metadata=None):
   generated = False
   stem = path.stem
   try:
-    if re.fullmatch(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d+)?", stem):
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_replay)?(?:_\d+)?", stem):
       if stem.isascii():
         datetime(*map(int, stem[:19].replace("_", "-").split("-")))
       else:
-        datetime.strptime(re.sub(r"_\d+$", "", stem), "%Y-%m-%d_%H-%M-%S")
+        datetime.strptime(re.sub(r"(?:_replay)?(?:_\d+)?$", "", stem), "%Y-%m-%d_%H-%M-%S")
       generated = True
     elif re.fullmatch(r"[A-Za-z]+_\d{1,2}_\d{4}-\d{2}-\d{2}-\d{2}[AP]M(?:-\d+)?", stem):
       datetime.strptime(re.sub(r"-\d+$", "", stem), "%B_%d_%Y-%I-%M-%S%p")
@@ -379,19 +348,19 @@ def preview_response(path, original, lock):
 def list_recordings():
   with recording_lock():
     recordings = []
-    for path in SCREEN_RECORDINGS_PATH.glob("*.mp4"):
+    for path in frogpilot_paths.SCREEN_RECORDINGS_PATH.glob("*.mp4"):
       if path.is_file() and not path.is_symlink():
         recordings.append((path, path.stat()))
 
     recordings.sort(key=lambda item: item[1].st_mtime, reverse=True)
     metadata = [recording_metadata(path, information) for path, information in recordings]
 
-  return stream_list("recordings", metadata)
+  return jsonify(metadata)
 
 
 @blueprint.get("/api/screen_recordings/download/<path:filename>")
 def download_recording(filename):
-  path = media_file(SCREEN_RECORDINGS_PATH, filename, (".mp4",))
+  path = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, filename, (".mp4",))
   with recording_lock():
     if not path.is_file():
       abort(404, "Recording not found")
@@ -400,8 +369,8 @@ def download_recording(filename):
 
 @blueprint.get("/screen_recordings/<path:filename>")
 def recording_preview(filename):
-  path = media_file(SCREEN_RECORDINGS_PATH, filename, (".png", ".gif"))
-  original = media_file(SCREEN_RECORDINGS_PATH, path.with_suffix(".mp4").name, (".mp4",))
+  path = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, filename, (".png", ".gif"))
+  original = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, path.with_suffix(".mp4").name, (".mp4",))
   return preview_response(path, original, recording_lock)
 
 
@@ -418,13 +387,13 @@ def rename_recording():
   if not name:
     abort(400, "Invalid recording name")
 
-  original = media_file(SCREEN_RECORDINGS_PATH, data["old"], (".mp4",))
-  renamed = media_file(SCREEN_RECORDINGS_PATH, f"{name}.mp4", (".mp4",))
+  original = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, data["old"], (".mp4",))
+  renamed = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, f"{name}.mp4", (".mp4",))
   with recording_lock(True):
     if not original.is_file():
       abort(404, "Recording not found")
     if original == renamed:
-      return {"message": "Renamed", "filename": renamed.name}
+      return {"message": "Renamed"}
 
     files = [(original, renamed)]
     files.extend((original.with_suffix(extension), renamed.with_suffix(extension)) for extension in (".png", ".gif"))
@@ -442,7 +411,7 @@ def rename_recording():
         target.rename(source)
       raise
 
-  return {"message": "Renamed", "filename": renamed.name}
+  return {"message": "Renamed"}
 
 
 def remove_recording(path):
@@ -453,7 +422,7 @@ def remove_recording(path):
 
 @blueprint.delete("/api/screen_recordings/delete/<path:filename>")
 def delete_recording(filename):
-  path = media_file(SCREEN_RECORDINGS_PATH, filename, (".mp4",))
+  path = media_file(frogpilot_paths.SCREEN_RECORDINGS_PATH, filename, (".mp4",))
   with recording_lock(True):
     if not path.is_file():
       abort(404, "Recording not found")
@@ -465,7 +434,7 @@ def delete_recording(filename):
 @blueprint.delete("/api/screen_recordings/delete_all")
 def delete_recordings():
   with recording_lock(True):
-    for path in SCREEN_RECORDINGS_PATH.glob("*.mp4"):
+    for path in frogpilot_paths.SCREEN_RECORDINGS_PATH.glob("*.mp4"):
       if path.is_file() and not path.is_symlink():
         remove_recording(path)
 
@@ -474,6 +443,10 @@ def delete_recordings():
 
 def route_lock(exclusive=False):
   return storage_lock(Path(FOOTAGE_PATHS[-1]).parent / ".route_mutation.lock", exclusive)
+
+
+def segment_number(segment):
+  return int(segment.name.rsplit("--", 1)[1])
 
 
 def route_library():
@@ -489,9 +462,20 @@ def route_library():
         routes.setdefault(match[1], []).append(segment)
 
   for segments in routes.values():
-    segments.sort(key=lambda segment: int(segment.name.rsplit("--", 1)[1]))
+    segments.sort(key=segment_number)
 
   return routes
+
+
+def route_segments(name):
+  segments = []
+  for root in FOOTAGE_PATHS:
+    for segment in Path(root).glob(f"{name}--*"):
+      if SEGMENT_PATTERN.fullmatch(segment.name) and segment.is_dir() and not segment.is_symlink():
+        segments.append(segment)
+
+  segments.sort(key=segment_number)
+  return segments
 
 
 def require_route(name, routes=None):
@@ -499,25 +483,27 @@ def require_route(name, routes=None):
     abort(400, "Invalid route name")
 
   if routes is None:
-    routes = route_library()
-  if name not in routes:
+    segments = route_segments(name)
+  else:
+    segments = routes.get(name)
+  if not segments:
     abort(404, "Route not found")
 
-  return routes[name]
+  return segments
 
 
 def route_busy(segments):
-  if any(list(segment.glob("*.lock")) for segment in segments):
-    return True
   if not logger_running():
     return False
+  if any(list(segment.glob("*.lock")) for segment in segments):
+    return True
 
-  current_route = params.get("CurrentRoute", encoding="utf8")
+  current_route = frogpilot_variables.params.get("CurrentRoute", encoding="utf8")
   if current_route and any(segment.name.startswith(f"{current_route}--") for segment in segments):
     return True
 
   try:
-    count = int(params.get("RouteCount", encoding="utf8"))
+    count = int(frogpilot_variables.params.get("RouteCount", encoding="utf8"))
   except (TypeError, ValueError):
     return not current_route
   return any(segment.name.startswith(f"{(count - 1) & 0xffffffff:08x}--") for segment in segments)
@@ -547,9 +533,9 @@ def route_date(segments):
 
 
 def route_preservation(segments):
-  if any(has_preserve_attr(segment, PRESERVE_ROUTE_ATTR_NAME) for segment in segments):
+  if any(frogpilot_utilities.has_preserve_attr(segment, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE) for segment in segments):
     return "route"
-  if any(segment.name.endswith("--0") and has_preserve_attr(segment, PRESERVE_ATTR_NAME) for segment in segments):
+  if any(segment.name.endswith("--0") and frogpilot_utilities.has_preserve_attr(segment, PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE) for segment in segments):
     return "legacy"
   return None
 
@@ -575,6 +561,7 @@ def route_metadata(name, segments):
     "is_custom_name": bool(markers),
     "is_preserved": preservation is not None,
     "preservation": preservation,
+    "recording": route_busy(segments),
   }
 
 
@@ -606,32 +593,16 @@ def list_routes():
       except FileNotFoundError:
         continue  # loggerd can reclaim completed footage during the scan.
 
-  return stream_list("routes", metadata)
+  return jsonify(metadata)
 
 
 @blueprint.get("/api/routes/<name>")
 def route_details(name):
-  sources = []
-  with ExitStack() as stack:
-    with route_lock():
-      segments = require_route(name)
-      cameras = {camera: camera_files(segments, camera) for camera in CAMERAS}
-      date = route_date(segments)
-      if not route_busy(segments):
-        for path in cameras["forward"]:
-          duration_file = path.parent / "qcamera.ts"
-          if not duration_file.is_file() or duration_file.is_symlink():
-            duration_file = path
-          sources.append(stack.enter_context(open_source(duration_file)))
-
-    duration = sum(processor.video_duration(source, source_identity(source)) for source in sources)
+  with route_lock():
+    segments = require_route(name)
+    cameras = {camera: camera_files(segments, camera) for camera in CAMERAS}
 
   return {
-    "name": name,
-    "segment_urls": [f"/video/{segment}" for segment in dict.fromkeys(path.name for path in segments)],
-    "total_duration": round(duration),
-    "date": date,
-    "available_cameras": [camera for camera, files in cameras.items() if files],
     "camera_segments": {camera: [f"/video/{path.parent.name}" for path in files] for camera, files in cameras.items() if files},
   }
 
@@ -654,11 +625,11 @@ def preserve_route(name):
     marked = []
     try:
       for segment in last_segments.values():
-        os.setxattr(segment, PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE)
+        os.setxattr(segment, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE)
         marked.append(segment)
     except OSError:
       for segment in marked:
-        os.removexattr(segment, PRESERVE_ROUTE_ATTR_NAME)
+        os.removexattr(segment, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME)
       raise
 
   return {"message": "Route preserved!", "preservation": "route"}
@@ -672,41 +643,24 @@ def unpreserve_route(name):
     preservation = route_preservation(segments)
 
     for segment in segments:
-      if has_preserve_attr(segment, PRESERVE_ROUTE_ATTR_NAME):
-        os.removexattr(segment, PRESERVE_ROUTE_ATTR_NAME)
-      if preservation != "route" and segment.name.endswith("--0") and has_preserve_attr(segment, PRESERVE_ATTR_NAME):
+      if frogpilot_utilities.has_preserve_attr(segment, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE):
+        os.removexattr(segment, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME)
+      if preservation != "route" and segment.name.endswith("--0") and frogpilot_utilities.has_preserve_attr(segment, PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE):
         os.removexattr(segment, PRESERVE_ATTR_NAME)
 
     preservation = route_preservation(segments)
 
   message = "Route unpreserved!"
   if preservation == "legacy":
-    message = "Whole-route priority removed; the existing first-segment flag remains."
+    message = "Route unpreserved. Its first segment is still preserved."
   return {"message": message, "preservation": preservation}
 
 
 def delete_route_segments(segments):
   require_finished(segments)
 
-  moved = []
-  directories = {}
-  try:
-    for segment in segments:
-      parent = segment.parent.parent
-      if parent not in directories:
-        directories[parent] = Path(tempfile.mkdtemp(prefix=".route-delete-", dir=parent))
-      destination = directories[parent] / f"{len(moved)}-{segment.name}"
-      segment.rename(destination)
-      moved.append((segment, destination))
-  except OSError:
-    for original, destination in reversed(moved):
-      destination.rename(original)
-    for directory in directories.values():
-      directory.rmdir()
-    raise
-
-  for directory in directories.values():
-    shutil.rmtree(directory)
+  for segment in segments:
+    shutil.rmtree(segment)
 
 
 @blueprint.delete("/api/routes/<name>")
@@ -729,6 +683,8 @@ def delete_routes():
     routes = route_library()
     selected = []
     for segments in routes.values():
+      if route_busy(segments):
+        continue
       if data.get("include_preserved", False) or route_preservation(segments) is None:
         selected.extend(segments)
 

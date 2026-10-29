@@ -249,23 +249,14 @@ export function mount(container) {
     state.searching = false;
     state.favoritesVisible = false;
     state.suggestions = [];
-    const name = suggestion.full_address || suggestion.name || suggestion.address || "Unnamed Location";
+    const name = suggestion.full_address || suggestion.place_name || suggestion.name || suggestion.address || "Unnamed Location";
     state.search = name;
 
     try {
       let coordinates = coordinatesOf(suggestion);
-      if (!coordinates) {
-        coordinates = suggestion.geometry?.coordinates;
-      }
-
-      if (!coordinates) {
-        let result;
-        if (suggestion.mapbox_id) {
-          result = await fetchMapbox(`search/searchbox/v1/retrieve/${encodeURIComponent(suggestion.mapbox_id)}`, token,
-            { session_token: sessionToken }, current.signal);
-        } else {
-          result = await fetchMapbox("search/geocode/v6/forward", token, { q: name }, current.signal);
-        }
+      if (!coordinates && suggestion.mapbox_id) {
+        const result = await fetchMapbox(`search/searchbox/v1/retrieve/${encodeURIComponent(suggestion.mapbox_id)}`, token,
+          { session_token: sessionToken }, current.signal);
         coordinates = result.features?.[0]?.geometry?.coordinates;
       }
 
@@ -274,7 +265,7 @@ export function mount(container) {
       }
 
       const result = await fetchMapbox(`directions/v5/mapbox/driving-traffic/${position.join(",")};${coordinates.join(",")}`, token,
-        { geometries: "geojson", annotations: "congestion", overview: "full", alternatives: "true" }, current.signal);
+        { geometries: "geojson", annotations: "congestion,distance", overview: "full", alternatives: "true" }, current.signal);
       if (current.signal.aborted || controller.signal.aborted) {
         return;
       }
@@ -308,7 +299,7 @@ export function mount(container) {
   }
 
   function sendDestination() {
-    const destination = { ...selectedDestination };
+    const destination = { place_name: selectedDestination.name, latitude: selectedDestination.latitude, longitude: selectedDestination.longitude };
     action(async () => {
       const result = await mutate("/api/navigation", "POST", destination);
       if (!controller.signal.aborted) {
@@ -370,7 +361,8 @@ export function mount(container) {
       try {
         const destinations = JSON.parse(data.previousDestinations || "[]");
         if (Array.isArray(destinations)) {
-          previous = destinations.map(destination => ({ name: destination.place_name || destination.name, geometry: destination.geometry }));
+          previous = destinations.map(destination => ({ name: destination.place_name || destination.name, latitude: destination.latitude,
+            longitude: destination.longitude }));
         }
       } catch {
         previous = [];

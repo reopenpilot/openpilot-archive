@@ -1,7 +1,9 @@
 import { html, reactive } from "/assets/vendor/arrow.mjs";
-import { fetchEvents, fetchJson } from "/assets/js/api.js";
+import { fetchJson } from "/assets/js/api.js";
 import { showSnackbar } from "/assets/js/snackbar.js";
 import { confirmDialog, openDialog } from "/assets/components/modal.js";
+
+export const MEDIA_NAME_PATTERN = "[A-Za-z0-9 _\\-]+";
 
 export function formatMediaDate(value) {
   const date = new Date(value);
@@ -19,6 +21,55 @@ export function formatMediaDate(value) {
   return `${month} ${day}${ending}, ${date.getFullYear()} - ${time}`;
 }
 
+export function loadPreviews(container) {
+  const loading = new Set();
+  const observed = new WeakSet();
+  const queue = [];
+
+  function next() {
+    while (loading.size < 3 && queue.length) {
+      const image = queue.shift();
+      if (!image.isConnected) {
+        visibility.observe(image);
+        continue;
+      }
+
+      const finish = () => {
+        loading.delete(image);
+        next();
+      };
+      image.addEventListener("load", finish, { once: true });
+      image.addEventListener("error", finish, { once: true });
+      loading.add(image);
+      image.src = image.dataset.src;
+    }
+  }
+
+  const visibility = new IntersectionObserver(entries => {
+    entries.filter(entry => entry.isIntersecting).forEach(entry => {
+      visibility.unobserve(entry.target);
+      queue.push(entry.target);
+    });
+    next();
+  });
+
+  const cards = new MutationObserver(() => {
+    container.querySelectorAll("img[data-src]").forEach(image => {
+      if (!observed.has(image)) {
+        observed.add(image);
+        visibility.observe(image);
+      }
+    });
+  });
+  cards.observe(container, { childList: true, subtree: true });
+
+  return () => {
+    cards.disconnect();
+    visibility.disconnect();
+    queue.length = 0;
+  };
+}
+
 export function stopPreviews(container) {
   container.querySelectorAll(".recording-preview-gif").forEach(image => {
     image.hidden = true;
@@ -28,21 +79,21 @@ export function stopPreviews(container) {
 
 export function mediaCard(item, title, open, disabled, action = "") {
   return html`
-    <article class="recording-card"
-      @mouseenter="${event => {
-        if (disabled()) {
-          return;
-        }
-
-        const image = event.currentTarget.querySelector(".recording-preview-gif");
-        image.src = item.gif;
-        image.hidden = false;
-      }}"
-      @mouseleave="${event => stopPreviews(event.currentTarget)}">
+    <article class="recording-card">
       <button type="button" class="recording-open" aria-label="${() => `Open ${title}`}"
-        disabled="${disabled}" @click="${open}">
+        disabled="${disabled}" @click="${open}"
+        @mouseenter="${event => {
+          if (disabled()) {
+            return;
+          }
+
+          const image = event.currentTarget.querySelector(".recording-preview-gif");
+          image.src = item.gif;
+          image.hidden = false;
+        }}"
+        @mouseleave="${event => stopPreviews(event.currentTarget)}">
         <span class="recording-preview-container" aria-busy="true">
-          <img class="recording-preview" src="${() => item.png}" alt="" loading="lazy" decoding="async"
+          <img class="recording-preview" data-src="${() => item.png}" alt="" decoding="async"
             @load="${event => {
               event.currentTarget.parentElement.setAttribute("aria-busy", "false");
             }}"
@@ -72,7 +123,8 @@ function recordingTitle(recording) {
 
 export function mount(container) {
   const controller = new AbortController();
-  const state = reactive({ busy: false, error: "", loading: true, recordings: [], total: 0 });
+  const state = reactive({ busy: false, error: "", loading: true, recordings: [] });
+  const stopLoading = loadPreviews(container);
   let player = null;
 
   async function refresh() {
@@ -83,18 +135,9 @@ export function mount(container) {
     state.loading = true;
     state.error = "";
     state.recordings = [];
-    state.total = 0;
 
     try {
-      await fetchEvents("/api/screen_recordings/list", data => {
-        if (data.recordings) {
-          state.recordings.push(...data.recordings);
-        }
-
-        if (data.total !== undefined) {
-          state.total = data.total;
-        }
-      }, { signal: controller.signal });
+      state.recordings = await fetchJson("/api/screen_recordings/list", { signal: controller.signal });
     } catch (error) {
       if (!controller.signal.aborted) {
         state.error = error.message;
@@ -114,8 +157,8 @@ export function mount(container) {
     state.busy = true;
 
     try {
-      const name = await confirmDialog("Rename recording", "Choose a name for this recording.", {
-        confirmText: "Save", inputValue: recording.filename.replace(/\.mp4$/i, ""),
+      const name = await confirmDialog("Rename recording", "Choose a name for this recording. Use letters, numbers, spaces, and hyphens.", {
+        confirmText: "Save", inputValue: recording.filename.replace(/\.mp4$/i, ""), pattern: MEDIA_NAME_PATTERN,
       });
       if (typeof name !== "string" || !name.trim() || controller.signal.aborted) {
         return;
@@ -149,14 +192,18 @@ export function mount(container) {
     state.busy = true;
 
     try {
+      let title = "Delete recordings";
       let message = "Delete all completed screen recordings? This cannot be undone.";
+      let success = "Recordings deleted!";
       let url = "/api/screen_recordings/delete_all";
       if (recording) {
+        title = "Delete recording";
         message = `Delete “${recordingTitle(recording)}”? This cannot be undone.`;
+        success = "Recording deleted!";
         url = `/api/screen_recordings/delete/${encodeURIComponent(recording.filename)}`;
       }
 
-      const confirmed = await confirmDialog("Delete recordings", message, { confirmText: "Delete", danger: true });
+      const confirmed = await confirmDialog(title, message, { confirmText: "Delete", danger: true });
       if (!confirmed || controller.signal.aborted) {
         return;
       }
@@ -167,7 +214,7 @@ export function mount(container) {
       await refresh();
 
       if (!controller.signal.aborted) {
-        showSnackbar("Recordings deleted!");
+        showSnackbar(success);
       }
     } catch (error) {
       if (!controller.signal.aborted) {
@@ -238,20 +285,10 @@ export function mount(container) {
         <button type="button" class="show-preserved-button" hidden="${() => !state.error}" @click="${refresh}">Try again</button>
         <div class="screen-recordings-grid" aria-label="Screen recordings" aria-busy="${() => state.loading}">
           ${() => state.recordings.map(recording => mediaCard(recording, recordingTitle(recording), () => play(recording), () => state.busy || state.loading))}
-          ${() => {
-            if (!state.loading) {
-              return "";
-            }
-
-            const count = Math.min(6, Math.max(0, state.total - state.recordings.length));
-
-            return Array.from({ length: count }, () => html`<article class="recording-card" aria-hidden="true">
-              <span class="recording-preview-container" aria-busy="true"></span>
-              <span class="recording-filename">...</span>
-            </article>`);
-          }}
         </div>
-        <button type="button" class="delete-all-button" hidden="${() => !state.recordings.length && !(state.loading && state.total)}"
+        <button type="button" class="delete-all-button" hidden="${() => {
+          return !state.recordings.length;
+        }}"
           disabled="${() => state.loading || state.busy}" @click="${() => remove()}">
           ${() => state.busy ? "Please wait..." : "Delete All Recordings"}
         </button>
@@ -263,6 +300,7 @@ export function mount(container) {
 
   return () => {
     controller.abort();
+    stopLoading();
     player?.close();
     container.querySelectorAll("img").forEach(image => image.removeAttribute("src"));
   };

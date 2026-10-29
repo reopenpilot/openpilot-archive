@@ -4,7 +4,6 @@ import { mountSidebar, selectPage, updateAvailability } from "/assets/components
 const pages = {
   "/": "home/home",
   "/dashcam_routes": "recordings/dashcam_routes",
-  "/download_speed_limits": "tools/speed_limits",
   "/lock_or_unlock_doors": "tools/doors",
   "/manage_error_logs": "tools/error_logs",
   "/manage_navigation_keys": "navigation/navigation_keys",
@@ -20,11 +19,16 @@ const pages = {
 const content = document.getElementById("page");
 const overlay = document.getElementById("driving_lock");
 
+const pairingForm = document.getElementById("pairing_form");
+const pairingBoxes = [...pairingForm.querySelectorAll("input")];
+const pairingMessage = document.getElementById("pairing_message");
+
 const state = {
   availabilityController: undefined,
   cleanup: undefined,
   locked: true,
   pageVersion: 0,
+  pairing: false,
   stylesheets: new Map(),
 };
 
@@ -95,21 +99,36 @@ async function showPage() {
   }
 }
 
-function setLocked(value, reachable) {
+function setLocked(value, reachable, pairing) {
   const changed = state.locked !== value;
+  const pairingStarted = pairing && !state.pairing;
   state.locked = value;
+  state.pairing = pairing;
   overlay.hidden = !value;
+  pairingForm.hidden = !pairing;
   document.getElementById("app").inert = value;
   document.getElementById("menu_button").inert = value;
 
   const title = document.getElementById("lock_title");
   const message = document.getElementById("lock_message");
-  if (reachable) {
+  if (pairing) {
+    title.textContent = "Pair this browser";
+    message.textContent = "Enter the 6-digit code shown next to “Manage Your Settings At” in the car's Navigation settings.";
+  } else if (reachable) {
     title.textContent = "The Pond is locked while driving";
     message.textContent = "Shift into Park to use The Pond.";
   } else {
     title.textContent = "Can't reach your device";
     message.textContent = "The Pond will reconnect automatically when your device is available.";
+  }
+
+  if (pairingStarted) {
+    for (const box of pairingBoxes) {
+      box.value = "";
+    }
+
+    pairingMessage.textContent = "Turning pairing off and back on makes a new one.";
+    pairingBoxes[0].focus();
   }
 
   if (!changed) {
@@ -120,7 +139,10 @@ function setLocked(value, reachable) {
     state.availabilityController?.abort();
     selectPage(location.pathname);
     leavePage();
-    overlay.focus();
+
+    if (!pairing) {
+      overlay.focus();
+    }
   } else {
     state.availabilityController = new AbortController();
     updateAvailability(state.availabilityController.signal).catch(error => {
@@ -142,9 +164,10 @@ async function checkDriving() {
       throw new Error("Invalid device state");
     }
 
-    setLocked(data.onroad, true);
+    const pairing = !data.onroad && !data.paired;
+    setLocked(data.onroad || pairing, true, pairing);
   } catch {
-    setLocked(true, false);
+    setLocked(true, false, false);
   } finally {
     clearTimeout(timeout);
     setTimeout(checkDriving, 1000);
@@ -172,6 +195,63 @@ document.addEventListener("click", event => {
   history.pushState(null, "", url);
   window.scrollTo(0, 0);
   showPage();
+});
+
+for (let index = 0; index < pairingBoxes.length; index++) {
+  const box = pairingBoxes[index];
+
+  box.addEventListener("input", () => {
+    box.value = box.value.replace(/\D/g, "").slice(0, 1);
+    if (box.value && index < 5) {
+      pairingBoxes[index + 1].focus();
+    }
+  });
+
+  box.addEventListener("keydown", event => {
+    if (event.key === "Backspace" && !box.value && index > 0) {
+      pairingBoxes[index - 1].focus();
+    }
+  });
+
+  box.addEventListener("paste", event => {
+    const digits = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!digits) {
+      return;
+    }
+
+    event.preventDefault();
+    for (let digit = 0; digit < digits.length; digit++) {
+      pairingBoxes[digit].value = digits[digit];
+    }
+
+    pairingBoxes[Math.min(5, digits.length)].focus();
+  });
+}
+
+pairingForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  let code = "";
+  for (const box of pairingBoxes) {
+    code += box.value;
+  }
+
+  if (code.length < 6) {
+    pairingMessage.textContent = "Enter all 6 digits.";
+    return;
+  }
+
+  const button = pairingForm.querySelector("button");
+  button.disabled = true;
+
+  try {
+    await fetchJson("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }) });
+    pairingMessage.textContent = "Paired. Welcome to The Pond.";
+  } catch (error) {
+    pairingMessage.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
 });
 
 document.fonts.ready.then(checkDriving);

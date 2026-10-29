@@ -13,67 +13,19 @@ from flask import Blueprint, abort
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from cereal import messaging
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.hardware import HARDWARE
 
+from openpilot.frogpilot.common import frogpilot_paths
 from openpilot.frogpilot.system.the_pond.device import is_driving, state
 
 blueprint = Blueprint("tailscale", __name__)
 
-TAILSCALE_PATH = Path("/data/tailscale")
-UNIT_PATH = Path("/etc/systemd/system/tailscaled.service")
-
-
-def service_unit():
-  return f"""[Unit]
-Description=Tailscale node agent
-After=network.target
-
-[Service]
-ExecStart={TAILSCALE_PATH}/tailscaled \\
-  --tun=userspace-networking \\
-  --socks5-server=localhost:1055 \\
-  --state={TAILSCALE_PATH}/state/tailscaled.state \\
-  --socket={TAILSCALE_PATH}/tailscaled.sock \\
-  --statedir={TAILSCALE_PATH}/state
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-"""
-
 
 def managed_installation():
-  expected = service_unit()
-  marker = TAILSCALE_PATH / ".the_pond_managed"
-
-  try:
-    if not (TAILSCALE_PATH / "tailscale").is_file() or not (TAILSCALE_PATH / "tailscaled").is_file():
-      return False
-
-    installed_lines = [line.strip() for line in UNIT_PATH.read_text().splitlines() if line.strip()]
-    expected_lines = [line.strip() for line in expected.splitlines() if line.strip()]
-    return installed_lines == expected_lines and (not marker.exists() or marker.read_text().strip() == hashlib.sha256(expected.encode()).hexdigest())
-  except OSError:
-    return False
-
-
-def command(arguments):
-  return subprocess.run(arguments, check=True, capture_output=True, text=True, timeout=60).stdout.strip()
-
-
-@contextmanager
-def writable_root():
-  read_only = os.statvfs("/").f_flag & os.ST_RDONLY
-  if read_only:
-    command(["sudo", "mount", "-o", "remount,rw", "/"])
-
-  try:
-    yield
-  finally:
-    if read_only:
-      command(["sudo", "mount", "-o", "remount,ro", "/"])
+  installed = all((frogpilot_paths.TAILSCALE_PATH / name).is_file() for name in ("tailscale", "tailscaled"))
+  return installed and not frogpilot_paths.UNIT_PATH.exists()
 
 
 @contextmanager
@@ -88,9 +40,9 @@ def installation_operation():
 
 
 def login_url():
-  arguments = ["sudo", str(TAILSCALE_PATH / "tailscale"), "--socket", str(TAILSCALE_PATH / "tailscaled.sock")]
+  arguments = [str(frogpilot_paths.TAILSCALE_PATH / "tailscale"), "--socket", str(frogpilot_paths.TAILSCALE_SOCKET_PATH)]
   arguments += ["up", "--hostname", f"{HARDWARE.get_device_type()}-the-pond"]
-  process = subprocess.Popen(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+  process = subprocess.Popen(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
   try:
     output = b""
@@ -103,6 +55,8 @@ def login_url():
 
         chunk = os.read(process.stdout.fileno(), 4096)
         if not chunk:
+          if process.wait(timeout=5) == 0:
+            return None
           break
 
         output += chunk
@@ -114,14 +68,12 @@ def login_url():
   finally:
     try:
       if process.poll() is None:
-        result = subprocess.run(["sudo", "kill", "-TERM", f"-{process.pid}"], capture_output=True, timeout=5)
-        if result.returncode and process.poll() is None:
-          raise RuntimeError("Could not stop Tailscale sign-in")
+        process.terminate()
 
       try:
         process.wait(timeout=5)
       except subprocess.TimeoutExpired:
-        command(["sudo", "kill", "-KILL", f"-{process.pid}"])
+        process.kill()
         process.wait(timeout=5)
     finally:
       process.stdout.close()
@@ -130,14 +82,14 @@ def login_url():
 @blueprint.get("/api/tailscale/installed")
 def installation_status():
   managed = managed_installation()
-  external = not managed and (UNIT_PATH.exists() or shutil.which("tailscale") is not None)
-  return {"external": external, "installed": managed or external, "managed": managed}
+  external = not managed and (frogpilot_paths.UNIT_PATH.exists() or shutil.which("tailscale") is not None)
+  return {"external": external, "installed": managed or external}
 
 
 @blueprint.post("/api/tailscale/setup")
 def install():
   with installation_operation(), requests.Session() as session:
-    if (UNIT_PATH.exists() or shutil.which("tailscale")) and not managed_installation():
+    if (frogpilot_paths.UNIT_PATH.exists() or shutil.which("tailscale")) and not managed_installation():
       abort(409, "Tailscale is managed outside The Pond")
 
     if not managed_installation():
@@ -160,8 +112,8 @@ def install():
       if not checksum or re.fullmatch(r"[0-9a-fA-F]{64}", checksum[0]) is None:
         abort(502, "Invalid Tailscale checksum")
 
-      TAILSCALE_PATH.mkdir(parents=True, exist_ok=True)
-      with TemporaryDirectory(prefix=".install-", dir=TAILSCALE_PATH) as temporary:
+      frogpilot_paths.TAILSCALE_PATH.mkdir(parents=True, exist_ok=True)
+      with TemporaryDirectory(prefix=".install-", dir=frogpilot_paths.TAILSCALE_PATH) as temporary:
         archive_path = Path(temporary) / "tailscale.tgz"
         digest = hashlib.sha256()
 
@@ -189,22 +141,22 @@ def install():
           abort(423, "Tailscale installation is unavailable while driving")
 
         for name in ("tailscale", "tailscaled"):
-          (Path(temporary) / name).replace(TAILSCALE_PATH / name)
-        (TAILSCALE_PATH / "state").mkdir(exist_ok=True)
+          (Path(temporary) / name).replace(frogpilot_paths.TAILSCALE_PATH / name)
+        frogpilot_paths.TAILSCALE_STATE_PATH.mkdir(exist_ok=True)
 
-        unit = service_unit()
-        unit_file = TAILSCALE_PATH / "tailscaled.service"
-        unit_file.write_text(unit)
+      state.send_request("updateToggles")
 
-        with writable_root():
-          command(["sudo", "install", "-m", "644", str(unit_file), str(UNIT_PATH)])
-          (TAILSCALE_PATH / ".the_pond_managed").write_text(hashlib.sha256(unit.encode()).hexdigest())
+      deadline = time.monotonic() + 30
+      while not frogpilot_paths.TAILSCALE_SOCKET_PATH.exists():
+        if time.monotonic() > deadline:
+          abort(504, "Tailscale did not start. Please try again.")
+        time.sleep(1)
 
-          command(["sudo", "systemctl", "daemon-reload"])
-          command(["sudo", "systemctl", "enable", str(UNIT_PATH)])
-          command(["sudo", "systemctl", "restart", "tailscaled"])
+    auth_url = login_url()
+    if auth_url is None:
+      return {"message": "Tailscale is already signed in."}
 
-    return {"message": "Tailscale is ready for sign-in.", "auth_url": login_url()}
+    return {"message": "Tailscale is ready for sign-in.", "auth_url": auth_url}
 
 
 @blueprint.post("/api/tailscale/uninstall")
@@ -214,15 +166,17 @@ def uninstall():
       abort(409, "Tailscale is managed outside The Pond")
 
     cloudlog.warning("The Pond: Tailscale uninstall requested")
-    command(["sudo", "systemctl", "stop", "tailscaled"])
+    for name in ("tailscale", "tailscaled"):
+      (frogpilot_paths.TAILSCALE_PATH / name).unlink()
+    state.send_request("updateToggles")
 
-    with writable_root():
-      command(["sudo", "systemctl", "disable", "tailscaled"])
-      command(["sudo", "rm", "--", str(UNIT_PATH)])
-    command(["sudo", "systemctl", "daemon-reload"])
-    command(["sudo", "rm", "-rf", "--", str(TAILSCALE_PATH)])
+    subscriber = messaging.SubMaster(["managerState"])
+    deadline = time.monotonic() + 15
+    while time.monotonic() < deadline:
+      subscriber.update(1000)
+      if subscriber.updated["managerState"] and not any(process.name == "tailscaled" and process.running for process in subscriber["managerState"].processes):
+        break
 
-    if UNIT_PATH.exists() or TAILSCALE_PATH.exists():
-      abort(500, "Tailscale uninstall is incomplete")
+    shutil.rmtree(frogpilot_paths.TAILSCALE_PATH)
 
   return {"message": "Tailscale uninstalled!"}

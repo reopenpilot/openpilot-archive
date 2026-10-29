@@ -1,4 +1,5 @@
 import base64
+import hmac
 import json
 import math
 import re
@@ -6,13 +7,12 @@ import threading
 import time
 
 from datetime import datetime
-from flask import Blueprint, abort, jsonify, request, send_file
+from flask import Blueprint, Response, abort, jsonify, request, send_file
 from io import BytesIO
 
 from cereal import car, messaging
 from opendbc.can.parser import CANParser
 from openpilot.common.conversions import Conversions as CV
-from openpilot.common.params import ParamKeyType
 from openpilot.common.swaglog import cloudlog
 from openpilot.selfdrive.car.toyota.carcontroller import LOCK_CMD, UNLOCK_CMD
 from openpilot.system.hardware import HARDWARE
@@ -20,15 +20,18 @@ from openpilot.system.loggerd.config import get_available_bytes, get_used_bytes
 from openpilot.system.version import get_build_metadata
 
 from openpilot.frogpilot.selfdrive.car.toyota.door_control import create_door_command
-from openpilot.frogpilot.selfdrive.ui.theme_manager import DOWNLOAD_PROGRESS_PARAM
-from openpilot.frogpilot.common.frogpilot_variables import EXCLUDED_KEYS, frogpilot_default_params, params, params_memory, update_frogpilot_toggles
-from openpilot.frogpilot.system.the_pond.helpers import format_ordinal_date, is_safe_display_name, json_body
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.system.the_pond.helpers import format_ordinal_date, is_paired, is_safe_display_name, json_body, pair_browser
 
 blueprint = Blueprint("device", __name__)
 
+NUMERIC_KEYS = {key for key, value, _, _ in frogpilot_variables.frogpilot_default_params if re.fullmatch(r"-?[0-9]+(\.[0-9]+)?", value)}
+NUMERIC_KEYS |= frogpilot_variables.EMPTY_DEFAULT_FLOAT_KEYS
+PAIRING_ATTEMPTS = 10
+PAIRING_WINDOW = 10 * 60
 PARAM_KEYS = {
   "DiscordUsername", "DownloadableColors", "DownloadableDistanceIcons", "DownloadableIcons", "DownloadableSignals", "DownloadableSounds",
-  "DownloadableWheels", "IsMetric",
+  "DownloadableWheels",
 }
 STATE_TIMEOUT = 3
 
@@ -37,20 +40,28 @@ class DeviceState:
   def __init__(self):
     self.door_lock = threading.Lock()
     self.favorites_lock = threading.Lock()
+    self.pairing_lock = threading.Lock()
     self.params_lock = threading.Lock()
+    self.request_lock = threading.Lock()
     self.tailscale_lock = threading.Lock()
     self.theme_lock = threading.Lock()
     self.tmux_lock = threading.Lock()
 
+    self.pm = messaging.PubMaster(["thePondRequest"])
+    self.process_state_sock = messaging.sub_sock("frogpilotProcessState", conflate=True)
+
+    self.pairing_failures = []
+    self.process_state = None
     self.snapshot = (None, False, True, 0)
+    self.theme_download_request_time = 0
 
   def run(self):
-    subscriber = messaging.SubMaster(["frogpilotCarState", "managerState"])
+    subscriber = messaging.SubMaster(["frogpilotCarState", "managerState"], poll="managerState")
 
     while True:
       try:
         subscriber.update(1000)
-        onroad = params.get("IsOnroad")
+        onroad = frogpilot_variables.params.get("IsOnroad")
         previous_onroad = self.snapshot[0]
 
         parked = False
@@ -67,12 +78,56 @@ class DeviceState:
         cloudlog.exception("The Pond could not read device state")
         time.sleep(1)
 
+  def download_theme(self, component, theme):
+    msg = messaging.new_message("thePondRequest")
+    theme_download = msg.thePondRequest.request.init("downloadTheme", 1)[0]
+    theme_download.component = component
+    theme_download.theme = theme
+    with self.request_lock:
+      self.theme_download_request_time = msg.logMonoTime
+      self.pm.send("thePondRequest", msg)
+
+  def send_request(self, kind):
+    msg = messaging.new_message("thePondRequest")
+    setattr(msg.thePondRequest.request, kind, None)
+    with self.request_lock:
+      self.pm.send("thePondRequest", msg)
+
+  def theme_download(self):
+    with self.request_lock:
+      msg = messaging.recv_one_or_none(self.process_state_sock)
+      if msg is not None:
+        self.process_state = msg
+
+      if self.process_state is None:
+        return self.theme_download_request_time != 0, None
+
+      process_state = self.process_state.frogpilotProcessState
+      return process_state.downloadThemeRequestTime < self.theme_download_request_time, process_state
+
+  def theme_download_progress(self):
+    pending, process_state = self.theme_download()
+    if pending:
+      return "Downloading..."
+    if process_state is None:
+      return ""
+    return process_state.themeDownloadProgress
+
+  def theme_download_running(self):
+    pending, process_state = self.theme_download()
+    if pending or process_state is None:
+      return pending
+
+    finished = process_state.themeDownloadFailedCount + process_state.themeDownloadSuccessCount >= process_state.themeDownloadCount
+    stopped = process_state.themeDownloadProgress in ("Download cancelled...", "GitHub and GitLab are offline...")
+    return not (finished or stopped)
+
 
 state = DeviceState()
 
 
 def is_driving():
-  onroad = params.get("IsOnroad")
+  onroad = frogpilot_variables.params.get("IsOnroad")
   if onroad == b"0":
     return False
 
@@ -82,14 +137,14 @@ def is_driving():
 
 def logger_running():
   onroad, _, running, updated = state.snapshot
-  if params.get("IsOnroad") != onroad or time.monotonic() - updated > STATE_TIMEOUT:
+  if frogpilot_variables.params.get("IsOnroad") != onroad or time.monotonic() - updated > STATE_TIMEOUT:
     return True
   if running:
     return True
 
   if onroad == b"1":
     try:
-      toggles = json.loads(params_memory.get("FrogPilotToggles") or b"{}")
+      toggles = json.loads(frogpilot_variables.params_memory.get("FrogPilotToggles") or b"{}")
     except ValueError:
       return True
     return not isinstance(toggles, dict) or toggles.get("no_logging") is not True
@@ -98,7 +153,7 @@ def logger_running():
 
 
 def car_params():
-  value = params.get("CarParamsPersistent")
+  value = frogpilot_variables.params.get("CarParamsPersistent")
   if not value:
     return None
 
@@ -112,7 +167,7 @@ def car_params():
 
 def doors_supported():
   configuration = car_params()
-  return configuration is not None and configuration.carName == "toyota" and HARDWARE.get_device_type() != "tici"
+  return configuration is not None and configuration.carName == "toyota"
 
 
 def send_door_command(locked):
@@ -126,7 +181,7 @@ def send_door_command(locked):
 
   deadline = time.monotonic() + 10
   while time.monotonic() < deadline:
-    if params.get("IsOnroad") != b"0":
+    if frogpilot_variables.params.get("IsOnroad") != b"0":
       abort(409, "Door control is only available when the car is off")
 
     message = create_door_command(command)
@@ -151,7 +206,7 @@ def doors(action):
     abort(404)
   if not doors_supported():
     abort(409, "Door control is not supported on this device")
-  if params.get("IsOnroad") != b"0":
+  if frogpilot_variables.params.get("IsOnroad") != b"0":
     abort(409, "Door control is only available when the car is off")
 
   if not state.door_lock.acquire(blocking=False):
@@ -169,7 +224,39 @@ def doors(action):
 
 @blueprint.get("/api/onroad")
 def onroad_status():
-  return {"onroad": is_driving()}
+  return {"onroad": is_driving(), "paired": is_paired()}
+
+
+@blueprint.post("/api/pair")
+def pair():
+  body = json_body({"code", "token"})
+
+  with state.pairing_lock:
+    now = time.monotonic()
+    state.pairing_failures = [failure for failure in state.pairing_failures if now - failure < PAIRING_WINDOW]
+    if len(state.pairing_failures) >= PAIRING_ATTEMPTS:
+      abort(429, "Too many wrong codes. Wait 10 minutes, then try again.")
+
+    if not frogpilot_variables.params.get_bool("ThePondPairing"):
+      abort(409, "Pairing is turned off on the car. Turn on “Pairing Code” in the car's Navigation settings to pair this browser.")
+
+    state.pairing_failures.append(now)
+
+    code = body.get("code")
+    pairing_code = frogpilot_variables.params.get("ThePondPairingCode")
+    if not isinstance(code, str) or not pairing_code or not hmac.compare_digest(code.encode(), pairing_code):
+      abort(403, "That code doesn't match the one in the car's Navigation settings.")
+
+    state.pairing_failures.remove(now)
+
+    name, token, options = pair_browser()
+
+  if body.get("token") is True:
+    return {"token": token}
+
+  response = Response(status=204)
+  response.set_cookie(name, token, **options)
+  return response
 
 
 @blueprint.get("/api/params")
@@ -177,27 +264,11 @@ def get_param():
   key = request.args.get("key")
   if key not in PARAM_KEYS:
     abort(403)
-  return params.get(key) or b""
-
-
-@blueprint.get("/api/params_memory")
-def get_memory_param():
-  if request.args.get("key") != DOWNLOAD_PROGRESS_PARAM:
-    abort(403)
-  return params_memory.get(DOWNLOAD_PROGRESS_PARAM) or b""
-
-
-@blueprint.post("/api/speed_limits")
-def speed_limits():
-  speed_limits = json.loads(params.get("SpeedLimits") or "[]")
-  for limit in speed_limits:
-    limit.pop("tile", None)
-
-  return send_file(BytesIO(json.dumps(speed_limits).encode()), as_attachment=True, download_name="speed_limits.json", mimetype="application/json")
+  return frogpilot_variables.params.get(key) or b""
 
 
 def saved_keys():
-  keys = json.loads(params.get("SecOCKeys") or b"[]")
+  keys = json.loads(frogpilot_variables.params.get("SecOCKeys") or b"[]")
   if not isinstance(keys, list) or any(not isinstance(key, dict) for key in keys):
     raise ValueError("Saved security keys are invalid")
   return keys
@@ -224,7 +295,7 @@ def security_keys():
         abort(400, "Missing key name")
 
       keys = [key for key in keys if key.get("name") != name]
-      params.put("SecOCKeys", json.dumps(keys))
+      frogpilot_variables.params.put("SecOCKeys", json.dumps(keys))
     elif request.method == "POST":
       if request.content_length is not None and request.content_length > 32 * 1024:
         abort(413, "Key list is too large")
@@ -255,7 +326,7 @@ def security_keys():
         keys.append({"name": name, "value": value})
         names.add(name)
 
-      params.put("SecOCKeys", json.dumps(keys))
+      frogpilot_variables.params.put("SecOCKeys", json.dumps(keys))
 
     return jsonify([{"name": key.get("name"), "value_set": valid_key(key.get("value"))} for key in keys])
 
@@ -275,19 +346,18 @@ def apply_security_key():
       abort(409, "Security keys are not applicable to this vehicle")
 
     cloudlog.warning("The Pond: security key applied")
-    params.put("SecOCKey", value)
+    frogpilot_variables.params.put("SecOCKey", value)
+
+    if frogpilot_paths.SECOC_KEY_PATH.exists():
+      frogpilot_paths.SECOC_KEY_PATH.write_text(value)
 
   return "", 204
-
-
-def backup_keys():
-  return {key for key, _, _, _ in frogpilot_default_params if key not in EXCLUDED_KEYS and not params.get_key_flag(key) & ParamKeyType.DONT_LOG}
 
 
 @blueprint.post("/api/toggles/backup")
 def backup_toggles():
   with state.params_lock:
-    values = {key: (params.get(key) or b"").decode("utf8", errors="replace") for key in sorted(backup_keys())}
+    values = {key: (frogpilot_variables.params.get(key) or b"").decode("utf8", errors="replace") for key in sorted(frogpilot_utilities.backup_keys())}
 
   return send_file(BytesIO(json.dumps({"data": values}, indent=2).encode()),
                    as_attachment=True, download_name="toggle_backup.json", mimetype="application/json")
@@ -307,7 +377,10 @@ def restore_toggles():
   if not isinstance(values, dict) or any(not isinstance(value, str) for value in values.values()):
     abort(400, "Invalid backup data")
 
-  allowed = backup_keys()
+  allowed = frogpilot_utilities.backup_keys()
+  values = {frogpilot_variables.RENAMED_KEYS.get(key, key): value for key, value in values.items()}
+  if any(key in allowed and key in NUMERIC_KEYS and value and not re.fullmatch(r"-?[0-9]{1,9}(\.[0-9]{1,30})?", value) for key, value in values.items()):
+    abort(400, "Invalid backup data")
   try:
     values = {key: value.encode() for key, value in values.items() if key in allowed}
   except UnicodeError:
@@ -315,24 +388,24 @@ def restore_toggles():
 
   with state.params_lock:
     for key, value in values.items():
-      params.put(key, value)
+      frogpilot_variables.params.put(key, value)
 
-  update_frogpilot_toggles()
+  state.send_request("updateToggles")
   return {"success": True, "message": "Toggles restored!"}
 
 
 def reboot_after_reset(parameter):
-  if params.get("IsOnroad") == b"0":
+  if frogpilot_variables.params.get("IsOnroad") == b"0":
     HARDWARE.reboot()
   else:
-    params.remove(parameter)
+    frogpilot_variables.params.remove(parameter)
 
 
 @blueprint.post("/api/toggles/<action>")
 def reset_toggles(action):
   if action not in ("reset_default", "reset_stock"):
     abort(404)
-  if params.get("IsOnroad") != b"0":
+  if frogpilot_variables.params.get("IsOnroad") != b"0":
     abort(423, "Toggle reset is only available while offroad")
 
   parameter = "DoToggleReset"
@@ -340,28 +413,33 @@ def reset_toggles(action):
     parameter = "DoToggleResetStock"
 
   with state.params_lock:
-    if params.get_bool("DoToggleReset") or params.get_bool("DoToggleResetStock"):
+    if frogpilot_variables.params.get_bool("DoToggleReset") or frogpilot_variables.params.get_bool("DoToggleResetStock"):
       abort(409, "A toggle reset is already in progress")
 
     cloudlog.warning(f"The Pond: {action} and reboot requested")
-    params.put_bool(parameter, True)
+    frogpilot_variables.params.put_bool(parameter, True)
     threading.Timer(0.5, reboot_after_reset, args=(parameter,)).start()
 
   return {"message": "Resetting toggles and rebooting..."}
 
 
 def drive_stats():
+  if frogpilot_utilities.use_konik_server():
+    drive_stats_key = "ApiCache_DriveStatsKonik"
+  else:
+    drive_stats_key = "ApiCache_DriveStats"
+
   stats = []
-  for key in ("ApiCache_DriveStats", "FrogPilotStats"):
+  for key in (drive_stats_key, "FrogPilotStats"):
     try:
-      value = json.loads(params.get(key) or b"{}")
+      value = json.loads(frogpilot_variables.params.get(key) or b"{}")
     except ValueError:
       value = {}
     if not isinstance(value, dict):
       value = {}
     stats.append(value)
 
-  metric = params.get_bool("IsMetric")
+  metric = frogpilot_variables.params.get_bool("IsMetric")
   distance_conversion = 1
   meter_conversion = CV.METER_TO_MILE
   unit = "miles"
@@ -405,7 +483,7 @@ def drive_stats():
 def statistics():
   metadata = get_build_metadata()
   branch = metadata.channel
-  if branch in ("FrogPilot-Development", "FrogPilot-Testing", "FrogPilot-Vetting"):
+  if branch in (frogpilot_variables.DEVELOPMENT_BRANCH, frogpilot_variables.TESTING_BRANCH, frogpilot_variables.VETTING_BRANCH):
     environment = branch.removeprefix("FrogPilot-")
   elif metadata.release_channel:
     environment = "Release"
@@ -426,9 +504,13 @@ def statistics():
   if len(owner) >= 2:
     maintainer = owner[1]
 
-  version_date = format_ordinal_date(datetime.strptime(metadata.openpilot.git_commit_date.split()[1], "%Y-%m-%d"))
+  version_date = "Unknown"
+  commit_date = metadata.openpilot.git_commit_date.split()
+  if len(commit_date) >= 2:
+    version_date = format_ordinal_date(datetime.strptime(commit_date[1], "%Y-%m-%d"))
+
   update = "No"
-  if params.get_bool("UpdaterFetchAvailable"):
+  if frogpilot_variables.params.get_bool("UpdaterFetchAvailable"):
     update = "Yes"
 
   return {

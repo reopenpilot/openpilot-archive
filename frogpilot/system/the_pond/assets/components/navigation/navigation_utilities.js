@@ -100,7 +100,7 @@ export function formatArrival(seconds) {
   return arrival.toLocaleString([], options);
 }
 
-export function congestionGradient(route) {
+function congestionGradient(route) {
   const colors = { low: "#2ecc71", moderate: "#f1c40f", heavy: "#e67e22", severe: "#e74c3c", unknown: "#2ecc71" };
   const congestion = route.legs?.flatMap(leg => leg.annotation?.congestion || []) || [];
   if (congestion.length < 2) {
@@ -108,8 +108,20 @@ export function congestionGradient(route) {
     return ["interpolate", ["linear"], ["line-progress"], 0, color, 1, color];
   }
 
+  const distances = route.legs.flatMap(leg => leg.annotation?.distance || []);
+  const total = distances.reduce((sum, distance) => sum + distance, 0);
+
   const gradient = ["interpolate", ["linear"], ["line-progress"]];
-  congestion.forEach((level, index) => gradient.push(index / (congestion.length - 1), colors[level] || "#999"));
+  let previous = -1;
+  let travelled = 0;
+  congestion.forEach((level, index) => {
+    const progress = (travelled + distances[index] / 2) / total;
+    travelled += distances[index];
+    if (progress > previous) {
+      gradient.push(progress, colors[level] || "#999");
+      previous = progress;
+    }
+  });
 
   return gradient;
 }
