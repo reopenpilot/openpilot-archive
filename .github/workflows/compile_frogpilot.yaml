@@ -106,10 +106,14 @@ jobs:
 
           cd "$RUNNER_TEMP/release"
           if ${{ inputs.publish_staging }} &&
-             update_date="$(git rev-parse --verify --quiet "refs/remotes/public/$BRANCH_STAGING:.github/update_date")"
+             git rev-parse --verify --quiet "refs/remotes/public/$BRANCH_STAGING:.github/update_date" > /dev/null
           then
-            git -c protocol.version=2 fetch --no-tags public "$update_date"
-            git show "$update_date" > .github/update_date
+            public_repo="${PUBLIC_REPO#https://github.com/}"
+            public_repo="${public_repo%.git}"
+
+            curl --fail --silent --show-error \
+              "https://raw.githubusercontent.com/$public_repo/$BRANCH_STAGING/.github/update_date" \
+              > .github/update_date
           fi
 
           if ${{ inputs.not_vetted }}; then

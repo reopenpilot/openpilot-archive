@@ -131,6 +131,7 @@ struct FrogPilotCarState @0xda96579883444c35 {
   pedalInterceptorNoBrake @15 :Bool;
   sportGear @16 :Bool;
   trafficModeEnabled @17 :Bool;
+  vEgo @18 :Float32;
 }
 
 struct FrogPilotControlsState @0x80ae746ee2596b11 {
