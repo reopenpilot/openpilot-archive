@@ -11665,6 +11665,20 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > > </details>
 > >
 > 
+> > <details><summary>20261030-0948</summary>
+> >
+> > #### fp-FrogPilot-Staging-20261030-0948
+> >
+> > ```
+> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20261030-0948
+> > ```
+> > ```
+> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20261030-0948
+> > ```
+> >
+> > </details>
+> >
+> 
 > > <details><summary>20261031-1900</summary>
 > >
 > > #### fp-FrogPilot-Staging-20261031-1900
