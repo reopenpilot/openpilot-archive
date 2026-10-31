@@ -5,7 +5,7 @@ from openpilot.common.numpy_fast import mean
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
 from openpilot.selfdrive.car.interfaces import CarStateBase
-from openpilot.selfdrive.car.gm.values import DBC, AccState, CanBus, STEER_THRESHOLD, GMFlags, CC_ONLY_CAR, CAMERA_ACC_CAR, SDGM_CAR
+from openpilot.selfdrive.car.gm.values import DBC, AccState, CanBus, STEER_THRESHOLD, GMFlags, CAR, CC_ONLY_CAR, CAMERA_ACC_CAR, SDGM_CAR
 
 TransmissionType = car.CarParams.TransmissionType
 NetworkLocation = car.CarParams.NetworkLocation
@@ -31,7 +31,6 @@ class CarState(CarStateBase):
     self.distance_button = 0
 
     self.single_pedal_mode = False
-    self.pedal_steady = 0.
 
   def update(self, pt_cp, cam_cp, loopback_cp, frogpilot_toggles):
     ret = car.CarState.new_message()
@@ -77,7 +76,7 @@ class CarState(CarStateBase):
       ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(pt_cp.vl["ECMPRDNL2"]["PRNDL2"], None))
 
     if self.CP.flags & GMFlags.NO_ACCELERATOR_POS_MSG.value:
-      ret.brake = pt_cp.vl["EBCMBrakePedalPosition"]["BrakePedalPosition"] / 0xd0
+      ret.brake = pt_cp.vl["EBCMBrakePedalPosition"]["BrakePedalPosition"]
     else:
       ret.brake = pt_cp.vl["ECMAcceleratorPos"]["BrakePedalPos"]
     if self.CP.networkLocation == NetworkLocation.fwdCamera:
@@ -96,7 +95,10 @@ class CarState(CarStateBase):
 
     if self.CP.enableGasInterceptor:
       ret.gas = (pt_cp.vl["GAS_SENSOR"]["INTERCEPTOR_GAS"] + pt_cp.vl["GAS_SENSOR"]["INTERCEPTOR_GAS2"]) / 2.
-      threshold = 10 if self.CP.carFingerprint in CAMERA_ACC_CAR else 4 # Panda 515 threshold = 10.88. Set lower to avoid panda blocking messages and GasInterceptor faulting.
+      # Panda 515 threshold = 10.4 (2.6 on the Volt). Set lower to avoid panda blocking messages and GasInterceptor faulting.
+      threshold = 10 if self.CP.carFingerprint in CAMERA_ACC_CAR else 4
+      if self.CP.carFingerprint == CAR.CHEVROLET_VOLT:
+        threshold = 2.25
       ret.gasPressed = ret.gas > threshold
     else:
       ret.gas = pt_cp.vl["AcceleratorPedal2"]["AcceleratorPedal2"] / 254.
@@ -178,6 +180,7 @@ class CarState(CarStateBase):
 
     if self.CP.transmissionType == TransmissionType.direct:
       self.single_pedal_mode |= ret.regenBraking and ret.gearShifter == GearShifter.manumatic
+      fp_ret.pedalInterceptorNoBrake = bool(self.CP.flags & GMFlags.PEDAL_LONG.value) and not self.single_pedal_mode
 
     fp_ret.sportGear = pt_cp.vl["SportMode"]["SportMode"] == 1
 

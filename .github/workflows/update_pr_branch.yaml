@@ -1,68 +1,67 @@
-name: "Update PR Target Branch"
+name: Update PR Branch
+run-name: Update ${{ vars.BRANCH_PR_TARGET }}
 
 on:
   push:
-    branches:
-      - FrogPilot-Testing
+    branches: [FrogPilot-Testing]
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 env:
-  BRANCH_PR_TARGET: ${{ vars.BRANCH_PR_TARGET }}
   GIT_EMAIL: ${{ vars.GIT_EMAIL }}
   GIT_NAME: ${{ vars.GIT_NAME }}
-  SOURCE_BRANCH: FrogPilot-Testing
 
-concurrency:
-  group: update-pr-branch
+  BRANCH_PR_TARGET: ${{ vars.BRANCH_PR_TARGET }}
+
+  COMPILE_COMMIT: ${{ vars.COMPILE_COMMIT }}
+
+  TZ: UTC
+
+concurrency: update-pr-branch
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          filter: blob:none
+          ref: refs/heads/FrogPilot-Testing
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - run: |
-          set -euo pipefail
-          export TZ=America/Phoenix
+          set -o pipefail
 
-          : "${BRANCH_PR_TARGET:?BRANCH_PR_TARGET is required}"
-          : "${GIT_EMAIL:?GIT_EMAIL is required}"
-          : "${GIT_NAME:?GIT_NAME is required}"
+          if [[ "$BRANCH_PR_TARGET" == FrogPilot-Testing ]]; then
+            echo "BRANCH_PR_TARGET must differ from FrogPilot-Testing." >&2
+            exit 1
+          fi
 
-          [ "$SOURCE_BRANCH" != "$BRANCH_PR_TARGET" ] || { echo "BRANCH_PR_TARGET must differ from SOURCE_BRANCH." >&2; exit 1; }
+          target_ref="refs/remotes/origin/$BRANCH_PR_TARGET"
 
-          git fetch origin \
-            "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH" \
-            "+refs/heads/$BRANCH_PR_TARGET:refs/remotes/origin/$BRANCH_PR_TARGET"
-
-          source_ref="origin/$SOURCE_BRANCH"
-          target_ref="origin/$BRANCH_PR_TARGET"
-
-          git switch --detach "$source_ref"
-
-          compile_commit="$(git log --first-parent --format='%H%x09%s' HEAD | awk -F'\t' '$2 == "Compile FrogPilot" { print $1; exit }')"
-          if [ -n "$compile_commit" ]; then
+          if [[ -f prebuilt ]]; then
+            : "${COMPILE_COMMIT:?COMPILE_COMMIT is required}"
+            compile_commit="$(
+              git log --first-parent --format='%H %s' |
+                awk '!found && $0 == $1 " " ENVIRON["COMPILE_COMMIT"] { print $1; found = 1 }'
+            )"
+            if [[ -z "$compile_commit" ]]; then
+              echo "Compiled tree but no \"$COMPILE_COMMIT\" commit found." >&2
+              exit 1
+            fi
             git revert --no-commit "$compile_commit"
           fi
 
-          source_tree="$(git write-tree)"
-          target_tree="$(git rev-parse "$target_ref^{tree}")"
-
-          if [ "$source_tree" = "$target_tree" ]; then
-            echo "$BRANCH_PR_TARGET already matches $SOURCE_BRANCH."
+          tree="$(git write-tree)"
+          if [[ "$tree" == "$(git rev-parse "$target_ref^{tree}")" ]]; then
+            echo "$BRANCH_PR_TARGET is already up to date."
             exit 0
           fi
 
-          git config user.name "$GIT_NAME"
-          git config user.email "$GIT_EMAIL"
-
-          now="$(date +%s)"
-          day="$(date -d "@$now" +%-d)"
+          read -r month day year < <(date '+%B %-d %Y')
           case "$day" in
             1|21|31) suffix="st" ;;
             2|22) suffix="nd" ;;
@@ -70,12 +69,15 @@ jobs:
             *) suffix="th" ;;
           esac
 
-          message="$(date -d "@$now" "+%B ${day}${suffix}, %Y Update")"
+          message="$month ${day}${suffix}, $year Update"
           parent="$target_ref"
-          if [ "$(git log -1 --format=%s "$target_ref")" = "$message" ]; then
+          if [[ "$(git log -1 --format=%s "$target_ref")" == "$message" ]]; then
             parent="$target_ref^"
           fi
 
-          commit="$(git commit-tree "$source_tree" -p "$parent" -m "$message")"
+          commit="$(
+            git -c user.name="$GIT_NAME" -c user.email="${GIT_EMAIL:?GIT_EMAIL is required}" \
+              commit-tree "$tree" -p "$parent" -m "$message"
+          )"
 
           git push --force-with-lease origin "$commit:refs/heads/$BRANCH_PR_TARGET"
