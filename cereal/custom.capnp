@@ -122,15 +122,23 @@ struct FrogPilotCarState @0xda96579883444c35 {
   distancePressed @6 :Bool;
   distanceLongPressed @7 :Bool;
   distanceVeryLongPressed @8 :Bool;
-  ecoGear @9 :Bool;
-  experimentalModePressCount @10 :UInt64;
-  forceCoast @11 :Bool;
-  isParked @12 :Bool;
-  pauseLateral @13 :Bool;
-  pauseLongitudinal @14 :Bool;
-  pedalInterceptorNoBrake @15 :Bool;
-  sportGear @16 :Bool;
-  trafficModeEnabled @17 :Bool;
+  doorLockStatus @9 :DoorLockStatus;
+  ecoGear @10 :Bool;
+  experimentalModePressCount @11 :UInt64;
+  forceCoast @12 :Bool;
+  isParked @13 :Bool;
+  pauseLateral @14 :Bool;
+  pauseLongitudinal @15 :Bool;
+  pedalInterceptorNoBrake @16 :Bool;
+  sportGear @17 :Bool;
+  trafficModeEnabled @18 :Bool;
+  vEgo @19 :Float32;
+
+  enum DoorLockStatus {
+    unavailable @0;
+    locked @1;
+    unlocked @2;
+  }
 }
 
 struct FrogPilotControlsState @0x80ae746ee2596b11 {

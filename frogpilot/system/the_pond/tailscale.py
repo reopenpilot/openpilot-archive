@@ -1,182 +1,213 @@
+import aiohttp
+import asyncio
 import hashlib
-import os
+import json
 import re
-import requests
-import selectors
 import shutil
-import subprocess
 import tarfile
 import time
 
-from contextlib import contextmanager
-from flask import Blueprint, abort
-from pathlib import Path
-from tempfile import TemporaryDirectory
+from aiohttp import web
 
-from cereal import messaging
-from openpilot.common.swaglog import cloudlog
-from openpilot.system.hardware import HARDWARE
+from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.system.the_pond import utilities
 
-from openpilot.frogpilot.common import frogpilot_paths
-from openpilot.frogpilot.system.the_pond.device import is_driving, state
+DEVICE_NAME_CHECK_INTERVAL = 5
 
-blueprint = Blueprint("tailscale", __name__)
+DOWNLOAD_CHUNK_SIZE = 1024 * 1024
+DOWNLOAD_TIMEOUT = 600
+
+HOSTNAME_PATTERN = re.compile(r"[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?")
+
+LOGIN_TIMEOUT = "10m"
+
+STOP_TIMEOUT = 15
+
+TAILSCALE_ARCHITECTURE = "arm64"
+TAILSCALE_BINARIES = ("tailscale", "tailscaled")
+TAILSCALE_HOSTNAME = "ThePond"
+TAILSCALE_INDEX_URL = "https://pkgs.tailscale.com/stable/?mode=json"
+TAILSCALE_PACKAGES_URL = "https://pkgs.tailscale.com/stable"
+
+routes = web.RouteTableDef()
+
+device_name = None
+device_name_checked = 0.0
+
+async def cancel_login(the_pond):
+  job = the_pond.jobs.get("tailscale")
+  if job is not None and job[1]["kind"] == "login":
+    job[0].cancel()
+    await asyncio.wait([job[0]])
 
 
-def managed_installation():
-  installed = all((frogpilot_paths.TAILSCALE_PATH / name).is_file() for name in ("tailscale", "tailscaled"))
-  return installed and not frogpilot_paths.UNIT_PATH.exists()
+def get_command(*args):
+  return [str(frogpilot_paths.TAILSCALE_PATH / "tailscale"), f"--socket={frogpilot_paths.TAILSCALE_SOCKET_PATH}", *args]
 
 
-@contextmanager
-def installation_operation():
-  if not state.tailscale_lock.acquire(blocking=False):
-    abort(409, "Another Tailscale operation is already running")
+def is_installed():
+  return all((frogpilot_paths.TAILSCALE_PATH / binary).is_file() for binary in TAILSCALE_BINARIES)
+
+
+async def get_status():
+  global device_name, device_name_checked
+  device_name_checked = time.monotonic()
+  try:
+    status = json.loads(await utilities.run_process(get_command("status", "--json")))
+  except RuntimeError:
+    return None
+
+  device_name = ((status.get("Self") or {}).get("DNSName") or "").partition(".")[0].lower() or None
+  return status
+
+
+async def is_device_name(name):
+  if name != device_name and is_installed() and time.monotonic() - device_name_checked >= DEVICE_NAME_CHECK_INTERVAL:
+    await get_status()
+  return name == device_name
+
+
+def extract_binaries(archive_path):
+  with tarfile.open(archive_path) as archive:
+    for member in archive.getmembers():
+      name = member.name.rpartition("/")[2]
+      if member.isfile() and name in TAILSCALE_BINARIES:
+        with archive.extractfile(member) as source, open(frogpilot_paths.TAILSCALE_PATH / f".{name}", "wb") as destination:
+          shutil.copyfileobj(source, destination)
+
+  for binary in TAILSCALE_BINARIES:
+    path = frogpilot_paths.TAILSCALE_PATH / f".{binary}"
+    path.chmod(0o755)
+    path.rename(frogpilot_paths.TAILSCALE_PATH / binary)
+
+
+async def install(the_pond, progress):
+  frogpilot_paths.TAILSCALE_PATH.mkdir(parents=True, exist_ok=True)
+  archive_path = frogpilot_paths.TAILSCALE_PATH / ".download.tgz"
 
   try:
-    yield
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT), raise_for_status=True) as session:
+      async with session.get(TAILSCALE_INDEX_URL) as response:
+        tarball = (await response.json(content_type=None))["Tarballs"][TAILSCALE_ARCHITECTURE]
+
+      async with session.get(f"{TAILSCALE_PACKAGES_URL}/{tarball}.sha256") as response:
+        expected_hash = (await response.text()).split()[0]
+
+      digest = hashlib.sha256()
+      async with session.get(f"{TAILSCALE_PACKAGES_URL}/{tarball}") as response:
+        progress["total"] = response.content_length or 0
+        with open(archive_path, "wb") as file:
+          async for chunk in response.content.iter_chunked(DOWNLOAD_CHUNK_SIZE):
+            file.write(chunk)
+            digest.update(chunk)
+            progress["downloaded"] += len(chunk)
+
+    if digest.hexdigest() != expected_hash:
+      raise RuntimeError("Tailscale download failed verification")
+
+    await asyncio.to_thread(extract_binaries, archive_path)
   finally:
-    state.tailscale_lock.release()
+    archive_path.unlink(missing_ok=True)
+
+  frogpilot_paths.TAILSCALE_STATE_PATH.mkdir(exist_ok=True)
+  the_pond.send_request("updateToggles")
 
 
-def login_url():
-  arguments = [str(frogpilot_paths.TAILSCALE_PATH / "tailscale"), "--socket", str(frogpilot_paths.TAILSCALE_SOCKET_PATH)]
-  arguments += ["up", "--hostname", f"{HARDWARE.get_device_type()}-the-pond"]
-  process = subprocess.Popen(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
+async def login(the_pond):
+  hostname = json.loads(await utilities.run_process(get_command("debug", "prefs"))).get("Hostname") or TAILSCALE_HOSTNAME
+  process = await asyncio.create_subprocess_exec(*get_command("up", "--accept-dns=false", f"--hostname={hostname}", f"--timeout={LOGIN_TIMEOUT}"),
+                                                 stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
   try:
-    output = b""
-    deadline = time.monotonic() + 60
-    with selectors.DefaultSelector() as selector:
-      selector.register(process.stdout, selectors.EVENT_READ)
-      while time.monotonic() < deadline:
-        if not selector.select(max(0, deadline - time.monotonic())):
-          break
-
-        chunk = os.read(process.stdout.fileno(), 4096)
-        if not chunk:
-          if process.wait(timeout=5) == 0:
-            return None
-          break
-
-        output += chunk
-        match = re.search(rb"https://login\.tailscale\.com/[^\s]+(?=\s)", output)
-        if match:
-          return match[0].decode("ascii")
-
-    abort(504, "Tailscale did not return a sign-in URL. Please try again.")
+    await process.wait()
   finally:
-    try:
-      if process.poll() is None:
-        process.terminate()
-
-      try:
-        process.wait(timeout=5)
-      except subprocess.TimeoutExpired:
-        process.kill()
-        process.wait(timeout=5)
-    finally:
-      process.stdout.close()
+    await utilities.stop_process(process)
 
 
-@blueprint.get("/api/tailscale/installed")
-def installation_status():
-  managed = managed_installation()
-  external = not managed and (frogpilot_paths.UNIT_PATH.exists() or shutil.which("tailscale") is not None)
-  return {"external": external, "installed": managed or external}
+async def uninstall(the_pond):
+  for binary in TAILSCALE_BINARIES:
+    (frogpilot_paths.TAILSCALE_PATH / binary).unlink(missing_ok=True)
+  the_pond.send_request("updateToggles")
+
+  for _ in range(STOP_TIMEOUT):
+    if not any(process.name == "tailscaled" and process.running for process in the_pond.sm["managerState"].processes):
+      break
+    await asyncio.sleep(1)
+
+  await asyncio.to_thread(shutil.rmtree, frogpilot_paths.TAILSCALE_PATH, True)
 
 
-@blueprint.post("/api/tailscale/setup")
-def install():
-  with installation_operation(), requests.Session() as session:
-    if (frogpilot_paths.UNIT_PATH.exists() or shutil.which("tailscale")) and not managed_installation():
-      abort(409, "Tailscale is managed outside The Pond")
+@routes.get("/api/tailscale")
+async def get_tailscale(request):
+  the_pond = request.app[utilities.THE_POND]
 
-    if not managed_installation():
-      cloudlog.warning("The Pond: Tailscale installation requested")
+  status = None
+  if is_installed():
+    tailscale_status = await get_status()
+    if tailscale_status is not None:
+      device = tailscale_status.get("Self") or {}
+      status = {
+        "auth_url": tailscale_status.get("AuthURL") or None,
+        "backend_state": tailscale_status.get("BackendState"),
+        "dns_name": (device.get("DNSName") or "").rstrip(".") or None,
+        "hostname": device.get("HostName"),
+        "ips": device.get("TailscaleIPs") or [],
+        "magic_dns": (tailscale_status.get("CurrentTailnet") or {}).get("MagicDNSEnabled", False),
+        "peers_online": sum(bool(peer.get("Online")) for peer in (tailscale_status.get("Peer") or {}).values()),
+      }
 
-      response = session.get("https://pkgs.tailscale.com/stable/", timeout=15)
-      response.raise_for_status()
-
-      versions = re.findall(r"tailscale_(\d+\.\d+\.\d+)_arm64\.tgz", response.text)
-      if not versions:
-        abort(502, "Could not find the current Tailscale download")
-
-      version = max(versions, key=lambda value: tuple(map(int, value.split("."))))
-      filename = f"tailscale_{version}_arm64"
-      url = f"https://pkgs.tailscale.com/stable/{filename}.tgz"
-
-      checksum_response = session.get(url + ".sha256", timeout=15)
-      checksum_response.raise_for_status()
-      checksum = checksum_response.text.strip().split()
-      if not checksum or re.fullmatch(r"[0-9a-fA-F]{64}", checksum[0]) is None:
-        abort(502, "Invalid Tailscale checksum")
-
-      frogpilot_paths.TAILSCALE_PATH.mkdir(parents=True, exist_ok=True)
-      with TemporaryDirectory(prefix=".install-", dir=frogpilot_paths.TAILSCALE_PATH) as temporary:
-        archive_path = Path(temporary) / "tailscale.tgz"
-        digest = hashlib.sha256()
-
-        with session.get(url, stream=True, timeout=(15, 60)) as download:
-          download.raise_for_status()
-          with archive_path.open("wb") as archive_file:
-            for chunk in download.iter_content(256 * 1024):
-              archive_file.write(chunk)
-              digest.update(chunk)
-
-        if digest.hexdigest() != checksum[0].lower():
-          abort(502, "Tailscale checksum mismatch")
-
-        with tarfile.open(archive_path, "r:gz") as archive:
-          for name in ("tailscale", "tailscaled"):
-            member = archive.getmember(f"{filename}/{name}")
-            if not member.isfile():
-              abort(502, "Invalid Tailscale binary in archive")
-
-            with archive.extractfile(member) as source, (Path(temporary) / name).open("wb") as target:
-              shutil.copyfileobj(source, target)
-            (Path(temporary) / name).chmod(0o755)
-
-        if is_driving():
-          abort(423, "Tailscale installation is unavailable while driving")
-
-        for name in ("tailscale", "tailscaled"):
-          (Path(temporary) / name).replace(frogpilot_paths.TAILSCALE_PATH / name)
-        frogpilot_paths.TAILSCALE_STATE_PATH.mkdir(exist_ok=True)
-
-      state.send_request("updateToggles")
-
-      deadline = time.monotonic() + 30
-      while not frogpilot_paths.TAILSCALE_SOCKET_PATH.exists():
-        if time.monotonic() > deadline:
-          abort(504, "Tailscale did not start. Please try again.")
-        time.sleep(1)
-
-    auth_url = login_url()
-    if auth_url is None:
-      return {"message": "Tailscale is already signed in."}
-
-    return {"message": "Tailscale is ready for sign-in.", "auth_url": auth_url}
+  return web.json_response({"installed": is_installed(), "job": utilities.get_job(the_pond, "tailscale"), "port": frogpilot_variables.THE_POND_PORT, "status": status})
 
 
-@blueprint.post("/api/tailscale/uninstall")
-def uninstall():
-  with installation_operation():
-    if not managed_installation():
-      abort(409, "Tailscale is managed outside The Pond")
+@routes.post("/api/tailscale")
+async def install_tailscale(request):
+  the_pond = request.app[utilities.THE_POND]
+  if not frogpilot_utilities.is_online(the_pond.sm["deviceState"]):
+    raise web.HTTPConflict(text="offline")
 
-    cloudlog.warning("The Pond: Tailscale uninstall requested")
-    for name in ("tailscale", "tailscaled"):
-      (frogpilot_paths.TAILSCALE_PATH / name).unlink()
-    state.send_request("updateToggles")
+  progress = {"downloaded": 0, "kind": "install", "total": 0}
+  utilities.start_job(the_pond, "tailscale", install(the_pond, progress), progress)
+  return web.Response(status=202)
 
-    subscriber = messaging.SubMaster(["managerState"])
-    deadline = time.monotonic() + 15
-    while time.monotonic() < deadline:
-      subscriber.update(1000)
-      if subscriber.updated["managerState"] and not any(process.name == "tailscaled" and process.running for process in subscriber["managerState"].processes):
-        break
 
-    shutil.rmtree(frogpilot_paths.TAILSCALE_PATH)
+@routes.post("/api/tailscale/login")
+async def login_tailscale(request):
+  the_pond = request.app[utilities.THE_POND]
+  if not is_installed():
+    raise web.HTTPNotFound(text="not_found")
 
-  return {"message": "Tailscale uninstalled!"}
+  utilities.start_job(the_pond, "tailscale", login(the_pond), {"kind": "login"})
+  return web.Response(status=202)
+
+
+@routes.post("/api/tailscale/logout")
+async def logout_tailscale(request):
+  the_pond = request.app[utilities.THE_POND]
+  if not is_installed():
+    raise web.HTTPNotFound(text="not_found")
+
+  await cancel_login(the_pond)
+
+  await utilities.run_process(get_command("logout"))
+  return web.Response(status=204)
+
+
+@routes.put("/api/tailscale/hostname")
+async def set_hostname(request):
+  hostname = (await utilities.read_json(request)).get("hostname")
+  if not isinstance(hostname, str) or HOSTNAME_PATTERN.fullmatch(hostname) is None:
+    raise web.HTTPBadRequest(text="invalid_hostname")
+  if not is_installed():
+    raise web.HTTPNotFound(text="not_found")
+
+  await utilities.run_process(get_command("set", f"--hostname={hostname}"))
+  return web.Response(status=204)
+
+
+@routes.delete("/api/tailscale")
+async def uninstall_tailscale(request):
+  the_pond = request.app[utilities.THE_POND]
+
+  await cancel_login(the_pond)
+
+  utilities.start_job(the_pond, "tailscale", uninstall(the_pond), {"kind": "uninstall"})
+  return web.Response(status=202)

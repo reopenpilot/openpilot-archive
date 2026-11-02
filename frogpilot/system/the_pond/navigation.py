@@ -1,229 +1,173 @@
-import hashlib
 import json
-import math
-import re
+import secrets
 
-from flask import Blueprint, abort, jsonify, request, send_from_directory
+from aiohttp import web
 
-from openpilot.frogpilot.common import frogpilot_paths, frogpilot_variables
-from openpilot.frogpilot.system.the_pond.device import state
-from openpilot.frogpilot.system.the_pond.helpers import is_safe_display_name, json_body
+from openpilot.frogpilot.system.the_pond import utilities
 
-blueprint = Blueprint("navigation", __name__)
+FAVORITE_TYPES = {"home": "is_home", "work": "is_work"}
 
-KEYS = {
-  "public": ("MapboxPublicKey", "pk.", 80, "Public key"),
-  "secret": ("MapboxSecretKey", "sk.", 80, "Secret key"),
-}
-MAPBOX_HELP_IMAGES = {"both_keys_set.png", "no_keys_set.png", "public_key_set.png", "setup_completed.png"}
+MAX_FAVORITES = 100
+MAX_NAME_LENGTH = 256
 
+UNNAMED_PLACE = "Unnamed place"
 
-def valid_coordinate(value, minimum, maximum):
-  return isinstance(value, (int, float)) and not isinstance(value, bool) and minimum <= value <= maximum and math.isfinite(value)
+routes = web.RouteTableDef()
 
+def load_favorites(params):
+  favorites = json.loads(params.get("FavoriteDestinations") or "[]")
+  changed = False
 
-def valid_mapbox_key(value, prefix):
-  return re.fullmatch(re.escape(prefix) + r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", value) is not None
+  for favorite in favorites:
+    if "id" not in favorite:
+      favorite["id"] = secrets.token_hex(4)
+      changed = True
 
+    if not favorite.get("name"):
+      favorite["name"] = UNNAMED_PLACE
+      changed = True
 
-def favorite_id(favorite):
-  identity = f"{favorite.get('longitude')},{favorite.get('latitude')}|{favorite.get('routeId') or ''}|{favorite.get('name') or ''}"
-  return hashlib.sha1(identity.encode()).hexdigest()
+  if changed:
+    params.put("FavoriteDestinations", json.dumps(favorites))
 
-
-def favorites():
-  stored = json.loads(frogpilot_variables.params.get("FavoriteDestinations") or b"[]")
-  if not isinstance(stored, list) or any(not isinstance(favorite, dict) for favorite in stored):
-    raise ValueError("Saved favorites are invalid")
-
-  for favorite in stored:
-    favorite.setdefault("id", favorite_id(favorite))
-
-  return stored
+  return favorites
 
 
-def favorite_data(fields):
-  data = json_body(fields, 4096)
-  if data.get("name") is not None and not is_safe_display_name(data["name"]):
-    abort(400, "Invalid destination name")
+def load_recents(params):
+  locations = json.loads(params.get("ApiCache_NavDestinations") or "null")
+  if isinstance(locations, dict):
+    locations = locations.get("locations")
+  if not isinstance(locations, list):
+    return []
 
-  for field in ("id", "routeId"):
-    if field in data and (not isinstance(data[field], str) or len(data[field]) > 256):
-      abort(400, "Invalid favorite identifier")
-
-  for field in ("is_home", "is_work"):
-    if field in data and not isinstance(data[field], bool):
-      abort(400, "Invalid favorite location type")
-  if data.get("is_home") and data.get("is_work"):
-    abort(400, "A destination cannot be both Home and Work")
-
-  return data
+  recents = []
+  for location in sorted(locations, key=lambda location: location.get("modified") or "", reverse=True):
+    if location.get("save_type") == "recent":
+      recents.append({"address": location.get("place_details") or "", "latitude": location["latitude"], "longitude": location["longitude"],
+                      "name": location.get("place_name") or UNNAMED_PLACE})
+  return recents
 
 
-@blueprint.route("/api/navigation", methods=["DELETE", "GET", "POST"])
-def navigation():
-  if request.method == "GET":
-    try:
-      position = json.loads(frogpilot_variables.params.get("LastGPSPosition") or b"{}")
-    except ValueError:
-      position = {}
-
-    last_position = None
-    if isinstance(position, dict) and valid_coordinate(position.get("latitude"), -90, 90) and valid_coordinate(position.get("longitude"), -180, 180):
-      last_position = {"latitude": str(position["latitude"]), "longitude": str(position["longitude"])}
-
-    public_key = frogpilot_variables.params.get("MapboxPublicKey", encoding="utf8") or ""
-    if not valid_mapbox_key(public_key, "pk."):
-      public_key = ""
-
-    return {
-      "destination": frogpilot_variables.params.get("NavDestination", encoding="utf8") or "",
-      "isMetric": frogpilot_variables.params.get_bool("IsMetric"),
-      "lastPosition": last_position,
-      "mapboxPublic": public_key,
-      "mapboxSecretSet": bool(frogpilot_variables.params.get("MapboxSecretKey")),
-      "previousDestinations": frogpilot_variables.params.get("ApiCache_NavDestinations", encoding="utf8") or "",
-    }
-
-  if request.method == "DELETE":
-    frogpilot_variables.params.remove("NavDestination")
-    frogpilot_variables.params.remove("NavDestinationWaypoints")
-    return {"message": "Destination cleared"}
-
-  destination = json_body({"latitude", "longitude", "place_name"}, 4096)
-  if destination.get("place_name") is not None and not is_safe_display_name(destination["place_name"]):
-    abort(400, "Invalid destination name")
-  if not valid_coordinate(destination.get("latitude"), -90, 90) or not valid_coordinate(destination.get("longitude"), -180, 180):
-    abort(400, "Invalid destination coordinates")
-
-  frogpilot_variables.params.remove("NavDestinationWaypoints")
-  frogpilot_variables.params.put("NavDestination", json.dumps(destination))
-
-  return {"message": "Destination sent to FrogPilot"}
+def read_coordinate(value, limit):
+  if type(value) not in (int, float) or not -limit <= value <= limit:
+    raise web.HTTPBadRequest(text="invalid_location")
+  return value
 
 
-@blueprint.route("/api/navigation/favorite", methods=["DELETE", "GET", "POST"])
-def favorite_destinations():
-  if request.method == "GET":
-    with state.favorites_lock:
-      return jsonify(favorites=favorites())
-
-  favorite = favorite_data({"id", "is_home", "is_work", "latitude", "longitude", "name", "routeId"})
-
-  with state.favorites_lock:
-    saved = favorites()
-
-    if request.method == "DELETE":
-      if favorite.get("id"):
-        saved = [entry for entry in saved if entry["id"] != favorite["id"]]
-      else:
-        saved = [entry for entry in saved if any(entry.get(field) != favorite.get(field) for field in ("latitude", "longitude", "name", "routeId"))]
-      message = "Destination removed from favorites!"
-    else:
-      if (not is_safe_display_name(favorite.get("name")) or not valid_coordinate(favorite.get("latitude"), -90, 90)
-          or not valid_coordinate(favorite.get("longitude"), -180, 180)):
-        abort(400, "Invalid favorite name or coordinates")
-
-      favorite.setdefault("id", favorite_id(favorite))
-      if not any(entry["id"] == favorite["id"] for entry in saved):
-        if len(saved) >= 100:
-          abort(400, "A maximum of 100 favorites can be saved")
-
-        for field in ("is_home", "is_work"):
-          if favorite.get(field):
-            for entry in saved:
-              entry.pop(field, None)
-        saved.append(favorite)
-
-      message = "Destination added to favorites!"
-
-    frogpilot_variables.params.put("FavoriteDestinations", json.dumps(saved))
-
-  return {"message": message}
+def read_name(name):
+  if not isinstance(name, str) or not 0 < len(name.strip()) <= MAX_NAME_LENGTH or not name.strip().isprintable():
+    raise web.HTTPBadRequest(text="invalid_name")
+  return name.strip()
 
 
-@blueprint.post("/api/navigation/favorite/rename")
-def rename_favorite():
-  data = favorite_data({"id", "is_home", "is_work", "name", "routeId"})
-  if not data.get("id") and not data.get("routeId"):
-    abort(400, "Missing favorite identifier")
-
-  with state.favorites_lock:
-    saved = favorites()
-    target = None
-    for favorite in saved:
-      if data.get("id"):
-        matches = favorite["id"] == data["id"]
-      else:
-        matches = favorite.get("routeId") == data["routeId"]
-      if matches:
-        target = favorite
-        break
-
-    if target is None:
-      abort(404, "Favorite not found")
-
-    if data.get("name"):
-      target["name"] = data["name"]
-
-    for field, other in (("is_home", "is_work"), ("is_work", "is_home")):
-      if field not in data:
-        continue
-
-      if data[field]:
-        for favorite in saved:
-          favorite.pop(field, None)
-        target[field] = True
-        target.pop(other, None)
-      else:
-        target.pop(field, None)
-
-    frogpilot_variables.params.put("FavoriteDestinations", json.dumps(saved))
-
-  return {"message": "Favorite updated successfully!"}
+def read_place(body):
+  return {"latitude": read_coordinate(body.get("latitude"), 90), "longitude": read_coordinate(body.get("longitude"), 180), "name": read_name(body.get("name"))}
 
 
-@blueprint.route("/api/navigation_key", methods=["DELETE", "POST"])
-def navigation_keys():
-  if request.method == "DELETE":
-    key = KEYS.get(request.args.get("type"))
-    if key is None:
-      abort(400, "Unknown key type")
+def read_type(body):
+  favorite_type = body.get("type")
+  if favorite_type is None:
+    return None
 
-    frogpilot_variables.params.remove(key[0])
-    return {"message": f"{key[3]} deleted successfully!"}
+  if not isinstance(favorite_type, str) or favorite_type not in FAVORITE_TYPES:
+    raise web.HTTPBadRequest(text="invalid_type")
 
-  data = json_body(set(KEYS))
-  updates = []
-  for key, (parameter, prefix, length, label) in KEYS.items():
-    value = data.get(key, "")
-    if not isinstance(value, str):
-      abort(400, f"{label} must be text")
-
-    value = value.strip()
-    if not value:
-      continue
-
-    if not value.startswith(("pk.", "sk.")):
-      value = prefix + value
-    if not valid_mapbox_key(value, prefix):
-      abort(400, f"Enter a valid {label.lower()} starting with {prefix}")
-    if len(value) < length:
-      abort(400, f"{label} is invalid or too short")
-    updates.append((parameter, value, label))
-
-  if not updates:
-    abort(400, "Nothing to update")
-
-  for parameter, value, _ in updates:
-    frogpilot_variables.params.put(parameter, value)
-
-  return {"message": f"{', '.join(label for _, _, label in updates)} saved successfully!"}
+  return favorite_type
 
 
-@blueprint.get("/mapbox-help/<filename>")
-def mapbox_help(filename):
-  if filename not in MAPBOX_HELP_IMAGES:
-    abort(404)
+def set_type(favorites, favorite, favorite_type):
+  for key in FAVORITE_TYPES.values():
+    favorite.pop(key, None)
 
-  return send_from_directory(frogpilot_paths.NAVIGATION_TRAINING_PATH, filename)
+  if favorite_type is not None:
+    key = FAVORITE_TYPES[favorite_type]
+
+    for other in favorites:
+      other.pop(key, None)
+
+    favorite[key] = True
+
+
+@routes.post("/api/navigation/favorites")
+async def add_favorite(request):
+  params = request.app[utilities.THE_POND].params
+  body = await utilities.read_json(request)
+
+  favorites = load_favorites(params)
+  if len(favorites) >= MAX_FAVORITES:
+    raise web.HTTPConflict(text="too_many_favorites")
+
+  favorite = {**read_place(body), "id": secrets.token_hex(4)}
+  favorites.append(favorite)
+  params.put("FavoriteDestinations", json.dumps(favorites))
+  return web.json_response({"id": favorite["id"]})
+
+
+@routes.delete("/api/navigation/destination")
+async def cancel_destination(request):
+  params = request.app[utilities.THE_POND].params
+  params.remove("NavDestination")
+  params.remove("NavDestinationWaypoints")
+  return web.Response(status=204)
+
+
+@routes.delete("/api/navigation/favorites/{id}")
+async def delete_favorite(request):
+  params = request.app[utilities.THE_POND].params
+
+  favorites = load_favorites(params)
+  remaining = [favorite for favorite in favorites if favorite["id"] != request.match_info["id"]]
+  if len(remaining) == len(favorites):
+    raise web.HTTPNotFound(text="not_found")
+
+  params.put("FavoriteDestinations", json.dumps(remaining))
+  return web.Response(status=204)
+
+
+@routes.get("/api/navigation")
+async def get_navigation(request):
+  params = request.app[utilities.THE_POND].params
+  last_position = params.get("LastGPSPosition")
+  return web.json_response({
+    "destination": json.loads(params.get("NavDestination") or "null"),
+    "favorites": load_favorites(params),
+    "is_metric": params.get_bool("IsMetric"),
+    "last_position": json.loads(last_position) if last_position else None,
+    "recents": load_recents(params),
+  })
+
+
+@routes.put("/api/navigation/destination")
+async def set_destination(request):
+  params = request.app[utilities.THE_POND].params
+  place = read_place(await utilities.read_json(request))
+
+  params.remove("NavDestinationWaypoints")
+  params.put("NavDestination", json.dumps({"latitude": place["latitude"], "longitude": place["longitude"], "place_name": place["name"]}))
+  return web.Response(status=204)
+
+
+@routes.put("/api/navigation/favorites/{id}")
+async def update_favorite(request):
+  params = request.app[utilities.THE_POND].params
+  body = await utilities.read_json(request)
+
+  favorites = load_favorites(params)
+  favorite = next((favorite for favorite in favorites if favorite["id"] == request.match_info["id"]), None)
+  if favorite is None:
+    raise web.HTTPNotFound(text="not_found")
+
+  if "latitude" in body:
+    favorite["latitude"] = read_coordinate(body["latitude"], 90)
+
+  if "longitude" in body:
+    favorite["longitude"] = read_coordinate(body["longitude"], 180)
+
+  if "name" in body:
+    favorite["name"] = read_name(body["name"])
+
+  if "type" in body:
+    set_type(favorites, favorite, read_type(body))
+
+  params.put("FavoriteDestinations", json.dumps(favorites))
+  return web.Response(status=204)

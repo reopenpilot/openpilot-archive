@@ -41,6 +41,9 @@ ERROR_FILE_PATH = ERROR_LOGS_PATH / "error.txt"
 SCREEN_RECORDINGS_PATH = Path("/data/media/screen_recordings")
 VIDEO_CACHE_PATH = Path("/data/video_cache")
 
+FROGPILOT_PANELS_PATH = Path(BASEDIR) / "frogpilot/ui/qt/offroad"
+STOCK_PANELS_PATH = Path(BASEDIR) / "selfdrive/ui/qt"
+
 FROGS_GO_MOO_PATH = Path("/persist/frogsgomoo.py")
 
 HD_LOGS_PATH = Path("/data/media/0/realdata_HD")
@@ -59,8 +62,6 @@ COMPILED_DIR = MODELS_PATH / "compiled"
 MODEL_SIZES_PATH = MODELS_PATH / "model_sizes.json"
 UNCOMPILED_DIR = MODELS_PATH / "uncompiled_downloads"
 VERSION_PATH = MODELS_PATH / "model_version"
-
-NAVIGATION_TRAINING_PATH = Path(__file__).parents[1] / "navigation/navigation_training"
 
 NNFF_MODELS_PATH = Path(__file__).parents[1] / "assets/nnff_models"
 
@@ -88,6 +89,12 @@ TAILSCALE_STATE_PATH = TAILSCALE_PATH / "state"
 UNIT_PATH = Path("/etc/systemd/system/tailscaled.service")
 
 TELEMETRY_SCHEMAS_PATH = Path("/data/telemetry_schemas")
+
+THE_POND_ASSETS_PATH = Path(BASEDIR) / "frogpilot/system/the_pond/assets"
+THE_POND_PATH = Path("/data/the_pond")
+THE_POND_DRIVES_PATH = THE_POND_PATH / "drives"
+THE_POND_THUMBNAILS_PATH = THE_POND_PATH / "thumbnails"
+THE_POND_VIDEOS_PATH = THE_POND_PATH / "videos"
 
 TINYGRAD_MODELD_PATH = Path(BASEDIR) / "frogpilot/selfdrive/modeld/tinygrad"
 

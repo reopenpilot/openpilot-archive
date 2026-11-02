@@ -87,6 +87,7 @@ class Soundd:
 
     self.theme_update_count = 0
 
+    self.the_pond_request_sock = messaging.sub_sock("thePondRequest")
     self.ui_request_sock = messaging.sub_sock("frogpilotUIRequest")
 
     self.error_log = frogpilot_paths.ERROR_FILE_PATH
@@ -175,6 +176,8 @@ class Soundd:
   def get_audible_alert(self, sm):
     # FrogPilot variables
     test_requests = [msg.frogpilotUIRequest for msg in messaging.drain_sock(self.ui_request_sock) if msg.frogpilotUIRequest.which() == 'testAlert']
+    test_requests += [msg.thePondRequest.request for msg in messaging.drain_sock(self.the_pond_request_sock)
+                      if msg.thePondRequest.request.which() == 'testAlert']
     if test_requests:
       test_alert = getattr(AudibleAlert, test_requests[-1].testAlert)
       test_volume = test_requests[-1].testAlertVolume

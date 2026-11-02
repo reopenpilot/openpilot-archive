@@ -227,6 +227,12 @@ class CarState(CarStateBase):
 
     fp_ret.dashboardSpeedLimit = calculate_speed_limit(cp_cam, frogpilot_toggles)
 
+    if cp.ts_nanos["DOOR_LOCKS"]["LOCK_STATUS"] > 0:
+      if cp.vl["DOOR_LOCKS"]["LOCK_STATUS"] == 0:
+        fp_ret.doorLockStatus = "locked"
+      else:
+        fp_ret.doorLockStatus = "unlocked"
+
     if not self.CP.flags & ToyotaFlags.SECOC.value:
       fp_ret.ecoGear = cp.vl["GEAR_PACKET"]["ECON_ON"] == 1
       if self.CP.flags & ToyotaFlags.NO_DSU:
@@ -273,6 +279,9 @@ class CarState(CarStateBase):
       ("PCM_CRUISE", 33),
       ("PCM_CRUISE_SM", 1),
       ("STEER_TORQUE_SENSOR", 50),
+
+      # FrogPilot variables
+      ("DOOR_LOCKS", 0),
     ]
 
     if CP.flags & ToyotaFlags.SECOC.value:

@@ -40,6 +40,7 @@ locks = {
   "load_conditional_ways": threading.Lock(),
   "lock_doors": threading.Lock(),
   "restore_settings": threading.Lock(),
+  "send_door_command": threading.Lock(),
   "send_stats": threading.Lock(),
   "update_checks": threading.Lock(),
   "update_maps": threading.Lock(),
@@ -72,6 +73,9 @@ def backup_keys():
     if key not in frogpilot_variables.EXCLUDED_KEYS and key not in frogpilot_variables.BACKUP_EXCLUDED_KEYS
     and not frogpilot_variables.params.get_key_flag(key) & ParamKeyType.DONT_LOG
   }
+
+def settings_backup_keys():
+  return backup_keys() | frogpilot_variables.SETTINGS_BACKUP_STOCK_KEYS
 
 @cache
 def block_user():
@@ -161,6 +165,16 @@ def extract_zip(zip_file, extract_path):
 def frogs_go_moo():
   return frogpilot_paths.FROGS_GO_MOO_PATH.is_file()
 
+def get_directory_size(path):
+  size = 0
+  for directory, _, files in os.walk(path):
+    for name in files:
+      try:
+        size += os.lstat(os.path.join(directory, name)).st_size
+      except FileNotFoundError:
+        continue
+  return size
+
 def get_downloaded_models(models, thneed_models):
   return [
     model for model in models
@@ -196,6 +210,26 @@ def get_nnff_substitutes():
 def get_phoenix_time():
   return datetime.datetime.now().astimezone(ZoneInfo("America/Phoenix")).strftime("%B %d, %Y - %I:%M%p")
 
+def get_target_branches(available_branches, current_branch):
+  branches = available_branches.split(",")
+  if not frogs_go_moo():
+    branches = [branch for branch in branches if not is_hidden_branch(branch)]
+
+  for branch in (current_branch, *frogpilot_variables.TOP_BRANCHES):
+    if branch in branches:
+      branches.remove(branch)
+      branches.insert(0, branch)
+  return branches
+
+def has_openpilot_longitudinal(params, car_params):
+  if car_params["experimentalLongitudinalAvailable"]:
+    has_longitudinal = params.get_bool("ExperimentalLongitudinalEnabled")
+  else:
+    has_longitudinal = car_params["openpilotLongitudinalControl"]
+
+  honda_nidec = car_params["safetyConfigs"][0]["safetyModel"] == "hondaNidec"
+  return has_longitudinal and (honda_nidec or car_params["carName"] == "gm" or not params.get_bool("DisableOpenpilotLongitudinal"))
+
 def has_preserve_attr(path, attribute, value):
   try:
     return os.getxattr(path, attribute) == value
@@ -206,6 +240,19 @@ def has_preserve_attr(path, attribute, value):
 
 def is_classic_model(model):
   return get_model_version(model) in frogpilot_variables.CLASSIC_MODEL_VERSIONS
+
+@cache
+def is_hidden_branch(branch):
+  return branch.lower().startswith(frogpilot_variables.DEVELOPMENT_BRANCH.lower()) or branch in frogpilot_variables.HIDDEN_BRANCHES
+
+def is_ignition_on(sm):
+  return any(ps.ignitionLine or ps.ignitionCan for ps in sm["pandaStates"] if ps.pandaType != log.PandaState.PandaType.unknown)
+
+def is_online(device_state):
+  return device_state.networkType != NetworkType.none
+
+def is_openpilot_steering(sm):
+  return sm["deviceState"].started and (sm["controlsState"].enabled or sm["frogpilotCarState"].alwaysOnLateralEnabled)
 
 def is_thread_alive(name):
   with locks[name]:

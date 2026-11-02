@@ -54,12 +54,8 @@ PARK = car.CarState.GearShifter.park
 SNG_INTERCEPTOR_GAS = 0.12
 
 def get_long_tune(CP, params):
-  if CP.carFingerprint in TSS2_CAR or CP.enableGasInterceptor:
-    kiBP = [2., 5.]
-    kiV = [0.5, 0.25]
-  else:
-    kiBP = [0., 5., 35.]
-    kiV = [3.6, 2.4, 1.5]
+  kiBP = [2., 5.]
+  kiV = [0.5, 0.25]
 
   return PIDController(0.0, (kiBP, kiV),
                        pos_limit=params.ACCEL_MAX, neg_limit=params.ACCEL_MIN,

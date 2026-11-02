@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import math
+import re
 import time
 
 from functools import lru_cache
@@ -39,6 +40,7 @@ CRUISING_SPEED = 5                        # m/s, roughly the speed cars go when 
 CURVE_AHEAD_ENTER = 0.6                   # m/s^2, peak lateral acceleration on the planned path that counts as a curve ahead
 CURVE_AHEAD_EXIT = 0.4                    # m/s^2, peak lateral acceleration on the planned path below which the curve ahead has ended
 DEFAULT_LATERAL_ACCELERATION = 2.0        # m/s^2, typical lateral acceleration when taking curves
+DOOR_COMMAND_ATTEMPTS = 10                # Lock or unlock frames sent, one per second, before a door command gives up
 EARTH_RADIUS = 6378137                    # Radius of the Earth in meters
 LATERAL_DELAY_OFFSET = 0.2                # Seconds added to the steering actuator delay to get the total lateral delay
 LAT_SMOOTH_SECONDS = 0.1                  # Seconds of lateral smoothing for models that don't set their own
@@ -61,6 +63,7 @@ BACKUP_EXCLUDED_KEYS = {"FrogPilotTelemetry", "FrogPilotTelemetryConfirmed", "Gi
 CAR_MAKE_NAMES = {"GMC": "GMC", "SEAT": "SEAT", "SKODA": "Škoda"}
 CLASSIC_MODEL_VERSIONS = {"v1", "v2", "v3", "v4"}
 CURRENT_SPEED_STOP_MODELS = {"cd210-model", "pop-model"}
+DASHBOARD_SPEED_LIMIT_BRANDS = {"ford", "hyundai", "toyota"}
 LKAS_BUTTON_BRANDS = {"chrysler", "ford", "gm", "honda", "mazda", "nissan"}
 MAP_GEARS_BRANDS = {"gm", "toyota"}
 MIN_STABLE_DELAY_MODELS = {"cd210-model"}
@@ -78,6 +81,21 @@ NON_DRIVING_GEARS = [GearShifter.neutral, GearShifter.park, GearShifter.reverse,
 RANDOM_EVENT_END = custom.FrogPilotCarEvent.EventName.youveGotMail
 RANDOM_EVENT_START = custom.FrogPilotCarEvent.EventName.accel30
 
+RESET_REMOVED_KEYS = {
+  "CarParamsPersistent",
+  "CarParamsPrevRoute",
+  "FrogPilotTelemetry",
+  "FrogPilotTelemetryConfirmed",
+  "GithubSshKeys",
+  "GithubUsername",
+  "LastGPSPosition",
+  "SshEnabled"
+}
+
+SECOC_KEY_PATTERN = re.compile(r"[0-9A-Fa-f]{32}")
+
+SECRET_KEYS = {"DiscordUsername", "FavoriteDestinations", "MapboxPublicKey", "MapboxSecretKey", "NavDestination", "SecOCKey", "SecOCKeys", "WeatherToken"}
+
 DEVELOPMENT_BRANCH = "FrogPilot-Development"
 PR_BRANCH = "MAKE-PRS-HERE"
 RELEASE_BRANCH = "FrogPilot"
@@ -85,11 +103,42 @@ STAGING_BRANCH = "FrogPilot-Staging"
 TESTING_BRANCH = "FrogPilot-Testing"
 VETTING_BRANCH = "FrogPilot-Vetting"
 
-REPORT_REPOSITORIES = ("frogai/frogpilot", "frogai/frogpilot-development", "frogai/openpilot")
+HIDDEN_BRANCHES = {PR_BRANCH, VETTING_BRANCH}
+TOP_BRANCHES = ("devel-staging", "devel", "nightly", "master-ci", "master")
+
+UPDATER_PROCESS = "system.updated.updated"
+
 RESOURCES_REPO = "FrogAi/FrogPilot-Resources"
 
-POND_ACTIVE_THEME = "pond_active-user_created"
+MAP_COUNTRY_PREFIX = "nation."
+MAP_STATE_PREFIX = "us_state."
 
+MAPBOX_KEY_MIN_LENGTH = 80
+MAPBOX_PUBLIC_KEY_PREFIX = "pk."
+MAPBOX_PUBLIC_KEY_TEST_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places/mapbox.json?access_token={}"
+MAPBOX_SECRET_KEY_PREFIX = "sk."
+MAPBOX_SECRET_KEY_TEST_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/-73.989,40.733;-74,40.733?access_token={}"
+
+REPORT_CRASH_ISSUE = 'I saw an alert that said "openpilot crashed"'
+REPORT_OTHER_ISSUE = "Something else (please describe)"
+REPORT_UNSURE_ISSUE = "I'm not sure if this is normal or a bug:"
+REPORT_DESCRIBED_ISSUES = (REPORT_CRASH_ISSUE, REPORT_OTHER_ISSUE, REPORT_UNSURE_ISSUE)
+
+REPORT_DESCRIPTION_MAX_LENGTH = 300
+REPORT_DESCRIPTION_MIN_LENGTH = 10
+REPORT_DISCORD_USER_MAX_LENGTH = 64
+REPORT_REPOSITORIES = ("frogai/frogpilot", "frogai/frogpilot-development", "frogai/openpilot")
+
+THE_POND_HOSTNAME = "ThePond.local"
+THE_POND_PORT = 8082
+
+POND_ACTIVE_THEME = "pond_active-user_created"
+USER_CREATED_THEME_SUFFIX = "-user_created"
+
+VALID_NAME_PATTERN = re.compile(r"[A-Za-z0-9._-]+")
+
+AUTOMATIC_BACKUP_SUFFIX = "_auto"
+IN_PROGRESS_BACKUP_SUFFIX = "_in_progress"
 SCREEN_RECORDING_COMPANION_SUFFIXES = (".gif", ".png")
 
 PRESERVE_ROUTE_ATTR_NAME = "user.preserve_route"
@@ -99,12 +148,32 @@ UPLOAD_DONE = b"done"
 UPLOAD_PENDING = b"pending"
 
 WEATHER_API_URL = "https://api.openweathermap.org/data/4.0/onecall/current"
+WEATHER_KEY_MAX_LENGTH = 32
+WEATHER_KEY_TEST_URL = f"{WEATHER_API_URL}?lat=42.4293&lon=-83.9850&appid={{}}"
 
 ACCELERATION_PROFILES = {
   "STANDARD": 0,
   "ECO": 1,
   "SPORT": 2,
   "SPORT_PLUS": 3
+}
+
+BUILTIN_THEMES = {
+  "april_fools": "April Fools",
+  "christmas": "Christmas",
+  "cinco_de_mayo": "Cinco de Mayo",
+  "easter": "Easter",
+  "fourth_of_july": "Fourth of July",
+  "halloween": "Halloween",
+  "may_the_fourth": "May the Fourth",
+  "new_years": "New Year's",
+  "none": "None",
+  "st_patricks_day": "St. Patrick's Day",
+  "stitch_day": "Stitch Day",
+  "stock": "Stock",
+  "thanksgiving": "Thanksgiving",
+  "valentines_day": "Valentine's Day",
+  "world_frog_day": "World Frog Day"
 }
 
 BUTTON_FUNCTIONS = {
@@ -115,6 +184,52 @@ BUTTON_FUNCTIONS = {
   "PAUSE_LONGITUDINAL": 4,
   "EXPERIMENTAL_MODE": 5,
   "TRAFFIC_MODE": 6
+}
+
+BUTTON_FUNCTION_LABELS = {
+  0: "No Action",
+  1: "Change \"Personality Profile\"",
+  2: "Force openpilot to Coast",
+  3: "Pause Steering",
+  4: "Pause Acceleration/Braking",
+  5: "Toggle \"Experimental Mode\" On/Off",
+  6: "Toggle \"Traffic Mode\" On/Off"
+}
+
+CALIBRATION_KEYS = {"CalibrationParams", "LiveDelay", "LiveParameters", "LiveTorqueParameters"}
+
+CAR_MAKES = ("Acura", "Audi", "Buick", "Cadillac", "Chevrolet", "Chrysler", "CUPRA", "Dodge", "Ford", "Genesis", "GMC", "Holden", "Honda", "Hyundai", "Jeep",
+             "Kia", "Lexus", "Lincoln", "MAN", "Mazda", "Nissan", "Ram", "SEAT", "Škoda", "Subaru", "Tesla", "Toyota", "Volkswagen")
+
+CAR_MAKE_FOLDERS = {
+  "acura": "honda",
+  "audi": "volkswagen",
+  "buick": "gm",
+  "cadillac": "gm",
+  "chevrolet": "gm",
+  "chrysler": "chrysler",
+  "cupra": "volkswagen",
+  "dodge": "chrysler",
+  "ford": "ford",
+  "genesis": "hyundai",
+  "gmc": "gm",
+  "holden": "gm",
+  "honda": "honda",
+  "hyundai": "hyundai",
+  "jeep": "chrysler",
+  "kia": "hyundai",
+  "lexus": "toyota",
+  "lincoln": "ford",
+  "man": "volkswagen",
+  "mazda": "mazda",
+  "nissan": "nissan",
+  "ram": "chrysler",
+  "seat": "volkswagen",
+  "škoda": "volkswagen",
+  "subaru": "subaru",
+  "tesla": "tesla",
+  "toyota": "toyota",
+  "volkswagen": "volkswagen"
 }
 
 CE_STATUS = {
@@ -130,6 +245,8 @@ CE_STATUS = {
   "NAVIGATION_INTERSECTION": 9,  # Approaching intersection condition
   "NAVIGATION_TURN": 10,         # Approaching turn condition
 }
+
+CURVE_DATA_KEYS = {"CalibrationProgress", "CurvatureData", "MaxLateralAcceleration"}
 
 CURVE_SPEED_PROFILES = {
   "GENTLE": 0,
@@ -163,6 +280,32 @@ DEVELOPER_SIDEBAR_METRICS = {
   "LONGITUDINAL_MPC_JERK_SPEED_CONTROL": 15
 }
 
+DEVELOPER_SIDEBAR_METRIC_LABELS = {
+  0: "None",
+  1: "Acceleration: Current",
+  2: "Acceleration: Max",
+  3: "Auto Tune: Actuator Delay",
+  4: "Auto Tune: Friction",
+  5: "Auto Tune: Lateral Acceleration",
+  6: "Auto Tune: Steer Ratio",
+  7: "Auto Tune: Stiffness Factor",
+  8: "Engagement %: Lateral",
+  9: "Engagement %: Longitudinal",
+  10: "Lateral Control: Steering Angle",
+  11: "Lateral Control: Torque % Used",
+  12: "Longitudinal Control: Actuator Acceleration Output",
+  13: "Longitudinal MPC Jerk: Acceleration",
+  14: "Longitudinal MPC Jerk: Danger Zone",
+  15: "Longitudinal MPC Jerk: Speed Control"
+}
+
+DEVICE_MODELS = {
+  "mici": "comma four",
+  "pc": "PC",
+  "tici": "comma three",
+  "tizi": "comma 3X"
+}
+
 DOWNLOADABLE_PARAMS = {
   "colors": "DownloadableColors",
   "distance_icons": "DownloadableDistanceIcons",
@@ -170,31 +313,6 @@ DOWNLOADABLE_PARAMS = {
   "signals": "DownloadableSignals",
   "sounds": "DownloadableSounds",
   "steering_wheels": "DownloadableWheels"
-}
-
-EMPTY_DEFAULT_FLOAT_KEYS = {
-  "LongitudinalActuatorDelay",
-  "LongitudinalActuatorDelayStock",
-  "StartAccel",
-  "StartAccelStock",
-  "SteerDelay",
-  "SteerDelayStock",
-  "SteerFriction",
-  "SteerFrictionStock",
-  "SteerKP",
-  "SteerKPStock",
-  "SteerLatAccel",
-  "SteerLatAccelStock",
-  "SteerRatio",
-  "SteerRatioStock",
-  "StopAccel",
-  "StopAccelStock",
-  "StoppingDecelRate",
-  "StoppingDecelRateStock",
-  "VEgoStarting",
-  "VEgoStartingStock",
-  "VEgoStopping",
-  "VEgoStoppingStock"
 }
 
 EXCLUDED_KEYS = {
@@ -222,6 +340,38 @@ EXCLUDED_KEYS = {
   "UpdaterAvailableBranches"
 }
 
+FROGPILOT_STATS_TYPES = {
+  "AEBEvents": "count",
+  "AOLTime": "timePercent",
+  "CruiseSpeedTimes": "speed",
+  "CurrentMonthsMeters": "distance",
+  "DayTime": "timePercent",
+  "Disengages": "count",
+  "Engages": "count",
+  "ExperimentalModeTime": "timePercent",
+  "FrogChirps": "count",
+  "FrogHops": "count",
+  "FrogPilotDrives": "count",
+  "FrogPilotMeters": "distance",
+  "FrogPilotSeconds": "time",
+  "FrogSqueaks": "count",
+  "GoatScreams": "count",
+  "LateralTime": "timePercent",
+  "LongestDistanceWithoutOverride": "distance",
+  "LongitudinalTime": "timePercent",
+  "MaxAcceleration": "accel",
+  "ModelTimes": "parent",
+  "NightTime": "timePercent",
+  "Overrides": "count",
+  "OverrideTime": "timePercent",
+  "PersonalityTimes": "parent",
+  "RandomEvents": "parent",
+  "StandstillTime": "timePercent",
+  "StopLightTime": "timePercent",
+  "TrackedTime": "time",
+  "WeatherTimes": "parent"
+}
+
 HOLIDAY_GREETINGS = {
   "april_fools": "Happy April Fool's Day! 🤡",
   "christmas_week": "Merry Christmas! 🎄",
@@ -236,6 +386,306 @@ HOLIDAY_GREETINGS = {
   "thanksgiving_week": "Happy Thanksgiving! 🦃",
   "valentines_day": "Happy Valentine's Day! ❤️",
   "world_frog_day": "Happy World Frog Day! 🐸"
+}
+
+MAP_COUNTRIES = {
+  "Africa": {
+    "DZ": "Algeria",
+    "AO": "Angola",
+    "BJ": "Benin",
+    "BW": "Botswana",
+    "BF": "Burkina Faso",
+    "BI": "Burundi",
+    "CM": "Cameroon",
+    "CF": "Central African Republic",
+    "TD": "Chad",
+    "CG": "Congo (Brazzaville)",
+    "CD": "Congo (Kinshasa)",
+    "DJ": "Djibouti",
+    "EG": "Egypt",
+    "GQ": "Equatorial Guinea",
+    "ER": "Eritrea",
+    "SZ": "Eswatini",
+    "ET": "Ethiopia",
+    "GA": "Gabon",
+    "GM": "Gambia",
+    "GH": "Ghana",
+    "GN": "Guinea",
+    "GW": "Guinea-Bissau",
+    "CI": "Ivory Coast",
+    "KE": "Kenya",
+    "LS": "Lesotho",
+    "LR": "Liberia",
+    "LY": "Libya",
+    "MG": "Madagascar",
+    "MW": "Malawi",
+    "ML": "Mali",
+    "MR": "Mauritania",
+    "MA": "Morocco",
+    "MZ": "Mozambique",
+    "NA": "Namibia",
+    "NE": "Niger",
+    "NG": "Nigeria",
+    "RW": "Rwanda",
+    "SN": "Senegal",
+    "SL": "Sierra Leone",
+    "SO": "Somalia",
+    "ZA": "South Africa",
+    "SS": "South Sudan",
+    "SD": "Sudan",
+    "TZ": "Tanzania",
+    "TG": "Togo",
+    "TN": "Tunisia",
+    "UG": "Uganda",
+    "ZM": "Zambia",
+    "ZW": "Zimbabwe"
+  },
+  "Antarctica": {
+    "AQ": "Antarctica"
+  },
+  "Asia": {
+    "AF": "Afghanistan",
+    "AM": "Armenia",
+    "AZ": "Azerbaijan",
+    "BD": "Bangladesh",
+    "BT": "Bhutan",
+    "BN": "Brunei",
+    "KH": "Cambodia",
+    "CN": "China",
+    "CY": "Cyprus",
+    "TL": "East Timor",
+    "IN": "India",
+    "ID": "Indonesia",
+    "IR": "Iran",
+    "IQ": "Iraq",
+    "IL": "Israel",
+    "JP": "Japan",
+    "JO": "Jordan",
+    "KZ": "Kazakhstan",
+    "KW": "Kuwait",
+    "KG": "Kyrgyzstan",
+    "LA": "Laos",
+    "LB": "Lebanon",
+    "MY": "Malaysia",
+    "MN": "Mongolia",
+    "MM": "Myanmar",
+    "NP": "Nepal",
+    "KP": "North Korea",
+    "OM": "Oman",
+    "PK": "Pakistan",
+    "PS": "Palestine",
+    "PH": "Philippines",
+    "QA": "Qatar",
+    "RU": "Russia",
+    "SA": "Saudi Arabia",
+    "KR": "South Korea",
+    "LK": "Sri Lanka",
+    "SY": "Syria",
+    "TW": "Taiwan",
+    "TJ": "Tajikistan",
+    "TH": "Thailand",
+    "TR": "Turkey",
+    "TM": "Turkmenistan",
+    "AE": "United Arab Emirates",
+    "UZ": "Uzbekistan",
+    "VN": "Vietnam",
+    "YE": "Yemen"
+  },
+  "Europe": {
+    "AL": "Albania",
+    "AT": "Austria",
+    "BY": "Belarus",
+    "BE": "Belgium",
+    "BA": "Bosnia and Herzegovina",
+    "BG": "Bulgaria",
+    "HR": "Croatia",
+    "CZ": "Czech Republic",
+    "DK": "Denmark",
+    "EE": "Estonia",
+    "FI": "Finland",
+    "FR": "France",
+    "GE": "Georgia",
+    "DE": "Germany",
+    "GR": "Greece",
+    "HU": "Hungary",
+    "IS": "Iceland",
+    "IE": "Ireland",
+    "IT": "Italy",
+    "LV": "Latvia",
+    "LT": "Lithuania",
+    "LU": "Luxembourg",
+    "MD": "Moldova",
+    "ME": "Montenegro",
+    "NL": "Netherlands",
+    "MK": "North Macedonia",
+    "NO": "Norway",
+    "PL": "Poland",
+    "PT": "Portugal",
+    "RO": "Romania",
+    "RS": "Serbia",
+    "SK": "Slovakia",
+    "SI": "Slovenia",
+    "ES": "Spain",
+    "SE": "Sweden",
+    "CH": "Switzerland",
+    "UA": "Ukraine",
+    "GB": "United Kingdom"
+  },
+  "North America": {
+    "BS": "Bahamas",
+    "BZ": "Belize",
+    "CA": "Canada",
+    "CR": "Costa Rica",
+    "CU": "Cuba",
+    "DO": "Dominican Republic",
+    "SV": "El Salvador",
+    "GL": "Greenland",
+    "GT": "Guatemala",
+    "HT": "Haiti",
+    "HN": "Honduras",
+    "JM": "Jamaica",
+    "MX": "Mexico",
+    "NI": "Nicaragua",
+    "PA": "Panama",
+    "TT": "Trinidad and Tobago",
+    "US": "United States"
+  },
+  "Oceania": {
+    "AU": "Australia",
+    "FJ": "Fiji",
+    "TF": "French Southern Territories",
+    "NC": "New Caledonia",
+    "NZ": "New Zealand",
+    "PG": "Papua New Guinea",
+    "SB": "Solomon Islands",
+    "VU": "Vanuatu"
+  },
+  "South America": {
+    "AR": "Argentina",
+    "BO": "Bolivia",
+    "BR": "Brazil",
+    "CL": "Chile",
+    "CO": "Colombia",
+    "EC": "Ecuador",
+    "FK": "Falkland Islands",
+    "GY": "Guyana",
+    "PY": "Paraguay",
+    "PE": "Peru",
+    "SR": "Suriname",
+    "UY": "Uruguay",
+    "VE": "Venezuela"
+  }
+}
+
+MAP_STATES = {
+  "United States - Midwest": {
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MO": "Missouri",
+    "NE": "Nebraska",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "SD": "South Dakota",
+    "WI": "Wisconsin"
+  },
+  "United States - Northeast": {
+    "CT": "Connecticut",
+    "ME": "Maine",
+    "MA": "Massachusetts",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NY": "New York",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "VT": "Vermont"
+  },
+  "United States - South": {
+    "AL": "Alabama",
+    "AR": "Arkansas",
+    "DE": "Delaware",
+    "DC": "District of Columbia",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "MD": "Maryland",
+    "MS": "Mississippi",
+    "NC": "North Carolina",
+    "OK": "Oklahoma",
+    "SC": "South Carolina",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "VA": "Virginia",
+    "WV": "West Virginia"
+  },
+  "United States - West": {
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "CA": "California",
+    "CO": "Colorado",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "MT": "Montana",
+    "NV": "Nevada",
+    "NM": "New Mexico",
+    "OR": "Oregon",
+    "UT": "Utah",
+    "WA": "Washington",
+    "WY": "Wyoming"
+  },
+  "United States - Territories": {
+    "AS": "American Samoa",
+    "MP": "Northern Mariana Islands",
+    "PR": "Puerto Rico",
+    "VI": "Virgin Islands"
+  }
+}
+
+MAP_STYLE_LABELS = {
+  0: "Stock openpilot",
+  1: "FrogPilot",
+  2: "Mapbox Streets",
+  3: "Mapbox Outdoors",
+  4: "Mapbox Light",
+  5: "Mapbox Dark",
+  6: "Mapbox Navigation Day",
+  7: "Mapbox Navigation Night",
+  8: "Mapbox Satellite",
+  9: "Mapbox Satellite Streets",
+  10: "Mapbox Traffic Night",
+  11: "Mike's Personalized Style"
+}
+
+METRIC_CONVERSIONS = {
+  "CESignalSpeed": (CV.MPH_TO_KPH, 0),
+  "CESpeed": (CV.MPH_TO_KPH, 0),
+  "CESpeedLead": (CV.MPH_TO_KPH, 0),
+  "CustomCruise": (CV.MPH_TO_KPH, 0),
+  "CustomCruiseLong": (CV.MPH_TO_KPH, 0),
+  "IncreasedStoppedDistance": (CV.FOOT_TO_METER, None),
+  "IncreasedStoppedDistanceLowVisibility": (CV.FOOT_TO_METER, None),
+  "IncreasedStoppedDistanceRain": (CV.FOOT_TO_METER, None),
+  "IncreasedStoppedDistanceRainStorm": (CV.FOOT_TO_METER, None),
+  "IncreasedStoppedDistanceSnow": (CV.FOOT_TO_METER, None),
+  "LaneDetectionWidth": (CV.FOOT_TO_METER, None),
+  "LaneLinesWidth": (CV.INCH_TO_CM, 0),
+  "MinimumLaneChangeSpeed": (CV.MPH_TO_KPH, 0),
+  "Offset1": (CV.MPH_TO_KPH, 0),
+  "Offset2": (CV.MPH_TO_KPH, 0),
+  "Offset3": (CV.MPH_TO_KPH, 0),
+  "Offset4": (CV.MPH_TO_KPH, 0),
+  "Offset5": (CV.MPH_TO_KPH, 0),
+  "Offset6": (CV.MPH_TO_KPH, 0),
+  "Offset7": (CV.MPH_TO_KPH, 0),
+  "PathWidth": (CV.FOOT_TO_METER, 1),
+  "PauseAOLOnBrake": (CV.MPH_TO_KPH, 0),
+  "PauseLateralSpeed": (CV.MPH_TO_KPH, 0),
+  "RoadEdgesWidth": (CV.INCH_TO_CM, 0),
+  "SetSpeedOffset": (CV.MPH_TO_KPH, 0)
 }
 
 PRE_TOMB_RAIDER_MODELS = {
@@ -260,6 +710,23 @@ PRE_TOMB_RAIDER_MODELS = {
   "wd-40"
 }
 
+REPORT_ISSUES = (
+  "Acceleration feels harsh or jerky",
+  "An alert was unclear and I didn't know what it meant",
+  "Braking is too sudden or uncomfortable",
+  REPORT_UNSURE_ISSUE,
+  "My screen froze or is stuck loading something",
+  "My steering wheel buttons aren't working",
+  "openpilot disengages when I don't expect it",
+  "openpilot doesn't react to stopped vehicles ahead",
+  "openpilot doesn't resume from a stop",
+  "openpilot feels sluggish or slow to respond",
+  "Steering feels twitchy or unnatural",
+  "The car doesn't follow curves well",
+  "The car isn't staying centered in its lane",
+  REPORT_OTHER_ISSUE
+)
+
 RENAMED_KEYS = {
   "CustomColors": "ColorScheme",
   "CustomDistanceIcons": "DistanceIconPack",
@@ -267,6 +734,431 @@ RENAMED_KEYS = {
   "CustomSignals": "SignalAnimation",
   "CustomSounds": "SoundPack",
   "PersonalizeOpenpilot": "CustomThemes"
+}
+
+SETTING_LABELS = {
+  "AccelerationPath": {"name": "Acceleration Path"},
+  "AccelerationProfile": {"name": "Acceleration Profile", "values": {0: "Standard", 1: "Eco", 2: "Sport", 3: "Sport+"}},
+  "AdjacentLeadsUI": {"name": "Adjacent Leads Tracking"},
+  "AdjacentPath": {"name": "Adjacent Lanes"},
+  "AdjacentPathMetrics": {"name": "Adjacent Lane Metrics"},
+  "AdvancedCustomUI": {"name": "Advanced UI Controls"},
+  "AdvancedLateralTune": {"name": "Advanced Lateral Tuning"},
+  "AdvancedLongitudinalTune": {"name": "Advanced Longitudinal Tuning"},
+  "AggressiveFollow": {"decimals": 2, "name": "Aggressive Personality: Following Distance", "unit": " seconds", "values": {1: "1.00 second"}},
+  "AggressiveJerkAcceleration": {"name": "Aggressive Personality: Acceleration Smoothness", "unit": "%"},
+  "AggressiveJerkDanger": {"name": "Aggressive Personality: Safety Gap Bias", "unit": "%"},
+  "AggressiveJerkDeceleration": {"name": "Aggressive Personality: Braking Smoothness", "unit": "%"},
+  "AggressiveJerkSpeed": {"name": "Aggressive Personality: Speed-Up Response", "unit": "%"},
+  "AggressiveJerkSpeedDecrease": {"name": "Aggressive Personality: Slowdown Response", "unit": "%"},
+  "AggressivePersonalityProfile": {"name": "Aggressive Personality"},
+  "AlertVolumeControl": {"name": "Alert Volumes"},
+  "AlwaysOnDM": {"name": "Always-On Driver Monitoring"},
+  "AlwaysOnLateral": {"name": "Always On Lateral"},
+  "AlwaysOnLateralLKAS": {"name": "Always On Lateral: Enable With LKAS"},
+  "AlwaysOnLateralMain": {"name": "Always On Lateral: Enable With Cruise Control"},
+  "AutomaticallyDownloadModels": {"name": "Automatically Download New Models"},
+  "AutomaticUpdates": {"name": "Automatically Update FrogPilot"},
+  "BigMap": {"name": "Larger Map Display"},
+  "BlacklistedModels": {"name": "Model Blacklist"},
+  "BlindSpotMetrics": {"name": "Border Metrics (Blind Spot)"},
+  "BlindSpotPath": {"name": "Blind Spot Path"},
+  "BorderMetrics": {"name": "Border Metrics"},
+  "CameraView": {"name": "Camera View", "values": {0: "Auto", 1: "Driver", 2: "Standard", 3: "Wide"}},
+  "CarMake": {"name": "Car Make"},
+  "CarModel": {"name": "Car Model"},
+  "CarModelName": {"name": "Car Model Name"},
+  "CECurves": {"name": "Conditional Experimental Mode: Curve Detected Ahead"},
+  "CECurvesLead": {"name": "Conditional Experimental Mode: Curve Detected Ahead (With Lead)"},
+  "CELead": {"name": "Conditional Experimental Mode: Lead Detected Ahead"},
+  "CENavigation": {"name": "Conditional Experimental Mode: Navigation-Based"},
+  "CENavigationIntersections": {"name": "Conditional Experimental Mode: Navigation-Based (Intersections)"},
+  "CENavigationLead": {"name": "Conditional Experimental Mode: Navigation-Based (With Lead)"},
+  "CENavigationTurns": {"name": "Conditional Experimental Mode: Navigation-Based (Turns)"},
+  "CESignalLaneDetection": {"name": "Conditional Experimental Mode: Turn Signal Below (Not For Detected Lanes)"},
+  "CESignalSpeed": {"name": "Conditional Experimental Mode: Turn Signal Below", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "CESlowerLead": {"name": "Conditional Experimental Mode: Lead Detected Ahead (Slower Lead)"},
+  "CESpeed": {"name": "Conditional Experimental Mode: Below", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "CESpeedLead": {"name": "Conditional Experimental Mode: Below (With Lead)", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "CEStopLights": {"name": "Conditional Experimental Mode: \"Detected\" Stop Lights/Signs"},
+  "CEStoppedLead": {"name": "Conditional Experimental Mode: Lead Detected Ahead (Stopped Lead)"},
+  "ClusterOffset": {"decimals": 3, "name": "Toyota/Lexus Settings: Dashboard Speed Offset", "unit": "x"},
+  "ColorScheme": {"name": "Color Scheme"},
+  "Compass": {"name": "Compass"},
+  "ConditionalExperimental": {"name": "Conditional Experimental Mode"},
+  "CurveSpeedController": {"name": "Curve Speed Controller"},
+  "CurveSpeedProfile": {"name": "Curve Speed Profile", "values": {0: "Gentle", 1: "Standard", 2: "Sport", 3: "Adaptive"}},
+  "CustomAlerts": {"name": "Extra Alerts"},
+  "CustomCruise": {"name": "Cruise Interval", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "CustomCruiseLong": {"name": "Cruise Interval (Hold)", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "CustomPersonalities": {"name": "Driving Personalities"},
+  "CustomThemes": {"name": "Custom Themes"},
+  "CustomUI": {"name": "Driving Screen Widgets"},
+  "DebugMode": {"name": "Debug Mode"},
+  "DecelerationProfile": {"name": "Deceleration Profile", "values": {0: "Standard", 1: "Eco", 2: "Eco+"}},
+  "DeveloperMetrics": {"name": "Developer Metrics"},
+  "DeveloperSidebar": {"name": "Developer Sidebar"},
+  "DeveloperSidebarMetric1": {"name": "Developer Sidebar: Metric #1", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric2": {"name": "Developer Sidebar: Metric #2", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric3": {"name": "Developer Sidebar: Metric #3", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric4": {"name": "Developer Sidebar: Metric #4", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric5": {"name": "Developer Sidebar: Metric #5", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric6": {"name": "Developer Sidebar: Metric #6", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperSidebarMetric7": {"name": "Developer Sidebar: Metric #7", "values": DEVELOPER_SIDEBAR_METRIC_LABELS},
+  "DeveloperUI": {"name": "Developer UI"},
+  "DeveloperWidgets": {"name": "Developer Widgets"},
+  "DeviceManagement": {"name": "Device Settings"},
+  "DeviceShutdown": {
+    "name": "Device Shutdown Timer",
+    "values": {
+      0: "5 mins",
+      1: "15 mins",
+      2: "30 mins",
+      3: "45 mins",
+      4: "1 hour",
+      5: "2 hours",
+      6: "3 hours",
+      7: "4 hours",
+      8: "5 hours",
+      9: "6 hours",
+      10: "7 hours",
+      11: "8 hours",
+      12: "9 hours",
+      13: "10 hours",
+      14: "11 hours",
+      15: "12 hours",
+      16: "13 hours",
+      17: "14 hours",
+      18: "15 hours",
+      19: "16 hours",
+      20: "17 hours",
+      21: "18 hours",
+      22: "19 hours",
+      23: "20 hours",
+      24: "21 hours",
+      25: "22 hours",
+      26: "23 hours",
+      27: "24 hours",
+      28: "25 hours",
+      29: "26 hours",
+      30: "27 hours",
+      31: "28 hours",
+      32: "29 hours",
+      33: "30 hours"
+    }
+  },
+  "DisableOnroadUploads": {"name": "Disable Uploads (Disable Onroad Only)"},
+  "DisableOpenpilotLongitudinal": {"name": "Disable openpilot Longitudinal Control"},
+  "DiscordUsername": {"name": "Discord Username"},
+  "DisengageOnAccelerator": {"name": "Disengage on Accelerator Pedal"},
+  "DisengageVolume": {"name": "Disengage Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "DistanceButtonControl": {"name": "Distance Button", "values": BUTTON_FUNCTION_LABELS},
+  "DistanceIconPack": {"name": "Custom Themes: Personality Button"},
+  "DriverCamera": {"name": "Show Driver Camera When In Reverse"},
+  "DynamicPathWidth": {"name": "Dynamic Path Width"},
+  "DynamicPedalsOnUI": {"name": "Gas / Brake Pedal Indicators (Dynamic)"},
+  "EngageVolume": {"name": "Engage Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "ExperimentalMode": {"name": "Experimental Mode"},
+  "Fahrenheit": {"name": "Numerical Temperature Gauge (Fahrenheit)"},
+  "ForceAutoTune": {"name": "Force Auto-Tune On"},
+  "ForceAutoTuneOff": {"name": "Force Auto-Tune Off"},
+  "ForceFingerprint": {"name": "Disable Automatic Fingerprint Detection"},
+  "ForceMPHDashboard": {"name": "Force MPH from Dashboard"},
+  "ForceStops": {"name": "Force Stop at \"Detected\" Stop Lights/Signs"},
+  "ForceTorqueController": {"name": "Force Torque Controller"},
+  "FPSCounter": {"name": "FPS Display"},
+  "FrogsGoMoosTweak": {"name": "Toyota/Lexus Settings: FrogsGoMoo's Personal Tweaks"},
+  "FullMap": {"name": "Larger Map Display: Full Map"},
+  "GoatScream": {"name": "Goat Scream"},
+  "GreenLightAlert": {"name": "Green Light Alert"},
+  "GsmApn": {"name": "APN Setting"},
+  "GsmMetered": {"name": "Cellular Metered"},
+  "GsmRoaming": {"name": "Enable Roaming"},
+  "HideAlerts": {"name": "Hide Non-Critical Alerts"},
+  "HideLeadMarker": {"name": "Hide Lead Marker"},
+  "HideMap": {"name": "Hide Map"},
+  "HideMapIcon": {"name": "Hide Map Settings Button"},
+  "HideMaxSpeed": {"name": "Hide Max Speed"},
+  "HideSpeed": {"name": "Hide Current Speed"},
+  "HideSpeedLimit": {"name": "Hide Speed Limits"},
+  "HigherBitrate": {"name": "High-Quality Recording"},
+  "HolidayThemes": {"name": "Holiday Themes"},
+  "HondaAltTune": {"name": "Acura/Honda Settings: Gentle Following"},
+  "HondaLowSpeedPedal": {"name": "Acura/Honda Settings: Responsive Pedal at Low Speeds"},
+  "HondaMaxBrake": {"name": "Acura/Honda Settings: Increased Braking Force"},
+  "HumanAcceleration": {"name": "Human-Like Acceleration"},
+  "HumanFollowing": {"name": "Human-Like Following"},
+  "HumanLaneChanges": {"name": "Human-Like Lane Changes"},
+  "IconPack": {"name": "Icon Pack"},
+  "IncreasedStoppedDistance": {
+    "decimals": 1,
+    "name": "Increase Stopped Distance by",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "IncreasedStoppedDistanceLowVisibility": {
+    "decimals": 1,
+    "name": "Low Visibility: Increase Stopped Distance by",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "IncreasedStoppedDistanceRain": {
+    "decimals": 1,
+    "name": "Rain: Increase Stopped Distance by",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "IncreasedStoppedDistanceRainStorm": {
+    "decimals": 1,
+    "name": "Rainstorms: Increase Stopped Distance by",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "IncreasedStoppedDistanceSnow": {
+    "decimals": 1,
+    "name": "Snow: Increase Stopped Distance by",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "IncreaseFollowingLowVisibility": {"decimals": 2, "name": "Low Visibility: Increase Following Distance by", "unit": " seconds", "values": {1: "1.00 second"}},
+  "IncreaseFollowingRain": {"decimals": 2, "name": "Rain: Increase Following Distance by", "unit": " seconds", "values": {1: "1.00 second"}},
+  "IncreaseFollowingRainStorm": {"decimals": 2, "name": "Rainstorms: Increase Following Distance by", "unit": " seconds", "values": {1: "1.00 second"}},
+  "IncreaseFollowingSnow": {"decimals": 2, "name": "Snow: Increase Following Distance by", "unit": " seconds", "values": {1: "1.00 second"}},
+  "IncreaseThermalLimits": {"name": "Raise Temperature Limits"},
+  "InstantReplay": {
+    "name": "Capture Recent Footage",
+    "values": {
+      0: "Off",
+      30: "30 seconds",
+      60: "1 minute",
+      90: "1.5 minutes",
+      120: "2 minutes",
+      150: "2.5 minutes",
+      180: "3 minutes",
+      210: "3.5 minutes",
+      240: "4 minutes",
+      270: "4.5 minutes",
+      300: "5 minutes"
+    }
+  },
+  "IsLdwEnabled": {"name": "Enable Lane Departure Warnings"},
+  "IsMetric": {"name": "Use Metric System"},
+  "JoystickDebugMode": {"name": "Joystick Debug Mode"},
+  "LaneChanges": {"name": "Lane Changes"},
+  "LaneChangeTime": {"decimals": 1, "name": "Lane Change Delay", "unit": " seconds", "values": {0: "Instant", 1: "1.0 second"}},
+  "LaneDetectionWidth": {
+    "decimals": 1,
+    "name": "Minimum Lane Width",
+    "unit": (" feet", " meters"),
+    "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})
+  },
+  "LaneLinesWidth": {"name": "Lane Lines Width", "unit": (" inches", " cm"), "values": ({0: "Off", 1: "1 inch"}, {0: "Off"})},
+  "LanguageSetting": {"name": "Change Language"},
+  "LateralTune": {"name": "Lateral Tuning"},
+  "LeadDepartingAlert": {"name": "Lead Departing Alert"},
+  "LeadDetectionThreshold": {"name": "Lead Detection Sensitivity", "unit": "%"},
+  "LeadInfo": {"name": "Lead Info"},
+  "LKASButtonControl": {"name": "LKAS Button", "values": BUTTON_FUNCTION_LABELS},
+  "LockDoors": {"name": "Toyota/Lexus Settings: Automatically Lock/Unlock Doors (Lock)"},
+  "LockDoorsTimer": {"name": "Toyota/Lexus Settings: Lock Doors On Ignition Off After", "unit": " seconds", "values": {0: "Never"}},
+  "LongDistanceButtonControl": {"name": "Distance Button (Long Press)", "values": BUTTON_FUNCTION_LABELS},
+  "LongitudinalActuatorDelay": {"decimals": 2, "name": "Advanced Longitudinal Tuning: Actuator Delay", "unit": " seconds", "values": {1: "1.00 second"}},
+  "LongitudinalPersonality": {"name": "Driving Personality", "values": {0: "Aggressive", 1: "Standard", 2: "Relaxed"}},
+  "LongitudinalTune": {"name": "Acceleration and Braking"},
+  "LongPitch": {"name": "General Motors Settings: Smooth Pedal Response on Hills"},
+  "LoudBlindspotAlert": {"name": "Louder Blind Spot Alert"},
+  "LowVoltageShutdown": {"decimals": 1, "name": "Low-Voltage Cutoff", "unit": " volts"},
+  "MapAcceleration": {"name": "Map Accel/Decel to Gears (Acceleration)"},
+  "MapboxPublicKey": {"name": "Public Mapbox Key"},
+  "MapboxSecretKey": {"name": "Secret Mapbox Key"},
+  "MapDeceleration": {"name": "Map Accel/Decel to Gears (Deceleration)"},
+  "MapGears": {"name": "Map Accel/Decel to Gears"},
+  "MapsSelected": {"name": "Map Sources"},
+  "MapStyle": {"name": "Map Style", "values": MAP_STYLE_LABELS},
+  "MaxDesiredAcceleration": {"decimals": 1, "name": "Advanced Longitudinal Tuning: Maximum Acceleration", "unit": " m/s²"},
+  "MinimumLaneChangeSpeed": {"name": "Minimum Lane Change Speed", "unit": (" mph", " km/h"), "values": {0: "Any speed"}},
+  "Model": {"name": "Driving Model"},
+  "ModelRandomizer": {"name": "Model Randomizer"},
+  "ModelUI": {"name": "Model UI"},
+  "NavigationUI": {"name": "Navigation Widgets"},
+  "NewLongAPI": {"name": "comma's New Longitudinal API"},
+  "NNFF": {"name": "Neural Network Feedforward (NNFF)"},
+  "NNFFLite": {"name": "Neural Network Feedforward (NNFF) Lite"},
+  "NoLogging": {"name": "Disable Logging"},
+  "NoUploads": {"name": "Disable Uploads"},
+  "NudgelessLaneChange": {"name": "Automatic Lane Changes"},
+  "NumericalTemp": {"name": "Numerical Temperature Gauge"},
+  "Offset1": {
+    "name": ("Speed Limit Offsets: Speed Offset (0–24 mph)", "Speed Limit Offsets: Speed Offset (0–29 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset2": {
+    "name": ("Speed Limit Offsets: Speed Offset (25–34 mph)", "Speed Limit Offsets: Speed Offset (30–49 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset3": {
+    "name": ("Speed Limit Offsets: Speed Offset (35–44 mph)", "Speed Limit Offsets: Speed Offset (50–59 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset4": {
+    "name": ("Speed Limit Offsets: Speed Offset (45–54 mph)", "Speed Limit Offsets: Speed Offset (60–79 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset5": {
+    "name": ("Speed Limit Offsets: Speed Offset (55–64 mph)", "Speed Limit Offsets: Speed Offset (80–99 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset6": {
+    "name": ("Speed Limit Offsets: Speed Offset (65–74 mph)", "Speed Limit Offsets: Speed Offset (100–119 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "Offset7": {
+    "name": ("Speed Limit Offsets: Speed Offset (75–99 mph)", "Speed Limit Offsets: Speed Offset (120–140 km/h)"),
+    "unit": (" mph", " km/h"),
+    "values": {0: "Off"}
+  },
+  "OneLaneChange": {"name": "One Lane Change Per Signal"},
+  "OnroadDistanceButton": {"name": "Driving Personality Button"},
+  "OpenpilotEnabledToggle": {"name": "Enable openpilot"},
+  "PathEdgeWidth": {"name": "Path Edges Width", "unit": "%", "values": {0: "Off"}},
+  "PathWidth": {"decimals": 1, "name": "Path Width", "unit": (" feet", " meters"), "values": ({0: "Off", 1: "1.0 foot"}, {0: "Off", 1: "1.0 meter"})},
+  "PauseAOLOnBrake": {"name": "Always On Lateral: Pause on Brake Press Below", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "PauseLateralOnSignal": {"name": "Pause Steering Below (Turn Signal Only)"},
+  "PauseLateralSpeed": {"name": "Pause Steering Below", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "PedalsOnUI": {"name": "Gas / Brake Pedal Indicators"},
+  "PreferredSchedule": {"name": "Automatically Update Maps", "values": {0: "Manually", 1: "Weekly", 2: "Monthly"}},
+  "PromptDistractedVolume": {"name": "Distracted Driver Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "PromptVolume": {"name": "Prompt Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "QOLLateral": {"name": "Steering: Quality of Life"},
+  "QOLLongitudinal": {"name": "Gas / Brake: Quality of Life"},
+  "QOLVisuals": {"name": "Driving View: Quality of Life"},
+  "RadarTracksUI": {"name": "Radar Tracks"},
+  "RainbowPath": {"name": "Rainbow Path"},
+  "RandomEvents": {"name": "Random Events"},
+  "RandomThemes": {"name": "Random Themes"},
+  "RandomThemesHolidays": {"name": "Random Themes (Include Holiday Themes)"},
+  "RecordFront": {"name": "Record and Upload Driver Camera"},
+  "ReduceAccelerationLowVisibility": {"name": "Low Visibility: Reduce Acceleration by", "unit": "%"},
+  "ReduceAccelerationRain": {"name": "Rain: Reduce Acceleration by", "unit": "%"},
+  "ReduceAccelerationRainStorm": {"name": "Rainstorms: Reduce Acceleration by", "unit": "%"},
+  "ReduceAccelerationSnow": {"name": "Snow: Reduce Acceleration by", "unit": "%"},
+  "ReduceLateralAccelerationLowVisibility": {"name": "Low Visibility: Reduce Cornering Force by", "unit": "%"},
+  "ReduceLateralAccelerationRain": {"name": "Rain: Reduce Cornering Force by", "unit": "%"},
+  "ReduceLateralAccelerationRainStorm": {"name": "Rainstorms: Reduce Cornering Force by", "unit": "%"},
+  "ReduceLateralAccelerationSnow": {"name": "Snow: Reduce Cornering Force by", "unit": "%"},
+  "RefuseVolume": {"name": "Won't Engage Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "RelaxedFollow": {"decimals": 2, "name": "Relaxed Personality: Following Distance", "unit": " seconds", "values": {1: "1.00 second"}},
+  "RelaxedJerkAcceleration": {"name": "Relaxed Personality: Acceleration Smoothness", "unit": "%"},
+  "RelaxedJerkDanger": {"name": "Relaxed Personality: Safety Gap Bias", "unit": "%"},
+  "RelaxedJerkDeceleration": {"name": "Relaxed Personality: Braking Smoothness", "unit": "%"},
+  "RelaxedJerkSpeed": {"name": "Relaxed Personality: Speed-Up Response", "unit": "%"},
+  "RelaxedJerkSpeedDecrease": {"name": "Relaxed Personality: Slowdown Response", "unit": "%"},
+  "RelaxedPersonalityProfile": {"name": "Relaxed Personality"},
+  "ReverseCruise": {"name": "Reverse Cruise Increase"},
+  "RoadEdgesWidth": {"name": "Road Edges Width", "unit": (" inches", " cm"), "values": ({0: "Off", 1: "1 inch"}, {0: "Off"})},
+  "RoadNameUI": {"name": "Road Name"},
+  "RotatingWheel": {"name": "Rotating Steering Wheel"},
+  "ScreenBrightness": {"name": "Screen Brightness (Offroad)", "unit": "%", "values": {0: "Screen Off", 101: "Auto"}},
+  "ScreenBrightnessOnroad": {"name": "Screen Brightness (Onroad)", "unit": "%", "values": {0: "Screen Off", 101: "Auto"}},
+  "ScreenManagement": {"name": "Screen Settings"},
+  "ScreenRecorder": {"name": "Screen Recorder"},
+  "ScreenTimeout": {"name": "Screen Timeout (Offroad)", "unit": " seconds"},
+  "ScreenTimeoutOnroad": {"name": "Screen Timeout (Onroad)", "unit": " seconds"},
+  "SetSpeedLimit": {"name": "Match Speed Limit on Engage"},
+  "SetSpeedOffset": {"name": "Offset Set Speed by", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "ShowCEMStatus": {"name": "Conditional Experimental Mode: Status Widget"},
+  "ShowCPU": {"name": "Sidebar Metrics (CPU)"},
+  "ShowCSCStatus": {"name": "Curve Speed Controller: Status Widget"},
+  "ShowGPU": {"name": "Sidebar Metrics (GPU)"},
+  "ShowIP": {"name": "Sidebar Metrics (IP)"},
+  "ShowMemoryUsage": {"name": "Sidebar Metrics (RAM)"},
+  "ShowSLCOffset": {"name": "Show Speed Limit Offset"},
+  "ShowSpeedLimits": {"name": "Show Speed Limits"},
+  "ShowSteering": {"name": "Border Metrics (Steering Torque)"},
+  "ShowStoppingPoint": {"name": "Model Stopping Point"},
+  "ShowStoppingPointMetrics": {"name": "Model Stopping Point (Show Distance)"},
+  "ShowStorageLeft": {"name": "Sidebar Metrics (SSD Left)"},
+  "ShowStorageUsed": {"name": "Sidebar Metrics (SSD Used)"},
+  "SignalAnimation": {"name": "Custom Themes: Turn Signal"},
+  "SignalMetrics": {"name": "Border Metrics (Turn Signal)"},
+  "SLCConfirmation": {"name": "Confirm New Speed Limits"},
+  "SLCConfirmationHigher": {"name": "Confirm New Speed Limits (Higher Limits)"},
+  "SLCConfirmationLower": {"name": "Confirm New Speed Limits (Lower Limits)"},
+  "SLCFallback": {"name": "Speed Limit Controller: Fallback Speed", "values": {0: "Set Speed", 1: "Experimental Mode", 2: "Previous Limit"}},
+  "SLCLookaheadHigher": {"name": "Higher Limit Lookahead Time", "unit": " seconds", "values": {1: "1 second"}},
+  "SLCLookaheadLower": {"name": "Lower Limit Lookahead Time", "unit": " seconds", "values": {1: "1 second"}},
+  "SLCMapboxFiller": {"name": "Speed Limit Controller: Use Mapbox as Fallback"},
+  "SLCOverride": {"name": "Speed Limit Controller: Override Speed", "values": {0: "None", 1: "Set With Gas Pedal", 2: "Max Set Speed"}},
+  "SLCPriority1": {
+    "name": "Speed Limit Source Priority (Primary)",
+    "values": {"Camera": "Camera", "Dashboard": "Dashboard", "Highest": "Highest", "Lowest": "Lowest", "Map Data": "Map Data", "None": "None"}
+  },
+  "SLCPriority2": {
+    "name": "Speed Limit Source Priority (Secondary)",
+    "values": {"Camera": "Camera", "Dashboard": "Dashboard", "Highest": "Highest", "Lowest": "Lowest", "Map Data": "Map Data", "None": "None"}
+  },
+  "SLCPriority3": {
+    "name": "Speed Limit Source Priority (Tertiary)",
+    "values": {"Camera": "Camera", "Dashboard": "Dashboard", "Highest": "Highest", "Lowest": "Lowest", "Map Data": "Map Data", "None": "None"}
+  },
+  "SLCPriority4": {
+    "name": "Speed Limit Source Priority (Quaternary)",
+    "values": {"Camera": "Camera", "Dashboard": "Dashboard", "Highest": "Highest", "Lowest": "Lowest", "Map Data": "Map Data", "None": "None"}
+  },
+  "SNGHack": {"name": "Toyota/Lexus Settings: Stop-and-Go Hack"},
+  "SoundPack": {"name": "Sound Pack"},
+  "SpeedLimitChangedAlert": {"name": "Speed Limit Changed Alert"},
+  "SpeedLimitController": {"name": "Speed Limit Controller"},
+  "SpeedLimitFiller": {"name": "Speed Limit Filler"},
+  "SpeedLimitSources": {"name": "Show Speed Limit Sources"},
+  "StandardFollow": {"decimals": 2, "name": "Standard Personality: Following Distance", "unit": " seconds", "values": {1: "1.00 second"}},
+  "StandardJerkAcceleration": {"name": "Standard Personality: Acceleration Smoothness", "unit": "%"},
+  "StandardJerkDanger": {"name": "Standard Personality: Safety Gap Bias", "unit": "%"},
+  "StandardJerkDeceleration": {"name": "Standard Personality: Braking Smoothness", "unit": "%"},
+  "StandardJerkSpeed": {"name": "Standard Personality: Speed-Up Response", "unit": "%"},
+  "StandardJerkSpeedDecrease": {"name": "Standard Personality: Slowdown Response", "unit": "%"},
+  "StandardPersonalityProfile": {"name": "Standard Personality"},
+  "StandbyMode": {"name": "Standby Mode"},
+  "StartAccel": {"decimals": 2, "name": "Advanced Longitudinal Tuning: Start Acceleration", "unit": " m/s²"},
+  "StartupMessageBottom": {"name": "Startup Alert (Bottom Half)"},
+  "StartupMessageTop": {"name": "Startup Alert (Top Half)"},
+  "StaticPedalsOnUI": {"name": "Gas / Brake Pedal Indicators (Static)"},
+  "SteerDelay": {"decimals": 2, "name": "Advanced Lateral Tuning: Actuator Delay"},
+  "SteerFriction": {"decimals": 2, "name": "Advanced Lateral Tuning: Friction"},
+  "SteerKP": {"decimals": 2, "name": "Advanced Lateral Tuning: Kp Factor"},
+  "SteerLatAccel": {"decimals": 2, "name": "Advanced Lateral Tuning: Lateral Acceleration"},
+  "SteerRatio": {"decimals": 2, "name": "Advanced Lateral Tuning: Steer Ratio"},
+  "StopAccel": {"decimals": 2, "name": "Advanced Longitudinal Tuning: Stop Acceleration", "unit": " m/s²"},
+  "StoppedTimer": {"name": "Stopped Timer"},
+  "StoppingDecelRate": {"decimals": 3, "name": "Advanced Longitudinal Tuning: Stopping Rate", "unit": " m/s²/s"},
+  "SubaruSNG": {"name": "Subaru Settings: Stop and Go"},
+  "TacoTune": {"name": "\"Taco Bell Run\" Turn Speed Hack"},
+  "TacoTuneHacks": {"name": "Hyundai/Kia/Genesis Settings: \"Taco Bell Run\" Torque Hack"},
+  "TetheringEnabled": {"name": "Enable Tethering", "values": {0: "Off", 1: "Always", 2: "Only Onroad", 3: "Until Reboot"}},
+  "ToyotaDoors": {"name": "Toyota/Lexus Settings: Automatically Lock/Unlock Doors"},
+  "ToyotaDSUBypass": {"name": "Toyota/Lexus Settings: DSU Re-Route Harness"},
+  "TuningLevel": {"name": "Tuning Level", "values": {0: "Minimal", 1: "Standard", 2: "Advanced", 3: "Developer"}},
+  "TurnDesires": {"name": "Steer Into Turns Below Lane Change Speed"},
+  "UnlockDoors": {"name": "Toyota/Lexus Settings: Automatically Lock/Unlock Doors (Unlock)"},
+  "UseKonikServer": {"name": "Use Konik Server"},
+  "UseSI": {"name": "Use International System of Units"},
+  "UseVienna": {"name": "Use Vienna-Style Speed Signs"},
+  "VEgoStarting": {"decimals": 2, "name": "Advanced Longitudinal Tuning: Start Speed", "unit": " m/s"},
+  "VEgoStopping": {"decimals": 2, "name": "Advanced Longitudinal Tuning: Stop Speed", "unit": " m/s"},
+  "VeryLongDistanceButtonControl": {"name": "Distance Button (Very Long Press)", "values": BUTTON_FUNCTION_LABELS},
+  "VoltSNG": {"name": "General Motors Settings: Stop-and-Go Hack"},
+  "WarningImmediateVolume": {"name": "Urgent Warning Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "WarningSoftVolume": {"name": "Soft Warning Volume", "unit": "%", "values": {0: "Muted", 101: "Auto"}},
+  "WeatherPresets": {"name": "Weather Condition Offsets"},
+  "WeatherToken": {"name": "Weather Condition Offsets: Your Own Key"},
+  "WheelIcon": {"name": "Custom Themes: Steering Wheel"},
+  "WheelSpeed": {"name": "Use Wheel Speed"}
 }
 
 SPEED_LIMIT_READER_COMPATIBILITY = 1
@@ -279,6 +1171,36 @@ SPEED_LIMIT_SOURCES = {
   "MAP_DATA": "Map Data",
   "NAVIGATION": "Navigation",
   "NONE": "None",
+}
+
+STARTUP_ALERT_MAX_LENGTHS = {"StartupMessageBottom": 45, "StartupMessageTop": 35}
+
+THEME_COLOR_KEYS = ("LaneLines", "LeadMarker", "Path", "PathEdge", "Sidebar1", "Sidebar2", "Sidebar3")
+
+THEME_EXCLUDED_BUILTINS = {
+  "colors": {"none"},
+  "distance_icons": {"april_fools", "easter", "none"},
+  "icons": {"none"},
+  "signals": {"stock"},
+  "sounds": {"none"},
+  "steering_wheels": set()
+}
+
+THEME_PARAMS = {
+  "colors": "ColorScheme",
+  "distance_icons": "DistanceIconPack",
+  "icons": "IconPack",
+  "signals": "SignalAnimation",
+  "sounds": "SoundPack",
+  "steering_wheels": "WheelIcon"
+}
+
+THEME_SIGNAL_STYLES = ("static", "traditional")
+
+THEME_SLOTS = {
+  "distance_icons": ("aggressive", "relaxed", "standard", "traffic"),
+  "icons": ("button_flag", "button_home", "button_settings"),
+  "sounds": ("disengage", "engage", "prompt", "prompt_distracted", "refuse", "startup", "warning_immediate", "warning_soft")
 }
 
 TINYGRAD_FILES = [
@@ -566,9 +1488,10 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("SLCLookaheadLower", "0", 2, "0"),
   ("SLCMapboxFiller", "1", 1, "0"),
   ("SLCOverride", "1", 1, "0"),
-  ("SLCPriority1", "Navigation", 2, "Navigation"),
-  ("SLCPriority2", "Map Data", 2, "Map Data"),
-  ("SLCPriority3", "Dashboard", 2, "Dashboard"),
+  ("SLCPriority1", "Camera", 2, "Camera"),
+  ("SLCPriority2", "Navigation", 2, "Navigation"),
+  ("SLCPriority3", "Map Data", 2, "Map Data"),
+  ("SLCPriority4", "Dashboard", 2, "Dashboard"),
   ("SNGHack", "1", 2, "0"),
   ("SoundPack", "frog", 0, "stock"),
   ("SpeedLimitChangedAlert", "0", 0, "0"),
@@ -654,6 +1577,17 @@ def get_stock_value(key):
 
 def get_tuning_level(key):
   return tuning_levels[key]
+
+def get_models():
+  model_ids = (params.get("AvailableModels", encoding="utf-8") or "").split(",")
+  model_names = (params.get("AvailableModelNames", encoding="utf-8") or "").split(",")
+  model_versions = (params.get("ModelVersions", encoding="utf-8") or "").split(",")
+
+  models = []
+  for model_id, name, version in zip(model_ids, model_names, model_versions, strict=False):
+    if model_id:
+      models.append({"id": model_id, "name": frogpilot_utilities.clean_model_name(name), "version": version})
+  return models
 
 def get_frogpilot_toggles(sm=None):
   if sm is None:
@@ -808,13 +1742,13 @@ class FrogPilotVariables:
     toggle.has_sdsu = toggle.car_make == "toyota" and bool(CP.flags & ToyotaFlags.SMART_DSU.value)
     has_sng = CP.autoResumeSng
     toggle.has_zss = toggle.car_make == "toyota" and bool(FPCP.fpFlags & ToyotaFrogPilotFlags.ZSS.value)
-    honda_nidec = CP.safetyConfigs[0].safetyModel == SafetyModel.hondaNidec
+    toggle.is_honda_nidec = CP.safetyConfigs[0].safetyModel == SafetyModel.hondaNidec
     hyundai_canfd = CP.safetyConfigs[-1].safetyModel == SafetyModel.hyundaiCanfd
     is_angle_car = CP.steerControlType == car.CarParams.SteerControlType.angle
     toggle.is_gm_cc_only = CP.carFingerprint in CC_ONLY_CAR
     latAccelFactor = CP.lateralTuning.torque.latAccelFactor
     longitudinalActuatorDelay = CP.longitudinalActuatorDelay
-    toggle.openpilot_longitudinal = CP.openpilotLongitudinalControl and (honda_nidec or toggle.car_make == "gm" or not toggle.disable_openpilot_long)
+    toggle.openpilot_longitudinal = CP.openpilotLongitudinalControl and (toggle.is_honda_nidec or toggle.car_make == "gm" or not toggle.disable_openpilot_long)
     pcm_cruise = CP.pcmCruise
     startAccel = CP.startAccel
     steerActuatorDelay = CP.steerActuatorDelay
@@ -1065,7 +1999,7 @@ class FrogPilotVariables:
       toggle.sound_pack = toggle.current_holiday_theme
       toggle.wheel_image = toggle.current_holiday_theme
 
-    honda_nidec_longitudinal = toggle.openpilot_longitudinal and honda_nidec
+    honda_nidec_longitudinal = toggle.openpilot_longitudinal and toggle.is_honda_nidec
     toggle.honda_alt_tune = self.get_value("HondaAltTune", condition=honda_nidec_longitudinal)
     toggle.honda_low_speed_pedal = self.get_value("HondaLowSpeedPedal", condition=toggle.openpilot_longitudinal and toggle.car_make == "honda" and has_pedal)
     toggle.honda_max_brake = self.get_value("HondaMaxBrake", condition=honda_nidec_longitudinal)
@@ -1153,8 +2087,8 @@ class FrogPilotVariables:
     toggle.cruise_increase_long = self.get_value("CustomCruiseLong", cast=float, condition=not pcm_cruise and quality_of_life_longitudinal)
     toggle.force_stops = self.get_value("ForceStops", condition=quality_of_life_longitudinal)
     toggle.increase_stopped_distance = self.get_value("IncreasedStoppedDistance", cast=float, condition=quality_of_life_longitudinal, conversion=distance_conversion)
-    can_map_gears = (toggle.car_make in MAP_GEARS_BRANDS or hyundai_canfd) and not CP.secOcRequired
-    map_gears = self.get_value("MapGears", condition=can_map_gears and quality_of_life_longitudinal)
+    toggle.can_map_gears = (toggle.car_make in MAP_GEARS_BRANDS or hyundai_canfd) and not CP.secOcRequired
+    map_gears = self.get_value("MapGears", condition=toggle.can_map_gears and quality_of_life_longitudinal)
     toggle.map_acceleration = self.get_value("MapAcceleration", condition=map_gears)
     toggle.map_deceleration = self.get_value("MapDeceleration", condition=map_gears)
     toggle.reverse_cruise_increase = self.get_value("ReverseCruise", condition=quality_of_life_longitudinal and toggle.car_make == "toyota" and pcm_cruise)
@@ -1223,6 +2157,7 @@ class FrogPilotVariables:
     toggle.speed_limit_priority1 = self.get_value("SLCPriority1", cast=None, condition=toggle.speed_limit_controller)
     toggle.speed_limit_priority2 = self.get_value("SLCPriority2", cast=None, condition=toggle.speed_limit_controller)
     toggle.speed_limit_priority3 = self.get_value("SLCPriority3", cast=None, condition=toggle.speed_limit_controller)
+    toggle.speed_limit_priority4 = self.get_value("SLCPriority4", cast=None, condition=toggle.speed_limit_controller)
     toggle.speed_limit_priority_highest = toggle.speed_limit_priority1 == "Highest"
     toggle.speed_limit_priority_lowest = toggle.speed_limit_priority1 == "Lowest"
     toggle.speed_limit_sources = self.get_value("SpeedLimitSources", condition=toggle.speed_limit_controller) or toggle.debug_mode

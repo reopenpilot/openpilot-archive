@@ -104,7 +104,7 @@ def backup_frogpilot(build_metadata):
     backup_directory(directory, destination_directory, f"Successfully backed up FrogPilot to {destination_directory}", f"Failed to backup FrogPilot to {destination_directory}", minimum_backup_size, compressed=True)
 
 def backup_settings(destination):
-  for key in frogpilot_utilities.backup_keys() | frogpilot_variables.SETTINGS_BACKUP_STOCK_KEYS:
+  for key in frogpilot_utilities.settings_backup_keys():
     (destination / key).write_bytes(frogpilot_variables.params.get(key) or b"")
 
 def backup_toggles(params_cache):
@@ -290,7 +290,7 @@ def remove_tailscale_service():
                               "Successfully took ownership of Tailscale", "Failed to take ownership of Tailscale")
 
 def restore_settings(source):
-  allowed_keys = frogpilot_utilities.backup_keys() | frogpilot_variables.SETTINGS_BACKUP_STOCK_KEYS
+  allowed_keys = frogpilot_utilities.settings_backup_keys()
 
   for backup_file in source.iterdir():
     key = frogpilot_variables.RENAMED_KEYS.get(backup_file.name, backup_file.name)

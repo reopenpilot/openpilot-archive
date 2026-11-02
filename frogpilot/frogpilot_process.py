@@ -11,7 +11,7 @@ from openpilot.common.time import system_time_valid
 from openpilot.frogpilot.system.model_manager import ModelManager
 from openpilot.frogpilot.assets.theme_manager import ThemeManager
 from openpilot.frogpilot.common.frogpilot_api import FrogPilotAPI
-from openpilot.frogpilot.selfdrive.car.toyota.door_control import lock_doors
+from openpilot.frogpilot.selfdrive.car.toyota.door_control import lock_doors, send_door_command
 from openpilot.frogpilot.selfdrive.navd.map_scheduler import update_maps
 from openpilot.frogpilot.selfdrive.pandad.panda_flashing import flash_panda
 from openpilot.frogpilot.system.reporting import capture_report
@@ -36,6 +36,8 @@ class FrogPilotRequests:
     self.downloading_models = False
     self.downloading_themes = False
 
+    self.door_command = ""
+
     self.pending = {}
     self.request_times = {}
 
@@ -46,6 +48,15 @@ class FrogPilotRequests:
 
     self.request_times[kind], request = pending
     return request
+
+  def send_door_command(self, lock):
+    if send_door_command(lock):
+      if lock:
+        self.door_command = "locked"
+      else:
+        self.door_command = "unlocked"
+    else:
+      self.door_command = "failed"
 
   def update(self, sm):
     for msg in messaging.drain_sock(self.ui_request_sock):
@@ -108,12 +119,23 @@ class FrogPilotRequests:
       self.theme_manager.theme_update_count += 1
       self.theme_manager.theme_updated = True
 
+    if not frogpilot_utilities.is_thread_alive("send_door_command"):
+      request = self.take("lockDoors")
+      if request is not None:
+        if sm["deviceState"].started or frogpilot_utilities.is_thread_alive("lock_doors"):
+          self.door_command = "busy"
+        else:
+          self.door_command = "pending"
+          frogpilot_utilities.run_thread_with_lock("send_door_command", self.send_door_command, (request.lockDoors,))
+
     return self.take("updateToggles") is not None
 
   def publish(self, pm, stats_saved_count):
     frogpilot_process_state_send = messaging.new_message("frogpilotProcessState")
     frogpilotProcessState = frogpilot_process_state_send.frogpilotProcessState
 
+    frogpilotProcessState.doorCommand = self.door_command
+    frogpilotProcessState.doorCommandRequestTime = self.request_times.get("lockDoors", 0)
     frogpilotProcessState.downloadingModels = frogpilot_utilities.is_thread_alive("download_models") or self.model_manager.downloading_automatically
     frogpilotProcessState.downloadThemeRequestTime = self.request_times.get("downloadTheme", 0)
     frogpilotProcessState.modelDownloadProgress = self.model_manager.download_state.progress
@@ -158,7 +180,7 @@ def update_checks(model_manager, now, speed_limit_reader_models, theme_manager, 
   with model_manager.download_lock:
     model_manager.update_models(not sm["deviceState"].networkMetered and frogpilot_toggles.automatically_download_models, sm["deviceState"].started)
 
-  if frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler:
+  if frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler:
     speed_limit_reader_models.update(sm)
 
   if not sm["deviceState"].networkMetered:

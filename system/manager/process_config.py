@@ -67,7 +67,7 @@ def run_new_modeld(started, params, CP: car.CarParams, frogpilot_toggles) -> boo
   return started and not (frogpilot_utilities.is_classic_model(frogpilot_toggles.model) or frogpilot_utilities.is_tinygrad_model(frogpilot_toggles.model))
 
 def run_speed_limit_reader(started, params, CP: car.CarParams, frogpilot_toggles) -> bool:
-  return started and (frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler)
+  return started and (frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler)
 
 def run_tailscale(started, params, CP: car.CarParams, frogpilot_toggles) -> bool:
   return frogpilot_toggles.tailscale_installed

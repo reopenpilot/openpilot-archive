@@ -137,5 +137,6 @@ class FrogPilotCard:
     frogpilotCarState.pauseLateral = self.pause_lateral
     frogpilotCarState.pauseLongitudinal = self.pause_longitudinal
     frogpilotCarState.trafficModeEnabled = self.traffic_mode_enabled
+    frogpilotCarState.vEgo = carState.vEgo
 
     return frogpilotCarState

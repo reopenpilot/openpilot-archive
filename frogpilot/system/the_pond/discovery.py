@@ -1,13 +1,36 @@
 import socket
 import struct
-import subprocess
+import time
 
 from openpilot.common.swaglog import cloudlog
 
-HOTSPOT_SUBNET = "192.168.43.0/24"
+from openpilot.frogpilot.common import frogpilot_variables
+from openpilot.frogpilot.system.the_pond import utilities
+
+IP_ADDRESS_INTERFACES = ("wlan0", "eth0")
+
+MDNS_CHECK_INTERVAL = 10
 MDNS_GROUP = "224.0.0.251"
-MDNS_HOSTNAME = "ThePond.local"
 MDNS_PORT = 5353
+MDNS_QUERY_ATTEMPTS = 3
+MDNS_QUERY_TIMEOUT = 1
+
+
+def is_hostname_taken(name):
+  query = struct.pack(">HHHHHH", 1, 0, 1, 0, 0, 0) + name + struct.pack(">HH", 1, 1)
+
+  with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    sock.settimeout(MDNS_QUERY_TIMEOUT)
+    for _ in range(MDNS_QUERY_ATTEMPTS):
+      sock.sendto(query, (MDNS_GROUP, MDNS_PORT))
+      try:
+        while True:
+          data, source = sock.recvfrom(2048)
+          if len(data) >= 12 and data[2] & 0x80 and name.lower() in data[12:].lower() and local_ip_for(source[0]) != source[0]:
+            return True
+      except TimeoutError:
+        continue
+  return False
 
 
 def local_ip_for(address):
@@ -20,24 +43,47 @@ def local_ip_for(address):
 
 
 def mdns_responder():
-  name = b"".join(bytes([len(label)]) + label.encode("ascii") for label in MDNS_HOSTNAME.split(".")) + b"\0"
+  name = b"".join(bytes([len(label)]) + label.encode("ascii") for label in frogpilot_variables.THE_POND_HOSTNAME.split(".")) + b"\0"
   header = struct.pack(">HHHHHH", 0, 0x8400, 0, 1, 0, 0)
   record = name + struct.pack(">HHIH", 1, 0x8001, 120, 4)
+
+  claimed_address = None
+  next_check = 0
 
   try:
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
       sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       sock.bind(("", MDNS_PORT))
-      for index, _ in socket.if_nameindex():
-        try:
-          sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4s4si", socket.inet_aton(MDNS_GROUP), socket.inet_aton("0.0.0.0"), index))
-        except OSError:
-          continue
 
       while True:
         try:
-          data, source = sock.recvfrom(2048)
-          if len(data) < 12 or data[2] & 0x80 or name.lower() not in data[12:].lower():
+          if time.monotonic() >= next_check:
+            next_check = time.monotonic() + MDNS_CHECK_INTERVAL
+
+            for index, _ in socket.if_nameindex():
+              try:
+                sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4s4si", socket.inet_aton(MDNS_GROUP), socket.inet_aton("0.0.0.0"), index))
+              except OSError:
+                continue
+
+            ip_address = utilities.get_ip_address(IP_ADDRESS_INTERFACES)
+            if claimed_address is not None and ip_address != claimed_address:
+              claimed_address = None
+
+            if claimed_address is None and ip_address is not None and not is_hostname_taken(name):
+              claimed_address = ip_address
+
+          remaining = next_check - time.monotonic()
+          if remaining <= 0:
+            continue
+
+          sock.settimeout(remaining)
+          try:
+            data, source = sock.recvfrom(2048)
+          except TimeoutError:
+            continue
+
+          if claimed_address is None or len(data) < 12 or data[2] & 0x80 or name.lower() not in data[12:].lower():
             continue
 
           address = local_ip_for(source[0])
@@ -61,21 +107,3 @@ def mdns_responder():
           cloudlog.exception("The Pond: local discovery could not answer a query")
   except OSError:
     cloudlog.exception("The Pond: local discovery stopped")
-
-
-def redirect_port(port):
-  forwarded = ["-p", "tcp", "--dport", "80", "-s", HOTSPOT_SUBNET, "!", "-d", HOTSPOT_SUBNET, "-j", "RETURN"]
-  rule = ["PREROUTING", "-p", "tcp", "--dport", "80", "-j", "REDIRECT", "--to-ports", str(port)]
-
-  try:
-    result = subprocess.run(["sudo", "iptables", "-t", "nat", "-C", "PREROUTING", *forwarded], capture_output=True, timeout=10)
-    if result.returncode:
-      subprocess.run(["sudo", "iptables", "-t", "nat", "-I", "PREROUTING", "1", *forwarded], capture_output=True, check=True, timeout=10)
-
-    result = subprocess.run(["sudo", "iptables", "-t", "nat", "-C", *rule], capture_output=True, timeout=10)
-    if result.returncode:
-      subprocess.run(["sudo", "iptables", "-t", "nat", "-A", *rule], capture_output=True, check=True, timeout=10)
-
-    cloudlog.info(f"The Pond: port 80 redirects to {port}")
-  except (OSError, subprocess.SubprocessError):
-    cloudlog.exception("The Pond: could not configure port 80")
