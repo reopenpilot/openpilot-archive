@@ -54,16 +54,17 @@ def mdns_responder():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
       sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       sock.bind(("", MDNS_PORT))
-      for index, _ in socket.if_nameindex():
-        try:
-          sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4s4si", socket.inet_aton(MDNS_GROUP), socket.inet_aton("0.0.0.0"), index))
-        except OSError:
-          continue
 
       while True:
         try:
           if time.monotonic() >= next_check:
             next_check = time.monotonic() + MDNS_CHECK_INTERVAL
+
+            for index, _ in socket.if_nameindex():
+              try:
+                sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4s4si", socket.inet_aton(MDNS_GROUP), socket.inet_aton("0.0.0.0"), index))
+              except OSError:
+                continue
 
             ip_address = utilities.get_ip_address(IP_ADDRESS_INTERFACES)
             if claimed_address is not None and ip_address != claimed_address:
