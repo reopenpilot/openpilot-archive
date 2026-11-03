@@ -6,8 +6,10 @@ import math
 import numpy as np
 import os
 import requests
+import shutil
 import subprocess
 import threading
+import time
 import tomllib
 import zipfile
 
@@ -16,9 +18,11 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import openpilot.system.sentry as sentry
-from cereal import log
-from openpilot.common.params import Params, ParamKeyType
+from cereal import car, log
+from openpilot.common.params import Params
 from openpilot.common.realtime import set_core_affinity
+from openpilot.common.swaglog import cloudlog
+from openpilot.selfdrive.car.gm.values import CC_ONLY_CAR
 from openpilot.selfdrive.car.interfaces import TORQUE_SUBSTITUTE_PATH
 from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
@@ -33,7 +37,6 @@ running_threads = {}
 locks = {
   "backup_settings": threading.Lock(),
   "backup_toggles": threading.Lock(),
-  "capture_report": threading.Lock(),
   "download_models": threading.Lock(),
   "download_themes": threading.Lock(),
   "flash_panda": threading.Lock(),
@@ -41,7 +44,9 @@ locks = {
   "lock_doors": threading.Lock(),
   "restore_settings": threading.Lock(),
   "send_door_command": threading.Lock(),
+  "send_report": threading.Lock(),
   "send_stats": threading.Lock(),
+  "update_account_link": threading.Lock(),
   "update_checks": threading.Lock(),
   "update_maps": threading.Lock(),
   "update_openpilot": threading.Lock(),
@@ -67,20 +72,132 @@ def run_thread_with_lock(name, target, args=(), report=True):
       thread.start()
       running_threads[name] = thread
 
-def backup_keys():
-  return {
-    key for key, _, _, _ in frogpilot_variables.frogpilot_default_params
-    if key not in frogpilot_variables.EXCLUDED_KEYS and key not in frogpilot_variables.BACKUP_EXCLUDED_KEYS
-    and not frogpilot_variables.params.get_key_flag(key) & ParamKeyType.DONT_LOG
-  }
+class UpdateProgress:
+  def __init__(self, params):
+    self.params = params
 
-def settings_backup_keys():
-  return backup_keys() | frogpilot_variables.SETTINGS_BACKUP_STOCK_KEYS
+    self.agnos_size = 0
+    self.copied = 0
+    self.copy_total = 0
+    self.download_percent = 0
+
+    self.agnos_written = {}
+
+    self.agnos_started = None
+    self.copy_finished = None
+    self.copy_started = None
+    self.download_finished = None
+
+    self.started = time.monotonic()
+
+    try:
+      threading.Thread(target=self.publish, daemon=True).start()
+    except Exception:
+      cloudlog.exception("Failed to start the update progress thread")
+
+  def copy_file(self, source, destination):
+    with open(source, "rb") as source_file, open(destination, "wb") as destination_file:
+      while chunk := source_file.read(shutil.COPY_BUFSIZE):
+        destination_file.write(chunk)
+        self.copied += len(chunk)
+
+    shutil.copystat(source, destination)
+
+  def copy_tree(self, source, destination):
+    try:
+      self.copy_total = get_directory_size(source)
+    except Exception:
+      cloudlog.exception("Failed to measure the update's size for its progress")
+
+    self.copy_started = time.monotonic()
+
+    shutil.copytree(source, destination, symlinks=True, copy_function=self.copy_file)
+
+    self.copy_finished = time.monotonic()
+
+  def get_remaining(self, now):
+    if self.copy_finished is not None:
+      return max((self.copy_finished - self.copy_started) * frogpilot_variables.UPDATE_CLEANUP_RATIO - (now - self.copy_finished), 0)
+
+    copy_time = self.params.get_float("UpdaterCopySeconds") or frogpilot_variables.UPDATE_COPY_SECONDS
+
+    if self.copy_started is not None:
+      return copy_time * (1 - self.copied / self.copy_total + frogpilot_variables.UPDATE_CLEANUP_RATIO)
+
+    install_time = copy_time * (1 + frogpilot_variables.UPDATE_CLEANUP_RATIO)
+
+    if self.agnos_started is not None:
+      agnos_written = sum(self.agnos_written.values())
+      if agnos_written == 0:
+        return None
+      return (now - self.agnos_started) * (self.agnos_size - agnos_written) / agnos_written + install_time
+
+    if self.download_finished is not None:
+      return install_time
+
+    if self.download_percent == 0:
+      return None
+
+    elapsed = now - self.started
+    return elapsed * (100 - self.download_percent) / self.download_percent + install_time
+
+  def publish(self):
+    percent = 0
+
+    published = None
+
+    try:
+      while self.params.get("UpdaterState", encoding="utf-8") != "idle":
+        now = time.monotonic()
+        elapsed = now - self.started
+        remaining = self.get_remaining(now)
+
+        if remaining is not None:
+          target = min(int(100 * elapsed / (elapsed + remaining)), 99)
+          percent = max(percent, min(target, percent + 1))
+
+        progress = {"percent": percent}
+
+        if progress != published:
+          self.params.put("UpdaterDownloadProgress", json.dumps(progress))
+          published = progress
+
+        time.sleep(frogpilot_variables.UPDATE_PROGRESS_INTERVAL)
+
+      self.save_copy_time()
+
+      if self.params.get_bool("UpdateAvailable"):
+        while percent < 100:
+          percent += 1
+          self.params.put("UpdaterDownloadProgress", json.dumps({"percent": percent}))
+          time.sleep(frogpilot_variables.UPDATE_PROGRESS_INTERVAL)
+    finally:
+      self.params.remove("UpdaterDownloadProgress")
+
+  def report_agnos(self, partition, written):
+    self.agnos_written[partition["name"]] = written
+
+  def save_copy_time(self):
+    if self.copy_finished is None:
+      return
+
+    copy_time = self.copy_finished - self.copy_started
+    average = self.params.get_float("UpdaterCopySeconds")
+    if average > 0:
+      copy_time = average + (copy_time - average) * frogpilot_variables.UPDATE_COPY_AVERAGE_WEIGHT
+    self.params.put("UpdaterCopySeconds", str(round(copy_time, 1)))
+
+  def start_agnos(self, manifest_path):
+    try:
+      with open(manifest_path) as manifest:
+        self.agnos_size = sum(partition["size"] for partition in json.load(manifest))
+      self.agnos_started = time.monotonic()
+    except Exception:
+      cloudlog.exception("Failed to read the AGNOS size for the update's progress")
 
 @cache
 def block_user():
-  branch = get_build_metadata().channel
-  return branch in (frogpilot_variables.DEVELOPMENT_BRANCH, frogpilot_variables.PR_BRANCH, frogpilot_variables.VETTING_BRANCH) and not frogs_go_moo()
+  return get_build_metadata().channel == frogpilot_variables.PR_BRANCH and not is_FrogsGoMoo()
 
 def calculate_curve_speed(road_curvature, lateral_acceleration, roll_compensation):
   geometric_lateral_acceleration = np.maximum(lateral_acceleration + np.sign(road_curvature) * roll_compensation, 0)
@@ -128,6 +245,15 @@ def calculate_taco_turn_speeds(orientation_rates, speeds, v_ego):
   max_lat_accel = np.interp(v_ego, [5, 10, 20], [1.5, 2.0, 3.0])
   return np.sqrt(max_lat_accel / (np.abs(curvatures) + 1e-3)) - 2.0
 
+def can_disable_openpilot_long(CP, FPCP):
+  if CP.experimentalLongitudinalAvailable or CP.safetyConfigs[0].safetyModel == car.CarParams.SafetyModel.hondaNidec:
+    return False
+  if CP.enableDsu and not FPCP.openpilotLongitudinalControlDisabled:
+    return False
+  if CP.carName == "gm":
+    return CP.carFingerprint in CC_ONLY_CAR
+  return True
+
 def clean_model_name(name):
   return (
     name.replace("🗺️", "")
@@ -137,14 +263,16 @@ def clean_model_name(name):
     .strip()
   )
 
-def delete_file(path, print_error=True, report=True):
+def clear_update_progress(params):
+  try:
+    params.remove("UpdaterDownloadProgress")
+  except Exception:
+    cloudlog.exception("Failed to clear the update's progress")
+
+def delete_path(path, report=True):
   path = Path(path)
-  if path.is_file() or path.is_symlink():
-    run_cmd(["sudo", "rm", "-f", str(path)], f"Deleted file: {path}", f"Failed to delete file: {path}", report=report)
-  elif path.is_dir():
-    run_cmd(["sudo", "rm", "-rf", str(path)], f"Deleted directory: {path}", f"Failed to delete directory: {path}", report=report)
-  elif print_error:
-    print(f"File not found: {path}")
+  if path.exists() or path.is_symlink():
+    run_cmd(["sudo", "rm", "-rf", str(path)], f"Deleted: {path}", f"Failed to delete: {path}", report=report)
 
 def extract_zip(zip_file, extract_path):
   zip_file = Path(zip_file)
@@ -160,10 +288,6 @@ def extract_zip(zip_file, extract_path):
 
   zip_file.unlink()
   print(f"Extraction completed: {zip_file} has been removed")
-
-@cache
-def frogs_go_moo():
-  return frogpilot_paths.FROGS_GO_MOO_PATH.is_file()
 
 def get_directory_size(path):
   size = 0
@@ -212,7 +336,7 @@ def get_phoenix_time():
 
 def get_target_branches(available_branches, current_branch):
   branches = available_branches.split(",")
-  if not frogs_go_moo():
+  if not is_FrogsGoMoo():
     branches = [branch for branch in branches if not is_hidden_branch(branch)]
 
   for branch in (current_branch, *frogpilot_variables.TOP_BRANCHES):
@@ -230,6 +354,12 @@ def has_openpilot_longitudinal(params, car_params):
   honda_nidec = car_params["safetyConfigs"][0]["safetyModel"] == "hondaNidec"
   return has_longitudinal and (honda_nidec or car_params["carName"] == "gm" or not params.get_bool("DisableOpenpilotLongitudinal"))
 
+def has_pending_telemetry(path):
+  try:
+    return os.getxattr(Path(path, "rlog"), frogpilot_variables.UPLOAD_ATTR_NAME) == frogpilot_variables.UPLOAD_PENDING
+  except OSError:
+    return False
+
 def has_preserve_attr(path, attribute, value):
   try:
     return os.getxattr(path, attribute) == value
@@ -240,6 +370,10 @@ def has_preserve_attr(path, attribute, value):
 
 def is_classic_model(model):
   return get_model_version(model) in frogpilot_variables.CLASSIC_MODEL_VERSIONS
+
+@cache
+def is_FrogsGoMoo():
+  return frogpilot_paths.FROGS_GO_MOO_PATH.is_file()
 
 @cache
 def is_hidden_branch(branch):
@@ -254,12 +388,26 @@ def is_online(device_state):
 def is_openpilot_steering(sm):
   return sm["deviceState"].started and (sm["controlsState"].enabled or sm["frogpilotCarState"].alwaysOnLateralEnabled)
 
+def is_route_preserved(path):
+  try:
+    return os.getxattr(path, frogpilot_variables.ROUTE_PRESERVE_ATTR_NAME) == frogpilot_variables.ROUTE_PRESERVED
+  except OSError:
+    return False
+
 def is_thread_alive(name):
   with locks[name]:
     return running_threads.get(name, threading.Thread()).is_alive()
 
 def is_tinygrad_model(model):
   return get_model_version(model) not in frogpilot_variables.THNEED_MODEL_VERSIONS
+
+def is_tuning_value_set(params, key):
+  if key in frogpilot_variables.ZERO_ALLOWED_TUNING_KEYS:
+    return params.get_float(key) != 0 or params.get_float(f"{key}Stock") != 0
+  return params.get_float(key) != 0
+
+def is_unset_secret(key, value):
+  return key in frogpilot_variables.SECRET_KEYS and value in (b"", b"[]")
 
 def is_url_pingable(url, session=requests):
   headers = {"Accept": "*/*", "User-Agent": "frogpilot-ping-test/1.0 (https://github.com/FrogAi/FrogPilot)"}
@@ -323,6 +471,23 @@ def run_cmd(cmd, success_message, fail_message, env=None, report=True):
     if report:
       sentry.capture_exception(exception, crash_log=False)
     return None
+
+def run_git_with_progress(cmd, cwd, update_progress):
+  output = []
+
+  with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8", errors="replace") as process:
+    for line in process.stdout:
+      progress = frogpilot_variables.GIT_PROGRESS_PATTERN.match(line)
+      if progress is None:
+        if frogpilot_variables.GIT_PROGRESS_SUMMARY_PATTERN.match(line) is None:
+          output.append(line)
+      elif progress["phase"] == "Receiving objects":
+        update_progress.download_percent = int(progress["percent"])
+  update_progress.download_finished = time.monotonic()
+
+  if process.returncode != 0:
+    raise subprocess.CalledProcessError(process.returncode, cmd, output="".join(output))
+  return "".join(output)
 
 def update_json_file(path, data):
   temp_path = f"{path}.tmp"

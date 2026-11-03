@@ -13,7 +13,7 @@ def openpilot_longitudinal_visible(context, key):
 def lead_marker_reason(context):
   params = context.params
   hide_lead_marker = params.get_bool("AdvancedCustomUI") and params.get_bool("HideLeadMarker") and not params.get_bool("DebugMode")
-  return context.setting_reason(not (context.has_openpilot_longitudinal and hide_lead_marker), "HideLeadMarker", wanted=False)
+  return context.setting_reason(not (context.car_detected and context.has_openpilot_longitudinal and hide_lead_marker), "HideLeadMarker", wanted=False)
 
 
 def adjacent_leads_visible(context):
@@ -44,6 +44,11 @@ def show_speed_limits_from_mapbox_visible(context):
   return (context.level_reason("SLCMapboxFiller") or context.setting_reason(params.get_bool("ShowSpeedLimits"), "ShowSpeedLimits") or
           context.setting_reason(not speed_limit_controller_active(context), "SpeedLimitController", wanted=False) or
           context.set_reason("MapboxPublicKey"))
+
+
+def use_vienna_visible(context):
+  shown = context.params.get_bool("ShowSpeedLimits") or speed_limit_controller_active(context)
+  return context.level_reason("UseVienna") or context.setting_reason(shown, "ShowSpeedLimits")
 
 
 ROWS = [
@@ -244,7 +249,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 0,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the first slot"},
     "title": "Metric #1",
     "widget": "select"
   },
@@ -254,7 +259,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 1,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the second slot"},
     "title": "Metric #2",
     "widget": "select"
   },
@@ -264,7 +269,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 2,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the third slot"},
     "title": "Metric #3",
     "widget": "select"
   },
@@ -274,7 +279,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 3,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the fourth slot"},
     "title": "Metric #4",
     "widget": "select"
   },
@@ -284,7 +289,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 4,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the fifth slot"},
     "title": "Metric #5",
     "widget": "select"
   },
@@ -294,7 +299,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 5,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the sixth slot"},
     "title": "Metric #6",
     "widget": "select"
   },
@@ -304,7 +309,7 @@ ROWS = [
     "options": DEVELOPER_SIDEBAR_METRIC_OPTIONS,
     "order": 6,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Developer UI", "Developer Sidebar"),
-    "picker": {"title": "Select a metric to display"},
+    "picker": {"title": "Select a metric for the seventh slot"},
     "title": "Metric #7",
     "widget": "select"
   },
@@ -353,7 +358,7 @@ ROWS = [
   {
     "children": ("Theme and Appearance", "DRIVING VIEW", "Driving Screen Widgets"),
     "description": ("<b>Add extra things to the driving screen that stock openpilot does not show.</b><br><br>One of these does change how the car " +
-                    "drives: the \"Driving Personality Button\" switches your following distance."),
+                    "drives. The \"Driving Personality Button\" switches your following distance."),
     "key": "CustomUI",
     "order": 2,
     "path": ("Theme and Appearance", "DRIVING VIEW"),
@@ -403,7 +408,7 @@ ROWS = [
   {
     "description": ("<b>Add a button to the driving screen that switches your following distance between Aggressive, Standard, and Relaxed without " +
                     "going into the menus.</b><br><br>It works as a second \"Distance\" button, so holding it, or changing what that button does " +
-                    "under \"WHEEL BUTTONS\", gives you those actions instead. This changes how the car actually drives, not just what you see. It " +
+                    "under \"Wheel Buttons\", gives you those actions instead. This changes how the car actually drives, not just what you see. It " +
                     "also shows which one is active."),
     "key": "OnroadDistanceButton",
     "order": 4,
@@ -579,6 +584,7 @@ ROWS = [
     "order": 5,
     "path": ("Theme and Appearance", "DRIVING VIEW", "Navigation Widgets"),
     "title": "Use Vienna-Style Speed Signs",
+    "visible": use_vienna_visible,
     "widget": "toggle"
   },
   {

@@ -1,9 +1,11 @@
 """Install exception handler for process crash."""
+import json
 import sentry_sdk
 import traceback
 from datetime import datetime
 from enum import Enum
 from sentry_sdk.integrations.threading import ThreadingIntegration
+from sentry_sdk.transport import HttpTransport
 
 from openpilot.common.params import Params
 from openpilot.system.hardware import HARDWARE, PC
@@ -12,6 +14,11 @@ from openpilot.system.version import get_build_metadata, get_version
 
 from openpilot.frogpilot.common import frogpilot_paths, frogpilot_variables
 
+# FrogPilot variables
+MAX_QUEUED_TOMBSTONES = 50
+SENTRY_FLUSH_TIMEOUT = 10.0
+
+
 class SentryProject(Enum):
   # python project
   SELFDRIVE = "https://7ba43fba4cfcf1a6c0eff83d40374e43@o4505034923769856.ingest.us.sentry.io/4505034930651136"
@@ -19,20 +26,77 @@ class SentryProject(Enum):
   SELFDRIVE_NATIVE = "https://7ba43fba4cfcf1a6c0eff83d40374e43@o4505034923769856.ingest.us.sentry.io/4505034930651136"
 
 
-def report_tombstone(fn: str, message: str, contents: str) -> None:
-  cloudlog.error({'tombstone': message})
+# FrogPilot variables
+class DeliveryTrackingTransport(HttpTransport):
+  def on_dropped_event(self, reason) -> None:
+    self.delivered = False
+
+
+def deliver_tombstone(fn: str, message: str, contents: str) -> bool:
+  transport = sentry_sdk.Hub.current.client.transport
+  transport.delivered = True
 
   with sentry_sdk.configure_scope() as scope:
     scope.set_extra("tombstone_fn", fn)
     scope.set_extra("tombstone", contents)
     sentry_sdk.capture_message(message=message)
-    sentry_sdk.flush()
+    sentry_sdk.flush(timeout=SENTRY_FLUSH_TIMEOUT)
+
+  return transport._worker._timed_queue_join(0) and transport.delivered
+
+
+def queue_tombstone(fn: str, message: str, contents: str) -> None:
+  try:
+    frogpilot_paths.SENTRY_QUEUE_PATH.mkdir(parents=True, exist_ok=True)
+    queued = sorted(frogpilot_paths.SENTRY_QUEUE_PATH.glob("*.json"))
+    expired_count = max(0, len(queued) + 1 - MAX_QUEUED_TOMBSTONES)
+
+    for expired in queued[:expired_count]:
+      expired.unlink(missing_ok=True)
+
+    name = datetime.now().strftime("%Y-%m-%d--%H-%M-%S-%f") + ".json"
+    report = {"contents": contents, "fn": fn, "message": message}
+
+    (frogpilot_paths.SENTRY_QUEUE_PATH / name).write_text(json.dumps(report))
+    cloudlog.warning(f"queued tombstone for a later connection: {name}")
+  except OSError:
+    cloudlog.exception("sentry.queue_tombstone")
+
+
+def flush_queued_tombstones() -> None:
+  if not frogpilot_paths.SENTRY_QUEUE_PATH.is_dir():
+    return
+
+  for path in sorted(frogpilot_paths.SENTRY_QUEUE_PATH.glob("*.json")):
+    try:
+      report = json.loads(path.read_text())
+    except (OSError, ValueError):
+      path.unlink(missing_ok=True)
+      continue
+
+    if not deliver_tombstone(report["fn"], report["message"], report["contents"]):
+      return
+
+    path.unlink(missing_ok=True)
+    cloudlog.warning(f"delivered queued tombstone: {path.name}")
+
+
+def report_tombstone(fn: str, message: str, contents: str) -> None:
+  cloudlog.error({'tombstone': message})
+
+  # FrogPilot variables
+  if not deliver_tombstone(fn, message, contents):
+    queue_tombstone(fn, message, contents)
 
 
 # FrogPilot variables
 def capture_block():
   sentry_sdk.capture_message("Blocked user from using a restricted branch", level='info')
   sentry_sdk.flush()
+
+
+def capture_message(message: str, **kwargs) -> None:
+  sentry_sdk.capture_message(message, **kwargs)
 
 
 def capture_exception(*args, crash_log=True, **kwargs) -> None:
@@ -104,6 +168,7 @@ def init(project: SentryProject, native: bool = False) -> bool:
                   integrations=integrations,
                   traces_sample_rate=1.0,
                   max_value_length=8192,
+                  transport=DeliveryTrackingTransport,
                   environment=env)
 
   params = Params()

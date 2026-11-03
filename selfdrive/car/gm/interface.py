@@ -260,10 +260,12 @@ class CarInterface(CarInterfaceBase):
       ret.autoResumeSng = True
 
       if candidate in CC_ONLY_CAR:
+        ret.openpilotLongitudinalControl = not frogpilot_toggles.disable_openpilot_long
         ret.flags |= GMFlags.PEDAL_LONG.value
         ret.safetyConfigs[0].safetyParam |= Panda.FLAG_GM_PEDAL_LONG
         ret.longitudinalTuning.kiBP = [0.0, 3., 6., 35.]
         ret.longitudinalTuning.kiV = [0.125, 0.175, 0.225, 0.33]
+        ret.longitudinalTuning.kfDEPRECATED = 0.25
         ret.stoppingDecelRate = 0.8
       else:  # Pedal used for SNG, ACC for longitudinal control otherwise
         ret.safetyConfigs[0].safetyParam |= Panda.FLAG_GM_HW_CAM_LONG
@@ -277,7 +279,7 @@ class CarInterface(CarInterfaceBase):
       ret.radarUnavailable = True
       ret.experimentalLongitudinalAvailable = False
       ret.minEnableSpeed = 24 * CV.MPH_TO_MS
-      ret.openpilotLongitudinalControl = True
+      ret.openpilotLongitudinalControl = not frogpilot_toggles.disable_openpilot_long
       ret.pcmCruise = False
 
       ret.stoppingDecelRate = 11.18  # == 25 mph/s (.04 rate)

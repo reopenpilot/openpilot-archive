@@ -354,9 +354,9 @@ def hardware_thread(end_event, hw_queue) -> None:
 
     # FrogPilot variables
     # Handle force offroad/onroad
-    force_onroad = frogpilot_toggles.force_onroad and frogpilot_variables.params_memory.get_bool("ForceOnroad")
+    force_onroad = frogpilot_toggles.force_onroad and params.get_bool("ForceOnroad")
     if force_onroad and onroad_conditions["ignition"]:
-      frogpilot_variables.params_memory.put_bool("ForceOnroad", False)
+      params.put_bool("ForceOnroad", False)
       force_onroad_cleared_count += 1
       force_onroad_cleared_time = time.monotonic()
 

@@ -170,6 +170,8 @@ class LongitudinalPlanner:
       # FrogPilot variables
       if frogpilot_toggles.old_long_api:
         mpc_accel_max = min(mpc_accel_max, max(accel_clip[1], 0.0))
+      else:
+        mpc_accel_max = accel_clip[1]
 
     if force_slow_decel:
       v_cruise = 0.0

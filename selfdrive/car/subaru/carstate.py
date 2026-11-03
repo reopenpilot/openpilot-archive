@@ -5,7 +5,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from openpilot.selfdrive.car.subaru.values import DBC, CanBus, SubaruFlags
-from openpilot.selfdrive.car import CanSignalRateCalculator
+from openpilot.selfdrive.car import CanSignalRateCalculator, create_button_events
 
 
 class CarState(CarStateBase):
@@ -15,6 +15,9 @@ class CarState(CarStateBase):
     self.shifter_values = can_define.dv["Transmission"]["Gear"]
 
     self.angle_rate_calulator = CanSignalRateCalculator(50)
+
+    # FrogPilot variables
+    self.lkas_button = 0
 
   def update(self, cp, cp_cam, cp_body, frogpilot_toggles):
     ret = car.CarState.new_message()
@@ -140,6 +143,11 @@ class CarState(CarStateBase):
       fp_ret.brakeLights = bool(cp_cam.vl["ES_Brake"]["Cruise_Brake_Lights"])
     else:
       fp_ret.brakeLights = bool(cp_cam.vl["ES_DashStatus"]["Brake_Lights"])
+
+      prev_lkas_button = self.lkas_button
+      self.lkas_button = cp_cam.vl["ES_LKAS_State"]["LKAS_Dash_State"]
+
+      ret.buttonEvents = create_button_events(self.lkas_button, prev_lkas_button, {1: car.CarState.ButtonEvent.Type.lkas})
 
     return ret, fp_ret
 

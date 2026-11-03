@@ -49,7 +49,7 @@ class CarControllerParams:
 
     # To determine the limit for your car, find the maximum value that the stock LKAS will request.
     # If the max stock LKAS request is <384, add your car to this list.
-    elif CP.carFingerprint in (CAR.GENESIS_G80, CAR.GENESIS_G90, CAR.HYUNDAI_ELANTRA, CAR.HYUNDAI_ELANTRA_GT_I30, CAR.HYUNDAI_IONIQ,
+    elif CP.carFingerprint in (CAR.GENESIS_G80, CAR.HYUNDAI_ELANTRA, CAR.HYUNDAI_ELANTRA_GT_I30, CAR.HYUNDAI_IONIQ,
                                CAR.HYUNDAI_IONIQ_EV_LTD, CAR.HYUNDAI_SANTA_FE_PHEV_2022, CAR.HYUNDAI_SONATA_LF, CAR.KIA_FORTE, CAR.KIA_NIRO_PHEV,
                                CAR.KIA_OPTIMA_H, CAR.KIA_OPTIMA_H_G4_FL, CAR.KIA_SORENTO):
       self.STEER_MAX = 255
@@ -155,6 +155,11 @@ class CAR(Platforms):
   HYUNDAI_AZERA_6TH_GEN = HyundaiPlatformConfig(
     [HyundaiCarDocs("Hyundai Azera 2022", "All", car_parts=CarParts.common([CarHarness.hyundai_k]))],
     CarSpecs(mass=1600, wheelbase=2.885, steerRatio=14.5),
+  )
+  HYUNDAI_AZERA_DIESEL_6TH_GEN = HyundaiPlatformConfig(
+    [HyundaiCarDocs("Hyundai Azera Diesel 2019", "All", car_parts=CarParts.common([CarHarness.hyundai_c]))],
+    CarSpecs(mass=1675, wheelbase=2.845, steerRatio=14.5),
+    flags=HyundaiFlags.CLUSTER_GEARS | HyundaiFlags.MANDO_RADAR,
   )
   HYUNDAI_AZERA_HEV_6TH_GEN = HyundaiPlatformConfig(
     [

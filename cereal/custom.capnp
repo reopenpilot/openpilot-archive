@@ -43,6 +43,13 @@ struct FrogPilotCarControl {
   }
 }
 
+struct FrogPilotAccountState @0x8fa22efa18fa36e4 {
+  link @0 :Text;
+  linkRequestTime @1 :UInt64;
+  url @2 :Text;
+  urlRequestTime @3 :UInt64;
+}
+
 struct FrogPilotCarEvent @0x81c2f05a394cf4af {
   name @0 :EventName;
 
@@ -104,8 +111,9 @@ struct FrogPilotCarParams @0xf35cc4560bbf6ec2 {
   canUsePedal @0 :Bool;
   canUseSDSU @1 :Bool;
   fpFlags @2 :UInt32;
-  openpilotLongitudinalControlDisabled @3 :Bool;
-  safetyConfigs @4 :List(SafetyConfig);
+  hasDashboardSpeedLimit @3 :Bool;
+  openpilotLongitudinalControlDisabled @4 :Bool;
+  safetyConfigs @5 :List(SafetyConfig);
 
   struct SafetyConfig {
     safetyParam @0 :UInt16;
@@ -126,7 +134,7 @@ struct FrogPilotCarState @0xda96579883444c35 {
   ecoGear @10 :Bool;
   experimentalModePressCount @11 :UInt64;
   forceCoast @12 :Bool;
-  isParked @13 :Bool;
+  parked @13 :Bool;
   pauseLateral @14 :Bool;
   pauseLongitudinal @15 :Bool;
   pedalInterceptorNoBrake @16 :Bool;
@@ -299,25 +307,28 @@ struct FrogPilotUIEvent @0xc2243c65e0340384 {
 
 struct FrogPilotUIRequest @0xcd96dafb67a082d0 {
   union {
-    cancelMapsDownload @0 :Void;
-    cancelModelDownload @1 :Void;
-    cancelThemeDownload @2 :Void;
-    createSettingsBackup @3 :Text;
-    downloadAllModels @4 :Void;
-    downloadMaps @5 :Void;
-    downloadModels @6 :List(Text);
-    downloadTheme @7 :List(ThemeDownload);
-    flashPanda @8 :Void;
-    issueReport @9 :Text;
-    lockDoors @10 :Bool;
-    refreshTheme @11 :Void;
-    restoreSettingsBackup @12 :Text;
-    testAlert @13 :Text;
-    updateChecks @14 :Void;
-    updateToggles @15 :Void;
+    accountLink @0 :Void;
+    accountUrl @1 :Text;
+    cancelMapsDownload @2 :Void;
+    cancelModelDownload @3 :Void;
+    cancelThemeDownload @4 :Void;
+    createSettingsBackup @5 :Text;
+    downloadAllModels @6 :Void;
+    downloadMaps @7 :Void;
+    downloadModels @8 :List(Text);
+    downloadTheme @9 :List(ThemeDownload);
+    flashPanda @10 :Void;
+    issueReport @11 :Text;
+    lockDoors @12 :Bool;
+    refreshTheme @13 :Void;
+    restoreSettingsBackup @14 :Text;
+    testAlert @15 :Text;
+    unlinkAccount @16 :Void;
+    updateChecks @17 :Void;
+    updateToggles @18 :Void;
   }
 
-  testAlertVolume @16 :Float32;
+  testAlertVolume @19 :Float32;
 
   struct ThemeDownload {
     component @0 :Text;

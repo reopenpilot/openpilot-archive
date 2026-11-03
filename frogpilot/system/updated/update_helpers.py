@@ -37,6 +37,9 @@ def update_openpilot():
   if params.get_bool("UpdaterFetchAvailable"):
     wait_for_offroad()
 
+    if frogpilot_paths.BACKUP_PATH.is_file():
+      return
+
     if not run_updater("-SIGHUP", "Update available, downloading...", "Failed to download update...") or params.get_bool("UpdaterFetchAvailable"):
       return
   elif not params.get_bool("UpdateAvailable"):

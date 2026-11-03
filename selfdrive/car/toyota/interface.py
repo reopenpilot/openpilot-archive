@@ -149,7 +149,7 @@ class CarInterface(CarInterfaceBase):
 
     # min speed to enable ACC. if car can do stop and go, then set enabling speed
     # to a negative value, so it won't matter.
-    ret.minEnableSpeed = -1. if (stop_and_go or ret.enableGasInterceptor) else MIN_ACC_SPEED
+    ret.minEnableSpeed = -1. if (stop_and_go or ret.enableGasInterceptor or use_sdsu) else MIN_ACC_SPEED
 
     if candidate in TSS2_CAR:
       ret.flags |= ToyotaFlags.RAISED_ACCEL_LIMIT.value
@@ -188,7 +188,7 @@ class CarInterface(CarInterfaceBase):
       button_events += create_button_events(self.CS.distance_button, self.CS.prev_distance_button, {1: ButtonType.gapAdjustCruise})
 
     # FrogPilot variables
-    if self.CP.carFingerprint in TSS2_CAR:
+    if self.CP.carFingerprint in TSS2_CAR or (self.CP.flags & ToyotaFlags.SMART_DSU and not self.CP.flags & ToyotaFlags.RADAR_CAN_FILTER):
       # Cycles between 1 and 2 when pressing the button, then rests back at 0 after ~3s
       if self.CS.lkas_button != 0 and self.CS.lkas_button != self.CS.prev_lkas_button:
         button_events += create_button_events(1, 0, {1: ButtonType.lkas}) + create_button_events(0, 1, {1: ButtonType.lkas})

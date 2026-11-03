@@ -62,12 +62,8 @@ def car_row_reason(context, key, available):
   return context.level_reason(key) or context.car_reason(context.car_detected and available)
 
 
-def car_selection_reason(context):
-  return context.level_reason("ForceFingerprint") or context.setting_reason(context.params.get_bool("ForceFingerprint"), "ForceFingerprint")
-
-
 def disable_openpilot_longitudinal_visible(context):
-  available = context.has_openpilot_longitudinal or context.openpilot_longitudinal_control_disabled
+  available = context.has_openpilot_longitudinal or context.params.get_bool("DisableOpenpilotLongitudinal")
   return context.level_reason("DisableOpenpilotLongitudinal") or context.car_reason(available and context.can_disable_openpilot_long)
 
 
@@ -153,10 +149,9 @@ ROWS = [
     "widget": "action"
   },
   {
-    "description": ("<b>The make of the car openpilot is using.</b> To pick one yourself, turn on \"Disable Automatic Fingerprint Detection\" first " +
-                    "(\"Advanced\" tuning level)."),
+    "description": ("<b>The make of the car openpilot is using.</b> If openpilot doesn't recognize your car, pick it here and openpilot uses it instead. " +
+                    "To always use the car you pick, turn on \"Disable Automatic Fingerprint Detection\" (\"Advanced\" tuning level)."),
     "display": lambda context: context.params.get("CarMake", encoding="utf-8"),
-    "enabled": car_selection_reason,
     "key": "CarMake",
     "on_change": car_make_changed,
     "options": tuple({"label": make, "value": make} for make in frogpilot_variables.CAR_MAKES),
@@ -168,10 +163,9 @@ ROWS = [
   },
   {
     "current": lambda context: context.params.get("CarModelName", encoding="utf-8"),
-    "description": ("<b>The model of the car openpilot is using.</b> To pick one yourself, turn on \"Disable Automatic Fingerprint Detection\" first " +
-                    "(\"Advanced\" tuning level)."),
+    "description": ("<b>The model of the car openpilot is using.</b> If openpilot doesn't recognize your car, pick it here and openpilot uses it instead. " +
+                    "To always use the car you pick, turn on \"Disable Automatic Fingerprint Detection\" (\"Advanced\" tuning level)."),
     "display": lambda context: context.params.get("CarModelName", encoding="utf-8") or context.params.get("CarModel", encoding="utf-8"),
-    "enabled": car_selection_reason,
     "key": "CarModel",
     "keys": ("CarModel", "CarModelName"),
     "on_change": car_model_changed,
@@ -193,7 +187,7 @@ ROWS = [
     "widget": "toggle"
   },
   {
-    "confirm_enable": {"cancel": "No", "confirm": "Yes", "text": "Are you sure you want to completely disable openpilot longitudinal control?"},
+    "confirm_enable": {"cancel": "Cancel", "confirm": "Disable", "text": "Are you sure you want to completely disable openpilot longitudinal control?"},
     "description": "<b>Let your car's own cruise control handle the gas and brake instead of openpilot.</b>",
     "key": "DisableOpenpilotLongitudinal",
     "on_change": reboot_when_started,
@@ -368,7 +362,7 @@ ROWS = [
     "buttons": ("Reset",),
     "description": ("<b>Line up the speed openpilot shows on screen with the number on your dashboard, which most cars deliberately read a little " +
                     "high.</b><br><br>With \"Use Wheel Speed\" off, raise it until openpilot's number matches your dashboard. This does not change " +
-                    "how fast openpilot actually drives, with one exception: while it is following posted speed limits, a higher number here makes " +
+                    "how fast openpilot actually drives, except that while it is following posted speed limits, a higher number here makes " +
                     "it drive slightly slower."),
     "key": "ClusterOffset",
     "order": 1,
@@ -392,7 +386,7 @@ ROWS = [
   },
   {
     "description": ("<b>Swap in FrogsGoMoo's own settings for how openpilot comes to a stop.</b><br><br>These are personal preferences rather than a " +
-                    "fix for anything, and they are already on. They take over your stopping and starting values from \"Driving Controls\" and hide " +
+                    "fix for anything. They take over your stopping and starting values from \"Driving Controls\" and hide " +
                     "those rows while this is on, though on a Toyota the starting value has no effect. They also make openpilot's gas and brake " +
                     "control predict the car's acceleration further ahead at every speed, so they change how it drives while cruising as well."),
     "key": "FrogsGoMoosTweak",
@@ -430,7 +424,7 @@ ROWS = [
   },
   {
     "description": ("<b>Extra hardware openpilot has found fitted to your car, such as a comma pedal, an SDSU, or a ZSS.</b><br><br>openpilot works " +
-                    "these out from your car's wiring on its own. \"None\" is not proof nothing is fitted: on a Toyota a comma pedal is only " +
+                    "these out from your car's wiring on its own. \"None\" is not proof nothing is fitted. On a Toyota a comma pedal is only " +
                     "reported while openpilot is handling the gas and brake, and on a Bosch Honda it is never reported at all."),
     "display": hardware_detected,
     "id": "HardwareDetected",

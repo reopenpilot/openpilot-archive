@@ -69,7 +69,7 @@ class Car:
     if self.CP.secOcRequired:
       # Copy user key if available
       try:
-        with open(frogpilot_paths.SECOC_KEY_PATH) as f:
+        with open(frogpilot_paths.PARAMS_CACHE_PATH / "SecOCKey") as f:
           user_key = f.readline().strip()
           if len(user_key) == 32:
             self.params.put("SecOCKey", user_key)

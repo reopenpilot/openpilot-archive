@@ -2,6 +2,7 @@
 import datetime
 import os
 import signal
+import string
 import sys
 import traceback
 
@@ -19,7 +20,7 @@ from openpilot.common.swaglog import cloudlog, add_file_handler
 from openpilot.system.version import get_build_metadata, terms_version, training_version
 
 from openpilot.frogpilot.common.frogpilot_api import FrogPilotAPI
-from openpilot.frogpilot.common import frogpilot_functions, frogpilot_variables
+from openpilot.frogpilot.common import frogpilot_functions, frogpilot_paths, frogpilot_utilities, frogpilot_variables
 
 
 def manager_init() -> None:
@@ -73,6 +74,11 @@ def manager_init() -> None:
       value = params.get(k)
       if frogpilot_variables.params_cache.get(k) != value:
         frogpilot_variables.params_cache.put(k, value)
+
+  # FrogPilot variables
+  if reset_toggles or reset_toggles_stock:
+    frogpilot_utilities.delete_path(frogpilot_paths.SPEED_LIMIT_CAPTURES_PATH)
+
   params.remove("DoToggleReset")
   params.remove("DoToggleResetStock")
 
@@ -150,7 +156,10 @@ def manager_thread() -> None:
   params = Params()
 
   ignore: list[str] = []
-  if params.get("DongleId", encoding='utf8') in (None, UNREGISTERED_DONGLE_ID):
+
+  # FrogPilot variables
+  dongle_id = params.get("DongleId", encoding='utf8')
+  if dongle_id in (None, UNREGISTERED_DONGLE_ID) or not all(c in string.hexdigits for c in dongle_id):
     ignore += ["manage_athenad", "uploader"]
   if os.getenv("NOBOARD") is not None:
     ignore.append("pandad")

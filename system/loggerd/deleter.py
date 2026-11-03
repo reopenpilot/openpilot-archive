@@ -7,7 +7,7 @@ from openpilot.common.swaglog import cloudlog
 from openpilot.system.loggerd.config import get_available_bytes, get_available_percent
 from openpilot.system.loggerd.uploader import get_directory_sort, listdir_by_creation
 
-from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.common import frogpilot_utilities
 
 MIN_BYTES = 5 * 1024 * 1024 * 1024
 MIN_PERCENT = 10
@@ -21,18 +21,6 @@ PRESERVE_COUNT = 5
 
 def has_preserve_xattr(d: str) -> bool:
   return frogpilot_utilities.has_preserve_attr(d, PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE)
-
-
-# FrogPilot variables
-def get_preserved_route_segments(dirs_by_creation):
-  routes = set()
-  for directory in reversed(dirs_by_creation):
-    route, separator, segment = directory.rpartition("--")
-    if separator and segment.isdigit() and frogpilot_utilities.has_preserve_attr(directory, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE):
-      routes.add(route)
-      if len(routes) == PRESERVE_COUNT:
-        break
-  return [directory for directory in dirs_by_creation if directory.rpartition("--")[0] in routes]
 
 
 # FrogPilot variables
@@ -74,10 +62,11 @@ def deleter_thread(exit_event):
       dirs = get_log_dirs()
 
       # skip deleting most recent N preserved segments (and their prior segment)
-      preserved_dirs = set(get_preserved_segments(dirs)) | set(get_preserved_route_segments(dirs))
+      preserved_dirs = get_preserved_segments(dirs)
 
       # remove the earliest directory we can
-      for delete_path in sorted(dirs, key=lambda d: (os.path.basename(d) in DELETE_LAST, d in preserved_dirs)):
+      for delete_path in sorted(dirs, key=lambda d: (os.path.basename(d) in DELETE_LAST, d in preserved_dirs or frogpilot_utilities.is_route_preserved(d),
+                                                     frogpilot_utilities.has_pending_telemetry(d))):
         if any(name.endswith(".lock") for name in os.listdir(delete_path)):
           continue
 

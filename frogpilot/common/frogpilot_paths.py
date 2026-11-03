@@ -5,6 +5,7 @@ from openpilot.common.basedir import BASEDIR
 ACTIVE_THEME_PATH = Path(__file__).parents[1] / "assets/active_theme"
 HOLIDAY_THEMES_PATH = Path(__file__).parents[1] / "assets/holiday_themes"
 RANDOM_EVENTS_PATH = Path(__file__).parents[1] / "assets/random_events"
+STOCK_SOUNDS_PATH = Path(BASEDIR) / "selfdrive/assets/sounds"
 STOCK_THEME_PATH = Path(__file__).parents[1] / "assets/stock_theme"
 STOCK_THEME_COLORS_PATH = STOCK_THEME_PATH / "colors/colors.json"
 THEME_COLORS_PATH = ACTIVE_THEME_PATH / "colors/colors.json"
@@ -16,11 +17,12 @@ THEME_SIZES_PATH = THEME_SAVE_PATH / "theme_sizes.json"
 
 BACKUP_PATH = Path("/cache/on_backup")
 FROGPILOT_BACKUPS = Path("/data/backups")
+PARAMS_CACHE_PATH = Path("/cache/params")
 RESTORE_TEMP_PATH = Path("/data/restore_temp")
 TOGGLE_BACKUPS = Path("/data/toggle_backups")
 
 BOOT_LOGO_PATH = Path("/usr/comma/bg.jpg")
-FROGPILOT_BOOT_LOGO_PATH = Path(__file__).parents[1] / "assets/other_images/frogpilot_boot_logo.png"
+FROGPILOT_BOOT_LOGO_PATH = Path(__file__).parents[1] / "assets/other_images/frogpilot_boot_logo.jpg"
 STOCK_BOOT_LOGO_PATH = Path(__file__).parents[1] / "assets/other_images/stock_bg.jpg"
 
 BORDERS_PATH = Path(BASEDIR) / "frogpilot/assets/borders.json"
@@ -39,6 +41,7 @@ DEFAULT_THEME_COMPONENTS = {
 ERROR_LOGS_PATH = Path("/data/error_logs")
 ERROR_FILE_PATH = ERROR_LOGS_PATH / "error.txt"
 SCREEN_RECORDINGS_PATH = Path("/data/media/screen_recordings")
+SENTRY_QUEUE_PATH = Path("/data/sentry_queue")
 VIDEO_CACHE_PATH = Path("/data/video_cache")
 
 FROGPILOT_PANELS_PATH = Path(BASEDIR) / "frogpilot/ui/qt/offroad"
@@ -51,6 +54,10 @@ HD_PATH = Path("/cache/use_HD")
 
 KONIK_LOGS_PATH = Path("/data/media/0/realdata_konik")
 KONIK_PATH = Path("/cache/use_konik")
+
+LEGACY_PARAMS_BACKUP_PATH = Path("/data/params_backup")
+
+LOG_ROOTS = (Path("/data/media/0/realdata"), HD_LOGS_PATH, KONIK_LOGS_PATH)
 
 MAPS_PATH = Path("/data/media/0/osm/offline")
 
@@ -69,9 +76,9 @@ NOT_VETTED_PATH = Path("/data/openpilot/not_vetted")
 
 OFFLINE_MAPS_SCHEMA_PATH = Path(__file__).parents[1] / "system/offline_maps.capnp"
 
-PARAMS_BACKUP_PATH = Path("/data/params_backup")
+PARAMS_BACKUP_PATH = Path("/dev/shm/params_backup")
 
-SECOC_KEY_PATH = Path("/cache/params/SecOCKey")
+SPEED_LIMIT_CAPTURES_PATH = Path("/data/media/speed_limit_captures")
 
 SPEED_LIMIT_FILLER_IMAGES_PATH = Path("/data/speed_limit_filler_images")
 SPEED_LIMIT_FILLER_PATH = Path("/data/speed_limit_filler.json")

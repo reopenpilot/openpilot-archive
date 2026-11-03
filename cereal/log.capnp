@@ -2407,6 +2407,7 @@ struct Event {
     customReservedRawData2 @126 :Data;
 
     # *********** Custom: reserved for forks ***********
+    frogpilotAccountState @135 :Custom.FrogPilotAccountState;
     frogpilotCarParams @108 :Custom.FrogPilotCarParams;
     frogpilotCarState @109 :Custom.FrogPilotCarState;
     frogpilotControlsState @110 :Custom.FrogPilotControlsState;

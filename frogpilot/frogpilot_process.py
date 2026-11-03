@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import datetime
+import json
 import time
 
 from pathlib import Path
@@ -17,7 +18,7 @@ from openpilot.frogpilot.selfdrive.pandad.panda_flashing import flash_panda
 from openpilot.frogpilot.system.reporting import capture_report
 from openpilot.frogpilot.system.speed_limit_reader_models import SpeedLimitReaderModels
 from openpilot.frogpilot.system.updated.update_helpers import update_openpilot
-from openpilot.frogpilot.common import frogpilot_functions, frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.common import frogpilot_backups, frogpilot_functions, frogpilot_paths, frogpilot_utilities, frogpilot_variables
 from openpilot.frogpilot.controls.frogpilot_planner import FrogPilotPlanner
 from openpilot.frogpilot.controls.lib.speed_limit_filler import upload_speed_limits
 from openpilot.frogpilot.system.frogpilot_stats import send_stats
@@ -35,9 +36,17 @@ class FrogPilotRequests:
 
     self.downloading_models = False
     self.downloading_themes = False
+    self.flashed_panda = False
 
+    self.account_link_request_time = 0
+    self.report_finished_time = 0.0
+
+    self.account_link = "{}"
+    self.account_url = ""
     self.door_command = ""
+    self.issue_report = "{}"
 
+    self.failed_report = None
     self.pending = {}
     self.request_times = {}
 
@@ -49,6 +58,9 @@ class FrogPilotRequests:
     self.request_times[kind], request = pending
     return request
 
+  def flash_panda(self):
+    self.flashed_panda = flash_panda()
+
   def send_door_command(self, lock):
     if send_door_command(lock):
       if lock:
@@ -58,7 +70,33 @@ class FrogPilotRequests:
     else:
       self.door_command = "failed"
 
-  def update(self, sm):
+  def update_account_link(self, frogpilot_api, unlink, request_time):
+    if unlink:
+      frogpilot_api.unlink_account()
+
+    account_link = frogpilot_api.account_link()
+    if account_link:
+      self.account_link = json.dumps(account_link)
+    self.account_link_request_time = request_time
+
+  def publish_issue_report(self, issue_report):
+    self.issue_report = json.dumps(issue_report)
+
+  def send_report(self, report, frogpilot_toggles, frogpilot_api):
+    try:
+      self.failed_report = capture_report(report, frogpilot_toggles, frogpilot_api, self.publish_issue_report)
+    except Exception:
+      self.failed_report = report
+      self.publish_issue_report({"status": "failed"})
+      raise
+    finally:
+      self.report_finished_time = time.monotonic()
+
+  def start_report(self, report, frogpilot_toggles, frogpilot_api):
+    self.issue_report = json.dumps({"status": "pending"})
+    frogpilot_utilities.run_thread_with_lock("send_report", self.send_report, (report, dict(vars(frogpilot_toggles)), frogpilot_api))
+
+  def update(self, time_validated, sm, frogpilot_toggles, frogpilot_api):
     for msg in messaging.drain_sock(self.ui_request_sock):
       self.pending[msg.frogpilotUIRequest.which()] = (msg.logMonoTime, msg.frogpilotUIRequest)
 
@@ -91,6 +129,10 @@ class FrogPilotRequests:
 
     if sm["deviceState"].networkMetered and self.model_manager.downloading_automatically:
       self.model_manager.download_state.cancelled = True
+
+    if not frogpilot_utilities.is_thread_alive("flash_panda") and self.take("flashPanda") is not None:
+      self.flashed_panda = False
+      frogpilot_utilities.run_thread_with_lock("flash_panda", self.flash_panda)
 
     if not frogpilot_utilities.is_thread_alive("download_themes"):
       if self.downloading_themes:
@@ -128,9 +170,42 @@ class FrogPilotRequests:
           self.door_command = "pending"
           frogpilot_utilities.run_thread_with_lock("send_door_command", self.send_door_command, (request.lockDoors,))
 
-    return self.take("updateToggles") is not None
+    if time_validated and not frogpilot_utilities.is_thread_alive("send_report"):
+      report_wait_over = time.monotonic() - self.report_finished_time >= frogpilot_variables.REPORT_WAIT_SECONDS
+
+      request = self.take("issueReport")
+      if request is not None:
+        self.start_report(json.loads(request.issueReport), frogpilot_toggles, frogpilot_api)
+      elif self.failed_report is not None and report_wait_over:
+        if self.failed_report.get("MeteredConfirmed") or not sm["deviceState"].networkMetered:
+          self.start_report(self.failed_report, frogpilot_toggles, frogpilot_api)
+      elif self.failed_report is None and report_wait_over:
+        self.issue_report = "{}"
+
+    if not frogpilot_utilities.is_thread_alive("update_account_link"):
+      refresh = self.take("accountLink") is not None
+      unlink = self.take("unlinkAccount") is not None
+      if refresh or unlink:
+        request_time = max(self.request_times.get("accountLink", 0), self.request_times.get("unlinkAccount", 0))
+        frogpilot_utilities.run_thread_with_lock("update_account_link", self.update_account_link, (frogpilot_api, unlink, request_time))
+
+    request = self.take("accountUrl")
+    if request is not None:
+      self.account_url = frogpilot_api.account_url(request.accountUrl)
+
+    return self.take("updateToggles") is not None, self.take("updateChecks") is not None
 
   def publish(self, pm, stats_saved_count):
+    frogpilot_account_state_send = messaging.new_message("frogpilotAccountState")
+    frogpilotAccountState = frogpilot_account_state_send.frogpilotAccountState
+
+    frogpilotAccountState.link = self.account_link
+    frogpilotAccountState.linkRequestTime = self.account_link_request_time
+    frogpilotAccountState.url = self.account_url
+    frogpilotAccountState.urlRequestTime = self.request_times.get("accountUrl", 0)
+
+    pm.send("frogpilotAccountState", frogpilot_account_state_send)
+
     frogpilot_process_state_send = messaging.new_message("frogpilotProcessState")
     frogpilotProcessState = frogpilot_process_state_send.frogpilotProcessState
 
@@ -138,6 +213,11 @@ class FrogPilotRequests:
     frogpilotProcessState.doorCommandRequestTime = self.request_times.get("lockDoors", 0)
     frogpilotProcessState.downloadingModels = frogpilot_utilities.is_thread_alive("download_models") or self.model_manager.downloading_automatically
     frogpilotProcessState.downloadThemeRequestTime = self.request_times.get("downloadTheme", 0)
+    frogpilotProcessState.flashedPanda = self.flashed_panda
+    frogpilotProcessState.flashingPanda = frogpilot_utilities.is_thread_alive("flash_panda")
+    frogpilotProcessState.flashPandaRequestTime = self.request_times.get("flashPanda", 0)
+    frogpilotProcessState.issueReport = self.issue_report
+    frogpilotProcessState.issueReportRequestTime = self.request_times.get("issueReport", 0)
     frogpilotProcessState.modelDownloadProgress = self.model_manager.download_state.progress
     frogpilotProcessState.modelDownloadRequestTime = max(self.request_times.get("downloadAllModels", 0), self.request_times.get("downloadModels", 0))
     frogpilotProcessState.statsSavedCount = stats_saved_count
@@ -159,23 +239,19 @@ def serve_settings_request(key, function):
 
   frogpilot_variables.params_memory.remove(key)
 
-def assets_checks(time_validated, frogpilot_toggles, frogpilot_api):
-  if frogpilot_variables.params_memory.get_bool("FlashPanda"):
-    frogpilot_utilities.run_thread_with_lock("flash_panda", flash_panda)
-
+def assets_checks():
   if frogpilot_variables.params_memory.get("BackupSettings") not in (None, b"0"):
     frogpilot_utilities.run_thread_with_lock("backup_settings", serve_settings_request, ("BackupSettings", frogpilot_functions.backup_settings))
 
   if frogpilot_variables.params_memory.get("RestoreSettings") not in (None, b"0"):
     frogpilot_utilities.run_thread_with_lock("restore_settings", serve_settings_request, ("RestoreSettings", frogpilot_functions.restore_settings))
 
-  issue_reported = frogpilot_variables.params_memory.get("IssueReported", encoding="utf-8")
-  if issue_reported is not None and time_validated:
-    frogpilot_utilities.run_thread_with_lock("capture_report", capture_report, (issue_reported, dict(vars(frogpilot_toggles)), frogpilot_api))
-
 def update_checks(model_manager, now, speed_limit_reader_models, theme_manager, sm, frogpilot_toggles, boot_run=False):
   while not (frogpilot_utilities.is_url_pingable("https://github.com") or frogpilot_utilities.is_url_pingable("https://gitlab.com")):
     time.sleep(60)
+
+  if not sm["deviceState"].networkMetered and frogpilot_toggles.automatic_updates:
+    frogpilot_utilities.run_thread_with_lock("update_openpilot", update_openpilot)
 
   with model_manager.download_lock:
     model_manager.update_models(not sm["deviceState"].networkMetered and frogpilot_toggles.automatically_download_models, sm["deviceState"].started)
@@ -190,15 +266,13 @@ def update_checks(model_manager, now, speed_limit_reader_models, theme_manager, 
   if not sm["deviceState"].networkMetered:
     frogpilot_utilities.run_thread_with_lock("update_maps", update_maps, (now,))
 
-  if not sm["deviceState"].networkMetered and frogpilot_toggles.automatic_updates:
-    frogpilot_utilities.run_thread_with_lock("update_openpilot", update_openpilot)
-
 def update_toggles(variables, started, model_manager, theme_manager, time_validated):
   frogpilot_toggles = variables.frogpilot_toggles
 
   previous_holiday_themes = frogpilot_toggles.holiday_themes
   previous_random_themes = frogpilot_toggles.random_themes
 
+  model_manager.models_updated = False
   theme_manager.theme_updated = False
 
   if not started and frogpilot_variables.params.get_bool("ModelRandomizer"):
@@ -216,7 +290,7 @@ def update_toggles(variables, started, model_manager, theme_manager, time_valida
   theme_manager.update_active_theme(time_validated, frogpilot_toggles, randomize_theme=randomize_theme)
 
   if time_validated:
-    frogpilot_utilities.run_thread_with_lock("backup_toggles", frogpilot_functions.backup_toggles, (frogpilot_variables.params_cache,), report=False)
+    frogpilot_utilities.run_thread_with_lock("backup_toggles", frogpilot_backups.backup_toggles, (frogpilot_variables.params_cache,), report=False)
 
 def frogpilot_thread():
   set_realtime_priority(Priority.CTRL_LOW)
@@ -233,14 +307,13 @@ def frogpilot_thread():
 
   frogpilot_toggles = variables.frogpilot_toggles
 
-  pm = messaging.PubMaster(["frogpilotPlan", "frogpilotProcessState"])
+  pm = messaging.PubMaster(["frogpilotAccountState", "frogpilotPlan", "frogpilotProcessState"])
   sm = messaging.SubMaster(["carControl", "carState", "controlsState", "deviceState",
                             "liveLocationKalman", "liveParameters", "longitudinalPlan", "modelV2",
                             "radarState", "frogpilotCarParams", "frogpilotCarState", "frogpilotControlsState",
                             "frogpilotDeviceState", "frogpilotModelV2", "frogpilotNavigation", "frogpilotSignReading"],
                             poll="modelV2")
 
-  manual_update_previously = False
   run_update_checks = False
   share_speed_limits = True
   started_previously = False
@@ -299,7 +372,7 @@ def frogpilot_thread():
       if time_validated:
         frogpilot_utilities.run_thread_with_lock("send_stats", send_stats, (frogpilot_variables.params, frogpilot_toggles, frogpilot_api))
 
-    if theme_manager.theme_updated:
+    if model_manager.models_updated or theme_manager.theme_updated:
       update_toggles(variables, started, model_manager, theme_manager, time_validated)
 
     if started and sm.updated["modelV2"]:
@@ -322,9 +395,9 @@ def frogpilot_thread():
       share_speed_limits = False
 
     if sm.frame % ASSET_CHECK_RATE == 0:
-      assets_checks(time_validated, frogpilot_toggles, frogpilot_api)
+      assets_checks()
 
-    toggles_updated = frogpilot_requests.update(sm)
+    toggles_updated, update_checks_requested = frogpilot_requests.update(time_validated, sm, frogpilot_toggles, frogpilot_api)
     frogpilot_requests.publish(pm, stats_saved_count)
 
     toggles_updated |= sm["frogpilotDeviceState"].forceOnroadClearedCount > force_onroad_cleared_count
@@ -336,15 +409,12 @@ def frogpilot_thread():
     if toggles_updated:
       update_toggles(variables, started, model_manager, theme_manager, time_validated)
 
-    manual_update = frogpilot_variables.params_memory.get("ManualUpdateInitiated") is not None
-    run_update_checks |= manual_update and not manual_update_previously
-    manual_update_previously = manual_update
-
-    if frogpilot_utilities.frogs_go_moo():
+    if frogpilot_utilities.is_FrogsGoMoo():
       update_checks_period = now.minute // 5
     else:
       update_checks_period = now.hour
 
+    run_update_checks |= update_checks_requested
     run_update_checks |= update_checks_period != previous_update_checks_period
     run_update_checks &= time_validated
 
@@ -363,7 +433,7 @@ def frogpilot_thread():
       theme_manager.update_active_theme(time_validated, frogpilot_toggles)
       frogpilot_utilities.run_thread_with_lock("update_checks", update_checks, (model_manager, now, speed_limit_reader_models, theme_manager, sm, frogpilot_toggles, True))
 
-      frogpilot_utilities.run_thread_with_lock("backup_toggles", frogpilot_functions.backup_toggles, (frogpilot_variables.params_cache,), report=False)
+      frogpilot_utilities.run_thread_with_lock("backup_toggles", frogpilot_backups.backup_toggles, (frogpilot_variables.params_cache, True), report=False)
       frogpilot_utilities.run_thread_with_lock("send_stats", send_stats, (frogpilot_variables.params, frogpilot_toggles, frogpilot_api))
 
 def main():

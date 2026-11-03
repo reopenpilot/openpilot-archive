@@ -11,20 +11,45 @@ from aiohttp import web
 from pathlib import Path, PurePosixPath
 
 from openpilot.common.basedir import BASEDIR
-from openpilot.common.params import Params
 from openpilot.system.hardware import HARDWARE
 from openpilot.system.updated.common import set_consistent_flag
 from openpilot.system.updated.updated import FINALIZED
 
-from openpilot.frogpilot.common import frogpilot_functions, frogpilot_paths, frogpilot_utilities, frogpilot_variables
-from openpilot.frogpilot.system.the_pond import tailscale, toggles, utilities
+from openpilot.frogpilot.common import frogpilot_backups, frogpilot_functions, frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.system.the_pond import maps, utilities
 
 BACKUP_EXTENSION = ".tar.zst"
 
 MAX_SETTING_SIZE = 1024 * 1024
 
+NON_ROW_SETTING_TYPES = {
+  "AlwaysOnDM": bool,
+  "AutomaticUpdates": bool,
+  "DisengageOnAccelerator": bool,
+  "ExperimentalMode": bool,
+  "GsmRoaming": bool,
+  "IsLdwEnabled": bool,
+  "IsMetric": bool,
+  "LongitudinalPersonality": int,
+  "NavSettingLeftSide": bool,
+  "NavSettingTime24h": bool,
+  "OpenpilotEnabledToggle": bool,
+  "RecordFront": bool,
+  "TetheringEnabled": int,
+}
+
 OPENPILOT_FILES = ("launch_chffrplus.sh", "launch_openpilot.sh")
 OPENPILOT_FOLDERS = ("selfdrive", "system")
+
+RESET_CONSEQUENCES = {
+  "kept": ["Drives", "Backups", "Downloaded themes", "Learned driving data", "Speed Limit Filler data", "FrogPilot Stats", "Toyota security keys",
+           "Pairing code and paired browsers", "Tailscale sign-in", "Experimental Mode", "openpilot Longitudinal Control (Alpha)"],
+  "lost": ["Saved keys (Amap, Mapbox, and weather)", "Favorite places", "Discord name", "Chosen car make and model", "SSH keys", "Cellular APN",
+           "Map settings", "Speed limit sign clips", "Link to your FrogPilot.com account"],
+  "note": ("SSH and tethering are turned off, and the device reboots to finish the reset. You accept the terms, redo the training, and set your " +
+           "language again, and you're asked again whether to share FrogPilot data. Settings backups still hold your keys and favorite places " +
+           "until you delete them."),
+}
 
 routes = web.RouteTableDef()
 
@@ -49,15 +74,44 @@ def get_settings_backup(name):
   return path
 
 
-def list_backups(directory, pattern):
+def get_frogpilot_backup(name):
+  path = frogpilot_paths.FROGPILOT_BACKUPS / f"{name}{BACKUP_EXTENSION}"
+
+  if not path.is_file():
+    path = frogpilot_paths.FROGPILOT_BACKUPS / name
+
+  if name in ("", ".", "..") or path.parent != frogpilot_paths.FROGPILOT_BACKUPS or not path.exists():
+    raise web.HTTPNotFound(text="not_found")
+
+  if frogpilot_variables.IN_PROGRESS_BACKUP_SUFFIX in name:
+    raise web.HTTPNotFound(text="not_found")
+
+  return path
+
+
+def get_backup_size(path):
+  if path.is_dir():
+    return frogpilot_utilities.get_directory_size(path)
+
+  return path.stat().st_size
+
+
+def delete_backup(path):
+  if path.is_dir():
+    shutil.rmtree(path)
+  else:
+    path.unlink()
+
+
+def list_backups(directory):
   backups = []
-  for path in directory.glob(pattern):
+  for path in directory.glob("*"):
     if frogpilot_variables.IN_PROGRESS_BACKUP_SUFFIX not in path.name:
       backups.append({
         "automatic": frogpilot_variables.AUTOMATIC_BACKUP_SUFFIX in path.name,
         "modified": int(path.stat().st_mtime),
         "name": path.name.removesuffix(BACKUP_EXTENSION),
-        "size": path.stat().st_size if path.is_file() else None,
+        "size": get_backup_size(path),
       })
   return sorted(backups, key=lambda backup: backup["modified"], reverse=True)
 
@@ -74,6 +128,13 @@ def format_setting(key, value, metric):
 
   if value is None:
     return "Not set"
+  if key == "MapsSelected":
+    regions = maps.get_regions(value)
+    if not regions:
+      return "None"
+
+    region_names = maps.get_region_names()
+    return ", ".join(region_names[region] for region in regions)
   if isinstance(value, bool):
     return "On" if value else "Off"
   if isinstance(value, str):
@@ -91,14 +152,20 @@ def format_setting(key, value, metric):
 
 
 def read_setting(context, key, value):
+  from openpilot.frogpilot.system.the_pond import toggles
+
   if not value:
     return None
+  if key in NON_ROW_SETTING_TYPES:
+    return toggles.cast_value(value.decode(), NON_ROW_SETTING_TYPES[key])
   if key not in toggles.TABLE_ROWS and key not in toggles.SUB_TOGGLE_ROWS and key not in toggles.ROW_KEYS:
     return value.decode()
   return toggles.cast_value(value.decode(), toggles.key_type(key, context))
 
 
 def get_changes(the_pond, backup_path):
+  from openpilot.frogpilot.system.the_pond import toggles
+
   params = the_pond.params
   context = toggles.Context(the_pond)
 
@@ -108,17 +175,15 @@ def get_changes(the_pond, backup_path):
   if metric_path.is_file() and metric_path.stat().st_size > 0:
     backup_metric = metric_path.read_bytes() == b"1"
 
-  backup_keys = frogpilot_utilities.settings_backup_keys()
-
   changes = []
   for path in sorted(backup_path.iterdir()):
     key = path.name
-    if not path.is_file() or key not in backup_keys:
+    if not path.is_file() or key not in frogpilot_variables.SETTINGS_BACKUP_KEYS:
       continue
 
     raw_current = params.get(key) or b""
     raw_value = path.read_bytes()
-    if raw_value != raw_current:
+    if raw_value != raw_current and not frogpilot_utilities.is_unset_secret(key, raw_value):
       current = read_setting(context, key, raw_current)
       value = read_setting(context, key, raw_value)
       name = get_setting_label(frogpilot_variables.SETTING_LABELS.get(key, {}).get("name", key), metric)
@@ -136,12 +201,13 @@ def get_changes(the_pond, backup_path):
 
 
 def read_settings_archive(the_pond, file):
+  from openpilot.frogpilot.system.the_pond import toggles
+
   try:
     backup_zip = zipfile.ZipFile(file)
   except zipfile.BadZipFile:
     raise web.HTTPBadRequest(text="invalid_file") from None
 
-  backup_keys = frogpilot_utilities.settings_backup_keys()
   context = toggles.Context(the_pond)
 
   settings = {}
@@ -149,7 +215,7 @@ def read_settings_archive(the_pond, file):
     for member in backup_zip.infolist():
       if member.file_size > MAX_SETTING_SIZE:
         raise web.HTTPBadRequest(text="invalid_file")
-      if member.is_dir() or member.filename not in backup_keys:
+      if member.is_dir() or member.filename not in frogpilot_variables.SETTINGS_BACKUP_KEYS:
         continue
 
       try:
@@ -165,34 +231,15 @@ def read_settings_archive(the_pond, file):
   return settings
 
 
-def reset_settings(stock):
-  params = Params()
-
-  for key in frogpilot_variables.RESET_REMOVED_KEYS:
-    params.remove(key)
-    frogpilot_variables.params_cache.remove(key)
-
-  frogpilot_paths.SPEED_LIMIT_FILLER_PATH.unlink(missing_ok=True)
-
-  if frogpilot_paths.SPEED_LIMIT_FILLER_IMAGES_PATH.exists():
-    shutil.rmtree(frogpilot_paths.SPEED_LIMIT_FILLER_IMAGES_PATH)
-
-  if params.get_bool("ThePondPairing"):
-    params.put("ThePondPairingCode", utilities.new_pairing_code())
+async def reset_settings(the_pond, stock):
+  await utilities.unlink_account(the_pond)
 
   if stock:
-    params.put_bool("DoToggleResetStock", True)
+    the_pond.params.put_bool("DoToggleResetStock", True)
   else:
-    params.put_bool("DoToggleReset", True)
+    the_pond.params.put_bool("DoToggleReset", True)
 
-
-async def sign_out_of_tailscale(the_pond):
-  if not tailscale.is_installed():
-    return True
-
-  await tailscale.cancel_login(the_pond)
-  process = await asyncio.create_subprocess_exec(*tailscale.get_command("logout"))
-  return await process.wait() == 0
+  the_pond.params.put_bool("DoReboot", True)
 
 
 def find_openpilot_root(extract_path):
@@ -256,12 +303,24 @@ async def restore_frogpilot_backup(the_pond, backup_path):
     shutil.rmtree(extract_path, ignore_errors=True)
     extract_path.mkdir(parents=True)
 
-    if shutil.disk_usage(extract_path.parent).free / 4 <= backup_path.stat().st_size:
+    backup_size = await asyncio.to_thread(get_backup_size, backup_path)
+
+    if shutil.disk_usage(extract_path.parent).free / 4 <= backup_size:
       raise RuntimeError("Not enough space to restore")
 
-    await utilities.run_heavy_process(the_pond, ["tar", "--use-compress-program=zstd", "-xf", str(backup_path), "-C", str(extract_path)])
+    if backup_path.is_dir():
+      source_path = backup_path
+    else:
+      if backup_path.name.endswith(".tar.gz"):
+        compression = "gzip"
+      else:
+        compression = "zstd"
 
-    source_root = await asyncio.to_thread(find_openpilot_root, extract_path)
+      await utilities.run_heavy_process(the_pond, ["tar", f"--use-compress-program={compression}", "-xpf", str(backup_path), "-C", str(extract_path)])
+
+      source_path = extract_path
+
+    source_root = await asyncio.to_thread(find_openpilot_root, source_path)
     if source_root is None:
       raise RuntimeError("Not a FrogPilot backup")
 
@@ -334,26 +393,30 @@ async def delete_frogpilot_backups(request):
   if job is not None and job["state"] == "running":
     raise web.HTTPConflict(text="busy")
   for path in frogpilot_paths.FROGPILOT_BACKUPS.glob("*"):
-    if path.is_file():
-      path.unlink()
+    await asyncio.to_thread(delete_backup, path)
   return web.Response(status=204)
 
 
 @routes.delete("/api/frogpilot_backups/{name}")
 async def delete_frogpilot_backup(request):
-  utilities.get_file(frogpilot_paths.FROGPILOT_BACKUPS, f"{request.match_info['name']}{BACKUP_EXTENSION}").unlink()
+  await asyncio.to_thread(delete_backup, get_frogpilot_backup(request.match_info["name"]))
   return web.Response(status=204)
 
 
 @routes.get("/api/frogpilot_backups")
 async def get_frogpilot_backups(request):
-  backups = await asyncio.to_thread(list_backups, frogpilot_paths.FROGPILOT_BACKUPS, f"*{BACKUP_EXTENSION}")
+  backups = await asyncio.to_thread(list_backups, frogpilot_paths.FROGPILOT_BACKUPS)
   return web.json_response({"backups": backups, "job": utilities.get_job(request.app[utilities.THE_POND], "frogpilot_backup")})
 
 
 @routes.get("/api/frogpilot_backups/{name}/download")
 async def download_frogpilot_backup(request):
-  path = utilities.get_file(frogpilot_paths.FROGPILOT_BACKUPS, f"{request.match_info['name']}{BACKUP_EXTENSION}")
+  path = get_frogpilot_backup(request.match_info["name"])
+
+  if path.is_dir():
+    command = ["tar", "--use-compress-program=zstd", "-cf", "-", "-C", str(path.parent), path.name]
+    return await utilities.stream_process(request, command, f"{path.name}{BACKUP_EXTENSION}")
+
   return web.FileResponse(path, headers={"Content-Disposition": f'attachment; filename="{path.name}"'})
 
 
@@ -370,7 +433,7 @@ async def import_frogpilot_backup(request):
 @routes.post("/api/frogpilot_backups/{name}/restore")
 async def restore_frogpilot_backup_route(request):
   the_pond = request.app[utilities.THE_POND]
-  path = utilities.get_file(frogpilot_paths.FROGPILOT_BACKUPS, f"{request.match_info['name']}{BACKUP_EXTENSION}")
+  path = get_frogpilot_backup(request.match_info["name"])
   if the_pond.sm["deviceState"].started:
     raise web.HTTPConflict(text="car_on")
 
@@ -380,15 +443,13 @@ async def restore_frogpilot_backup_route(request):
 
 @routes.post("/api/settings_backups")
 async def create_settings_backup_route(request):
+  params = request.app[utilities.THE_POND].params
   name = get_backup_name((await utilities.read_json(request)).get("name"))
   if (frogpilot_paths.TOGGLE_BACKUPS / name).exists():
     raise web.HTTPConflict(text="name_in_use")
 
-  in_progress_destination = frogpilot_paths.TOGGLE_BACKUPS / f"{name}{frogpilot_variables.IN_PROGRESS_BACKUP_SUFFIX}"
-  shutil.rmtree(in_progress_destination, ignore_errors=True)
-  in_progress_destination.mkdir(parents=True)
-  await asyncio.to_thread(frogpilot_functions.backup_settings, in_progress_destination)
-  in_progress_destination.rename(frogpilot_paths.TOGGLE_BACKUPS / name)
+  frogpilot_paths.TOGGLE_BACKUPS.mkdir(parents=True, exist_ok=True)
+  await asyncio.to_thread(frogpilot_backups.create_settings_backup, params, name)
   return web.Response(status=204)
 
 
@@ -407,7 +468,7 @@ async def delete_settings_backup(request):
 
 @routes.get("/api/settings_backups")
 async def get_settings_backups(request):
-  return web.json_response(await asyncio.to_thread(list_backups, frogpilot_paths.TOGGLE_BACKUPS, "*"))
+  return web.json_response(await asyncio.to_thread(list_backups, frogpilot_paths.TOGGLE_BACKUPS))
 
 
 @routes.get("/api/settings_backups/{name}/changes")
@@ -421,12 +482,10 @@ async def get_settings_backup_changes(request):
 async def download_settings_backup(request):
   path = get_settings_backup(request.match_info["name"])
 
-  backup_keys = frogpilot_utilities.settings_backup_keys()
-
   archive = io.BytesIO()
   with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as backup_zip:
     for file in sorted(path.iterdir()):
-      if file.is_file() and file.name in backup_keys and file.name not in frogpilot_variables.SECRET_KEYS:
+      if file.is_file() and file.name in frogpilot_variables.SETTINGS_BACKUP_KEYS and file.name not in frogpilot_variables.SECRET_KEYS:
         backup_zip.write(file, file.name)
 
   return web.Response(body=archive.getvalue(), content_type="application/zip",
@@ -468,6 +527,11 @@ async def restore_settings_backup_route(request):
   return web.Response(status=204)
 
 
+@routes.get("/api/settings/reset")
+async def reset_consequences_route(request):
+  return web.json_response(RESET_CONSEQUENCES)
+
+
 @routes.post("/api/settings/reset")
 async def reset_settings_route(request):
   the_pond = request.app[utilities.THE_POND]
@@ -477,11 +541,5 @@ async def reset_settings_route(request):
   if the_pond.sm["deviceState"].started:
     raise web.HTTPConflict(text="car_on")
 
-  if not await sign_out_of_tailscale(the_pond):
-    raise web.HTTPInternalServerError(text="tailscale_sign_out_failed")
-
-  await asyncio.to_thread(reset_settings, stock)
-  the_pond.send_request("updateToggles")
-
-  the_pond.params.put_bool("DoReboot", True)
+  await reset_settings(the_pond, stock)
   return web.Response(status=204)

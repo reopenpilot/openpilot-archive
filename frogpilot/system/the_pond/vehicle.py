@@ -96,8 +96,9 @@ async def apply_secoc_key(request):
     if key["name"] == name:
       the_pond.params.put("SecOCKey", key["value"])
 
-      if frogpilot_paths.SECOC_KEY_PATH.is_file():
-        frogpilot_paths.SECOC_KEY_PATH.write_text(key["value"])
+      cache_key_path = frogpilot_paths.PARAMS_CACHE_PATH / "SecOCKey"
+      if cache_key_path.is_file():
+        cache_key_path.write_text(key["value"])
       return web.json_response({"restart_required": the_pond.sm["deviceState"].started})
 
   raise web.HTTPNotFound(text="not_found")

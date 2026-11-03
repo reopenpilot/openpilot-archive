@@ -195,20 +195,15 @@ def get_car(logcan, sendcan, experimental_long_allowed, params, num_pandas, frog
   candidate, fingerprints, vin, car_fw, source, exact_match = fingerprint(logcan, sendcan, num_pandas)
 
   # FrogPilot variables
-  if frogpilot_toggles.force_fingerprint and frogpilot_toggles.car_model in interfaces:
-    candidate = frogpilot_toggles.car_model
+  car_model = params.get("CarModel", encoding="utf-8")
+
+  if (candidate is None or frogpilot_toggles.force_fingerprint) and car_model in interfaces:
+    candidate = car_model
   elif candidate is None:
     cloudlog.event("car doesn't match any fingerprints", fingerprints=repr(fingerprints), error=True)
     candidate = "MOCK"
-
-    # FrogPilot variables
-    previous_CP_bytes = params.get("CarParamsPersistent")
-    if previous_CP_bytes and vin != VIN_UNKNOWN:
-      with car.CarParams.from_bytes(previous_CP_bytes) as previous_CP:
-        if previous_CP.carVin == vin and previous_CP.carFingerprint in interfaces:
-          candidate = previous_CP.carFingerprint
   else:
-    if params.get("CarModel", encoding="utf-8") != candidate:
+    if car_model != candidate:
       params.remove("CarModelName")
 
     car_make = candidate.split('_')[0]

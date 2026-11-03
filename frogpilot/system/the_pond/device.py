@@ -3,7 +3,6 @@ import json
 import time
 
 from aiohttp import web
-from pathlib import Path
 
 from openpilot.common.basedir import BASEDIR
 from openpilot.selfdrive.controls.lib.alertmanager import OFFROAD_ALERTS
@@ -18,12 +17,13 @@ routes = web.RouteTableDef()
 
 def get_storage_usage():
   return {
-    "dashcam": {Path(log_root).name: frogpilot_utilities.get_directory_size(log_root) for log_root in frogpilot_utilities.get_log_roots()},
+    "dashcam": {log_root.name: frogpilot_utilities.get_directory_size(log_root) for log_root in frogpilot_paths.LOG_ROOTS},
     "frogpilot_backups": frogpilot_utilities.get_directory_size(frogpilot_paths.FROGPILOT_BACKUPS),
     "maps": frogpilot_utilities.get_directory_size(frogpilot_paths.MAPS_PATH),
     "models": frogpilot_utilities.get_directory_size(frogpilot_paths.MODELS_PATH),
     "screen_recordings": frogpilot_utilities.get_directory_size(frogpilot_paths.SCREEN_RECORDINGS_PATH),
     "software": frogpilot_utilities.get_directory_size(BASEDIR),
+    "speed_limit_captures": frogpilot_utilities.get_directory_size(frogpilot_paths.SPEED_LIMIT_CAPTURES_PATH),
     "the_pond": frogpilot_utilities.get_directory_size(frogpilot_paths.THE_POND_PATH),
     "themes": frogpilot_utilities.get_directory_size(frogpilot_paths.THEME_SAVE_PATH),
   }

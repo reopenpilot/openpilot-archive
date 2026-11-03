@@ -4,12 +4,14 @@
 const P = window.Pond;
 
 const KEYS = {
+  amap: { label: "Amap key", name: "Amap key", placeholder: "Your Web Service key", service: "Amap", title: "Amap key" },
   mapbox_public: { label: "public key", name: "Mapbox public key", placeholder: "pk.…", service: "Mapbox", title: "Mapbox public key" },
   mapbox_secret: { label: "secret key", name: "Mapbox secret key", placeholder: "sk.…", service: "Mapbox", title: "Mapbox secret key" },
   weather: { label: "weather key", name: "Weather key", placeholder: "32 letters and numbers", service: "OpenWeatherMap", title: "weather key" }
 };
 
 const LOST_EFFECTS = {
+  amap: "Searching for places with Amap stops working until you add a key again.",
   mapbox_public: "Navigation is locked and openpilot stops getting speed limits from Mapbox until you add a public key again.",
   mapbox_secret: "Navigation is locked and the map stops showing on your driving screen until you add a secret key again.",
   weather: "FrogPilot goes back to shared weather, updated every 15 minutes."
@@ -18,16 +20,55 @@ const LOST_EFFECTS = {
 const MAPBOX_SCOPES = ["DATASETS:WRITE", "MAP:WRITE", "STYLES:LIST", "STYLES:WRITE", "TOKENS:READ", "TOKENS:WRITE", "UPLOADS:WRITE", "USER:READ"];
 
 const SAVE_MESSAGES = {
-  mapbox_public: { invalid_key: "That doesn't look like a Mapbox key. Copy the whole key and try again", wrong_key_type: "That's your secret key. Enter your public key here" },
-  mapbox_secret: { invalid_key: "That doesn't look like a Mapbox key. Copy the whole key and try again", wrong_key_type: "That's your public key. Enter your secret key here" },
-  weather: { invalid_key: "That doesn't look like a weather key. It's up to 32 letters and numbers" }
+  mapbox_public: {
+    empty_key: "Enter your public key first",
+    invalid_key: "That doesn't look like a Mapbox key. Copy the whole key and try again",
+    wrong_key_type: "That's your secret key. Enter your public key here"
+  },
+  mapbox_secret: {
+    empty_key: "Enter your secret key first",
+    invalid_key: "That doesn't look like a Mapbox key. Copy the whole key and try again",
+    wrong_key_type: "That's your public key. Enter your secret key here"
+  },
+  weather: { empty_key: "Enter your weather key first", invalid_key: "That doesn't look like a weather key. It's up to 32 letters and numbers" }
 };
+
+const MAP_REBOOT_DETAIL = `The driving screen reads your secret key when the device starts. Reboot from the <a class="link" href="/device">Device</a> page.`;
+
+P.mapRebootNotice = `<div class="notice">${P.ic("refresh")}<span><b>Reboot for the map to appear.</b> ${MAP_REBOOT_DETAIL}</span></div>`;
 
 function link(href, text) {
   return `<a class="link" href="${href}" target="_blank" rel="noopener">${text}</a>`;
 }
 
 const GUIDES = {
+  amap: {
+    title: "Get your Amap key",
+    intro: "Your Amap key lets the device search for places with Amap on the Navigation page while <b>Destination Search Provider</b> is set to Amap. " +
+           "It has to be a Web Service key. Routes and the map on your driving screen still come from Mapbox, so navigation needs your Mapbox keys too.",
+    sections: mode => [
+      ["On lbs.amap.com", [
+        `Open ${link("https://console.amap.com/", "Amap's console")} and log in, or register a developer account first.`,
+        "Open <b>应用管理</b> (App Management), choose <b>创建新应用</b> (Create New App), and fill in the form.",
+        "Under <b>我的应用</b> (My Apps), choose <b>添加 Key</b> (Add Key) for your app, and pick <b>Web 服务</b> (Web Service) as the " +
+        "service platform.",
+        "Copy the key it creates."
+      ]],
+      ["In The Pond", [
+        `On this page, choose <b>${mode}…</b> on the <b>Web Service key</b> row, paste the key, and choose <b>Save key</b>.`,
+        "Choose <b>Test</b> on the same row."
+      ]]
+    ],
+    looks: "It's one line of letters and numbers.",
+    sample: "3f2a9c7e1b4d8a6f0c5e9b2d7a4f1c8e",
+    works: "You see <b>Your Amap key works</b>. Searches on the Navigation page then go through Amap.",
+    problems: [
+      ["This isn't a Web Service key", "The key was made for another platform, such as <b>Web 端 (JS API)</b>. Add a new key and pick " +
+                                       "<b>Web 服务</b> as its service platform."],
+      ["Amap didn't accept this key", "The key was copied wrong or has expired. Copy it again from <b>我的应用</b> (My Apps)."],
+      ["Couldn't reach Amap", "The device isn't online. Connect it to Wi-Fi and choose <b>Test</b> again."]
+    ]
+  },
   mapbox_public: {
     title: "Get your Mapbox public key",
     intro: "Your public key lets you search for places and preview routes on the Navigation page, and lets FrogPilot get speed limits from Mapbox. " +
@@ -120,7 +161,13 @@ function testMessage(kind, result) {
     return `OpenWeatherMap didn't accept this key. Your OpenWeatherMap account needs the One Call by Call subscription. A new key or subscription can take up to about 2 hours to start working, so choose Test again later. Until then, FrogPilot uses shared weather, updated every 15 minutes.`;
   }
   if (result.result === "invalid") {
-    return "Mapbox didn't accept this key. Check it and add it again.";
+    return `${service} didn't accept this key. Check it and add it again.`;
+  }
+  if (result.result === "wrong_key_type") {
+    return "This isn't a Web Service key. Add a new key in Amap's console at lbs.amap.com and pick Web 服务 (Web Service) as its service platform.";
+  }
+  if (result.result === "failed" && kind === "amap") {
+    return "Amap refused the request.";
   }
   if (result.result === "rate_limited") {
     return `${service}'s request limit was reached. Try again later.`;
@@ -135,16 +182,32 @@ function testMessage(kind, result) {
 }
 
 async function saveKey(kind, key) {
-  let result;
-  try {
-    result = await P.request("PUT", `/api/keys/${kind}`, { key });
-  } catch (error) {
-    P.fail(error, `Couldn't save your ${KEYS[kind].label}`, SAVE_MESSAGES[kind]);
-    return false;
+  if (!key) {
+    throw new P.PondError(400, "empty_key");
   }
+
+  const result = await P.request("PUT", `/api/keys/${kind}`, { key });
   P.refresh();
   P.toast(`${KEYS[kind].name} saved`, result.reboot_required ? "It takes effect after the device reboots" : "");
-  return true;
+}
+
+async function saveWeather(form) {
+  const input = form.key;
+  const message = form.querySelector("[data-weather-error]");
+  try {
+    await saveKey("weather", input.value.trim());
+  } catch (error) {
+    if (!(error instanceof P.PondError)) {
+      throw error;
+    }
+
+    if (!error.handled) {
+      input.setAttribute("aria-invalid", "true");
+      message.textContent = SAVE_MESSAGES.weather[error.code] || error.message;
+      message.hidden = false;
+      input.focus();
+    }
+  }
 }
 
 function keyRow(kind, label, value, mono = false) {
@@ -177,21 +240,18 @@ P.act("keys-help", button => {
   });
 });
 
-P.act("keys-edit", async button => {
+P.act("keys-edit", button => {
   const kind = button.dataset.kind;
   const key = KEYS[kind];
-  const dialog = await P.dialog({
+  P.dialog({
     icon: "keys", title: `${button.dataset.mode} your ${key.title}`,
     body: `<label class="field"><span>${key.name}</span><input class="input mono" data-key autocomplete="off" spellcheck="false" placeholder="${key.placeholder}"></label>`,
-    confirm: "Save key"
+    confirm: "Save key",
+    errors: SAVE_MESSAGES[kind],
+    onConfirm: dialog => {
+      return saveKey(kind, dialog.querySelector("[data-key]").value.trim());
+    }
   });
-  if (!dialog) {
-    return;
-  }
-  const value = dialog.querySelector("[data-key]").value.trim();
-  if (value) {
-    saveKey(kind, value);
-  }
 });
 
 function showTestResult(button, works, title, detail) {
@@ -217,7 +277,12 @@ P.act("keys-test", async button => {
   if (result.result === "valid") {
     showTestResult(button, true, `Your ${KEYS[kind].label} works.`, kind === "weather" ? "It's valid for One Call API 4.0." : "");
   } else {
-    showTestResult(button, false, `Your ${KEYS[kind].label} didn't work.`, `${P.esc(testMessage(kind, result))}${result.message ? `<span class="keys-says">OpenWeatherMap says: "${P.esc(result.message)}"</span>` : ""}`);
+    let says = "";
+    if (result.message) {
+      says = `<span class="keys-says">${KEYS[kind].service} says: "${P.esc(result.message)}"</span>`;
+    }
+
+    showTestResult(button, false, `Your ${KEYS[kind].label} didn't work.`, `${P.esc(testMessage(kind, result))}${says}`);
   }
 });
 
@@ -253,27 +318,58 @@ P.page("keys", {
       publicKey = `${P.esc(k.mapbox_public.slice(0, 8))}…${P.esc(k.mapbox_public.slice(-4))}`;
     }
 
+    let weatherSaved = "";
+    if (k.weather) {
+      weatherSaved = `<small class="hint" id="keys-weather-saved">Saved, hidden. Enter a new key to replace it.</small>`;
+    }
+
     let secretKey = "Not set";
     if (k.mapbox_secret) {
       secretKey = "Saved, hidden";
     }
 
+    let amapPanel = "";
+    let publicKeyLabel = "Public key, for searching places, route previews, and speed limits";
+    if (k.amap_search) {
+      let amapKey = "Not set";
+      if (k.amap) {
+        amapKey = "Saved, hidden";
+      }
+
+      amapPanel = `<section class="panel"><div class="panel-head"><h2>Amap</h2></div>
+          <div class="panel-body keys-body">
+            <div class="keys-rows">${keyRow("amap", "Web Service key, for searching places", amapKey)}</div>
+          </div></section>`;
+      publicKeyLabel = "Public key, for route previews and speed limits";
+    }
+
+    let rebootNotice = "";
+    if (k.map_reboot_required) {
+      rebootNotice = P.mapRebootNotice;
+    }
+
     return {
       body: `
       <div class="two-col">
+        ${amapPanel}
         <section class="panel"><div class="panel-head"><h2>Mapbox</h2></div>
           <div class="panel-body keys-body">
             <div><div class="keys-usage"><b>Requests this month</b><span class="num"><b>${k.mapbox_requests.toLocaleString("en-US")}</b> <span class="muted">of ${k.mapbox_request_limit.toLocaleString("en-US")}</span></span></div>
               <div class="progress keys-progress" role="img" aria-label="${Math.round(share)}% of this month's requests used"><i data-w="${share}"></i></div></div>
             <div class="keys-rows">
-              ${keyRow("mapbox_public", "Public key, for searching places and speed limits", publicKey, Boolean(k.mapbox_public))}
+              ${keyRow("mapbox_public", publicKeyLabel, publicKey, Boolean(k.mapbox_public))}
               ${keyRow("mapbox_secret", "Secret key, for routes and the map on the driving screen", secretKey)}
             </div>
+            ${rebootNotice}
           </div></section>
         <section class="panel"><div class="panel-head"><h2>Weather</h2></div>
           <div class="panel-body"><form class="form-grid" data-weather>
             <p class="muted">Weather updates every 15 minutes. Add your own OpenWeatherMap key to update it every minute.</p>
-            <label class="field"><span>Weather key</span><input class="input mono" name="key" autocomplete="off" spellcheck="false" placeholder="${k.weather ? "Saved, hidden. Enter a new key to replace it" : KEYS.weather.placeholder}"></label>
+            <label class="field"><span>Weather key</span>
+              <input class="input mono" name="key" autocomplete="off" spellcheck="false" placeholder="${KEYS.weather.placeholder}"
+                aria-describedby="keys-weather-saved keys-weather-error">
+              ${weatherSaved}
+              <small class="hint keys-error" id="keys-weather-error" role="alert" data-weather-error hidden></small></label>
             <div class="keys-buttons">
               <button class="btn btn-primary btn-small" type="submit">Save key</button>
               ${k.weather ? `<button class="btn btn-quiet btn-small" type="button" data-act="keys-test" data-kind="weather">Test</button>
@@ -284,15 +380,7 @@ P.page("keys", {
       </div>`,
       mount: root => root.querySelector("[data-weather]").addEventListener("submit", e => {
         e.preventDefault();
-        const input = e.currentTarget.key;
-        const value = input.value.trim();
-        if (!value) {
-          input.setAttribute("aria-invalid", "true");
-          P.toast("Enter your weather key first", "", "alert");
-          return;
-        }
-        input.removeAttribute("aria-invalid");
-        saveKey("weather", value);
+        saveWeather(e.currentTarget);
       })
     };
   }

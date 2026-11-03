@@ -8,12 +8,16 @@ from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
 from openpilot.frogpilot.system.the_pond import utilities
 
 INVALID_KEY_STATUSES = {
+  "amap": (),
   "mapbox_public": (401,),
   "mapbox_secret": (401,),
   "weather": (401, 403),
 }
 
+JSON_TEST_KINDS = ("amap", "weather")
+
 KEYS = {
+  "amap": "AMapKey1",
   "mapbox_public": "MapboxPublicKey",
   "mapbox_secret": "MapboxSecretKey",
   "weather": "WeatherToken",
@@ -21,12 +25,28 @@ KEYS = {
 
 TEST_TIMEOUT = 15
 TEST_URLS = {
+  "amap": frogpilot_variables.AMAP_KEY_TEST_URL,
   "mapbox_public": frogpilot_variables.MAPBOX_PUBLIC_KEY_TEST_URL,
   "mapbox_secret": frogpilot_variables.MAPBOX_SECRET_KEY_TEST_URL,
   "weather": frogpilot_variables.WEATHER_KEY_TEST_URL,
 }
 
 routes = web.RouteTableDef()
+
+def amap_test_result(data, status):
+  if not data:
+    return {"result": "unreachable", "status": 0}
+
+  if data["status"] == "1":
+    result = "valid"
+  elif data["infocode"] == frogpilot_variables.AMAP_INVALID_KEY_CODE:
+    result = "invalid"
+  elif data["infocode"] == frogpilot_variables.AMAP_WRONG_KEY_TYPE_CODE:
+    result = "wrong_key_type"
+  else:
+    result = "failed"
+  return {"message": data["info"], "result": result, "status": status}
+
 
 def get_kind(request):
   kind = request.match_info["kind"]
@@ -55,6 +75,18 @@ def is_valid_weather(data):
   return isinstance(weather, list) and len(weather) > 0 and isinstance(weather[0], dict) and is_valid_integer(weather[0].get("id"))
 
 
+def navigation_keys(the_pond):
+  params = the_pond.params
+  mapbox_secret = params.get("MapboxSecretKey")
+
+  return {
+    "amap_search": params.get_int("SearchInput") == frogpilot_variables.AMAP_SEARCH_INPUT,
+    "map_reboot_required": bool(mapbox_secret) and mapbox_secret != the_pond.mapbox_secret_at_start,
+    "mapbox_public": params.get("MapboxPublicKey", encoding="utf-8") or None,
+    "mapbox_secret": bool(mapbox_secret),
+  }
+
+
 @routes.delete("/api/keys/{kind}")
 async def delete_key(request):
   request.app[utilities.THE_POND].params.remove(KEYS[get_kind(request)])
@@ -63,7 +95,8 @@ async def delete_key(request):
 
 @routes.get("/api/keys")
 async def get_keys(request):
-  params = request.app[utilities.THE_POND].params
+  the_pond = request.app[utilities.THE_POND]
+  params = the_pond.params
 
   now = datetime.datetime.now()
   mapbox_requests = json.loads(params.get("MapBoxRequests") or "{}")
@@ -73,10 +106,10 @@ async def get_keys(request):
     request_count = 0
 
   return web.json_response({
-    "mapbox_public": params.get("MapboxPublicKey", encoding="utf-8") or None,
+    **navigation_keys(the_pond),
+    "amap": bool(params.get("AMapKey1")),
     "mapbox_request_limit": frogpilot_variables.MAPBOX_MONTHLY_REQUEST_LIMIT,
     "mapbox_requests": request_count,
-    "mapbox_secret": bool(params.get("MapboxSecretKey")),
     "weather": bool(params.get("WeatherToken")),
   })
 
@@ -94,7 +127,7 @@ async def set_key(request):
   if kind == "weather":
     if len(key) > frogpilot_variables.WEATHER_KEY_MAX_LENGTH:
       raise web.HTTPBadRequest(text="invalid_key")
-  else:
+  elif kind != "amap":
     if kind == "mapbox_public":
       prefix = frogpilot_variables.MAPBOX_PUBLIC_KEY_PREFIX
       other_prefix = frogpilot_variables.MAPBOX_SECRET_KEY_PREFIX
@@ -133,9 +166,15 @@ async def test_key(request):
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=TEST_TIMEOUT)) as session:
       async with session.get(TEST_URLS[kind].format(key), allow_redirects=False) as response:
         status = response.status
-        data = await response.json(content_type=None) if kind == "weather" and (200 <= status < 300 or status in INVALID_KEY_STATUSES[kind]) else None
+
+        data = None
+        if kind in JSON_TEST_KINDS and (200 <= status < 300 or status in INVALID_KEY_STATUSES[kind]):
+          data = await response.json(content_type=None)
   except (aiohttp.ClientError, TimeoutError, ValueError):
     return web.json_response({"result": "unreachable", "status": 0})
+
+  if kind == "amap" and status < 400:
+    return web.json_response(amap_test_result(data, status))
 
   message = data.get("message") if isinstance(data, dict) and status in INVALID_KEY_STATUSES[kind] else None
 

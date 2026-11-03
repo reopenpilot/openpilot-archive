@@ -16,6 +16,8 @@ from openpilot.common.numpy_fast import clip
 from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.car import apply_hysteresis, gen_empty_fingerprint, scale_rot_inertia, scale_tire_stiffness, STD_CARGO_KG
 from openpilot.selfdrive.car.chrysler.values import CAR as ChryslerCAR, ChryslerFrogPilotFlags
+from openpilot.selfdrive.car.ford.fordcan import CanBus as FordCanBus
+from openpilot.selfdrive.car.ford.values import CAR as FordCAR, FordFlags
 from openpilot.selfdrive.car.gm.values import CAR as GMCAR
 from openpilot.selfdrive.car.honda.values import CAR as HondaCAR, HONDA_BOSCH
 from openpilot.selfdrive.car.hyundai.hyundaicanfd import CanBus
@@ -177,6 +179,9 @@ class CarInterfaceBase(ABC):
           if 570 not in fingerprint[0]:
             fp_ret.fpFlags |= ChryslerFrogPilotFlags.RAM_HD_ALT_BUTTONS.value
 
+      elif platform in FordCAR:
+        fp_ret.hasDashboardSpeedLimit = bool(CP.flags & FordFlags.CANFD) and 0x3CD in fingerprint[FordCanBus(CP).camera]
+
       elif platform in GMCAR:
         fp_ret.canUsePedal = True
 
@@ -199,6 +204,8 @@ class CarInterfaceBase(ABC):
           if 0x1fa in fingerprint[speed_limit_bus]:
             fp_ret.fpFlags |= HyundaiFrogPilotFlags.NAV_MSG.value
 
+          fp_ret.hasDashboardSpeedLimit = 0x1fa in fingerprint[speed_limit_bus]
+
           if frogpilot_toggles.taco_tune_hacks:
             fp_ret.safetyConfigs[-1].safetyParam |= Panda.FLAG_HYUNDAI_TACO_TUNE_HACK
         else:
@@ -211,6 +218,13 @@ class CarInterfaceBase(ABC):
 
           if 0x544 in fingerprint[0]:
             fp_ret.fpFlags |= HyundaiFrogPilotFlags.NAV_MSG.value
+
+          fp_ret.hasDashboardSpeedLimit = 0x53E in fingerprint[2] or 0x544 in fingerprint[0]
+
+        lkas_allowed_for_aol = candidate in CANFD_CAR or 0x391 in fingerprint[0]
+        lkas_required_for_aol = candidate in CANFD_CAR and not CP.openpilotLongitudinalControl
+        if lkas_allowed_for_aol and frogpilot_toggles.always_on_lateral and (frogpilot_toggles.always_on_lateral_lkas_selected or lkas_required_for_aol):
+          fp_ret.safetyConfigs[-1].safetyParam |= Panda.FLAG_HYUNDAI_ALWAYS_ON_LATERAL_LKAS
 
       elif platform in SubaruCAR:
         if CP.autoResumeSng and frogpilot_toggles.subaru_sng:
@@ -228,6 +242,7 @@ class CarInterfaceBase(ABC):
 
         fp_ret.canUsePedal = not CP.autoResumeSng
         fp_ret.canUseSDSU = not CP.enableDsu and candidate not in UNSUPPORTED_DSU_CAR and candidate not in TSS2_CAR
+        fp_ret.hasDashboardSpeedLimit = 0x489 in fingerprint[2]
 
       fp_ret.openpilotLongitudinalControlDisabled = frogpilot_toggles.disable_openpilot_long
 
