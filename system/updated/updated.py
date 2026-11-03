@@ -179,7 +179,7 @@ def init_overlay() -> None:
   cloudlog.info(f"git diff output:\n{git_diff}")
 
 
-def finalize_update() -> None:
+def finalize_update(update_progress) -> None:
   """Take the current OverlayFS merged view and finalize a copy outside of
   OverlayFS, ready to be swapped-in at BASEDIR. Copy using shutil.copytree"""
 
@@ -190,7 +190,7 @@ def finalize_update() -> None:
   # Copy the merged overlay view and set the update ready flag
   if os.path.exists(FINALIZED):
     shutil.rmtree(FINALIZED)
-  shutil.copytree(OVERLAY_MERGED, FINALIZED, symlinks=True)
+  update_progress.copy_tree(OVERLAY_MERGED, FINALIZED)
 
   run(["git", "reset", "--hard"], FINALIZED)
   run(["git", "submodule", "foreach", "--recursive", "git", "reset", "--hard"], FINALIZED)
@@ -203,7 +203,7 @@ def finalize_update() -> None:
   cloudlog.info("done finalizing overlay")
 
 
-def handle_agnos_update() -> None:
+def handle_agnos_update(update_progress) -> None:
   from openpilot.system.hardware.tici.agnos import flash_agnos_update, get_target_slot_number
 
   cur_version = HARDWARE.get_os_version()
@@ -213,6 +213,11 @@ def handle_agnos_update() -> None:
   cloudlog.info(f"AGNOS version check: {cur_version} vs {updated_version}")
   if cur_version == updated_version:
     return
+
+  # FrogPilot variables
+  if HARDWARE.get_device_type() not in ("tici", "tizi"):
+    set_offroad_alert("Offroad_UnsupportedDevice", True)
+    raise RuntimeError(f"AGNOS {updated_version} is not for this device")
 
   # prevent an openpilot getting swapped in with a mismatched or partially downloaded agnos
   set_consistent_flag(False)
@@ -227,8 +232,10 @@ def handle_agnos_update() -> None:
   if HARDWARE.get_device_type() in ("tici", "tizi") and os.path.exists(c3_manifest_path):
     manifest_path = c3_manifest_path
 
+  update_progress.start_agnos(manifest_path)
+
   target_slot_number = get_target_slot_number()
-  flash_agnos_update(manifest_path, target_slot_number, cloudlog)
+  flash_agnos_update(manifest_path, target_slot_number, cloudlog, report_progress=update_progress.report_agnos)
   set_offroad_alert("Offroad_NeosUpdate", False)
 
 
@@ -375,6 +382,9 @@ class Updater:
   def fetch_update(self) -> None:
     cloudlog.info("attempting git fetch inside staging overlay")
 
+    # FrogPilot variables
+    update_progress = frogpilot_utilities.UpdateProgress(self.params)
+
     self.params.put("UpdaterState", "downloading...")
 
     # TODO: cleanly interrupt this and invalidate old update
@@ -384,7 +394,7 @@ class Updater:
     setup_git_options(OVERLAY_MERGED)
 
     branch = self.target_branch
-    git_fetch_output = run(["git", "fetch", "origin", branch], OVERLAY_MERGED)
+    git_fetch_output = frogpilot_utilities.run_git_with_progress(["git", "fetch", "--progress", "origin", branch], OVERLAY_MERGED, update_progress)
     cloudlog.info("git fetch success: %s", git_fetch_output)
 
     cloudlog.info("git reset in progress")
@@ -401,11 +411,11 @@ class Updater:
 
     # TODO: show agnos download progress
     if AGNOS:
-      handle_agnos_update()
+      handle_agnos_update(update_progress)
 
     # Create the finalized, ready-to-swap update
     self.params.put("UpdaterState", "finalizing update...")
-    finalize_update()
+    finalize_update(update_progress)
     cloudlog.info("finalize success!")
 
     # FrogPilot variables
@@ -439,6 +449,9 @@ def main() -> None:
     # set initial state
     params.put("UpdaterState", "idle")
 
+    # FrogPilot variables
+    frogpilot_utilities.clear_update_progress(params)
+
     # Run the update loop
     first_run = True
 
@@ -453,9 +466,7 @@ def main() -> None:
       # FrogPilot variables
       frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles()
 
-      manual_update_requested = frogpilot_variables.params_memory.get_bool("ManualUpdateInitiated")
-      if manual_update_requested:
-        frogpilot_variables.params_memory.put_bool("ManualUpdateInitiated", False)
+      manual_update_requested = wait_helper.user_request != UserRequest.NONE
 
       # Attempt an update
       exception = None
@@ -515,7 +526,6 @@ def main() -> None:
         OVERLAY_INIT.unlink(missing_ok=True)
 
       try:
-        params.put("UpdaterState", "idle")
         update_successful = (update_failed_count == 0)
         updater.set_params(update_successful, update_failed_count, exception)
       except Exception:
@@ -525,8 +535,7 @@ def main() -> None:
       wait_helper.user_request = UserRequest.NONE
 
       # FrogPilot variables
-      if not frogpilot_variables.params_memory.get_bool("ManualUpdateInitiated"):
-        frogpilot_variables.params_memory.remove("ManualUpdateInitiated")
+      params.put("UpdaterState", "idle")
 
       wait_helper.sleep(None)
 

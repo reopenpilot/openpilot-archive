@@ -8,14 +8,19 @@ import time
 from aiohttp import web
 
 from openpilot.common.basedir import BASEDIR
+from openpilot.system.loggerd.config import SEGMENT_LENGTH
 
 from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
-from openpilot.frogpilot.system.the_pond import utilities
+from openpilot.frogpilot.system.the_pond import dashcam, utilities
 
 MAX_NAME_LENGTH = 64
 MAX_SHELL_IDLE_TIME = 300
 MAX_TMUX_CAPTURES = 4
 MAX_TMUX_TEXT_LENGTH = 1000
+
+REPORT_EDGE_TIME = 10
+REPORT_FILES = {"qcamera": dashcam.CAMERA_FILES["low"], "qlog": dashcam.LOG_FILES["qlog"], "rlog": dashcam.LOG_FILES["rlog"]}
+REPORT_TYPES = ("full", "quick")
 
 TMUX_KEYS = {"Down", "Enter", "Escape", "Left", "Right", "Tab", "Up", *(f"C-{letter}" for letter in string.ascii_lowercase)}
 TMUX_LOG_EXTENSION = ".log"
@@ -57,10 +62,10 @@ def check_issue_report_available(the_pond):
     raise web.HTTPNotFound(text="not_found")
 
 
-def get_issue_report_state():
-  if frogpilot_variables.params_memory.get("IssueReported") is None:
+def get_issue_report_state(frogpilot_process_state):
+  if not frogpilot_process_state.issueReport:
     return {"status": ""}
-  return {"status": "pending"}
+  return {"status": "", **json.loads(frogpilot_process_state.issueReport)}
 
 
 def get_log(request, directory):
@@ -72,11 +77,67 @@ def get_log(request, directory):
   return web.FileResponse(path, headers=headers)
 
 
+def get_marked_segments(segments, moment):
+  positions = [moment // SEGMENT_LENGTH]
+  offset = moment % SEGMENT_LENGTH
+
+  if offset <= REPORT_EDGE_TIME and positions[0] > 0:
+    positions.insert(0, positions[0] - 1)
+  if SEGMENT_LENGTH - offset <= REPORT_EDGE_TIME and positions[-1] + 1 < len(segments):
+    positions.append(positions[-1] + 1)
+
+  segment_numbers = list(segments)
+  return [segment_numbers[position] for position in positions]
+
+
+def get_report_files(segments, recording, report_type, moment):
+  finished = set(dashcam.finished_segments(segments, recording))
+
+  wanted = [("qlog", segment) for segment in segments]
+  if report_type == "full":
+    for segment in get_marked_segments(segments, moment):
+      wanted += [("qcamera", segment), ("rlog", segment)]
+
+  files = []
+  for kind, segment in wanted:
+    path = segments[segment] / REPORT_FILES[kind]
+    if segments[segment] in finished and path.is_file():
+      files.append({"kind": kind, "path": str(path), "segment": segment, "size_bytes": path.stat().st_size})
+  return files
+
+
 def get_report_issues():
   issues = list(frogpilot_variables.REPORT_ISSUES)
   if frogpilot_paths.ERROR_FILE_PATH.is_file():
     issues.insert(0, frogpilot_variables.REPORT_CRASH_ISSUE)
   return issues
+
+
+async def read_report_logs(the_pond, body):
+  route = body.get("route")
+  if not isinstance(route, str) or dashcam.ROUTE_PATTERN.match(route) is None:
+    raise web.HTTPBadRequest(text="invalid_route")
+
+  recording = dashcam.is_recording(the_pond, route)
+
+  segments = (await asyncio.to_thread(dashcam.get_routes, route)).get(route)
+  if segments is None:
+    raise web.HTTPBadRequest(text="invalid_route")
+
+  report_type = body.get("type")
+  if report_type not in REPORT_TYPES:
+    raise web.HTTPBadRequest(text="invalid_type")
+
+  moment = None
+  if report_type == "full":
+    moment = body.get("moment")
+    if type(moment) is not int or not 0 <= moment < len(segments) * SEGMENT_LENGTH:
+      raise web.HTTPBadRequest(text="invalid_moment")
+
+  files = await asyncio.to_thread(get_report_files, segments, recording, report_type, moment)
+  if not files:
+    raise web.HTTPConflict(text="no_logs")
+  return route, report_type, files
 
 
 @routes.delete("/api/error_logs")
@@ -108,6 +169,16 @@ async def get_issue_report(request):
   the_pond = request.app[utilities.THE_POND]
   check_issue_report_available(the_pond)
 
+  request_time = request.query.get("request_time", "0")
+  if not request_time.isdecimal():
+    raise web.HTTPBadRequest(text="invalid_request_time")
+
+  frogpilot_process_state = the_pond.sm["frogpilotProcessState"]
+
+  issue_report = get_issue_report_state(frogpilot_process_state)
+  if int(request_time) > frogpilot_process_state.issueReportRequestTime:
+    issue_report = {"status": "pending"}
+
   return web.json_response({
     "described_issues": frogpilot_variables.REPORT_DESCRIBED_ISSUES,
     "description_max_length": frogpilot_variables.REPORT_DESCRIPTION_MAX_LENGTH,
@@ -115,7 +186,7 @@ async def get_issue_report(request):
     "discord_user": the_pond.params.get("DiscordUsername", encoding="utf-8") or "",
     "discord_user_max_length": frogpilot_variables.REPORT_DISCORD_USER_MAX_LENGTH,
     "issues": get_report_issues(),
-    **get_issue_report_state(),
+    **issue_report,
   })
 
 
@@ -126,7 +197,7 @@ async def send_issue_report(request):
 
   if not frogpilot_utilities.is_online(the_pond.sm["deviceState"]):
     raise web.HTTPConflict(text="offline")
-  if get_issue_report_state()["status"] == "pending":
+  if get_issue_report_state(the_pond.sm["frogpilotProcessState"])["status"] in ("pending", "uploading"):
     raise web.HTTPConflict(text="pending")
 
   body = await utilities.read_json(request)
@@ -159,12 +230,39 @@ async def send_issue_report(request):
   if not discord_user or not discord_user.isprintable():
     raise web.HTTPBadRequest(text="invalid_discord_user")
 
-  report = {"DiscordUser": discord_user, "Issue": issue}
+  report = {"DiscordUser": discord_user, "Issue": issue, "MeteredConfirmed": body.get("metered_confirmed") is True}
+  if "route" in body:
+    route, report_type, files = await read_report_logs(the_pond, body)
+
+    logged_files = []
+    for file in files:
+      logged_files.append({"kind": file["kind"], "path": file["path"], "segment": file["segment"]})
+
+    report["Logs"] = {"files": logged_files, "type": report_type}
+    report["Route"] = route
 
   the_pond.params.put_nonblocking("DiscordUsername", discord_user)
 
-  frogpilot_variables.params_memory.put("IssueReported", json.dumps(report, separators=(",", ":")))
-  return web.Response(status=204)
+  request_time = the_pond.send_request("issueReport", json.dumps(report))
+  return web.json_response({"request_time": request_time})
+
+
+@routes.post("/api/issue_report/files")
+async def get_issue_report_files(request):
+  the_pond = request.app[utilities.THE_POND]
+  check_issue_report_available(the_pond)
+
+  _, _, files = await read_report_logs(the_pond, await utilities.read_json(request))
+
+  sizes = []
+  for file in files:
+    sizes.append({"kind": file["kind"], "segment": file["segment"], "size_bytes": file["size_bytes"]})
+
+  return web.json_response({
+    "files": sizes,
+    "metered": the_pond.sm["deviceState"].networkMetered,
+    "size_bytes": sum(file["size_bytes"] for file in files),
+  })
 
 
 @routes.get("/api/tmux")

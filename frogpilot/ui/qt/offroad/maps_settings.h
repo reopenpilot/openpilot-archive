@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "frogpilot/ui/qt/offroad/frogpilot_settings.h"
 #include "frogpilot/ui/qt/widgets/navigation_functions.h"
 
@@ -9,7 +7,7 @@ class FrogPilotMapsPanel : public FrogPilotListWidget {
   Q_OBJECT
 
 public:
-  explicit FrogPilotMapsPanel(FrogPilotSettingsWindow *parent);
+  explicit FrogPilotMapsPanel(FrogPilotSettingsWindow *parent, bool forceOpen = false);
 
 signals:
   void openSubPanel();
@@ -21,31 +19,34 @@ private:
   void cancelDownload();
   void refreshMapInfo();
   void startDownload();
-  void updateDownloadLabels(const std::string &osmDownloadProgress);
+  void updateDownloadLabels(const std::string &osmDownloadProgress, bool downloadingMaps);
+  void updateMapsSelected();
   void updateState(const UIState &s, const FrogPilotUIState &fs);
 
   bool cancellingDownload = false;
   bool forceOpenDescriptions = false;
   bool hasMapsSelected = false;
+  bool removingMaps = false;
   bool wasDownloadingMaps = false;
 
+  int initialDownloadedFiles = -1;
   int previousDownloadedFiles = 0;
 
-  ButtonControl *downloadMapsButton;
-  ButtonControl *removeMapsButton;
-  ButtonControl *resetMapdButton;
+  ButtonControl *downloadMapsButton = nullptr;
+  ButtonControl *removeMapsButton = nullptr;
+  ButtonControl *resetMapdButton = nullptr;
 
-  ButtonParamControl *preferredSchedule;
+  ButtonParamControl *preferredSchedule = nullptr;
 
-  FrogPilotButtonsControl *selectMaps;
+  FrogPilotButtonsControl *selectMaps = nullptr;
 
-  FrogPilotSettingsWindow *parent;
+  FrogPilotSettingsWindow *parent = nullptr;
 
-  LabelControl *downloadETA;
-  LabelControl *downloadStatus;
-  LabelControl *downloadTimeElapsed;
-  LabelControl *lastMapsDownload;
-  LabelControl *mapsSize;
+  LabelControl *downloadETA = nullptr;
+  LabelControl *downloadStatus = nullptr;
+  LabelControl *downloadTimeElapsed = nullptr;
+  LabelControl *lastMapsDownload = nullptr;
+  LabelControl *mapsSize = nullptr;
 
   std::vector<MapSelectionControl *> mapSelectionControls;
 

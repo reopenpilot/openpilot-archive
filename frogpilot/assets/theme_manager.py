@@ -51,13 +51,13 @@ class ThemeManager:
 
     for theme_subfolder_name, destination_folder_path in frogpilot_paths.DEFAULT_THEME_COMPONENTS.items():
       source_folder_path = world_frog_day_theme_path / theme_subfolder_name
-      frogpilot_utilities.delete_file(destination_folder_path, print_error=False)
+      frogpilot_utilities.delete_path(destination_folder_path)
       shutil.copytree(source_folder_path, destination_folder_path)
 
     steering_wheel_image_path = world_frog_day_theme_path / "steering_wheel/wheel.svg"
     steering_wheel_save_path = frogpilot_paths.STEERING_WHEELS_PATH / "frog.svg"
     for extension in WHEEL_EXTENSIONS:
-      frogpilot_utilities.delete_file(steering_wheel_save_path.with_suffix(extension), print_error=False)
+      frogpilot_utilities.delete_path(steering_wheel_save_path.with_suffix(extension))
     steering_wheel_save_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(steering_wheel_image_path, steering_wheel_save_path)
 
@@ -89,7 +89,7 @@ class ThemeManager:
     for current_repo_url in repo_urls:
       theme_url = f"{current_repo_url}/{relative_link}{extension}"
 
-      frogpilot_utilities.delete_file(theme_path, print_error=False)
+      frogpilot_utilities.delete_path(theme_path)
 
       downloaded_path = self.download_state.download_file(theme_path, self.session, theme_url)
 
@@ -347,7 +347,7 @@ class ThemeManager:
         active_wheel = frogpilot_paths.ACTIVE_THEME_PATH / "steering_wheel" / f"wheel{other_extension}"
         active_format_changed |= active_wheel.resolve() == download_path.with_suffix(other_extension).resolve()
 
-        frogpilot_utilities.delete_file(download_path.with_suffix(other_extension), print_error=False)
+        frogpilot_utilities.delete_path(download_path.with_suffix(other_extension))
 
       if active_format_changed:
         self.update_wheel_image(theme_name)
@@ -363,13 +363,13 @@ class ThemeManager:
   def install_zip(self, theme_path, download_path):
     stage_path = download_path.with_name(f".{download_path.name}.new")
     backup_path = download_path.with_name(f".{download_path.name}.old")
-    frogpilot_utilities.delete_file(stage_path, print_error=False)
-    frogpilot_utilities.delete_file(backup_path, print_error=False)
+    frogpilot_utilities.delete_path(stage_path)
+    frogpilot_utilities.delete_path(backup_path)
 
     try:
       frogpilot_utilities.extract_zip(theme_path, stage_path)
       if self.download_state.cancelled:
-        frogpilot_utilities.delete_file(stage_path, print_error=False)
+        frogpilot_utilities.delete_path(stage_path)
         return False
 
       if download_path.exists():
@@ -380,10 +380,10 @@ class ThemeManager:
         if backup_path.exists():
           backup_path.rename(download_path)
         raise
-      frogpilot_utilities.delete_file(backup_path, print_error=False)
+      frogpilot_utilities.delete_path(backup_path)
       return True
     except Exception:
-      frogpilot_utilities.delete_file(stage_path, print_error=False)
+      frogpilot_utilities.delete_path(stage_path)
       raise
 
   @staticmethod
@@ -649,6 +649,6 @@ class ThemeManager:
 
     for dir_path in frogpilot_paths.THEME_SAVE_PATH.glob("**/*"):
       if dir_path.is_dir() and not any(dir_path.iterdir()):
-        frogpilot_utilities.delete_file(dir_path, print_error=False)
+        frogpilot_utilities.delete_path(dir_path)
       elif dir_path.is_file() and (dir_path.name.startswith("tmp") or dir_path.suffix == ".tmp"):
-        frogpilot_utilities.delete_file(dir_path, print_error=False)
+        frogpilot_utilities.delete_path(dir_path)

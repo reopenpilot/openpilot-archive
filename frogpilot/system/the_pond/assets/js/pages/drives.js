@@ -34,7 +34,7 @@ const DISENGAGE_REASONS = {
 };
 const EVENT_KINDS = {
   alert: { icon: "alert", label: "Warnings" },
-  bookmark: { icon: "bookmark", label: "Flags" },
+  bookmark: { icon: "bookmark", label: "Flagged moments" },
   curve: { icon: "curve", label: "Curves" },
   disengaged: { icon: "x", label: "Disengaged" },
   experimental: { icon: "flask", label: "Experimental Mode" },
@@ -47,8 +47,10 @@ const EVENT_KINDS = {
   stop: { icon: "stop", label: "Stops" }
 };
 const GROUP_LABELS = { largest: "Largest first", longest: "Longest first", name: "By name" };
+const HEVC_TYPE = 'video/mp4; codecs="hvc1.1.6.L150.B0"';
 const LOGS = [["qlog", "Logs (qlog)"], ["rlog", "Full logs (rlog)"]];
 const SAVING_CHECK_INTERVAL = 2000;
+const SUMMARY_ERRORS = { unreadable_log: "Its log can't be read" };
 const THUMB_MAP_HEIGHT = 200;
 const THUMB_MAP_WIDTH = 320;
 const THUMB_RETRIES = 3;
@@ -72,12 +74,33 @@ function dayValue(t) {
   return P.fmt(t, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/(\d+)\/(\d+)\/(\d+)/, "$3-$1-$2");
 }
 
+function latestDay(items) {
+  let latest = 0;
+  for (const item of items) {
+    latest = Math.max(latest, item.date);
+  }
+
+  return dayValue(latest);
+}
+
 function itemTitle(item) {
   return item.name || `${P.dayLabel(item.date)}, ${P.timeLabel(item.date)}`;
 }
 
 function flag(icon, label) {
   return `<span class="flag" title="${label}">${P.ic(icon)}<span class="sr">${label}</span></span>`;
+}
+
+function byName(a, b) {
+  if (a.name && !b.name) {
+    return -1;
+  }
+
+  if (!a.name && b.name) {
+    return 1;
+  }
+
+  return a.name.localeCompare(b.name) || b.date - a.date;
 }
 
 function filtered(state) {
@@ -117,7 +140,7 @@ function filtered(state) {
   const sorters = {
     largest: (a, b) => b.size - a.size,
     longest: (a, b) => b.duration - a.duration,
-    name: (a, b) => (a.name || "~").localeCompare(b.name || "~") || b.date - a.date,
+    name: byName,
     newest: (a, b) => b.date - a.date,
     oldest: (a, b) => a.date - b.date
   };
@@ -156,7 +179,7 @@ async function loadRoute(thumb) {
     path = (await P.get(`/api/routes/${encodeURIComponent(thumb.dataset.route)}/drive`)).path;
   } catch (error) {
     if (!(error instanceof P.PondError) || error.status !== 404) {
-      P.fail(error, "Couldn't load the drive's route");
+      P.fail(error, "Couldn't load the drive's route", SUMMARY_ERRORS);
     }
   }
   if (thumb.isConnected) {
@@ -223,7 +246,12 @@ function watchSaving(state, signal) {
 }
 
 function favoriteButton(item, cls) {
-  return `<button class="${cls} fav" type="button" data-act="drives-favorite" data-id="${P.esc(item.id)}" aria-pressed="${item.preserved}" title="Favorites are kept when space runs low">${P.ic("star")}<span class="${cls === "clip-act" ? "sr" : ""}">Favorite</span></button>`;
+  let label = "<span>Favorite</span>";
+  if (cls === "clip-act") {
+    label = `<span class="sr">Favorite ${P.esc(itemTitle(item))}</span>`;
+  }
+
+  return `<button class="${cls} fav" type="button" data-act="drives-favorite" data-id="${P.esc(item.id)}" aria-pressed="${item.preserved}" title="Favorites are kept when space runs low">${P.ic("star")}${label}</button>`;
 }
 
 function clipCard(state, item) {
@@ -233,14 +261,57 @@ function clipCard(state, item) {
   const busy = kind.busy(item);
   const route = kind.routeMap && !busy ? `data-route="${P.esc(item.id)}"` : "";
   const thumbnail = kind.routeMap && !item.video ? "" : kind.thumbnail(item.id);
+  const fullTitle = P.esc(itemTitle(item));
+
+  const meta = [P.fmt(item.date, { weekday: "short", month: "short", day: "numeric" })];
+  if (item.name) {
+    meta.push(P.timeLabel(item.date));
+  }
+
+  meta.push(kind.meta(item));
+
+  let metaHTML = "";
+  for (const text of meta) {
+    if (text) {
+      metaHTML += `<span>${text}</span>`;
+    }
+  }
+
   const inner = `
       <span class="thumb" ${route}>${busy ? `<span class="thumb-state"><span class="spinner" aria-hidden="true"></span><span>${busy}</span></span>` : thumbHTML(thumbnail)}<span class="dur" data-length="${P.esc(item.id)}" ${seconds === undefined ? "hidden" : ""}>${seconds === undefined ? "" : kind.chip(seconds)}</span></span>
       <span class="clip-title">${P.esc(title)}</span>
-      <span class="clip-meta">${[P.fmt(item.date, { weekday: "short", month: "short", day: "numeric" }), item.name ? P.timeLabel(item.date) : "", kind.meta(item)].filter(Boolean).join(" · ")}${kind.flags(item)}</span>`;
+      <span class="clip-meta"><span class="dots">${metaHTML}</span>${kind.flags(item)}</span>`;
+
+  let link = `<div class="clip-link clip-busy">${inner}</div>`;
+  let select = "";
+  if (!busy) {
+    let preview = "";
+    if (thumbnail) {
+      preview = `data-preview="${kind.preview(item.id)}"`;
+    }
+
+    let favorite = "";
+    if (kind.favorite) {
+      favorite = favoriteButton(item, "clip-act");
+    }
+
+    const remove = `<button class="clip-act" type="button" data-act="clips-delete-card" data-id="${P.esc(item.id)}" title="Delete">${P.ic("trash")}<span class="sr">Delete ${fullTitle}</span></button>`;
+    link = `<a class="clip-link" href="${kind.href(item.id)}" ${preview}>${inner}</a>
+    <span class="clip-acts">${favorite}${remove}</span>`;
+
+    let checked = "";
+    if (selected.has(item.id)) {
+      checked = "checked";
+    }
+
+    const box = `<input type="checkbox" data-select="${P.esc(item.id)}" ${checked}>`;
+    const tick = `<span class="tick" aria-hidden="true">${P.ic("check")}</span>`;
+    select = `<label class="clip-sel">${box}${tick}<span class="sr">Select ${fullTitle}</span></label>`;
+  }
+
   return `<li class="clip" data-id="${P.esc(item.id)}" ${selecting ? `aria-selected="${selected.has(item.id)}"` : ""}>
-    ${busy ? `<div class="clip-link clip-busy">${inner}</div>` : `<a class="clip-link" href="${kind.href(item.id)}" ${thumbnail ? `data-preview="${kind.preview(item.id)}"` : ""}>${inner}</a>
-    <span class="clip-acts">${kind.favorite ? favoriteButton(item, "clip-act") : ""}<button class="clip-act" type="button" data-act="clips-delete-card" data-id="${P.esc(item.id)}" title="Delete">${P.ic("trash")}<span class="sr">Delete ${P.esc(title)}</span></button></span>`}
-    <label class="clip-sel"><input type="checkbox" data-select="${P.esc(item.id)}" ${selected.has(item.id) ? "checked" : ""}><span class="tick" aria-hidden="true">${P.ic("check")}</span><span class="sr">Select ${P.esc(title)}</span></label>
+    ${link}
+    ${select}
   </li>`;
 }
 
@@ -251,7 +322,7 @@ function clipsHTML(state) {
   }
   const shown = filtered(state);
   if (!shown.length) {
-    return `<div class="empty"><h3>No ${kind.noun}s match</h3><button class="btn btn-quiet btn-small" data-act="clips-clear">Clear filters</button></div>`;
+    return `<div class="empty"><h3>No ${kind.noun}s match</h3></div>`;
   }
   const grouped = f.sort === "newest" || f.sort === "oldest";
   const groups = [];
@@ -291,13 +362,32 @@ function selectBarHTML(state) {
   const chosen = items.filter(item => selected.has(item.id));
   const bytes = chosen.reduce((sum, item) => sum + item.size, 0);
   const favorites = chosen.length > 0 && chosen.every(item => item.preserved);
+
+  let deleteLabel = "Delete";
+  let disabled = "disabled";
+  if (chosen.length) {
+    deleteLabel = `Delete ${P.plural(chosen.length, kind.noun)}`;
+    disabled = "";
+  }
+
+  let favorite = "";
+  if (kind.favorite) {
+    let favoriteLabel = "Favorite";
+    if (favorites) {
+      favoriteLabel = "Unfavorite";
+    }
+
+    favorite = `<button class="btn btn-text btn-small" data-act="drives-favorite-selected"
+      ${disabled}>${P.ic("star")}<span class="lbl">${favoriteLabel}</span></button>`;
+  }
+
   return `<div class="select-bar" role="region" aria-label="Selected ${kind.noun}s">
     <b>${chosen.length ? `${P.plural(chosen.length, kind.noun)} · ${P.size(bytes)}` : `Select ${kind.noun}s`}</b>
     <button class="btn btn-text btn-small" data-act="clips-select-all">Select all shown</button>
     <span class="grow"></span>
     <button class="btn btn-text btn-small" data-act="clips-select-done">Done</button>
-    ${kind.favorite ? `<button class="btn btn-text btn-small" data-act="drives-favorite-selected" ${chosen.length ? "" : "disabled"}>${P.ic("star")}${favorites ? "Unfavorite" : "Favorite"}</button>` : ""}
-    <button class="btn btn-danger btn-small" data-act="clips-delete-selected" ${chosen.length ? "" : "disabled"}>${P.ic("trash")}Delete${chosen.length ? ` ${P.plural(chosen.length, kind.noun)}` : ""}</button>
+    ${favorite}
+    <button class="btn btn-danger btn-small" data-act="clips-delete-selected" ${disabled}>${P.ic("trash")}<span class="lbl">${deleteLabel}</span></button>
   </div>`;
 }
 
@@ -432,7 +522,7 @@ function mountList(root, state) {
       day.hidden = f.date !== "day";
       if (f.date === "day") {
         if (!f.day) {
-          f.day = dayValue(P.now());
+          f.day = latestDay(state.items);
         }
         day.value = f.day;
         day.focus();
@@ -461,7 +551,7 @@ function mountList(root, state) {
   }, { signal });
   root.addEventListener("click", e => {
     const link = e.target.closest(".clip-link");
-    if (!state.selecting || !link) {
+    if (!state.selecting || !link || link.matches(".clip-busy")) {
       return;
     }
     e.preventDefault();
@@ -511,7 +601,7 @@ async function listPage(kind, params) {
         <div class="tb-when">${P.dropdown({ attrs: "data-list-date", label: "When", options: DATES, value: f.date })}</div>
         <div class="tb-sort">${P.dropdown({ attrs: "data-list-sort", label: "Sort", options: kind.sorts, value: f.sort })}</div>
         <div class="menu-wrap tb-filter">
-          <button class="btn btn-quiet filter-btn" data-act="menu" aria-expanded="false" aria-haspopup="true"><span data-filter-label>${filterLabel(f)}</span>${P.ic("down", "ic-s")}</button>
+          <button class="btn btn-quiet filter-btn" data-act="menu" aria-expanded="false"><span data-filter-label>${filterLabel(f)}</span>${P.ic("down", "ic-s")}</button>
           <div class="menu" hidden aria-label="Show only">
             <h3>Show only</h3>
             ${kind.only.map(([key, label]) => `<label class="menu-item check-item"><input type="checkbox" data-only="${key}" ${f.only.has(key) ? "checked" : ""}><span>${label}</span></label>`).join("")}
@@ -530,7 +620,26 @@ function scaleHTML(isDrive, date, duration) {
   if (!duration) {
     return "";
   }
-  return [0, 1, 2, 3, 4].map(i => `<span>${isDrive ? P.timeLabel(date + (duration * i) / 4) : P.clock((duration * i) / 4)}</span>`).join("");
+
+  let html = "";
+  let previous = "";
+  for (const quarter of [0, 1, 2, 3, 4]) {
+    const seconds = (duration * quarter) / 4;
+    let label = P.clock(seconds);
+    if (isDrive) {
+      label = P.timeLabel(date + seconds);
+    }
+
+    if (label === previous) {
+      html += "<span></span>";
+    } else {
+      html += `<span>${label}</span>`;
+    }
+
+    previous = label;
+  }
+
+  return html;
 }
 
 function playerHTML({ audio = false, camera, cameras, date, duration, noun, partLength, poster }) {
@@ -538,11 +647,21 @@ function playerHTML({ audio = false, camera, cameras, date, duration, noun, part
   const step = isDrive ? partLength : 10;
   const stepWords = isDrive ? "one minute" : "10 seconds";
   const speeds = isDrive ? [1, 4, 16] : [1, 2, 4];
+
+  let viewClass = "player screen";
+  let legend = "";
+  if (isDrive) {
+    viewClass = "player";
+    legend = `<p class="tl-legend"><span data-engaged-key hidden><span class="sw"></span>openpilot engaged</span><span>Each tick is one minute</span></p>`;
+  }
+
   return `
-    <div class="player ${isDrive ? "" : "screen"}" id="player">
+    <div class="${viewClass}" id="player" tabindex="-1">
       <video class="frame on" playsinline preload="metadata" poster="${poster}"></video>
       ${isDrive ? `<div class="osd"><span data-osd-cam>${CAMERAS.find(c => c.id === camera).label} camera</span><span data-osd-clock>${P.timeLabel(date)}</span></div>` : ""}
       <button class="big-play" data-act="clips-play" aria-label="Play">${P.ic("play")}</button>
+      <button class="icon-btn view-full" type="button" data-act="clips-fullscreen" aria-label="Full screen" aria-pressed="false"
+        title="Full screen (f)">${P.ic("full")}</button>
     </div>
     <div class="player-bar">
       <button class="icon-btn" data-act="clips-play" aria-label="Play" data-play-btn>${P.ic("play")}</button>
@@ -554,7 +673,6 @@ function playerHTML({ audio = false, camera, cameras, date, duration, noun, part
       <button class="icon-btn speed-cycle" type="button" data-act="clips-speed-cycle" title="Playback speed"><span class="sr">Playback speed </span><span data-speed-text>1×</span></button>
       ${audio ? `<button class="icon-btn" type="button" data-act="clips-mute" aria-label="Mute" aria-pressed="false" title="Mute (m)" ${camera === "low" ? "" : "hidden"}>${P.ic("sound")}</button>` : ""}
       <button class="icon-btn view-theater" type="button" data-act="clips-theater" aria-label="Theater mode" aria-pressed="${theater}" title="Theater mode (t)">${P.ic("theater")}</button>
-      <button class="icon-btn view-full" type="button" data-act="clips-fullscreen" aria-label="Full screen" aria-pressed="false" title="Full screen (f)">${P.ic("full")}</button>
       ${isDrive && cameras.length > 1 ? `<div class="seg" role="group" aria-label="Camera">${cameras.map(c => `<button type="button" data-act="clips-camera" data-camera="${c.id}" aria-pressed="${c.id === camera}">${c.label}</button>`).join("")}</div>` : ""}
     </div>
     <div class="timeline-wrap">
@@ -565,7 +683,7 @@ function playerHTML({ audio = false, camera, cameras, date, duration, noun, part
         <div class="tl-hover" data-hover>0:00</div>
       </div>
       <div class="tl-scale" data-scale>${scaleHTML(isDrive, date, duration)}</div>
-      ${isDrive ? `<p class="tl-legend"><span><span class="sw"></span>openpilot engaged</span><span>Each tick is one minute</span></p>` : ""}
+      ${legend}
     </div>`;
 }
 
@@ -586,15 +704,25 @@ function mountPlayer(root, options) {
   const osdClock = root.querySelector("[data-osd-clock]");
   const step = isDrive ? partLength : 10;
   let camera = options.camera;
-  let duration = isDrive ? parts * partLength : 0;
+  let duration = 0;
+  let errorToast = null;
   let index = 0;
   let offset = 0;
   let playing = false;
   let t = 0;
 
+  if (isDrive) {
+    duration = options.duration;
+  }
+
   function load(next, at) {
     index = next;
     offset = at;
+
+    if (errorToast) {
+      errorToast.remove();
+    }
+
     video.src = src(index, camera);
   }
   function playVideo() {
@@ -621,6 +749,11 @@ function mountPlayer(root, options) {
     }
   }
   function setPlaying(on) {
+    if (on && video.error) {
+      reportError();
+      return;
+    }
+
     playing = on;
     view.classList.toggle("playing", on);
     root.querySelectorAll("[data-act='clips-play']").forEach(b => {
@@ -690,10 +823,20 @@ function mountPlayer(root, options) {
     if (signal.aborted) {
       return;
     }
+
+    if (errorToast) {
+      errorToast.remove();
+    }
+
     if (response.ok) {
-      P.toast(title, camera !== "low" && options.cameras?.some(c => c.id === "low") ? "This browser can't play this camera. Pick Low-res to watch it." : "This browser can't play this video", "alert");
+      let detail = "This browser can't play this video";
+      if (isDrive && camera !== "low" && options.cameras.includes("low")) {
+        detail = "This browser can't play this camera. Pick Low-res to watch it.";
+      }
+
+      errorToast = P.toast(title, detail, "alert");
     } else {
-      P.fail(new P.PondError(response.status, (await response.text()).trim()), title);
+      errorToast = P.fail(new P.PondError(response.status, (await response.text()).trim()), title);
     }
   }
 
@@ -763,9 +906,9 @@ function mountPlayer(root, options) {
   document.addEventListener("fullscreenchange", () => {
     root.querySelector("[data-act='clips-fullscreen']").setAttribute("aria-pressed", String(document.fullscreenElement === column));
   }, { signal });
-  document.addEventListener("keydown", e => {
+  column.addEventListener("keydown", e => {
     const key = e.key.toLowerCase();
-    if (e.altKey || e.ctrlKey || e.metaKey || document.querySelector("dialog[open]") || e.target.closest("input, select, textarea, [contenteditable], .timeline, .menu")) {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest(".timeline")) {
       return;
     }
     if (key === " " || key === "k") {
@@ -793,7 +936,8 @@ function mountPlayer(root, options) {
 
   const ticks = timeline.querySelector(".tl-ticks");
   if (ticks) {
-    ticks.style.backgroundSize = `${100 / Math.min(parts, 120)}% 100%`;
+    const minuteWidth = Math.max(partLength / duration, 1 / 120) * 100;
+    ticks.style.backgroundSize = `${minuteWidth}% 100%`;
   }
   const start = Math.max(0, Number(P.params().get("t")) || 0);
   const first = isDrive ? Math.min(parts - 1, Math.floor(start / partLength)) : 0;
@@ -824,7 +968,13 @@ function mountPlayer(root, options) {
       if (muteButton) {
         muteButton.hidden = next !== "low";
       }
-      P.setParam("camera", next === options.cameras[0].id ? "" : next);
+
+      let cameraParam = next;
+      if (next === options.firstCamera) {
+        cameraParam = "";
+      }
+
+      P.setParam("camera", cameraParam);
     },
     setSpeed,
     theater: toggleTheater,
@@ -832,6 +982,11 @@ function mountPlayer(root, options) {
   };
   return () => {
     listening.abort();
+
+    if (errorToast) {
+      errorToast.remove();
+    }
+
     video.pause();
     video.removeAttribute("src");
     video.load();
@@ -839,11 +994,32 @@ function mountPlayer(root, options) {
   };
 }
 
+function isItemPage(kind, item) {
+  const address = new URL(kind.href(item.id), location.href);
+  const params = P.params();
+  for (const [key, value] of address.searchParams) {
+    if (params.get(key) !== value) {
+      return false;
+    }
+  }
+
+  return location.pathname === address.pathname;
+}
+
 function mountDetail(root, kind, item, options) {
-  current = { item, kind };
-  const stopPlayer = mountPlayer(root, options);
+  current = { item, kind, others: options.others };
+  let stopPlayer = null;
+  if (root.querySelector("#player")) {
+    stopPlayer = mountPlayer(root, options);
+  }
   return () => {
-    stopPlayer();
+    if (stopPlayer) {
+      if (isItemPage(kind, item)) {
+        P.setParam("t", String(Math.floor(player.time())));
+      }
+
+      stopPlayer();
+    }
     current = null;
   };
 }
@@ -865,11 +1041,25 @@ function notFound(kind) {
 }
 
 async function renameItem(kind, item) {
-  const d = await P.dialog({
+  let hint = `placeholder="${P.esc(itemTitle({ ...item, name: "" }))}"`;
+  let rule = "";
+  if (kind.nameRule) {
+    hint = `aria-describedby="name-rule"`;
+    rule = `<small class="hint" id="name-rule" aria-hidden="true">${kind.nameRule}</small>`;
+  }
+
+  await P.dialog({
     icon: "pencil",
     title: `Rename ${kind.noun}`,
-    body: `<label class="field"><span>Name</span><input class="input" data-name maxlength="${kind.maxName}" value="${P.esc(item.name)}" placeholder="${P.esc(itemTitle({ ...item, name: "" }))}"></label>`,
+    body: `<label class="field"><span>Name</span><input class="input" data-name maxlength="${kind.maxName(item)}" value="${P.esc(item.name)}" ${hint}>${rule}</label>`,
     confirm: "Save name",
+    errors: kind.nameErrors,
+    onConfirm: async dl => {
+      const name = dl.querySelector("[data-name]").value.trim();
+      if (name !== item.name) {
+        await kind.rename(item, name);
+      }
+    },
     onOpen: dl => {
       const input = dl.querySelector("[data-name]");
       setTimeout(() => {
@@ -878,13 +1068,6 @@ async function renameItem(kind, item) {
       }, 0);
     }
   });
-  if (!d) {
-    return;
-  }
-  const name = d.querySelector("[data-name]").value.trim();
-  if (name !== item.name) {
-    await kind.rename(item, name);
-  }
 }
 
 function mapSVG(points, width, height) {
@@ -1010,44 +1193,127 @@ function momentLabel(moment) {
   return DISENGAGE_REASONS[reason] ? `Disengaged (${DISENGAGE_REASONS[reason]})` : "Disengaged";
 }
 
+function showMarkers(timeline) {
+  const shown = new Set();
+  for (const marker of timeline.querySelectorAll(".tl-ev")) {
+    marker.hidden = hiddenKinds.has(marker.dataset.kind) || shown.has(marker.dataset.seconds);
+
+    if (!marker.hidden) {
+      shown.add(marker.dataset.seconds);
+    }
+  }
+}
+
 function showTimeline(root, drive, date, duration) {
   const timeline = root.querySelector("#timeline");
   const at = seconds => `${(seconds / duration) * 100}%`;
-  const track = timeline.querySelector(".tl-track");
-  for (const [start, end] of drive.engaged) {
-    const span = document.createElement("i");
-    span.style.left = at(start);
-    span.style.width = at(end - start);
-    track.append(span);
+  if (timeline) {
+    const track = timeline.querySelector(".tl-track");
+    for (const [start, end] of drive.engaged) {
+      const span = document.createElement("i");
+      span.style.left = at(start);
+      span.style.width = at(end - start);
+      track.append(span);
+    }
+
+    root.querySelector("[data-engaged-key]").hidden = false;
   }
+
   if (!drive.events.length) {
     return;
   }
   const kinds = Object.keys(EVENT_KINDS).filter(kind => drive.events.some(moment => moment.kind === kind)).sort((a, b) => EVENT_KINDS[a].label.localeCompare(EVENT_KINDS[b].label));
   const hidden = moment => (hiddenKinds.has(moment.kind) ? "hidden" : "");
-  timeline.querySelector("[data-head]").insertAdjacentHTML("beforebegin", drive.events.map(moment => `<button class="tl-ev ${moment.kind}" data-act="drives-jump" data-kind="${moment.kind}" data-seconds="${moment.time}" aria-label="${momentLabel(moment)} at ${P.timeLabel(date + moment.time)}, ${P.clock(moment.time)} in" ${hidden(moment)}>${P.ic(EVENT_KINDS[moment.kind].icon)}</button>`).join(""));
-  timeline.querySelectorAll(".tl-ev").forEach(marker => {
-    marker.style.left = at(Number(marker.dataset.seconds));
-  });
-  root.querySelector(".timeline-wrap").insertAdjacentHTML("afterend", `
+
+  let markers = "";
+  let moments = "";
+  for (const moment of drive.events) {
+    const icon = EVENT_KINDS[moment.kind].icon;
+    const row = `<span class="t">${P.timeLabel(date + moment.time)}</span>${P.ic(icon, `ev-${moment.kind}`)}<span>${momentLabel(moment)}</span>`;
+
+    if (timeline) {
+      markers += `<button class="tl-ev ${moment.kind}" data-act="drives-jump" data-kind="${moment.kind}" data-seconds="${moment.time}" tabindex="-1" aria-hidden="true">${P.ic(icon)}</button>`;
+      moments += `<li data-kind="${moment.kind}" ${hidden(moment)}><button type="button" data-act="drives-jump" data-seconds="${moment.time}">${row}</button></li>`;
+    } else {
+      moments += `<li data-kind="${moment.kind}" ${hidden(moment)}><span class="moment">${row}</span></li>`;
+    }
+  }
+
+  if (timeline) {
+    timeline.querySelector("[data-head]").insertAdjacentHTML("beforebegin", markers);
+    timeline.querySelectorAll(".tl-ev").forEach(marker => {
+      marker.style.setProperty("--at", at(Number(marker.dataset.seconds)));
+    });
+    showMarkers(timeline);
+  }
+
+  root.querySelector(".player-col").insertAdjacentHTML("beforeend", `
     <div class="tl-filter" role="group" aria-label="Moments to show">${kinds.map(kind => `<button type="button" class="chip" data-act="drives-moment-kind" data-kind="${kind}" aria-pressed="${!hiddenKinds.has(kind)}">${P.ic(EVENT_KINDS[kind].icon)}${EVENT_KINDS[kind].label}<span class="n">${drive.events.filter(moment => moment.kind === kind).length}</span></button>`).join("")}</div>
-    <ul class="moments" aria-label="Moments in this drive">${drive.events.map(moment => `<li data-kind="${moment.kind}" ${hidden(moment)}><button type="button" data-act="drives-jump" data-seconds="${moment.time}"><span class="t">${P.timeLabel(date + moment.time)}</span>${P.ic(EVENT_KINDS[moment.kind].icon, `ev-${moment.kind}`)}<span>${momentLabel(moment)}</span></button></li>`).join("")}</ul>`);
+    <ul class="moments" aria-label="Moments in this drive">${moments}</ul>`);
 }
 
-async function deleteDrives(items) {
+async function deleteDrives(items, others) {
   const one = items.length === 1;
   const bytes = items.reduce((sum, item) => sum + item.size, 0);
-  const minutes = items.reduce((sum, item) => sum + item.segments, 0);
   const flagged = items.filter(item => item.bookmarked).length;
   const preserved = items.filter(item => item.preserved);
+
+  const cameras = new Set();
+  let logs = false;
+  let minutes = 0;
+  for (const item of items) {
+    for (const camera of item.cameras) {
+      cameras.add(camera);
+    }
+
+    if (item.cameras.length) {
+      minutes += item.segments;
+    }
+
+    if (item.logs.length) {
+      logs = true;
+    }
+  }
+
+  const lost = [];
+  if (cameras.size) {
+    const names = [];
+    for (const camera of CAMERAS) {
+      if (cameras.has(camera.id)) {
+        names.push(camera.label.toLowerCase());
+      }
+    }
+
+    lost.push(`All camera video (${new Intl.ListFormat("en-US").format(names)}) for ${P.plural(minutes, "minute")} of driving`);
+  }
+
+  if (logs) {
+    lost.push("The logs, the route on the map, and the timeline");
+  }
+
+  if (flagged) {
+    lost.push(`Flagged moments in ${P.plural(flagged, "drive")}`);
+  }
+
+  if (preserved.length) {
+    const titles = [];
+    for (const item of preserved) {
+      titles.push(P.esc(itemTitle(item)));
+    }
+
+    lost.push(`<b>${P.plural(preserved.length, "favorite drive")}</b>: ${titles.join(", ")}`);
+  }
+
+  let otherData = "Screen recordings";
+  if (others) {
+    otherData = "Screen recordings and every other drive";
+  }
+
   const ok = await P.dialog({
     icon: "trash", tone: "danger", confirmTone: "danger",
     title: one ? `Delete “${P.esc(itemTitle(items[0]))}”?` : `Delete ${items.length} drives?`,
     body: `<p>This removes ${one ? "the drive" : "them"} from the device for good and frees <b>${P.size(bytes)}</b>. It can't be undone.</p>
-      ${P.lossList(
-        [`All camera video (forward, wide, driver, and low-res) for ${P.plural(minutes, "minute")} of driving`, "The logs, the route on the map, and the timeline", ...(flagged ? [`Flagged moments in ${P.plural(flagged, "drive")}`] : []), ...(preserved.length ? [`<b>${P.plural(preserved.length, "favorite drive")}</b>: ${preserved.map(item => P.esc(itemTitle(item))).join(", ")}`] : [])],
-        ["Anything already uploaded to comma connect", "Screen recordings and every other drive"]
-      )}`,
+      ${P.lossList(lost, ["Anything already uploaded to comma connect", otherData])}`,
     confirm: `Delete ${one ? "drive" : P.plural(items.length, "drive")} (${P.size(bytes)})`
   });
   if (!ok) {
@@ -1069,18 +1335,13 @@ async function deleteDrives(items) {
 
 async function renameDrive(item, name) {
   const path = `/api/routes/${encodeURIComponent(item.id)}/name`;
-  try {
-    if (name) {
-      await P.request("PUT", path, { name });
-    } else {
-      await P.request("DELETE", path);
-    }
-  } catch (error) {
-    P.fail(error, "Couldn't rename the drive", { invalid_name: "Use up to 64 characters" });
-    return;
+  if (name) {
+    await P.request("PUT", path, { name });
+  } else {
+    await P.request("DELETE", path);
   }
+
   P.toast(name ? `Renamed to “${P.esc(name)}”` : "Name cleared");
-  P.setParam("t", String(Math.floor(player.time())));
   P.refresh();
 }
 
@@ -1094,8 +1355,11 @@ const DRIVES = {
   item: route => ({ ...route, duration: route.segments * route.segment_length, id: route.route }),
   label: "Drives",
   length: item => item.duration,
-  maxName: 64,
+  maxName() {
+    return 64;
+  },
   meta: item => (item.distance === undefined ? P.size(item.size) : P.distance(item.distance)),
+  nameErrors: { invalid_name: "Use up to 64 characters" },
   none: `<h3>No drives yet</h3><p>Drives show up here after the car has been driven.</p>`,
   noun: "drive",
   only: [["named", "Named", item => Boolean(item.name)], ["bookmarked", "Flagged", item => item.bookmarked], ["preserved", "Favorites", item => item.preserved]],
@@ -1105,8 +1369,8 @@ const DRIVES = {
   rename: renameDrive,
   routeMap: true,
   search: item => `${item.name} ${item.route}`,
-  searchHint: "Name, day, or route ID",
-  sorts: [["newest", "Newest first"], ["oldest", "Oldest first"], ["longest", "Longest first"], ["largest", "Largest size"], ["name", "Name"]],
+  searchHint: "Name, day, or ID",
+  sorts: [["newest", "Newest first"], ["oldest", "Oldest first"], ["longest", "Longest first"], ["largest", "Largest first"], ["name", "By name"]],
   thumbnail: id => `/api/routes/${encodeURIComponent(id)}/thumbnail`
 };
 
@@ -1134,44 +1398,93 @@ async function drivePage(params) {
       title: P.esc(itemTitle(item))
     };
   }
-  const duration = detail.segments * detail.segment_length;
+  const duration = detail.duration;
   const cameras = CAMERAS.filter(c => detail.cameras.includes(c.id));
-  const camera = cameras.some(c => c.id === params.get("camera")) ? params.get("camera") : (cameras[0] || CAMERAS[0]).id;
-  const uploads = [...cameras.map(c => [c.file, detail.uploaded[c.id]]), ...LOGS.map(([kind, label]) => [label, detail.uploaded[kind]])];
+
+  const logs = [];
+  for (const [kind, label] of LOGS) {
+    if (detail.logs.includes(kind)) {
+      logs.push([kind, label]);
+    }
+  }
+
+  let firstCamera = "";
+  if (cameras.length) {
+    firstCamera = cameras[0].id;
+  }
+
+  if (detail.cameras.includes("low") && !document.createElement("video").canPlayType(HEVC_TYPE)) {
+    firstCamera = "low";
+  }
+
+  let camera = firstCamera;
+  if (detail.cameras.includes(params.get("camera"))) {
+    camera = params.get("camera");
+  }
+
+  const uploads = [];
+  for (const { file, id: cameraId } of cameras) {
+    uploads.push([file, detail.uploaded[cameraId]]);
+  }
+
+  for (const [kind, label] of logs) {
+    uploads.push([label, detail.uploaded[kind]]);
+  }
+
   const complete = uploads.filter(([, count]) => count >= detail.segments).length;
   const title = itemTitle(item);
+  let minuteScope = "";
+  let playerColumn = `<div class="empty"><h3>No video from this drive</h3><p>Its camera files aren't on the device.</p></div>`;
+  let videoMenu = "";
+  if (cameras.length) {
+    minuteScope = `<button type="button" data-act="drives-scope" data-scope="minute" aria-pressed="false">This minute only</button>`;
+    playerColumn = playerHTML({ audio: detail.audio, camera, cameras, date: item.date, duration, noun: "drive", partLength: detail.segment_length, poster: DRIVES.thumbnail(id) });
+    videoMenu = "<h3>Video</h3>";
+    for (const { file, id: cameraId } of cameras) {
+      videoMenu += `<button class="menu-item" data-act="drives-download" data-kind="${cameraId}">${P.ic("download")}<span>${file}</span></button>`;
+    }
+  }
+
+  let logMenu = "";
+  if (logs.length) {
+    logMenu = `<h3>Logs</h3><p class="dl-note">Logs include your VIN, device serial, GitHub SSH keys, and exact GPS track.</p>`;
+    for (const [kind, label] of logs) {
+      logMenu += `<button class="menu-item" data-act="drives-download" data-kind="${kind}" data-log>${P.ic("file")}<span>${label}</span></button>`;
+    }
+  }
+
+  if (videoMenu && logMenu) {
+    videoMenu += "<hr>";
+  }
+
   return {
     title: P.esc(title),
     docTitle: title,
     crumb: { href: "/drives", label: "Drives" },
     actions: `<button class="icon-btn" data-act="clips-rename" aria-label="Rename drive" title="Rename">${P.ic("pencil")}</button>
       <div class="menu-wrap">
-        <button class="btn btn-primary btn-small" data-act="menu" aria-expanded="false" aria-haspopup="true" aria-label="Download">${P.ic("download")}<span class="lbl-long">Download</span>${P.ic("down", "ic-s")}</button>
-        <div class="menu" hidden role="menu" aria-label="Download">
+        <button class="btn btn-primary btn-small" data-act="menu" aria-expanded="false" aria-label="Download">${P.ic("download")}<span class="lbl-long">Download</span>${P.ic("down", "ic-s")}</button>
+        <div class="menu" hidden aria-label="Download">
           <div class="seg dl-scope" role="group" aria-label="How much">
             <button type="button" data-act="drives-scope" data-scope="all" aria-pressed="true">Whole drive</button>
-            <button type="button" data-act="drives-scope" data-scope="minute" aria-pressed="false">This minute only</button>
+            ${minuteScope}
             <button type="button" data-act="drives-scope" data-scope="range" aria-pressed="false">Minutes</button>
           </div>
           <div class="dl-range" hidden>
             <label>From minute <input class="input" type="number" data-range-from min="1" max="${detail.segment_numbers.length}" value="1"></label>
             <label>to <input class="input" type="number" data-range-to min="1" max="${detail.segment_numbers.length}" value="${detail.segment_numbers.length}"></label>
           </div>
-          <h3>Video</h3>
-          ${cameras.map(c => `<button class="menu-item" role="menuitem" data-act="drives-download" data-kind="${c.id}">${P.ic("download")}<span>${c.file}</span></button>`).join("")}
-          <hr><h3>Logs</h3>
-          <p class="dl-note">Logs include your VIN, device serial, GitHub SSH keys, and exact GPS track.</p>
-          ${LOGS.map(([kind, label]) => `<button class="menu-item" role="menuitem" data-act="drives-download" data-kind="${kind}" data-log>${P.ic("file")}<span>${label}</span></button>`).join("")}
+          ${videoMenu}${logMenu}
         </div>
       </div>`,
     body: `
     <div class="drive-grid">
-      <div class="player-col">${playerHTML({ audio: detail.audio, camera, cameras, date: item.date, duration, noun: "drive", partLength: detail.segment_length, poster: DRIVES.thumbnail(id) })}</div>
+      <div class="player-col">${playerColumn}</div>
       <div class="drive-side">
         <div class="map" data-map></div>
         <dl class="kv">
           <dt>Date</dt><dd>${P.fmt(item.date, { weekday: "short", month: "short", day: "numeric" })}</dd>
-          <dt>Time</dt><dd>${P.timeLabel(item.date)} to ${P.timeLabel(item.date + duration)}</dd>
+          <dt>Time</dt><dd>${P.timeLabel(item.date).replace(" ", P.NB)} to ${P.timeLabel(item.date + duration).replace(" ", P.NB)}</dd>
           <dt>Distance</dt><dd data-distance>…</dd>
           <dt>Driving time</dt><dd>${P.duration(duration)}</dd>
           <dt>openpilot engaged</dt><dd data-engaged>…</dd>
@@ -1183,6 +1496,7 @@ async function drivePage(params) {
           <summary><b>Upload status</b><span class="muted">${complete} of ${uploads.length} fully uploaded</span></summary>
           ${uploads.map(([label, count]) => `<div class="up-row"><span class="lbl">${label}</span><span>${count >= detail.segments ? "All uploaded" : count === 0 ? "Not uploaded" : `${count} of ${detail.segments} minutes`}</span><div class="progress"><i data-w="${(count / detail.segments) * 100}"></i></div></div>`).join("")}
         </details>
+        <div class="side-row"><a class="link" href="/report?route=${encodeURIComponent(item.route)}">${P.ic("report")}Report a problem with this drive</a></div>
         <div class="danger-zone side-row"><span class="muted">Frees ${P.size(item.size)}</span><button class="btn btn-danger-quiet btn-small" data-act="clips-delete-item">${P.ic("trash")}Delete drive</button></div>
         ${pagerHTML(DRIVES, detail.route_ids, id)}
       </div>
@@ -1194,8 +1508,10 @@ async function drivePage(params) {
       let fraction = 0;
       const stopDetail = mountDetail(root, DRIVES, item, {
         camera,
-        cameras,
+        cameras: detail.cameras,
         date: item.date,
+        duration,
+        firstCamera,
         isDrive: true,
         onMove: value => {
           fraction = value;
@@ -1203,6 +1519,7 @@ async function drivePage(params) {
             map.move(value);
           }
         },
+        others: detail.route_ids.length > 1,
         partLength: detail.segment_length,
         parts: detail.segment_numbers.length,
         src: (index, cam) => `/api/routes/${route}/${detail.segment_numbers[index]}/${cam}`
@@ -1238,7 +1555,7 @@ async function drivePage(params) {
         root.querySelector("[data-model]").textContent = "Not available";
         root.querySelector("[data-map]").remove();
         if (error.status !== 404) {
-          P.fail(error, "Couldn't load the drive's distance and route");
+          P.fail(error, "Couldn't load the drive's distance and route", SUMMARY_ERRORS);
         }
       });
       return () => {
@@ -1252,26 +1569,33 @@ async function drivePage(params) {
   };
 }
 
-P.clips = { drawRoute, itemTitle, lengths, listPage, mountDetail, notFound, pagerHTML, playerHTML, thumbHTML, watchPreviews, watchThumbs };
+P.clips = {
+  drawRoute, itemTitle, lengths, listPage, mountDetail, notFound, pagerHTML, playerHTML, summaryErrors: SUMMARY_ERRORS, thumbHTML, watchPreviews, watchThumbs
+};
 
 P.act("clips-camera", b => player.setCamera(b.dataset.camera));
-P.act("clips-clear", () => P.go(list.kind.path, { replace: true }));
+P.act("clips-clear", async () => {
+  await P.go(list.kind.path, { replace: true });
+  document.getElementById("content").focus({ preventScroll: true });
+});
 P.act("clips-delete-card", async b => {
   const item = list.items.find(entry => entry.id === b.dataset.id);
-  if (await list.kind.remove([item])) {
+  if (await list.kind.remove([item], list.items.length > 1)) {
     P.refresh();
   }
 });
 P.act("clips-delete-item", async () => {
-  const { item, kind } = current;
-  player.pause();
-  if (await kind.remove([item])) {
+  const { item, kind, others } = current;
+  if (player) {
+    player.pause();
+  }
+  if (await kind.remove([item], others)) {
     P.go(kind.path, { replace: true });
   }
 });
 P.act("clips-delete-selected", async () => {
   const chosen = list.items.filter(item => list.selected.has(item.id));
-  if (await list.kind.remove(chosen)) {
+  if (await list.kind.remove(chosen, list.items.length > chosen.length)) {
     P.refresh();
   }
 });
@@ -1282,14 +1606,18 @@ P.act("clips-rename", () => renameItem(current.kind, current.item));
 P.act("clips-seek", b => player.seek(Number(b.dataset.by)));
 P.act("clips-select-all", () => {
   for (const item of filtered(list)) {
-    list.selected.add(item.id);
+    if (!list.kind.busy(item)) {
+      list.selected.add(item.id);
+    }
   }
   refreshList();
+  document.querySelector("[data-act='clips-select-all']").focus();
 });
 P.act("clips-select-done", () => {
   list.selecting = false;
   list.selected.clear();
   refreshList();
+  document.querySelector("[data-act='clips-select-toggle']").focus();
 });
 P.act("clips-select-toggle", () => {
   list.selecting = !list.selecting;
@@ -1332,7 +1660,7 @@ P.act("drives-favorite", async b => {
   try {
     await P.busy(b, P.request(on ? "PUT" : "DELETE", `/api/routes/${encodeURIComponent(item.id)}/preserve`));
   } catch (error) {
-    P.fail(error, on ? "Couldn't add the drive to favorites" : "Couldn't remove the drive from favorites", { recording: "It's still recording. Try again after the drive ends", too_many_favorites: "Only 5 drives can be favorites. Remove one first" });
+    P.fail(error, on ? "Couldn't add the drive to favorites" : "Couldn't remove the drive from favorites", { recording: "It's still recording. Try again after the drive ends" });
     return;
   }
   item.preserved = on;
@@ -1351,7 +1679,7 @@ P.act("drives-favorite-selected", async b => {
       }
     })());
   } catch (error) {
-    P.fail(error, on ? "Couldn't add the drives to favorites" : "Couldn't remove the drives from favorites", { recording: "One of them is still recording. Try again after the drive ends", too_many_favorites: "Only 5 drives can be favorites. Remove one first" });
+    P.fail(error, on ? "Couldn't add the drives to favorites" : "Couldn't remove the drives from favorites", { recording: "One of them is still recording. Try again after the drive ends" });
     refreshList();
     return;
   }
@@ -1371,16 +1699,24 @@ P.act("drives-moment-kind", b => {
     hiddenKinds.add(kind);
   }
   b.setAttribute("aria-pressed", String(show));
-  document.querySelectorAll(`.tl-ev[data-kind="${kind}"], .moments li[data-kind="${kind}"]`).forEach(element => {
+  document.querySelectorAll(`.moments li[data-kind="${kind}"]`).forEach(element => {
     element.hidden = !show;
   });
+
+  const timeline = document.getElementById("timeline");
+  if (timeline) {
+    showMarkers(timeline);
+  }
 });
 P.act("drives-scope", b => {
   const menu = b.closest(".menu");
   menu.querySelectorAll("[data-act='drives-scope']").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   menu.querySelector(".dl-range").hidden = b.dataset.scope !== "range";
   if (b.dataset.scope === "range") {
-    const minute = player.part() + 1;
+    let minute = 1;
+    if (player) {
+      minute = player.part() + 1;
+    }
     menu.querySelector("[data-range-from]").value = minute;
     menu.querySelector("[data-range-to]").value = Math.min(current.segments.length, minute + 1);
   }

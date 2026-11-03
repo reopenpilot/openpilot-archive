@@ -6,13 +6,16 @@ class FrogPilotUtilitiesPanel : public FrogPilotListWidget {
   Q_OBJECT
 
 public:
-  explicit FrogPilotUtilitiesPanel(FrogPilotSettingsWindow *parent);
+  explicit FrogPilotUtilitiesPanel(FrogPilotSettingsWindow *parent, bool forceOpen = false);
 
 private:
+  void submitReport(QJsonObject report);
+  void updateState(const UIState &s, const FrogPilotUIState &fs);
+
   bool actionRunning = false;
 
-  FrogPilotSettingsWindow *parent;
+  ButtonControl *reportIssueButton;
+  FrogPilotSettingsWindow *parent = nullptr;
 
   Params params;
-  Params params_memory{"/dev/shm/params"};
 };

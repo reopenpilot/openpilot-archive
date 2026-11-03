@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import random
 import requests
 import threading
@@ -15,6 +16,7 @@ class ModelManager:
     self.download_state = frogpilot_download_utilities.DownloadState()
 
     self.downloading_automatically = False
+    self.models_updated = False
 
     self.available_models = self.split_param("AvailableModels")
     self.available_model_names = self.split_param("AvailableModelNames")
@@ -63,7 +65,7 @@ class ModelManager:
         self.download_state.download_file(destination, self.session, url, offset_bytes, total_bytes)
 
         if self.download_state.cancelled:
-          frogpilot_utilities.delete_file(destination)
+          frogpilot_utilities.delete_path(destination)
           self.download_state.handle_error(None, "Download cancelled...")
           return False
 
@@ -80,6 +82,8 @@ class ModelManager:
 
       offset_bytes += file_size
 
+    os.sync()
+    self.models_updated = True
     return True
 
   def download_models(self, models, finished_message, model_sizes=None):
@@ -93,7 +97,7 @@ class ModelManager:
         continue
 
       if not model_sizes and not self.is_thneed_model(model):
-        model_sizes = self.fetch_all_model_sizes(repo_url)
+        model_sizes = self.fetch_all_model_sizes(repo_url) or self.fetch_all_model_sizes(frogpilot_download_utilities.GITLAB_URL)
 
       print(f"Model {model} is not downloaded. Preparing to download...")
       if not self.download_model(model, repo_url, model_sizes):
@@ -133,8 +137,8 @@ class ModelManager:
         top_api_url = f"https://api.github.com/repos/{frogpilot_variables.RESOURCES_REPO}/contents?ref=Models"
         version_api_url = f"https://api.github.com/repos/{frogpilot_variables.RESOURCES_REPO}/contents/compiled?ref=Models"
       elif is_gitlab:
-        top_api_url = f"https://gitlab.com/api/v4/projects/{repo_encoded}/repository/tree?ref=Models"
-        version_api_url = f"https://gitlab.com/api/v4/projects/{repo_encoded}/repository/tree?path=compiled&ref=Models"
+        top_api_url = f"https://gitlab.com/api/v4/projects/{repo_encoded}/repository/tree?per_page=100&ref=Models"
+        version_api_url = f"https://gitlab.com/api/v4/projects/{repo_encoded}/repository/tree?path=compiled&per_page=100&ref=Models"
       else:
         print(f"Unsupported repository URL: {repo_url}")
         return model_sizes
@@ -233,7 +237,9 @@ class ModelManager:
 
       print(f"Model {model} is outdated. Deleting...")
       for filename in filenames:
-        frogpilot_utilities.delete_file(frogpilot_paths.MODELS_PATH / filename)
+        frogpilot_utilities.delete_path(frogpilot_paths.MODELS_PATH / filename)
+
+      self.models_updated = True
 
   def remove_unavailable_models(self):
     downloaded_models = [
@@ -242,18 +248,19 @@ class ModelManager:
     ]
 
     available_files = set()
-    for model in self.available_models:
+    for model in [*self.available_models, frogpilot_variables.DEFAULT_MODEL]:
       available_files.add(f"{model}.thneed")
       available_files.update(f"{model}_{filename}" for filename, _ in frogpilot_variables.TINYGRAD_FILES)
 
     for model_file in downloaded_models:
       if model_file.name not in available_files:
         print(f"Removing outdated model: {model_file}")
-        frogpilot_utilities.delete_file(model_file)
+        frogpilot_utilities.delete_path(model_file)
+        self.models_updated = True
 
     for tmp_file in [*frogpilot_paths.MODELS_PATH.glob("*.tmp"), *frogpilot_paths.MODELS_PATH.glob("tmp*")]:
       if tmp_file.is_file():
-        frogpilot_utilities.delete_file(tmp_file)
+        frogpilot_utilities.delete_path(tmp_file)
 
     if frogpilot_variables.params.get("Model", encoding="utf-8").removesuffix("_default") not in self.available_models:
       frogpilot_variables.params.put("Model", frogpilot_variables.params_default.get("Model", encoding="utf-8"))
@@ -277,6 +284,7 @@ class ModelManager:
     for key, value in model_params.items():
       if frogpilot_variables.params.get(key, encoding="utf-8") != value:
         frogpilot_variables.params.put(key, value)
+        self.models_updated = True
     print("Models list updated successfully!")
 
   def update_model_size(self, file_path):
@@ -290,7 +298,11 @@ class ModelManager:
       print("GitHub and GitLab are offline...")
       return
 
-    if not self.fetch_models(f"{repo_url}/Versions/model_names_{VERSION}.json"):
+    for url in dict.fromkeys((repo_url, frogpilot_download_utilities.GITLAB_URL)):
+      if self.fetch_models(f"{url}/Versions/model_names_{VERSION}.json"):
+        repo_url = url
+        break
+    else:
       return
 
     if not started:
@@ -321,7 +333,7 @@ class ModelManager:
 
     for filename, _ in frogpilot_variables.TINYGRAD_FILES:
       for file_path in frogpilot_paths.MODELS_PATH.glob(f"*_{filename}"):
-        frogpilot_utilities.delete_file(file_path)
+        frogpilot_utilities.delete_path(file_path)
 
   def validate_models(self):
     current = frogpilot_variables.params.get("Model", encoding="utf-8")

@@ -1,53 +1,61 @@
 #include "frogpilot/ui/qt/offroad/navigation_settings.h"
 
-FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
+#include <QRandomGenerator>
+
+FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *parent, bool forceOpen) : FrogPilotListWidget(parent), parent(parent) {
   networkManager = new QNetworkAccessManager(this);
 
-  QJsonObject shownDescriptions = QJsonDocument::fromJson(QString::fromStdString(params.get("ShownToggleDescriptions")).toUtf8()).object();
-  QString className = this->metaObject()->className();
-
-  if (!shownDescriptions.value(className).toBool(false)) {
-    forceOpenDescriptions = true;
-    shownDescriptions.insert(className, true);
-    params.put("ShownToggleDescriptions", QJsonDocument(shownDescriptions).toJson(QJsonDocument::Compact).toStdString());
-  }
+  forceOpenDescriptions = forceOpen;
 
   primelessLayout = new QStackedLayout();
   addItem(primelessLayout);
 
   FrogPilotListWidget *settingsList = new FrogPilotListWidget(this);
-  ipLabel = new LabelControl(tr("Manage Your Settings At"), tr("Offline..."), tr("<b>Open this address in a browser on the same Wi-Fi to reach \"The Pond\", where you search for destinations and send them to your car.</b>"));
-  settingsList->addItem(ipLabel);
+  amapKeyControl = new ButtonControl(tr("Amap Key"), tr("ADD"), tr("<b>Lets you search for a destination with Amap when \"Destination Search Provider\" is set to Amap.</b><br><br>This is a Web Service key you make yourself in the console on Amap's website, lbs.amap.com. Add a key to your app there and choose \"Web Service\" (Web 服务) as its service platform, since other kinds of Amap keys don't work here."), this);
+  QObject::connect(amapKeyControl, &ButtonControl::clicked, [this]() {
+    if (params.get("AMapKey1").empty()) {
+      QString key = InputDialog::getText(tr("Enter your Amap Key"), this).trimmed();
+      if (!key.isEmpty()) {
+        params.put("AMapKey1", key.toStdString());
+      }
+    } else if (FrogPilotConfirmationDialog::yesorno(tr("Remove your Amap Key?"), this)) {
+      params.remove("AMapKey1");
+    }
 
-  std::vector<QString> searchOptions{tr("Mapbox"), tr("Amap")};
-  searchInput = new FrogPilotButtonsControl(tr("Destination Search Provider"),
-                                            tr("<b>Switches this menu between your Mapbox keys and your Amap keys.</b><br><br>"
-                                               "Picking \"Amap\" just swaps which rows this menu shows you. \"The Pond\" still needs both Mapbox keys before it will show its navigation page at all, so set those either way. Destination searching itself happens in \"The Pond\", not here."),
-                                               "", searchOptions, true);
-  QObject::connect(searchInput, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
-    amapKeyControl1->setVisible(id == 1);
-    amapKeyControl2->setVisible(id == 1);
-    publicMapboxKeyControl->setVisible(id == 0);
-    secretMapboxKeyControl->setVisible(id == 0);
-    setupButton->setVisible(id == 0);
+    updateButtons();
+  });
+  settingsList->addItem(amapKeyControl);
 
+  searchProviderControl = new FrogPilotButtonsControl(tr("Destination Search Provider"), tr("<b>Chooses who finds the places you search for on the \"Navigation\" page in \"The Pond\".</b><br><br>Mapbox is the default. Amap is for searching places in China and needs your own \"Amap Key\". The route and the map on your driving screen come from Mapbox either way, so navigation needs both Mapbox keys with either choice."), "", {tr("Mapbox"), tr("Amap")}, true);
+  QObject::connect(searchProviderControl, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
     params.putInt("SearchInput", id);
 
-    update();
+    updateButtons();
   });
-  searchInput->setCheckedButton(params.getInt("SearchInput"));
-  settingsList->addItem(searchInput);
+  settingsList->addItem(searchProviderControl);
 
-  createKeyControl(amapKeyControl1, tr("Amap Key #1"), "AMapKey1", "", 39, settingsList);
-  createKeyControl(amapKeyControl2, tr("Amap Key #2"), "AMapKey2", "", 39, settingsList);
+  ipLabel = new LabelControl(tr("Manage Your Settings At"), tr("Offline..."), tr("<b>Open this address in a browser on the same Wi-Fi to reach \"The Pond\", where you manage your drives, recordings, themes, navigation, and more from a phone or computer.</b>"));
+  settingsList->addItem(ipLabel);
 
-  publicMapboxKeyControl = new FrogPilotButtonsControl(tr("Public Mapbox Key"), tr("<b>Lets you search for a destination and preview the route without paying for comma's subscription.</b><br><br>You make this key yourself on Mapbox's website. Navigation stays locked until both this and the \"Secret Mapbox Key\" are set, so add both. \"Mapbox Setup Instructions\" walks you through it."), "", {tr("ADD"), tr("TEST")});
+  pairingToggle = new ParamControl("ThePondPairing", tr("Pairing Code"), tr("<b>Ask for a code before a browser can use \"The Pond\".</b><br><br>Without a code, any device on the same Wi-Fi or Tailscale network can open your drives, camera footage, logs, location, and saved places, and can change your settings, unlock your doors, reboot the device, or sign the device into a Tailscale account. The code shows next to the address above. Turning this off signs every browser out, and turning it back on makes a new code."), "");
+  QObject::connect(pairingToggle, &ToggleControl::toggleFlipped, [this](bool state) {
+    if (state) {
+      params.put("ThePondPairingCode", QString::number(QRandomGenerator::system()->bounded(1000000)).rightJustified(6, '0').toStdString());
+    } else {
+      params.remove("ThePondPairedBrowsers");
+      params.remove("ThePondPairingCode");
+    }
+  });
+  settingsList->addItem(pairingToggle);
+
+  publicMapboxKeyControl = new FrogPilotButtonsControl(tr("Public Mapbox Key"), tr("<b>Lets you search for a destination and preview the route without paying for comma's subscription.</b><br><br>It also lets openpilot get speed limits from Mapbox. You make this key yourself on Mapbox's website. Navigation stays locked until both this and the \"Secret Mapbox Key\" are set, so add both. \"Mapbox Setup Instructions\" walks you through it."), "", {tr("ADD"), tr("TEST")});
   QObject::connect(publicMapboxKeyControl, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
     if (id == 0) {
       if (mapboxPublicKeySet) {
         if (FrogPilotConfirmationDialog::yesorno(tr("Remove your Public Mapbox Key?"), this)) {
           params.remove("MapboxPublicKey");
-          params_cache.remove("MapboxPublicKey");
+
+          setupCompleted = false;
 
           updateButtons();
         }
@@ -95,13 +103,14 @@ FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *pare
   });
   settingsList->addItem(publicMapboxKeyControl);
 
-  secretMapboxKeyControl = new FrogPilotButtonsControl(tr("Secret Mapbox Key"), tr("<b>Draws the map itself on your driving screen, alongside what the \"Public Mapbox Key\" does for searching.</b><br><br>Keep this one to yourself, since it can be used to run up charges on your Mapbox account. After you add it you are asked whether to reboot, and the map only appears once the device has actually rebooted."), "", {tr("ADD"), tr("TEST")});
+  secretMapboxKeyControl = new FrogPilotButtonsControl(tr("Secret Mapbox Key"), tr("<b>Draws the map itself on your driving screen and gets your navigation route from Mapbox, alongside what the \"Public Mapbox Key\" does for searching.</b><br><br>Keep this one to yourself, since it can be used to run up charges on your Mapbox account. After you add it you are asked whether to reboot, and the map only appears once the device has actually rebooted."), "", {tr("ADD"), tr("TEST")});
   QObject::connect(secretMapboxKeyControl, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
     if (id == 0) {
       if (mapboxSecretKeySet) {
         if (FrogPilotConfirmationDialog::yesorno(tr("Remove your Secret Mapbox Key?"), this)) {
           params.remove("MapboxSecretKey");
-          params_cache.remove("MapboxSecretKey");
+
+          setupCompleted = false;
 
           updateButtons();
         }
@@ -163,15 +172,15 @@ FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *pare
   });
   settingsList->addItem(setupButton);
 
-  updateSpeedLimitsToggle = new FrogPilotButtonControl("SpeedLimitFiller", tr("Speed Limit Filler"),
-                                                    tr("<b>Collect missing or incorrect speed limits automatically while you drive.</b><br><br>"
-                                                       "FrogPilot compares speed limits from your dashboard, where supported, Mapbox, and \"Navigate on openpilot\". Downloaded maps are required because "
-                                                       "FrogPilot uses their OSM way IDs to identify each road.<br><br>You can download the results from \"The Pond\" in "
-                                                       "the \"Download Speed Limits\" menu and load them into the Speed Limit Filler website. Review every proposed edit before submitting it to OSM.<br><br>"
-                                                       "Need a step-by-step guide? "
-                                                       "Visit <b>#speed-limit-filler</b> in the FrogPilot Discord!"),
-                                                       "", {});
-  settingsList->addItem(updateSpeedLimitsToggle);
+  speedLimitFillerToggle = new ParamControl("SpeedLimitFiller", tr("Speed Limit Filler"),
+                                            tr("<b>Learns speed limits from the signs the camera reads on roads where your downloaded maps have no limit or the wrong one.</b><br><br>"
+                                               "Each learned limit is saved for that road and direction and used in place of the map's limit the next time you drive there, "
+                                               "and it is forgotten once the map matches the signs. It also keeps a cropped photo of the sign each learned limit came from. "
+                                               "Roads with conditional limits, such as ones that change with the time of day or the weather, are skipped. Needs downloaded maps.<br><br>"
+                                               "With \"Share FrogPilot Data\" on, the learned limits, their sign photos, and the roads where the signs matched your map are sent to FrogPilot while parked on unmetered "
+                                               "Wi-Fi or Ethernet and used to improve speed limits for everyone using FrogPilot."),
+                                            "");
+  settingsList->addItem(speedLimitFillerToggle);
 
   ScrollView *settingsPanel = new ScrollView(settingsList, this);
   primelessLayout->addWidget(settingsPanel);
@@ -181,14 +190,14 @@ FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *pare
   ScrollView *instructionsPanel = new ScrollView(imageLabel, this);
   primelessLayout->addWidget(instructionsPanel);
 
-  toggles["AMapKey1"] = amapKeyControl1;
-  toggles["AMapKey2"] = amapKeyControl2;
+  toggles["AMapKey1"] = amapKeyControl;
   toggles["ManageSettingsAt"] = ipLabel;
   toggles["MapboxPublicKey"] = publicMapboxKeyControl;
   toggles["MapboxSecretKey"] = secretMapboxKeyControl;
   toggles["MapboxSetup"] = setupButton;
-  toggles["SearchInput"] = searchInput;
-  toggles["SpeedLimitFiller"] = updateSpeedLimitsToggle;
+  toggles["SearchInput"] = searchProviderControl;
+  toggles["SpeedLimitFiller"] = speedLimitFillerToggle;
+  toggles["ThePondPairing"] = pairingToggle;
 
   QObject::connect(parent, &FrogPilotSettingsWindow::closeSubPanel, [this]() {
     primelessLayout->setCurrentIndex(0);
@@ -205,15 +214,8 @@ void FrogPilotNavigationPanel::showEvent(QShowEvent *event) {
 
   setupCompleted = mapboxPublicKeySet && mapboxSecretKeySet;
 
-  int selectedSearchInput = params.getInt("SearchInput");
-
-  amapKeyControl1->setVisible(selectedSearchInput == 1);
-  amapKeyControl2->setVisible(selectedSearchInput == 1);
-  publicMapboxKeyControl->setVisible(selectedSearchInput == 0);
-  secretMapboxKeyControl->setVisible(selectedSearchInput == 0);
-  setupButton->setVisible(selectedSearchInput == 0);
-
-  updateSpeedLimitsToggle->setVisible(parent->tuningLevel >= parent->frogpilotToggleLevels["SpeedLimitFiller"].toDouble());
+  pairingToggle->setVisible(parent->tuningLevel >= parent->frogpilotToggleLevels.value("ThePondPairing").toDouble());
+  speedLimitFillerToggle->setVisible(parent->tuningLevel >= parent->frogpilotToggleLevels.value("SpeedLimitFiller").toDouble());
 }
 
 void FrogPilotNavigationPanel::hideEvent(QHideEvent *event) {
@@ -230,40 +232,27 @@ void FrogPilotNavigationPanel::mousePressEvent(QMouseEvent *event) {
   }
 }
 
-void FrogPilotNavigationPanel::createKeyControl(ButtonControl *&control, const QString &label, const std::string &paramKey, const QString &prefix, const int &minLength, FrogPilotListWidget *list) {
-  control = new ButtonControl(label, "", tr("<b>Your %1, stored for Amap destination searching in \"The Pond\".</b><br><br>FrogPilot does not actually send searches to Amap yet, so \"The Pond\" only checks that the keys are filled in. Set both Mapbox keys if you want destination search to work.").arg(label));
-  QObject::connect(control, &ButtonControl::clicked, [=] {
-    if (control->text() == tr("ADD")) {
-      QString key = InputDialog::getText(tr("Enter your %1").arg(label), this, "", false, minLength).trimmed();
-      if (!key.isEmpty()) {
-        if (!key.startsWith(prefix)) {
-          key = prefix + key;
-        }
-        params.put(paramKey, key.toStdString());
-      }
-    } else {
-      if (FrogPilotConfirmationDialog::yesorno(tr("Remove your %1?").arg(label), this)) {
-        control->setText(tr("ADD"));
-
-        params.remove(paramKey);
-        params_cache.remove(paramKey);
-
-        setupCompleted = false;
-      }
-    }
-  });
-  control->setText(QString::fromStdString(params.get(paramKey)).startsWith(prefix) ? tr("REMOVE") : tr("ADD"));
-  list->addItem(control);
-}
-
 void FrogPilotNavigationPanel::updateButtons() {
   FrogPilotUIState &fs = *frogpilotUIState();
 
-  QString ipAddress = fs.wifi->getIp4Address();
-  ipLabel->setText(ipAddress.isEmpty() ? tr("Offline...") : QString("%1:8082").arg(ipAddress));
+  amapKeyControl->setText(params.get("AMapKey1").empty() ? tr("ADD") : tr("REMOVE"));
 
-  amapKeyControl1->setText(params.get("AMapKey1").empty() ? tr("ADD") : tr("REMOVE"));
-  amapKeyControl2->setText(params.get("AMapKey2").empty() ? tr("ADD") : tr("REMOVE"));
+  int searchProvider = params.getInt("SearchInput");
+
+  amapKeyControl->setVisible(searchProvider == 1);
+  searchProviderControl->setCheckedButton(searchProvider);
+  setupButton->setVisible(searchProvider == 0);
+
+  QString ipAddress = fs.wifi->ipv4_address;
+  if (ipAddress.isEmpty()) {
+    ipLabel->setText(tr("Offline..."));
+  } else {
+    QString address = QString("%1:8082").arg(ipAddress);
+    if (params.getBool("ThePondPairing")) {
+      address += tr(" (Code %1)").arg(QString::fromStdString(params.get("ThePondPairingCode")));
+    }
+    ipLabel->setText(address);
+  }
 
   mapboxPublicKeySet = QString::fromStdString(params.get("MapboxPublicKey")).startsWith("pk");
   mapboxSecretKeySet = QString::fromStdString(params.get("MapboxSecretKey")).startsWith("sk");
@@ -286,16 +275,21 @@ void FrogPilotNavigationPanel::updateState(const UIState &s, const FrogPilotUISt
 }
 
 void FrogPilotNavigationPanel::updateStep() {
-  QString currentStep;
+  QString step;
   if (setupCompleted) {
-    currentStep = "../../frogpilot/navigation/navigation_training/setup_completed.png";
+    step = "../../frogpilot/navigation/navigation_training/setup_completed.png";
   } else if (mapboxPublicKeySet && mapboxSecretKeySet) {
-    currentStep = "../../frogpilot/navigation/navigation_training/both_keys_set.png";
+    step = "../../frogpilot/navigation/navigation_training/both_keys_set.png";
   } else if (mapboxPublicKeySet) {
-    currentStep = "../../frogpilot/navigation/navigation_training/public_key_set.png";
+    step = "../../frogpilot/navigation/navigation_training/public_key_set.png";
   } else {
-    currentStep = "../../frogpilot/navigation/navigation_training/no_keys_set.png";
+    step = "../../frogpilot/navigation/navigation_training/no_keys_set.png";
   }
+
+  if (step == currentStep) {
+    return;
+  }
+  currentStep = step;
 
   QPixmap pixmap;
   pixmap.load(currentStep);

@@ -1034,7 +1034,7 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
 FROGPILOT_EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   FrogPilotEventName.blockUser: {
     ET.PERMANENT: Alert(
-      "Don't use this branch!",
+      "Don't use the 'MAKE-PRS-HERE' branch!",
       "Forcing you into 'Dashcam Mode' for your safety",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.HIGHEST, VisualAlert.none, AudibleAlert.none, 1.),

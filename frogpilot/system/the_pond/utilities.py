@@ -15,8 +15,13 @@ from aiohttp import web
 from cereal import messaging
 from openpilot.common.params import Params
 from openpilot.system import sentry
+from openpilot.system.hardware import HARDWARE
 
 from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
+
+ACCOUNT_CHECK_INTERVAL = 1
+
+IS_COMMA_FOUR = HARDWARE.get_device_type() == "mici"
 
 PAIRING_COOKIE = "the_pond"
 PAIRING_COOKIE_AGE = 10 * 365 * 24 * 60 * 60
@@ -34,13 +39,16 @@ class ThePond:
     self.params = Params()
 
     self.pm = messaging.PubMaster(["thePondRequest"])
-    self.sm = messaging.SubMaster(["controlsState", "deviceState", "frogpilotCarState", "frogpilotDeviceState", "frogpilotPlan",
-                                   "frogpilotProcessState", "managerState", "pandaStates", "peripheralState"])
+    self.sm = messaging.SubMaster(["controlsState", "deviceState", "frogpilotAccountState", "frogpilotCarState", "frogpilotDeviceState",
+                                   "frogpilotPlan", "frogpilotProcessState", "managerState", "navInstruction", "navRoute", "pandaStates",
+                                   "peripheralState"])
 
     self.connections = weakref.WeakSet()
     self.file_locks = {}
     self.heavy_work = asyncio.Semaphore(1)
     self.jobs = {}
+
+    self.destination_set_time = 0
 
     self.drive_active = False
     self.preparation = None
@@ -48,11 +56,15 @@ class ThePond:
 
     self.locked = True
 
+    self.mapbox_secret_at_start = self.params.get("MapboxSecretKey")
+
     self.pairing_failures = []
 
     self.reboot_required = set()
 
     self.shell_used = 0.0
+
+    self.sound_player = None
 
     self.storage_usage = None
     self.storage_usage_expiry = 0.0
@@ -62,9 +74,9 @@ class ThePond:
   def is_locked(self):
     if not self.sm.seen["deviceState"]:
       return True
-    if not self.sm["deviceState"].started or frogpilot_utilities.frogs_go_moo():
+    if not self.sm["deviceState"].started or frogpilot_utilities.is_FrogsGoMoo():
       return False
-    return not self.sm["frogpilotCarState"].isParked
+    return not self.sm["frogpilotCarState"].parked
 
   def send_request(self, kind, value=None):
     msg = messaging.new_message("thePondRequest")
@@ -293,3 +305,9 @@ async def stop_process(process):
   if process.returncode is None:
     process.kill()
     await process.wait()
+
+
+async def unlink_account(the_pond):
+  request_time = the_pond.send_request("unlinkAccount")
+  while the_pond.sm["frogpilotAccountState"].linkRequestTime < request_time:
+    await asyncio.sleep(ACCOUNT_CHECK_INTERVAL)

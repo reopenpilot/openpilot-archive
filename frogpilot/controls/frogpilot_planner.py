@@ -43,7 +43,7 @@ class FrogPilotPlanner:
 
     self.accel_press_count = 0
     self.decel_press_count = 0
-    self.gps_bearing = 0
+    self.experimental_mode_press_count = None
     self.lane_width_left = 0
     self.lane_width_right = 0
     self.lateral_acceleration = 0
@@ -54,6 +54,9 @@ class FrogPilotPlanner:
     self.time_to_curve = 0
     self.v_cruise = 0
 
+    last_gps_position = json.loads(frogpilot_variables.params.get("LastGPSPosition") or "{}")
+    self.gps_bearing = last_gps_position.get("bearing", 0.)
+
     self.lane_width_filter = FirstOrderFilter(np.zeros(2), 0.15, DT_MDL)
     self.road_edge_filter = FirstOrderFilter(np.zeros(2), 0.15, DT_MDL)
 
@@ -63,10 +66,13 @@ class FrogPilotPlanner:
     self.accel_pressed = sm["frogpilotCarState"].accelPressCount > self.accel_press_count
     self.decel_pressed = sm["frogpilotCarState"].decelPressCount > self.decel_press_count
 
+    if self.experimental_mode_press_count is not None:
+      self.experimental_mode_pressed = sm["frogpilotCarState"].experimentalModePressCount > self.experimental_mode_press_count
+
     self.accel_press_count = sm["frogpilotCarState"].accelPressCount
     self.decel_press_count = sm["frogpilotCarState"].decelPressCount
+    self.experimental_mode_press_count = sm["frogpilotCarState"].experimentalModePressCount
 
-    self.experimental_mode_pressed = False
     self.frogpilot_vcruise.slc.speed_limit_accepted = False
     for msg in messaging.drain_sock(self.ui_event_sock):
       ui_event = msg.frogpilotUIEvent
@@ -183,17 +189,17 @@ class FrogPilotPlanner:
     frogpilot_plan_send.valid = sm.all_checks(service_list=["carState", "controlsState"])
     frogpilotPlan = frogpilot_plan_send.frogpilotPlan
 
-    frogpilotPlan.accelerationJerk = A_CHANGE_COST * self.frogpilot_following.acceleration_jerk
-    frogpilotPlan.dangerJerk = DANGER_ZONE_COST * self.frogpilot_following.danger_jerk
-    frogpilotPlan.speedJerk = J_EGO_COST * self.frogpilot_following.speed_jerk
-    frogpilotPlan.tFollow = self.frogpilot_following.t_follow
+    frogpilotPlan.accelerationJerk = float(A_CHANGE_COST * self.frogpilot_following.acceleration_jerk)
+    frogpilotPlan.dangerJerk = float(DANGER_ZONE_COST * self.frogpilot_following.danger_jerk)
+    frogpilotPlan.speedJerk = float(J_EGO_COST * self.frogpilot_following.speed_jerk)
+    frogpilotPlan.tFollow = float(self.frogpilot_following.t_follow)
 
     frogpilotPlan.ceStatus = self.cem.status_value
 
     frogpilotPlan.cscActive = self.frogpilot_vcruise.csc_active
     frogpilotPlan.cscControllingSpeed = self.frogpilot_vcruise.csc_controlling_speed
     frogpilotPlan.cscMaxLateralAcceleration = self.frogpilot_vcruise.csc.max_limit
-    frogpilotPlan.cscSpeed = self.frogpilot_vcruise.csc_target
+    frogpilotPlan.cscSpeed = float(self.frogpilot_vcruise.csc_target)
     frogpilotPlan.cscTraining = self.frogpilot_vcruise.csc.enable_training
 
     frogpilotPlan.desiredFollowDistance = self.frogpilot_following.desired_follow_distance
@@ -217,8 +223,8 @@ class FrogPilotPlanner:
 
     frogpilotPlan.lateralCheck = self.lateral_check
 
-    frogpilotPlan.maxAcceleration = self.frogpilot_acceleration.max_accel
-    frogpilotPlan.minAcceleration = self.frogpilot_acceleration.min_accel
+    frogpilotPlan.maxAcceleration = float(self.frogpilot_acceleration.max_accel)
+    frogpilotPlan.minAcceleration = float(self.frogpilot_acceleration.min_accel)
 
     frogpilotPlan.redLight = self.cem.stop_light_detected
 
@@ -238,7 +244,7 @@ class FrogPilotPlanner:
 
     frogpilotPlan.togglesUpdateTime = toggles_update_time
 
-    frogpilotPlan.vCruise = self.v_cruise
+    frogpilotPlan.vCruise = float(self.v_cruise)
 
     frogpilotPlan.weatherDaytime = self.frogpilot_weather.is_daytime
     frogpilotPlan.weatherId = self.frogpilot_weather.weather_id

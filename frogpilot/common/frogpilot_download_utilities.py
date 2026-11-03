@@ -64,7 +64,7 @@ class DownloadState:
 
   def handle_error(self, destination, error_message):
     if destination:
-      frogpilot_utilities.delete_file(destination, print_error=False)
+      frogpilot_utilities.delete_path(destination)
 
     if "404" not in error_message:
       self.progress = error_message

@@ -1,18 +1,12 @@
 #include <regex>
-#include <thread>
+
+#include <QFutureWatcher>
+#include <QtConcurrent>
 
 #include "frogpilot/ui/qt/offroad/maps_settings.h"
-#include "frogpilot/ui/qt/widgets/frogpilot_controls.h"
 
-FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
-  QJsonObject shownDescriptions = QJsonDocument::fromJson(QString::fromStdString(params.get("ShownToggleDescriptions")).toUtf8()).object();
-  QString className = this->metaObject()->className();
-
-  if (!shownDescriptions.value(className).toBool(false)) {
-    forceOpenDescriptions = true;
-    shownDescriptions.insert(className, true);
-    params.put("ShownToggleDescriptions", QJsonDocument(shownDescriptions).toJson(QJsonDocument::Compact).toStdString());
-  }
+FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent, bool forceOpen) : FrogPilotListWidget(parent), parent(parent) {
+  forceOpenDescriptions = forceOpen;
 
   QStackedLayout *mapsLayout = new QStackedLayout();
   addItem(mapsLayout);
@@ -22,7 +16,7 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
   std::vector<QString> scheduleOptions{tr("Manually"), tr("Weekly"), tr("Monthly")};
   preferredSchedule = new ButtonParamControl("PreferredSchedule", tr("Automatically Update Maps"),
                                           tr("<b>How often openpilot re-downloads the speed limit map data for the places you picked under \"Map Sources\". \"Weekly\" runs every Sunday, \"Monthly\" runs on the 1st, and \"Manually\" waits until you press \"DOWNLOAD\" yourself.</b><br><br>"
-                                             "There is one exception. Whenever the map data is missing from the device, openpilot starts the download on its own, usually within the hour, and that one is not held back until you park."),
+                                             "There is one exception. Whenever the map data is missing from the device, openpilot starts the download on its own, usually within the hour, and that one is not held back until you park. Automatic downloads only run on Wi-Fi or another unmetered connection."),
                                              "",
                                              scheduleOptions);
   settingsList->addItem(preferredSchedule);
@@ -55,17 +49,23 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
   settingsList->addItem(downloadTimeElapsed = new LabelControl(tr("Time Elapsed")));
   settingsList->addItem(downloadETA = new LabelControl(tr("Time Remaining")));
 
-  downloadETA->setVisible(false);
-  downloadStatus->setVisible(false);
-  downloadTimeElapsed->setVisible(false);
-
   removeMapsButton = new ButtonControl(tr("Remove Maps"), tr("REMOVE"), tr("<b>Delete your downloaded map data and clear the places you picked under \"Map Sources\", to free up storage.</b><br><br>Nothing comes back on its own, so \"Speed Limit Controller\" has no map speed limits until you pick your places again and start a new download."));
   QObject::connect(removeMapsButton, &ButtonControl::clicked, [this] {
     if (FrogPilotConfirmationDialog::yesorno(tr("Delete all downloaded maps and clear your selected map sources?"), this)) {
       hasMapsSelected = false;
+      removingMaps = true;
 
-      params.remove("MapsSelected");
+      downloadMapsButton->setEnabled(false);
+      removeMapsButton->setEnabled(false);
+      resetMapdButton->setEnabled(false);
+      selectMaps->setEnabled(false);
+
+      removeMapsButton->setValue(tr("Removing..."));
+
+      this->parent->keepScreenOn = true;
+
       params.remove("LastMapsUpdate");
+      params.remove("MapsSelected");
 
       for (MapSelectionControl *control : mapSelectionControls) {
         control->reloadSelectedMaps();
@@ -75,19 +75,42 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
 
       QDir mapsFolder = mapsFolderPath;
 
-      mapsSize->setText(tr("0 MB"));
+      QFutureWatcher<bool> *removalWatcher = new QFutureWatcher<bool>(this);
+      QObject::connect(removalWatcher, &QFutureWatcher<bool>::finished, this, [this, removalWatcher]() {
+        const bool removed = removalWatcher->result();
+        removalWatcher->deleteLater();
 
-      std::thread([mapsFolder]() mutable {
-        mapsFolder.removeRecursively();
-      }).detach();
+        removingMaps = false;
+
+        removeMapsButton->setValue("");
+
+        removeMapsButton->setEnabled(true);
+        resetMapdButton->setEnabled(true);
+        selectMaps->setEnabled(true);
+
+        this->parent->keepScreenOn = false;
+
+        refreshMapInfo();
+        updateState(*uiState(), *frogpilotUIState());
+
+        if (!removed && isVisible()) {
+          ConfirmationDialog::alert(tr("Some map data could not be removed. Try again."), this);
+        }
+      });
+
+      removalWatcher->setFuture(QtConcurrent::run([mapsFolder]() mutable {
+        return mapsFolder.removeRecursively();
+      }));
     }
   });
   settingsList->addItem(removeMapsButton);
 
   resetMapdButton = new ButtonControl(tr("Reset Downloader"), tr("RESET"),
-                                   tr("<b>Delete every map you have downloaded, reinstall the map downloader, and reboot your device.</b><br><br>Use this when downloads keep getting stuck or failing. Once your device is back online it downloads the places you picked under \"Map Sources\" all over again on its own, which can take hours."));
+                                   tr("<b>Delete every map you have downloaded, reset the map downloader, and reboot your device.</b><br><br>Use this when downloads keep getting stuck or failing. Once your device is back online it downloads the places you picked under \"Map Sources\" all over again on its own, which can take hours."));
   QObject::connect(resetMapdButton, &ButtonControl::clicked, [parent, this]() {
-    if (ConfirmationDialog::confirm(tr("Reset the map downloader? This deletes every map you have downloaded, and your device will reboot afterward."), tr("Reset"), this)) {
+    if (isOpenpilotSteering()) {
+      ConfirmationDialog::alert(tr("Disengage to Reboot"), this);
+    } else if (ConfirmationDialog::confirm(tr("Reset the map downloader? This deletes every map you have downloaded, and your device will reboot afterward."), tr("Reset"), this)) {
       std::thread([parent, this]() {
         runOnUIThread(resetMapdButton, [parent, this]() {
           parent->keepScreenOn = true;
@@ -99,6 +122,7 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
         std::system("pkill mapd");
 
         QDir("/data/media/0/osm").removeRecursively();
+        params.remove("LastMapsUpdate");
 
         runOnUIThread(resetMapdButton, [this]() {
           resetMapdButton->setValue(tr("Reset!"));
@@ -112,11 +136,25 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
 
         util::sleep_for(2500);
 
-        Hardware::reboot();
+        runOnUIThread(resetMapdButton, [this]() {
+          QTimer *rebootTimer = new QTimer(this);
+          QObject::connect(rebootTimer, &QTimer::timeout, [rebootTimer]() {
+            if (!isOpenpilotSteering()) {
+              rebootTimer->stop();
+
+              Hardware::reboot();
+            }
+          });
+          rebootTimer->start(1000 / UI_FREQ);
+        });
       }).detach();
     }
   });
   settingsList->addItem(resetMapdButton);
+
+  lastMapsDownload->setVisible(false);
+  removeMapsButton->setVisible(false);
+  resetMapdButton->setVisible(false);
 
   settingsList->addItem(mapsSize = new LabelControl(tr("Storage Used")));
 
@@ -172,9 +210,7 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
       selectMaps->showDescription();
     }
 
-    std::string mapsSelected = params.get("MapsSelected");
-    hasMapsSelected = !QJsonDocument::fromJson(QByteArray::fromStdString(mapsSelected)).object().value("nations").toArray().isEmpty();
-    hasMapsSelected |= !QJsonDocument::fromJson(QByteArray::fromStdString(mapsSelected)).object().value("states").toArray().isEmpty();
+    updateMapsSelected();
 
     mapsLayout->setCurrentWidget(settingsPanel);
   });
@@ -186,6 +222,10 @@ FrogPilotMapsPanel::FrogPilotMapsPanel(FrogPilotSettingsWindow *parent) : FrogPi
 }
 
 void FrogPilotMapsPanel::showEvent(QShowEvent *event) {
+  for (MapSelectionControl *control : mapSelectionControls) {
+    control->reloadSelectedMaps();
+  }
+
   if (forceOpenDescriptions) {
     downloadMapsButton->showDescription();
     preferredSchedule->showDescription();
@@ -194,9 +234,7 @@ void FrogPilotMapsPanel::showEvent(QShowEvent *event) {
     selectMaps->showDescription();
   }
 
-  std::string mapsSelected = params.get("MapsSelected");
-  hasMapsSelected = !QJsonDocument::fromJson(QByteArray::fromStdString(mapsSelected)).object().value("nations").toArray().isEmpty();
-  hasMapsSelected |= !QJsonDocument::fromJson(QByteArray::fromStdString(mapsSelected)).object().value("states").toArray().isEmpty();
+  updateMapsSelected();
 
   wasDownloadingMaps = false;
 
@@ -205,19 +243,26 @@ void FrogPilotMapsPanel::showEvent(QShowEvent *event) {
 }
 
 void FrogPilotMapsPanel::updateState(const UIState &s, const FrogPilotUIState &fs) {
+  if (!isVisible() && s.scene.started) {
+    return;
+  }
+
+  const bool downloadingMaps = !params_memory.get("OSMDownloadLocations").empty();
+  const std::string osmDownloadProgress = params.get("OSMDownloadProgress");
+
+  if (!downloadingMaps && !osmDownloadProgress.empty()) {
+    updateDownloadLabels(osmDownloadProgress, false);
+  }
+
   if (!isVisible()) {
     return;
   }
 
-  const bool parked = !s.scene.started || fs.frogpilot_scene.parked || fs.frogpilot_toggles.value("frogs_go_moo").toBool();
-  const std::string osmDownloadProgress = params.get("OSMDownloadProgress");
-  const bool downloadPending = !params_memory.get("OSMDownloadLocations").empty();
-  const bool downloadingMaps = !osmDownloadProgress.empty() || downloadPending;
+  const bool parked = !s.scene.started || fs.frogpilot_scene.parked || frogsGoMoo();
 
   if (downloadingMaps && !wasDownloadingMaps) {
+    initialDownloadedFiles = -1;
     previousDownloadedFiles = 0;
-    elapsedTime.start();
-    startTime = QDateTime::currentDateTime();
   } else if (!downloadingMaps && wasDownloadingMaps) {
     refreshMapInfo();
   }
@@ -240,7 +285,7 @@ void FrogPilotMapsPanel::updateState(const UIState &s, const FrogPilotUIState &f
       downloadStatus->setText(tr("Calculating..."));
       downloadTimeElapsed->setText(tr("Calculating..."));
     } else {
-      updateDownloadLabels(osmDownloadProgress);
+      updateDownloadLabels(osmDownloadProgress, true);
     }
   } else {
     downloadMapsButton->setText(tr("DOWNLOAD"));
@@ -253,11 +298,11 @@ void FrogPilotMapsPanel::updateState(const UIState &s, const FrogPilotUIState &f
     removeMapsButton->setVisible(mapsFolderPath.exists());
     resetMapdButton->setVisible(true);
 
-    downloadMapsButton->setEnabled(!cancellingDownload && hasMapsSelected && fs.frogpilot_scene.online && parked);
+    downloadMapsButton->setEnabled(!removingMaps && !cancellingDownload && hasMapsSelected && fs.frogpilot_scene.online && parked);
     downloadMapsButton->setValue(fs.frogpilot_scene.online ? (parked ? (hasMapsSelected ? "" : tr("Select your map sources")) : tr("Not parked")) : tr("Offline..."));
   }
 
-  parent->keepScreenOn = downloadingMaps;
+  parent->keepScreenOn = downloadingMaps || removingMaps;
 }
 
 void FrogPilotMapsPanel::cancelDownload() {
@@ -268,7 +313,7 @@ void FrogPilotMapsPanel::cancelDownload() {
   params.remove("OSMDownloadProgress");
   params_memory.remove("OSMDownloadLocations");
 
-  std::system("pkill mapd");
+  params_memory.putBool("RestartMapd", true);
 
   QTimer::singleShot(2500, this, [this]() {
     cancellingDownload = false;
@@ -278,14 +323,20 @@ void FrogPilotMapsPanel::cancelDownload() {
 void FrogPilotMapsPanel::refreshMapInfo() {
   const std::string lastMapsUpdate = params.get("LastMapsUpdate");
   lastMapsDownload->setText(lastMapsUpdate.empty() ? tr("Never") : QString::fromStdString(lastMapsUpdate));
-  mapsSize->setText(calculateDirectorySize(mapsFolderPath));
+
+  QFutureWatcher<QString> *sizeWatcher = new QFutureWatcher<QString>(this);
+  QObject::connect(sizeWatcher, &QFutureWatcher<QString>::finished, this, [this, sizeWatcher]() {
+    mapsSize->setText(sizeWatcher->result());
+    sizeWatcher->deleteLater();
+  });
+  sizeWatcher->setFuture(QtConcurrent::run(calculateDirectorySize, mapsFolderPath));
 }
 
 void FrogPilotMapsPanel::startDownload() {
   params_memory.put("OSMDownloadLocations", params.get("MapsSelected"));
 }
 
-void FrogPilotMapsPanel::updateDownloadLabels(const std::string &osmDownloadProgress) {
+void FrogPilotMapsPanel::updateDownloadLabels(const std::string &osmDownloadProgress, bool downloadingMaps) {
   static std::regex fileStatusRegex(R"("total_files":(\d+),.*"downloaded_files":(\d+))");
 
   std::smatch match;
@@ -293,19 +344,34 @@ void FrogPilotMapsPanel::updateDownloadLabels(const std::string &osmDownloadProg
     const int totalFiles = std::stoi(match[1].str());
     const int downloadedFiles = std::stoi(match[2].str());
 
-    if (downloadedFiles == totalFiles && totalFiles > 0) {
-      params.put("LastMapsUpdate", formatCurrentDate().toStdString());
+    if (!downloadingMaps) {
       params.remove("OSMDownloadProgress");
 
-      std::system("pkill mapd");
+      if (downloadedFiles == totalFiles && totalFiles > 0) {
+        params.put("LastMapsUpdate", formatCurrentDate().toStdString());
+
+        params_memory.putBool("RestartMapd", true);
+
+        refreshMapInfo();
+      } else if (isVisible()) {
+        ConfirmationDialog::alert(tr("Some maps could not be downloaded. Check your connection and try again."), this);
+      }
 
       previousDownloadedFiles = 0;
 
       return;
     }
 
-    if (downloadedFiles > 0) {
-      downloadETA->setText(formatETA(elapsedTime.elapsed(), downloadedFiles, previousDownloadedFiles, totalFiles, startTime));
+    if (initialDownloadedFiles < 0) {
+      elapsedTime.start();
+
+      initialDownloadedFiles = downloadedFiles;
+
+      startTime = QDateTime::currentDateTime();
+    }
+
+    if (downloadedFiles > initialDownloadedFiles) {
+      downloadETA->setText(formatETA(elapsedTime.elapsed(), downloadedFiles - initialDownloadedFiles, previousDownloadedFiles - initialDownloadedFiles, totalFiles - initialDownloadedFiles, startTime));
     } else {
       downloadETA->setText(tr("Calculating..."));
     }
@@ -315,4 +381,9 @@ void FrogPilotMapsPanel::updateDownloadLabels(const std::string &osmDownloadProg
 
     previousDownloadedFiles = downloadedFiles;
   }
+}
+
+void FrogPilotMapsPanel::updateMapsSelected() {
+  const QJsonObject mapsSelected = QJsonDocument::fromJson(QByteArray::fromStdString(params.get("MapsSelected"))).object();
+  hasMapsSelected = !mapsSelected.value("nations").toArray().isEmpty() || !mapsSelected.value("states").toArray().isEmpty();
 }

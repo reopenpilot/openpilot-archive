@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import capnp
 import hashlib
+import hmac
+import json
 import requests
 import secrets
 import shutil
@@ -12,6 +14,7 @@ from pathlib import Path
 import cereal.messaging as messaging
 
 from cereal import CEREAL_PATH, log
+from openpilot.common.api import get_key_pair
 from openpilot.common.params import Params
 from openpilot.system import sentry
 from openpilot.system.loggerd.uploader import listdir_by_creation
@@ -26,10 +29,18 @@ LEGACY_UPLOAD_ATTR_VALUE = b"1"
 
 SCHEMA_FILES = ("car.capnp", "custom.capnp", "include/c++.capnp", "legacy.capnp", "log.capnp")
 
+EXCLUDED_CAN_ADDRESSES = {
+  "ford": frozenset((0x462, 0x465)),
+  "gm": frozenset((0x32A, 0x4E1, 0x514)),
+  "tesla": frozenset((0x3D8,)),
+  "toyota": frozenset((0x580, 0x581, 0x582)),
+}
+
 EXCLUDED_MESSAGE_TYPES = frozenset((
   "accelerometer2",
   "androidLog",
   "boot",
+  "cameraOdometry",
   "clocks",
   "customReservedRawData0",
   "customReservedRawData1",
@@ -42,10 +53,18 @@ EXCLUDED_MESSAGE_TYPES = frozenset((
   "drivingModelData",
   "errorLogMessage",
   "frogpilotDeviceState",
+  "frogpilotProcessState",
+  "frogpilotSignReading",
+  "frogpilotUIEvent",
+  "frogpilotUIRequest",
   "gnssMeasurements",
+  "gpsLocation",
+  "gpsLocationExternal",
   "gpsNMEA",
   "gyroscope2",
   "lightSensor",
+  "livePose",
+  "liveTracks",
   "livestreamDriverEncodeData",
   "livestreamDriverEncodeIdx",
   "livestreamRoadEncodeData",
@@ -67,17 +86,21 @@ EXCLUDED_MESSAGE_TYPES = frozenset((
   "qRoadEncodeData",
   "qRoadEncodeIdx",
   "qcomGnss",
+  "roadCameraState",
   "roadEncodeData",
   "roadEncodeIdx",
   "temperatureSensor",
   "temperatureSensor2",
   "testJoystick",
+  "thePondRequest",
   "thumbnail",
   "ubloxGnss",
   "ubloxRaw",
   "uiDebug",
   "uiPlan",
   "uploaderState",
+  "userFlag",
+  "wideRoadCameraState",
   "wideRoadEncodeData",
   "wideRoadEncodeIdx",
 ))
@@ -85,44 +108,63 @@ EXCLUDED_MESSAGE_TYPES = frozenset((
 REMOVED_FIELDS = {
   "carParams": ("carVin",),
   "liveLocationKalman": (
+    "accelerationCalibrated",
+    "accelerationDevice",
+    "angularVelocityDevice",
     "calibratedOrientationECEF",
     "filterState",
     "orientationECEF",
     "positionECEF",
     "positionGeodetic",
+    "velocityCalibrated",
+    "velocityDevice",
     "velocityECEF",
     "velocityNED",
   ),
-  "livePose": ("filterState",),
 }
 
 REPLACEMENT_FIELDS = {
   "carControl": {"orientationNED.2": 0},
-  "frogpilotPlan": {"gpsBearing": 0},
-  "gpsLocation": {"altitude": 0, "bearingDeg": 0, "latitude": 0, "longitude": 0, "unixTimestampMillis": 0, "vNED": []},
-  "gpsLocationExternal": {"altitude": 0, "bearingDeg": 0, "latitude": 0, "longitude": 0, "unixTimestampMillis": 0, "vNED": []},
+  "controlsState": {"alertText1": "", "alertText2": ""},
+  "frogpilotControlsState": {"alertText1": "", "alertText2": ""},
+  "frogpilotPlan": {"gpsBearing": 0, "themeUpdateCount": 0, "togglesUpdateTime": 0, "weatherDaytime": False, "wheelImageUpdateCount": 0},
   "liveLocationKalman": {
     "calibratedOrientationNED.value.2": 0,
+    "excessiveResets": False,
     "gpsTimeOfWeek": 0,
     "gpsWeek": 0,
     "orientationNED.value.2": 0,
+    "timeSinceReset": 0,
+    "timeToFirstFix": 0,
     "unixTimestampMillis": 0,
   },
-  "livePose": {"orientationNED.z": 0},
   "modelV2": {"leads": [], "rawPredictions": b""},
-  "roadCameraState": {"image": b""},
-  "wideRoadCameraState": {"image": b""},
 }
 
 WHITELIST_FIELDS = {
-  "driverMonitoringState": ("isRHD",),
-  "initData": ("deviceType", "dirty", "gitCommit", "gitCommitDate", "osVersion", "version"),
+  "driverMonitoringState": (),
+  "initData": ("gitCommit", "version"),
 }
 
-def filter_log(data, schema):
+def get_car_make(data, schema, default_car_make):
+  try:
+    for event in schema.Event.read_multiple_bytes(data):
+      try:
+        if event.which() == "carParams":
+          return event.carParams.carName
+      except capnp.KjException:
+        continue
+  except capnp.KjException:
+    pass
+
+  return default_car_make
+
+def filter_log(data, schema, default_car_make):
   car_fingerprint = None
 
   fingerprinting = False
+
+  excluded_can_addresses = EXCLUDED_CAN_ADDRESSES.get(get_car_make(data, schema, default_car_make))
 
   filtered_data = bytearray()
 
@@ -148,6 +190,12 @@ def filter_log(data, schema):
         continue
 
       builder = event.as_builder()
+
+      if which == "can" and excluded_can_addresses:
+        kept_frames = [frame for frame in event.can if frame.address not in excluded_can_addresses]
+
+        if len(kept_frames) != len(event.can):
+          builder.can = kept_frames
 
       if which in REMOVED_FIELDS:
         message = getattr(builder, which)
@@ -193,6 +241,8 @@ class FrogPilotTelemetry:
 
     self.frogpilot_api = frogpilot_api.FrogPilotAPI(self.params)
 
+    self.private_key = get_key_pair()[1].encode()
+
     self.git_commit = self.params.get("GitCommit", encoding="utf-8")
     self.schemas = {self.git_commit: log}
 
@@ -204,11 +254,16 @@ class FrogPilotTelemetry:
         shutil.copy(Path(CEREAL_PATH, name), staging_path / name)
       staging_path.rename(schema_path)
 
+    self.retry_at = 0
+
     self.compressor = zstandard.ZstdCompressor(level=COMPRESSION_LEVEL)
 
     self.session = requests.Session()
 
     self.sm = messaging.SubMaster(["deviceState"])
+
+    self.car_fingerprint = None
+    self.car_fingerprint_route = None
 
     self.route = self.params.get("CurrentRoute", encoding="utf-8")
     self.first_segment = None
@@ -279,6 +334,11 @@ class FrogPilotTelemetry:
       if not log_path.with_suffix(".lock").is_file():
         yield log_path, drive_ids[route]
 
+  def pending_captures(self):
+    for capture_path in sorted(frogpilot_paths.SPEED_LIMIT_CAPTURES_PATH.glob("*.hevc")):
+      if getxattr(capture_path, frogpilot_variables.UPLOAD_ATTR_NAME) == frogpilot_variables.UPLOAD_PENDING:
+        yield capture_path
+
   def schema(self, git_commit):
     if git_commit not in self.schemas:
       schema_path = frogpilot_paths.TELEMETRY_SCHEMAS_PATH / git_commit / "log.capnp"
@@ -294,8 +354,15 @@ class FrogPilotTelemetry:
     except (OSError, StopIteration, capnp.KjException):
       return
 
-    filtered_data, car_fingerprint = filter_log(data, schema)
+    filtered_data, car_fingerprint = filter_log(data, schema, frogpilot_variables.get_frogpilot_toggles().car_make)
     data = self.compressor.compress(filtered_data)
+
+    route = log_path.parent.name.rpartition("--")[0]
+    if car_fingerprint is not None:
+      self.car_fingerprint = car_fingerprint
+      self.car_fingerprint_route = route
+    elif route == self.car_fingerprint_route:
+      car_fingerprint = self.car_fingerprint
 
     submission = self.frogpilot_api.post_json("/v1/telemetry", {
       "car_fingerprint": car_fingerprint,
@@ -306,7 +373,23 @@ class FrogPilotTelemetry:
     }, self.session)
 
     if upload := submission.get("upload"):
-      self.frogpilot_api.put_upload(upload, data, log_path.name, self.session)
+      self.frogpilot_api.put_upload(upload, data, log_path.name, "telemetry", self.session)
+
+  def upload_capture(self, capture_path):
+    data = capture_path.read_bytes()
+
+    submission = self.frogpilot_api.post_json("/v1/captures", {
+      **json.loads(capture_path.with_suffix(".json").read_text()),
+      "capture_id": self.upload_id(capture_path.stem),
+      "sha256": hashlib.sha256(data).hexdigest(),
+      "size_bytes": len(data),
+    }, self.session)
+
+    if upload := submission.get("upload"):
+      self.frogpilot_api.put_upload(upload, data, capture_path.name, "capture", self.session)
+
+  def upload_id(self, name):
+    return hmac.new(self.private_key, name.encode(), "sha256").hexdigest()[:32]
 
   def can_upload(self):
     self.sm.update(0)
@@ -319,7 +402,7 @@ class FrogPilotTelemetry:
   def update(self):
     self.mark_shared_logs()
 
-    if not self.can_upload():
+    if time.monotonic() < self.retry_at or not self.frogpilot_api.get_token() or not self.can_upload():
       return
 
     for log_path, drive_id in self.pending_logs():
@@ -327,6 +410,7 @@ class FrogPilotTelemetry:
         self.upload(log_path, drive_id)
         setxattr(log_path, frogpilot_variables.UPLOAD_ATTR_NAME, drive_id.encode())
       except (frogpilot_api.FrogPilotAPIError, requests.exceptions.RequestException):
+        self.retry_at = time.monotonic() + 60 * 60
         return
       except Exception as error:
         sentry.capture_exception(error, crash_log=False)
@@ -339,6 +423,24 @@ class FrogPilotTelemetry:
         shutil.rmtree(schema_path)
 
     self.schemas = {self.git_commit: log}
+
+    for capture_path in self.pending_captures():
+      try:
+        self.upload_capture(capture_path)
+
+        if frogpilot_utilities.is_FrogsGoMoo():
+          setxattr(capture_path, frogpilot_variables.UPLOAD_ATTR_NAME, frogpilot_variables.UPLOAD_DONE)
+        else:
+          capture_path.unlink()
+          capture_path.with_suffix(".json").unlink()
+      except (frogpilot_api.FrogPilotAPIError, requests.exceptions.RequestException):
+        self.retry_at = time.monotonic() + 60 * 60
+        return
+      except Exception as error:
+        sentry.capture_exception(error, crash_log=False)
+
+      if not self.can_upload():
+        return
 
 
 def main():

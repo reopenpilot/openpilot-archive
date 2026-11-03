@@ -7,35 +7,39 @@
 #include "selfdrive/ui/qt/offroad/settings.h"
 #include "selfdrive/ui/qt/widgets/scrollview.h"
 
-class QNetworkAccessManager;
-
 class FrogPilotSettingsWindow : public QFrame {
   Q_OBJECT
 
 public:
   explicit FrogPilotSettingsWindow(SettingsWindow *parent);
 
+  void confirmTuningLevel(QWidget *dialogParent);
   void updateTuningLevel();
   void updateVariables();
 
+  bool canDisableOpenpilotLong = true;
+  bool canUseDSUBypass = false;
   bool canUsePedal = false;
   bool carDetected = false;
   bool canUseSDSU = false;
-  bool forceOpenDescriptions = false;
   bool hasAutoTune = true;
   bool hasBSM = true;
   bool hasDashSpeedLimits = true;
-  bool hasExperimentalOpenpilotLongitudinal = false;
+  bool hasDistanceButton = true;
+  bool hasLKASButton = true;
   bool hasNNFFLog = true;
+  bool hasOldLongAPI = false;
   bool hasOpenpilotLongitudinal = true;
   bool hasPCMCruise = false;
   bool hasPedal = false;
   bool hasRadar = true;
   bool hasSDSU = false;
   bool hasSNG = false;
+  bool hasStartingState = true;
   bool hasZSS = false;
   bool isAngleCar = false;
   bool isGM = true;
+  bool isGMCCOnly = false;
   bool isHKG = true;
   bool isHKGCanFd = true;
   bool isHonda = true;
@@ -46,8 +50,8 @@ public:
   bool isTSK = false;
   bool isVolt = true;
   bool keepScreenOn = false;
-  bool openpilotLongitudinalControlDisabled = false;
-  bool useLkasForAOL = false;
+  bool lkasAllowedForAOL = false;
+  bool subaruSNG = false;
 
   float friction = 0;
   float latAccelFactor = 0;
@@ -63,6 +67,8 @@ public:
 
   int tuningLevel = 0;
 
+  std::string carFingerprint;
+
   QJsonObject frogpilotToggleLevels;
 
 signals:
@@ -73,6 +79,7 @@ signals:
   void openSubPanel();
   void openSubSubPanel();
   void openSubSubSubPanel();
+  void tuningLevelChanged(int level);
   void updateMetric(bool metric, bool bootRun=false);
 
 private:
@@ -82,7 +89,11 @@ private:
   void showEvent(QShowEvent *event) override;
   void updateState();
 
+  bool forceOpenDescriptions = false;
+  bool isMetric = false;
   bool panelOpen = false;
+  bool useHigherBitrate = false;
+  bool useKonikServer = false;
 
   std::string carMake;
 
@@ -97,9 +108,12 @@ private:
   ParamWatcher *carParamsWatcher = nullptr;
 
   Params params;
+  Params params_default{"/dev/shm/params_default"};
   Params params_memory{"/dev/shm/params"};
 
-  QStackedLayout *mainLayout;
+  QJsonObject shownDescriptions;
 
-  ScrollView *frogpilotPanel;
+  QStackedLayout *mainLayout = nullptr;
+
+  ScrollView *frogpilotPanel = nullptr;
 };

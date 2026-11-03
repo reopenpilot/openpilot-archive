@@ -2,11 +2,31 @@
 
 #include "frogpilot/ui/qt/offroad/frogpilot_settings.h"
 
+struct ThemeAsset {
+  QDir directory;
+
+  QString subFolder;
+  QString component;
+  QString downloadableParam;
+  QString deleteTitle;
+  QString deleteOneConfirmation;
+  QString deleteSeveralConfirmation;
+  QString downloadTitle;
+  QString selectTitle;
+
+  QStringList excludedBuiltinThemes;
+
+  bool allDownloaded = false;
+  bool downloading = false;
+
+  FrogPilotButtonsControl *button;
+};
+
 class FrogPilotThemesPanel : public FrogPilotListWidget {
   Q_OBJECT
 
 public:
-  explicit FrogPilotThemesPanel(FrogPilotSettingsWindow *parent);
+  explicit FrogPilotThemesPanel(FrogPilotSettingsWindow *parent, bool forceOpen = false);
 
 protected:
   void showEvent(QShowEvent *event) override;
@@ -15,56 +35,34 @@ signals:
   void openSubPanel();
 
 private:
+  void updateStartupAlert();
   void updateState(const UIState &s, const FrogPilotUIState &fs);
+  void updateThemeSelections(bool randomThemesEnabled);
   void updateToggles();
 
   bool cancellingDownload = false;
-  bool colorDownloading = false;
-  bool colorsDownloaded;
-  bool distanceIconDownloading = false;
-  bool distanceIconsDownloaded;
   bool finalizingDownload = false;
   bool forceOpenDescriptions = false;
-  bool iconDownloading = false;
-  bool iconsDownloaded;
   bool randomThemes = false;
-  bool signalDownloading = false;
-  bool signalsDownloaded;
-  bool soundDownloading = false;
-  bool soundsDownloaded;
   bool themeDownloading = false;
-  bool wheelDownloading = false;
-  bool wheelsDownloaded;
 
   std::map<QString, AbstractControl*> toggles;
 
-  QSet<QString> customThemeKeys = {"CustomColors", "CustomDistanceIcons", "CustomIcons", "CustomSignals", "CustomSounds", "DownloadStatusLabel", "WheelIcon"};
+  std::map<QString, ThemeAsset> themeAssets;
+
+  QSet<QString> customThemeKeys = {"ColorScheme", "DistanceIconPack", "DownloadStatusLabel", "IconPack", "SignalAnimation", "SoundPack", "WheelIcon"};
 
   QSet<QString> parentKeys;
 
-  FrogPilotButtonsControl *manageCustomColorsButton;
-  FrogPilotButtonsControl *manageCustomIconsButton;
-  FrogPilotButtonsControl *manageCustomSignalsButton;
-  FrogPilotButtonsControl *manageCustomSoundsButton;
-  FrogPilotButtonsControl *manageDistanceIconsButton;
-  FrogPilotButtonsControl *manageWheelIconsButton;
+  FrogPilotButtonsControl *startupAlertButton = nullptr;
 
-  FrogPilotSettingsWindow *parent;
+  FrogPilotSettingsWindow *parent = nullptr;
 
-  LabelControl *downloadStatusLabel;
+  LabelControl *downloadStatusLabel = nullptr;
 
   QDir themePacksDirectory{"/data/themes/theme_packs/"};
   QDir wheelsDirectory{"/data/themes/steering_wheels/"};
 
-  QJsonObject frogpilotToggleLevels;
-
-  QString colorSchemeToDownload;
-  QString distanceIconPackToDownload;
-  QString iconPackToDownload;
-  QString signalAnimationToDownload;
-  QString soundPackToDownload;
-  QString wheelToDownload;
-
   Params params;
-  Params params_memory{"/dev/shm/params"};
+  Params params_default{"/dev/shm/params_default"};
 };

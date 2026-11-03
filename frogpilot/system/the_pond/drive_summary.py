@@ -73,8 +73,11 @@ def add_event(events, last_seen, kind, time, reason=None):
 
 
 def read_events(qlog):
-  with open(qlog, "rb") as file:
-    data = file.read()
+  try:
+    with open(qlog, "rb") as file:
+      data = file.read()
+  except FileNotFoundError:
+    return
 
   try:
     yield from log.Event.read_multiple_bytes(data)
@@ -175,6 +178,8 @@ def summarize(qlogs):
           disable_reason = reasons[0]
           if disengagement is not None and disengagement["reason"] is None:
             disengagement["reason"] = disable_reason
+      elif which == "userFlag":
+        events.append({"kind": "bookmark", "time": get_drive_time(position, qlog_start, msg.logMonoTime)})
       elif which == "frogpilotPlan":
         frogpilot_plan = msg.frogpilotPlan
         time = get_drive_time(position, qlog_start, msg.logMonoTime)

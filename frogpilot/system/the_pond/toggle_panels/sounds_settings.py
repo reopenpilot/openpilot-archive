@@ -1,34 +1,52 @@
 import asyncio
-import numpy as np
 import re
-import sounddevice
-import wave
-
-from pathlib import Path
+import signal
+import sys
 
 from cereal import messaging
-from openpilot.common.basedir import BASEDIR
 
 from openpilot.frogpilot.common import frogpilot_paths
+from openpilot.frogpilot.system.the_pond import utilities
 from openpilot.frogpilot.system.the_pond.toggle_panels import rows
 
-STOCK_SOUNDS_PATH = Path(BASEDIR) / "selfdrive/assets/sounds"
+PLAY_SOUND_PROGRAM = """
+import numpy as np
+import sounddevice as sd
+import sys
+import wave
+
+with wave.open(sys.argv[1], 'rb') as sound_file:
+  audio = np.frombuffer(sound_file.readframes(sound_file.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
+  sample_rate = sound_file.getframerate()
+
+sd.play(audio * float(sys.argv[2]), sample_rate)
+sd.wait()
+"""
 
 VOLUME_LABELS = {0: "Muted", 101: "Auto"}
 
 
-def play_sound(name, volume):
-  path = frogpilot_paths.ACTIVE_THEME_PATH / "sounds" / f"{name}.wav"
-  if not path.is_file():
-    path = STOCK_SOUNDS_PATH / f"{name}.wav"
+def sound_path(name):
+  theme_sounds_path = frogpilot_paths.ACTIVE_THEME_PATH / "sounds"
 
-  with wave.open(str(path), "r") as wavefile:
-    channels = wavefile.getnchannels()
-    sample_rate = wavefile.getframerate()
-    frames = wavefile.readframes(wavefile.getnframes())
+  stock_path = frogpilot_paths.STOCK_SOUNDS_PATH / f"{name}.wav"
+  theme_path = theme_sounds_path / f"{name}.wav"
 
-  sound = np.frombuffer(frames, dtype=np.int16).reshape(-1, channels).astype(np.float32) / 32768
-  sounddevice.play(sound * volume, sample_rate, blocking=True)
+  if theme_path.exists():
+    return theme_path
+  return stock_path
+
+
+async def play_sound(the_pond, path, volume):
+  if the_pond.sound_player is not None:
+    await utilities.stop_process(the_pond.sound_player)
+
+  player = await asyncio.create_subprocess_exec(sys.executable, "-u", "-c", PLAY_SOUND_PROGRAM, str(path), str(volume), stderr=asyncio.subprocess.PIPE)
+  the_pond.sound_player = player
+
+  _, stderr = await player.communicate()
+  if player.returncode not in (0, -signal.SIGKILL):
+    raise RuntimeError(f"Playing {path} failed ({player.returncode}): {stderr.decode(errors='replace')[-1000:]}")
 
 
 def test_sound_action(key):
@@ -43,7 +61,7 @@ def test_sound_action(key):
       context.the_pond.pm.send("thePondRequest", msg)
     else:
       file_name = re.sub(r"(?<!^)([A-Z])", r"_\1", name).lower()
-      await asyncio.to_thread(play_sound, file_name, min(volume / 100, 1.0))
+      await play_sound(context.the_pond, sound_path(file_name), min(volume / 100, 1.0))
     return True
 
   return {"TEST": {"run": test_sound}}
@@ -169,7 +187,7 @@ ROWS = [
     "children": ("Alerts and Sounds", "MANAGE", "Extra Alerts"),
     "description": ("<b>Turn on extra alerts stock openpilot doesn't have, for things you would otherwise have to catch yourself.</b><br><br>These " +
                     "cover the light turning green, the car ahead pulling away, and the speed limit changing. The blind spot one in here is not a " +
-                    "new alert: openpilot already chimes when you signal for a lane change and there's a car beside you, and this only swaps that " +
+                    "new alert. openpilot already chimes when you signal for a lane change and there's a car beside you, and this only swaps that " +
                     "chime for a louder one."),
     "key": "CustomAlerts",
     "order": 1,

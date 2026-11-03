@@ -2,8 +2,6 @@ import openpilot.system.sentry as sentry
 
 from panda import Panda
 
-from openpilot.frogpilot.common import frogpilot_variables
-
 def flash_panda():
   serials = Panda.list()
   flashed = bool(serials)
@@ -18,7 +16,4 @@ def flash_panda():
       sentry.capture_exception(exception)
       flashed = False
 
-  if flashed:
-    frogpilot_variables.params_memory.remove("FlashPanda")
-  else:
-    frogpilot_variables.params_memory.put_bool("FlashPanda", False)
+  return flashed

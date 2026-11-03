@@ -66,6 +66,13 @@ def run_navigation_modeld(started, params, CP: car.CarParams, frogpilot_toggles)
 def run_new_modeld(started, params, CP: car.CarParams, frogpilot_toggles) -> bool:
   return started and not (frogpilot_utilities.is_classic_model(frogpilot_toggles.model) or frogpilot_utilities.is_tinygrad_model(frogpilot_toggles.model))
 
+def run_speed_limit_capture(started, params, CP: car.CarParams, frogpilot_toggles) -> bool:
+  dashboard_speed_limit = CP.carName == "toyota" and frogpilot_toggles.has_dashboard_speed_limit
+  reader_speed_limit = frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler
+  logging_allowed = allow_logging(started, params, CP, frogpilot_toggles)
+  uploads_allowed = allow_uploads(started, params, CP, frogpilot_toggles)
+  return logging_allowed and (dashboard_speed_limit or reader_speed_limit) and frogpilot_toggles.frogpilot_telemetry and uploads_allowed
+
 def run_speed_limit_reader(started, params, CP: car.CarParams, frogpilot_toggles) -> bool:
   return started and (frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller or frogpilot_toggles.speed_limit_filler)
 
@@ -135,6 +142,7 @@ procs = [
   PythonProcess("frogpilot_process", "frogpilot.frogpilot_process", always_run),
   PythonProcess("frogpilot_telemetry", "frogpilot.system.frogpilot_telemetry", run_frogpilot_telemetry, enabled=not PC),
   NativeProcess("mapd", "frogpilot/navigation", ["./mapd"], always_run),
+  PythonProcess("speed_limit_capture", "frogpilot.system.speed_limit_capture", run_speed_limit_capture, enabled=not PC),
   PythonProcess("speed_limit_reader", "frogpilot.system.speed_limit_reader", run_speed_limit_reader, enabled=not PC),
   NativeProcess("tailscaled", str(frogpilot_paths.TAILSCALE_PATH), ["./tailscaled", "--tun=userspace-networking",
                 f"--socket={frogpilot_paths.TAILSCALE_SOCKET_PATH}", f"--statedir={frogpilot_paths.TAILSCALE_STATE_PATH}"], run_tailscale),

@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import json
 import subprocess
 
 from aiohttp import web
@@ -13,7 +14,22 @@ def get_branches(params):
   available_branches = params.get("UpdaterAvailableBranches", encoding="utf-8")
   if available_branches is None:
     return []
-  return frogpilot_utilities.get_target_branches(available_branches, params.get("GitBranch", encoding="utf-8"))
+
+  current_branch = params.get("GitBranch", encoding="utf-8")
+  branches = frogpilot_utilities.get_target_branches(available_branches, current_branch)
+
+  for branch in (params.get("UpdaterTargetBranch", encoding="utf-8"), current_branch):
+    if branch and branch not in branches:
+      branches.insert(0, branch)
+
+  return branches
+
+
+def get_download_progress(params):
+  progress = params.get("UpdaterDownloadProgress")
+  if progress is None:
+    return None
+  return json.loads(progress)
 
 
 def get_failed_count(params):
@@ -39,11 +55,12 @@ async def get_software(request):
 
   return web.json_response({
     "automatic_updates": params.get_bool("AutomaticUpdates"),
-    "automatic_updates_changeable": params.get_bool("IsReleaseBranch") or frogpilot_utilities.frogs_go_moo(),
+    "automatic_updates_changeable": params.get_bool("IsReleaseBranch") or frogpilot_utilities.is_FrogsGoMoo(),
     "branch": params.get("GitBranch", encoding="utf-8"),
     "branches": get_branches(params),
     "current_description": (params.get("UpdaterCurrentDescription", encoding="utf-8") or
                             f"{params.get('GitBranch', encoding='utf-8')} / {params.get('GitCommit', encoding='utf-8')[:7]}"),
+    "download_progress": get_download_progress(params),
     "failed_count": get_failed_count(params),
     "fetch_available": params.get_bool("UpdaterFetchAvailable"),
     "last_update_time": last_update_time,
@@ -84,8 +101,8 @@ async def select_branch(request):
   params.put("UpdaterTargetBranch", branch)
 
   if download and branch != params.get("GitBranch", encoding="utf-8"):
-    frogpilot_variables.params_memory.put_bool("ManualUpdateInitiated", True)
     await signal_updater("-SIGHUP")
+    the_pond.send_request("updateChecks")
   else:
     await signal_updater("-SIGUSR1")
   return web.Response(status=204)
@@ -112,13 +129,12 @@ async def download_update(request):
   if not is_updater_idle(params):
     raise web.HTTPConflict(text="updater_busy")
 
-  frogpilot_variables.params_memory.put_bool("ManualUpdateInitiated", True)
-
   if get_failed_count(params) > 0 or not params.get_bool("UpdaterFetchAvailable"):
     await signal_updater("-SIGUSR1")
   else:
     await signal_updater("-SIGHUP")
 
+  the_pond.send_request("updateChecks")
   return web.Response(status=204)
 
 

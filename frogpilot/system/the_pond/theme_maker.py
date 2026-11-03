@@ -32,11 +32,12 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 MAX_SIGNAL_FRAMES = 30
 MAX_SIGNAL_INTERVAL = 10000
 MAX_SUBMISSION_SIZE = 32 * 1024 * 1024
+MAX_SUBMISSION_SVG_SIZE = 1024 * 1024
 MAX_THEME_NAME_LENGTH = 32
 MAX_USERNAME_LENGTH = 128
 
 SIGNAL_BLINDSPOT_NAME = "turn_signal_blindspot"
-SIGNAL_FRAME_PATTERN = re.compile(r"^turn_signal_\d+$")
+SIGNAL_FRAME_PATTERN = re.compile(r"^turn_signal(_\d+)?$")
 SIGNAL_STYLE_PATTERN = re.compile(r"^([a-z]+)_(\d+)$")
 
 SOUND_CHANNELS = 1
@@ -404,7 +405,7 @@ def submit_theme(params, theme_name, discord_username, assets):
   for asset in submission["assets"]:
     data = assets[asset["kind"]][1]
     if "upload" in asset:
-      frogpilot_api.put_upload(asset["upload"], data, f"Theme {asset['kind']}")
+      frogpilot_api.put_upload(asset["upload"], data, f"Theme {asset['kind']}", "theme_submission")
     completed_assets.append({"asset_id": asset["asset_id"], "sha256": hashlib.sha256(data).hexdigest(), "size_bytes": len(data)})
 
   frogpilot_api.post_json(f"/v1/theme-submissions/{submission['submission_id']}/complete", {"assets": completed_assets, "schema_version": 1})
@@ -561,6 +562,7 @@ async def get_user_themes(request):
       "file_size": MAX_FILE_SIZE,
       "name_length": MAX_THEME_NAME_LENGTH,
       "submission_size": MAX_SUBMISSION_SIZE,
+      "submission_svg_size": MAX_SUBMISSION_SVG_SIZE,
       "username_length": MAX_USERNAME_LENGTH,
     },
     "no_wheel": sorted(no_wheel),
@@ -743,17 +745,24 @@ async def submit_theme_route(request):
   the_pond = request.app[utilities.THE_POND]
   key = get_user_theme(request)
 
-  discord_username = (await utilities.read_json(request)).get("discord_username")
+  body = await utilities.read_json(request)
+  discord_username = body.get("discord_username")
   if not isinstance(discord_username, str) or not 0 < len(discord_username.strip().encode()) <= MAX_USERNAME_LENGTH:
     raise web.HTTPBadRequest(text="invalid_username")
+
+  name = body.get("theme_name")
+  if not isinstance(name, str) or not THEME_NAME_PATTERN.match(name.strip()):
+    raise web.HTTPBadRequest(text="invalid_name")
 
   assets = await asyncio.to_thread(build_submission, key)
   if not assets:
     raise web.HTTPConflict(text="empty_theme")
   if sum(len(data) for _, data in assets.values()) > MAX_SUBMISSION_SIZE:
     raise web.HTTPConflict(text="theme_too_large")
+  if WHEEL_FOLDER in assets and assets[WHEEL_FOLDER][0] == SUBMISSION_IMAGE_TYPES[".svg"] and len(assets[WHEEL_FOLDER][1]) > MAX_SUBMISSION_SVG_SIZE:
+    raise web.HTTPConflict(text="svg_too_large")
 
-  theme_name = utilities.format_theme_name(key.removesuffix(frogpilot_variables.USER_CREATED_THEME_SUFFIX), False)
+  theme_name = utilities.format_theme_name("_".join(name.lower().split()), False)
   try:
     submission_id = await asyncio.to_thread(submit_theme, the_pond.params, theme_name, discord_username.strip(), assets)
   except FrogPilotAPIError:

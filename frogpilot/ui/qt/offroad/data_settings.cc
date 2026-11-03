@@ -1,17 +1,37 @@
-#include <fcntl.h>
+#include <cerrno>
 #include <sys/file.h>
 #include <sys/xattr.h>
-#include <unistd.h>
 
 #include <QDirIterator>
 #include <QProcess>
+#include <QSet>
 #include <QStorageInfo>
 
 #include "frogpilot/ui/qt/offroad/data_settings.h"
-
-#include "frogpilot/ui/qt/widgets/frogpilot_controls.h"
+#include "frogpilot/ui/qt/widgets/account_popup.h"
 
 namespace {
+  QString friendlyDate(const QDate &date, const QString &detail) {
+    int day = date.day();
+    QString suffix = QCoreApplication::translate("FrogPilotDataPanel", "th", "ordinal suffix");
+    if (day < 11 || day > 13) {
+      if (day % 10 == 1) {
+        suffix = QCoreApplication::translate("FrogPilotDataPanel", "st", "ordinal suffix");
+      } else if (day % 10 == 2) {
+        suffix = QCoreApplication::translate("FrogPilotDataPanel", "nd", "ordinal suffix");
+      } else if (day % 10 == 3) {
+        suffix = QCoreApplication::translate("FrogPilotDataPanel", "rd", "ordinal suffix");
+      }
+    }
+
+    return QCoreApplication::translate("FrogPilotDataPanel", "%1 %2%3, %4 (%5)")
+      .arg(date.toString("MMMM"))
+      .arg(day)
+      .arg(suffix)
+      .arg(date.year())
+      .arg(detail);
+  }
+
   qint64 restoreSourceSize(const QFileInfo &source) {
     if (source.isFile()) {
       return source.size();
@@ -30,15 +50,6 @@ namespace {
     QStorageInfo storage("/data");
     qint64 sourceSize = restoreSourceSize(QFileInfo(sourcePath));
     return storage.isValid() && storage.isReady() && sourceSize > 0 && storage.bytesAvailable() / 4 > sourceSize;
-  }
-
-  int lockRecordings() {
-    int fd = ::open("/data/media/screen_recordings.lock", O_RDWR | O_CREAT | O_CLOEXEC | O_NOFOLLOW, 0664);
-    if (fd >= 0 && ::flock(fd, LOCK_EX | LOCK_NB) != 0) {
-      ::close(fd);
-      return -1;
-    }
-    return fd;
   }
 
   void removeRecordingCompanions(const QDir &directory, const QString &name) {
@@ -60,62 +71,95 @@ namespace {
     if (!QFile::exists(sources[0])) {
       return false;
     }
+
     for (const QString &target : targets) {
       if (QFile::exists(target)) {
         return false;
       }
     }
 
-    int renamed = 0;
     for (int i = 0; i < sources.size(); ++i) {
       if (!QFile::exists(sources[i])) {
         continue;
       }
+
       if (!QFile::rename(sources[i], targets[i])) {
         for (int j = i - 1; j >= 0; --j) {
           QFile::rename(targets[j], sources[j]);
         }
         return false;
       }
-      renamed = i + 1;
     }
-    return renamed > 0;
+    return true;
   }
 
-  const QStringList PROTECTED_PARAMS = {
-    "CalibrationParams", "DongleId", "GithubSshKeys", "GithubUsername",
-    "HardwareSerial", "IMEI", "LiveDelay", "LiveParameters", "LiveTorqueParameters"
-  };
+  void runDataOperation(FrogPilotSettingsWindow *parent, FrogPilotButtonsControl *button, std::vector<int> hiddenButtons,
+                        QString busyText, QString successText, QString failureText, std::function<bool()> operation) {
+    std::thread([=]() {
+      runOnUIThread(button, [=]() {
+        parent->keepScreenOn = true;
+
+        button->setEnabled(false);
+        button->setValue(busyText);
+
+        for (int id : hiddenButtons) {
+          button->setVisibleButton(id, false);
+        }
+      });
+
+      bool success = operation();
+
+      runOnUIThread(button, [=]() {
+        button->setValue(success ? successText : failureText);
+      });
+
+      util::sleep_for(2500);
+
+      runOnUIThread(button, [=]() {
+        button->setEnabled(true);
+        button->setValue("");
+
+        for (int id : hiddenButtons) {
+          button->setVisibleButton(id, true);
+        }
+
+        parent->keepScreenOn = false;
+      });
+    }).detach();
+  }
+
+  bool validName(const QString &name) {
+    static const QRegularExpression validCharacters("^[A-Za-z0-9._-]+$");
+    return validCharacters.match(name).hasMatch() && !name.contains("..") && !name.startsWith("-");
+  }
 
   bool validBackupName(const QString &name) {
-    static const QRegularExpression validCharacters("^[A-Za-z0-9._-]+$");
-    return validCharacters.match(name).hasMatch() && !name.contains("..") && !name.startsWith("-") && !name.contains("_in_progress") && !name.contains("_auto");
+    return validName(name) && !name.contains("_in_progress") && !name.contains("_auto");
   }
 
   int runCommand(const QString &program, const QStringList &arguments) {
     return QProcess::execute(program, arguments);
   }
 
-  QStringList protectedParamArgs() {
-    QStringList arguments;
-    for (const QString &key : PROTECTED_PARAMS) {
-      arguments << "--exclude" << key;
+  bool runSettingsRequest(const std::string &key, const QString &path) {
+    Params params_memory{"/dev/shm/params"};
+
+    std::string request = path.toStdString();
+    params_memory.put(key, request);
+
+    int elapsed = 0;
+    while (params_memory.get(key) == request && elapsed < 120000) {
+      util::sleep_for(100);
+      elapsed += 100;
     }
-    return arguments;
+
+    bool success = params_memory.get(key).empty();
+    params_memory.remove(key);
+    return success;
   }
 }
 
-FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
-  QJsonObject shownDescriptions = QJsonDocument::fromJson(QString::fromStdString(params.get("ShownToggleDescriptions")).toUtf8()).object();
-  QString className = this->metaObject()->className();
-
-  bool forceOpenDescriptions = false;
-  if (!shownDescriptions.value(className).toBool(false)) {
-    forceOpenDescriptions = true;
-    shownDescriptions.insert(className, true);
-    params.put("ShownToggleDescriptions", QJsonDocument(shownDescriptions).toJson(QJsonDocument::Compact).toStdString());
-  }
-
+FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent, bool forceOpen) : FrogPilotListWidget(parent), parent(parent) {
   QStackedLayout *dataLayout = new QStackedLayout();
   addItem(dataLayout);
 
@@ -127,13 +171,16 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
   ScrollView *statsLabelsPanel = new ScrollView(statsLabelsList, this);
   dataLayout->addWidget(statsLabelsPanel);
 
-  ButtonControl *deleteDrivingDataButton = new ButtonControl(tr("Delete Driving Data"), tr("DELETE"), tr("<b>Delete every recorded drive to free up space and clear personal footage off the device.</b><br><br>Only the minute of footage you flagged while driving is kept, not the rest of that drive, and preserving a drive in \"The Pond\" keeps just its first minute the same way."));
+  ButtonControl *deleteDrivingDataButton = new ButtonControl(tr("Delete Driving Data"), tr("DELETE"),
+    tr("<b>Delete recorded drives to free up space and clear personal footage off the device.</b><br><br>"
+       "Whole routes preserved in \"The Pond\" are kept. Existing event flags keep their marked segments."));
   QObject::connect(deleteDrivingDataButton, &ButtonControl::clicked, [=]() {
     QDir hdDataDir("/data/media/0/realdata_HD/");
     QDir konikDataDir("/data/media/0/realdata_konik/");
     QDir realDataDir("/data/media/0/realdata/");
+    QDir speedLimitCapturesDir("/data/media/speed_limit_captures/");
 
-    if (ConfirmationDialog::confirm(tr("Delete all driving footage and data? Flagged and preserved drives will be kept."), tr("Delete"), this)) {
+    if (ConfirmationDialog::confirm(tr("Delete all driving footage and data? Flagged segments and preserved routes will be kept."), tr("Delete"), this)) {
       std::thread([=]() mutable {
         runOnUIThread(deleteDrivingDataButton, [=]() {
           parent->keepScreenOn = true;
@@ -142,25 +189,47 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
           deleteDrivingDataButton->setValue(tr("Deleting..."));
         });
 
-        bool success = true;
-
-        QList<QDir> footageDirs = {hdDataDir, konikDataDir, realDataDir};
-        for (const QDir &footageDir : footageDirs) {
-          if (!footageDir.exists()) {
-            continue;
-          }
-
-          QFileInfoList entries = footageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-          for (const QFileInfo &entry : entries) {
-            char value[10] = {0};
-            if (!(getxattr(entry.absoluteFilePath().toUtf8().constData(), "user.preserve", value, sizeof(value)) > 0 && strcmp(value, "1") == 0)) {
-              success &= QDir(entry.absoluteFilePath()).removeRecursively();
+        QString result = tr("Delete failed...");
+        int descriptor = ::open("/data/media/0/.route_mutation.lock", O_RDWR | O_CREAT | O_CLOEXEC | O_NOFOLLOW, 0664);
+        if (descriptor >= 0) {
+          if (::flock(descriptor, LOCK_EX | LOCK_NB) == 0) {
+            bool success = true;
+            QFileInfoList entries;
+            QList<QDir> footageDirs = {hdDataDir, konikDataDir, realDataDir};
+            for (const QDir &footageDir : footageDirs) {
+              if (footageDir.exists()) {
+                entries.append(footageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot));
+              }
             }
+
+            QSet<QString> preservedRoutes;
+            for (const QFileInfo &entry : entries) {
+              char value = 0;
+              if (getxattr(entry.absoluteFilePath().toUtf8().constData(), "user.preserve_route", &value, sizeof(value)) == 1 && value == '1') {
+                preservedRoutes.insert(entry.fileName().section("--", 0, -2));
+              }
+            }
+            for (const QFileInfo &entry : entries) {
+              if (preservedRoutes.contains(entry.fileName().section("--", 0, -2))) {
+                continue;
+              }
+              char value[10] = {0};
+              if (!(getxattr(entry.absoluteFilePath().toUtf8().constData(), "user.preserve", value, sizeof(value)) > 0 && strcmp(value, "1") == 0)) {
+                success &= QDir(entry.absoluteFilePath()).removeRecursively();
+              }
+            }
+            success &= speedLimitCapturesDir.removeRecursively();
+            if (success) {
+              result = tr("Deleted!");
+            }
+          } else if (errno == EWOULDBLOCK || errno == EAGAIN) {
+            result = tr("Driving data busy...");
           }
+          ::close(descriptor);
         }
 
         runOnUIThread(deleteDrivingDataButton, [=]() {
-          deleteDrivingDataButton->setValue(success ? tr("Deleted!") : tr("Delete failed..."));
+          deleteDrivingDataButton->setValue(result);
         });
 
         util::sleep_for(2500);
@@ -174,7 +243,7 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       }).detach();
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     deleteDrivingDataButton->showDescription();
   }
   dataMainList->addItem(deleteDrivingDataButton);
@@ -210,7 +279,7 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       }).detach();
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     deleteErrorLogsButton->showDescription();
   }
   dataMainList->addItem(deleteErrorLogsButton);
@@ -218,149 +287,111 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
   FrogPilotButtonsControl *screenRecordingsButton = new FrogPilotButtonsControl(tr("Screen Recordings"), tr("<b>Delete or rename your recordings of the driving screen.</b><br><br>Recordings are made with the \"Screen Recorder\" button on the driving screen. \"DELETE ALL\" removes every recording at once."), "", {tr("DELETE"), tr("DELETE ALL"), tr("RENAME")});
   QObject::connect(screenRecordingsButton, &FrogPilotButtonsControl::buttonClicked, [=](int id) {
     QDir recordingsDir("/data/media/screen_recordings");
-    QStringList recordingsNames = recordingsDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    QStringList recordingsNames = recordingsDir.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot);
+    std::sort(recordingsNames.begin(), recordingsNames.end(), std::greater<QString>());
 
-    QStringList mp4Recordings;
+    QStringList friendlyNames;
+    QMap<QString, QString> recordingMap;
+
     for (const QString &name : recordingsNames) {
-      if (name.endsWith(".mp4", Qt::CaseInsensitive)) {
-        mp4Recordings << name;
+      if (!name.endsWith(".mp4", Qt::CaseInsensitive)) {
+        continue;
       }
+
+      QString friendlyName = name;
+      QString cleanName = QString(name).remove(".mp4");
+
+      QStringList parts = cleanName.split("_");
+
+      if (parts.size() >= 2) {
+        QDate date = QDate::fromString(parts[0], "yyyy-MM-dd");
+        QTime time = QTime::fromString(parts[1], "HH-mm-ss");
+
+        if (date.isValid() && time.isValid()) {
+          friendlyName = friendlyDate(date, formatShortTime(time));
+        }
+      }
+
+      if (friendlyName == name) {
+        friendlyName = cleanName;
+        friendlyName.replace("_", " ");
+      }
+
+      if (cleanName.contains("_replay_")) {
+        friendlyName += tr(" (Replay)");
+      }
+
+      const QString baseName = friendlyName;
+      int duplicate = 2;
+
+      while (recordingMap.contains(friendlyName)) {
+        friendlyName = QString("%1 (%2)").arg(baseName).arg(duplicate);
+        duplicate++;
+      }
+
+      friendlyNames.append(friendlyName);
+      recordingMap[friendlyName] = name;
     }
 
     if (id == 0) {
-      QString selection = MultiOptionDialog::getSelection(tr("Choose a screen recording to delete"), mp4Recordings, "", this);
-      if (!selection.isEmpty()) {
-        if (ConfirmationDialog::confirm(tr("Delete this screen recording?"), tr("Delete"), this)) {
-          std::thread([=]() {
-            runOnUIThread(screenRecordingsButton, [=]() {
-              parent->keepScreenOn = true;
+      QStringList selections = FrogPilotMultiOptionDialog::getSelections(tr("Choose screen recordings to delete"), friendlyNames, tr("Delete"), this);
+      if (!selections.isEmpty()) {
+        QString confirmation;
+        if (selections.size() == 1) {
+          confirmation = tr("Delete this screen recording?");
+        } else {
+          confirmation = tr("Delete the %1 selected screen recordings?").arg(selections.size());
+        }
 
-              screenRecordingsButton->setButtonsEnabled(false);
-              screenRecordingsButton->setValue(tr("Deleting..."));
-
-              screenRecordingsButton->setVisibleButton(1, false);
-              screenRecordingsButton->setVisibleButton(2, false);
-            });
-
-            int lockFd = lockRecordings();
-            bool success = false;
-            if (lockFd >= 0) {
-              success = QFile::remove(recordingsDir.absoluteFilePath(selection));
-              removeRecordingCompanions(recordingsDir, selection);
-              ::close(lockFd);
+        if (ConfirmationDialog::confirm(confirmation, tr("Delete"), this)) {
+          runDataOperation(parent, screenRecordingsButton, {1, 2}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() {
+            bool success = true;
+            for (const QString &selection : selections) {
+              const QString recordingName = recordingMap[selection];
+              if (QFile::remove(recordingsDir.absoluteFilePath(recordingName))) {
+                removeRecordingCompanions(recordingsDir, recordingName);
+              } else {
+                success = false;
+              }
             }
-
-            runOnUIThread(screenRecordingsButton, [=]() {
-              screenRecordingsButton->setValue(lockFd < 0 ? tr("Recording in progress...") : success ? tr("Deleted!") : tr("Delete failed..."));
-            });
-
-            util::sleep_for(2500);
-
-            runOnUIThread(screenRecordingsButton, [=]() {
-              screenRecordingsButton->setButtonsEnabled(true);
-              screenRecordingsButton->setValue("");
-
-              screenRecordingsButton->setVisibleButton(1, true);
-              screenRecordingsButton->setVisibleButton(2, true);
-
-              parent->keepScreenOn = false;
-            });
-          }).detach();
+            return success;
+          });
         }
       }
 
     } else if (id == 1) {
       if (ConfirmationDialog::confirm(tr("Delete all screen recordings?"), tr("Delete All"), this)) {
-        std::thread([=]() mutable {
-          runOnUIThread(screenRecordingsButton, [=]() {
-            parent->keepScreenOn = true;
-
-            screenRecordingsButton->setButtonsEnabled(false);
-            screenRecordingsButton->setValue(tr("Deleting..."));
-
-            screenRecordingsButton->setVisibleButton(0, false);
-            screenRecordingsButton->setVisibleButton(2, false);
-          });
-
-          int lockFd = lockRecordings();
-          bool success = false;
-          if (lockFd >= 0) {
-            success = recordingsDir.removeRecursively();
-            recordingsDir.mkpath(".");
-            ::close(lockFd);
+        runDataOperation(parent, screenRecordingsButton, {0, 2}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() {
+          bool success = true;
+          for (const QString &name : recordingsDir.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
+            success &= QFile::remove(recordingsDir.absoluteFilePath(name));
           }
-
-          runOnUIThread(screenRecordingsButton, [=]() {
-            screenRecordingsButton->setValue(lockFd < 0 ? tr("Recording in progress...") : success ? tr("Deleted!") : tr("Delete failed..."));
-          });
-
-          util::sleep_for(2500);
-
-          runOnUIThread(screenRecordingsButton, [=]() {
-            screenRecordingsButton->setButtonsEnabled(true);
-            screenRecordingsButton->setValue("");
-
-            screenRecordingsButton->setVisibleButton(0, true);
-            screenRecordingsButton->setVisibleButton(2, true);
-
-            parent->keepScreenOn = false;
-          });
-        }).detach();
+          return success;
+        });
       }
 
     } else if (id == 2) {
-      QString selection = MultiOptionDialog::getSelection(tr("Choose a screen recording to rename"), mp4Recordings, "", this);
+      QString selection = MultiOptionDialog::getSelection(tr("Choose a screen recording to rename"), friendlyNames, "", this);
       if (!selection.isEmpty()) {
         QString newBase = InputDialog::getText(tr("Enter a new name"), this, tr("Rename Screen Recording")).trimmed().replace(" ", "_");
         if (!newBase.isEmpty()) {
-          if (newBase.contains('/') || newBase.contains('\\') || newBase.contains("..") || newBase.startsWith('.')) {
-            ConfirmationDialog::alert(tr("That name can't be used. Names can't contain slashes or dots at the start."), this);
+          QString newName = newBase + ".mp4";
+          if (!validName(newBase)) {
+            ConfirmationDialog::alert(tr("That name can't be used. Names can only use letters, numbers, dashes, periods, and underscores."), this);
             return;
           }
-          QString newName = newBase + ".mp4";
           if (recordingsNames.contains(newName)) {
             ConfirmationDialog::alert(tr("Name already in use. Please choose a different name."), this);
             return;
           }
-          std::thread([=]() {
-            runOnUIThread(screenRecordingsButton, [=]() {
-              parent->keepScreenOn = true;
-
-              screenRecordingsButton->setButtonsEnabled(false);
-              screenRecordingsButton->setValue(tr("Renaming..."));
-
-              screenRecordingsButton->setVisibleButton(0, false);
-              screenRecordingsButton->setVisibleButton(1, false);
-            });
-
-            int lockFd = lockRecordings();
-            bool success = false;
-            if (lockFd >= 0) {
-              success = renameRecording(recordingsDir, selection, newName);
-              ::close(lockFd);
-            }
-
-            runOnUIThread(screenRecordingsButton, [=]() {
-              screenRecordingsButton->setValue(lockFd < 0 ? tr("Recording in progress...") : success ? tr("Renamed!") : tr("Rename failed..."));
-            });
-
-            util::sleep_for(2500);
-
-            runOnUIThread(screenRecordingsButton, [=]() {
-              screenRecordingsButton->setButtonsEnabled(true);
-              screenRecordingsButton->setValue("");
-
-              screenRecordingsButton->setVisibleButton(0, true);
-              screenRecordingsButton->setVisibleButton(1, true);
-
-              parent->keepScreenOn = false;
-            });
-          }).detach();
+          runDataOperation(parent, screenRecordingsButton, {0, 1}, tr("Renaming..."), tr("Renamed!"), tr("Rename failed..."), [=]() {
+            return renameRecording(recordingsDir, recordingMap[selection], newName);
+          });
         }
       }
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     screenRecordingsButton->showDescription();
   }
   dataMainList->addItem(screenRecordingsButton);
@@ -403,68 +434,22 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
           ConfirmationDialog::alert(tr("Name already in use. Please choose a different name."), this);
           return;
         }
-        bool compressed = FrogPilotConfirmationDialog::yesorno(tr("Compress this backup? It takes a bit longer, but the backup uses much less space."), this);
-        std::thread([=]() {
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            parent->keepScreenOn = true;
+        runDataOperation(parent, frogpilotBackupButton, {1, 2, 3}, tr("Backing up..."), tr("Backup created!"), tr("Backup failed..."), [=]() {
+          QString inProgressPath = backupDir.filePath(nameSelection + "_in_progress.tar.zst");
+          QString finalPath = backupDir.filePath(nameSelection + ".tar.zst");
 
-            frogpilotBackupButton->setButtonsEnabled(false);
-            frogpilotBackupButton->setValue(tr("Backing up..."));
+          QFile::remove(inProgressPath);
+          int tarStatus = runCommand("tar", {"--use-compress-program=zstd", "-cf", inProgressPath, "-C", "/data", "openpilot"});
 
-            frogpilotBackupButton->setVisibleButton(1, false);
-            frogpilotBackupButton->setVisibleButton(2, false);
-            frogpilotBackupButton->setVisibleButton(3, false);
-          });
-
-          QString fullBackupPath = backupDir.filePath(nameSelection);
-          QString inProgressBackupPath = fullBackupPath + "_in_progress";
-          QString inProgressArchivePath = fullBackupPath + "_in_progress.tar.zst";
-
-          bool success = (!QFileInfo::exists(inProgressBackupPath) || QDir(inProgressBackupPath).removeRecursively());
-          success &= (!QFileInfo::exists(inProgressArchivePath) || QFile::remove(inProgressArchivePath));
-          success &= QDir().mkpath(inProgressBackupPath);
+          bool success = tarStatus == 0 && QFileInfo(inProgressPath).size() > 0;
           if (success) {
-            success = runCommand("rsync", {"-av", "/data/openpilot/", inProgressBackupPath + "/"}) == 0;
+            success = QFile::rename(inProgressPath, finalPath);
           }
-
-          if (success && compressed) {
-            runOnUIThread(frogpilotBackupButton, [=]() {
-              frogpilotBackupButton->setValue(tr("Compressing..."));
-            });
-
-            success = runCommand("tar", {"-I", "zstd -2 -T0", "-cf", inProgressArchivePath, "-C", inProgressBackupPath, "."}) == 0;
-
-            QDir(inProgressBackupPath).removeRecursively();
-
-            if (success) {
-              success = QFile::rename(inProgressArchivePath, fullBackupPath + ".tar.zst");
-            }
-          } else if (success) {
-            success = QDir().rename(inProgressBackupPath, fullBackupPath);
-          }
-
           if (!success) {
-            QDir(inProgressBackupPath).removeRecursively();
-            QFile::remove(inProgressArchivePath);
+            QFile::remove(inProgressPath);
           }
-
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            frogpilotBackupButton->setValue(success ? tr("Backup created!") : tr("Backup failed..."));
-          });
-
-          util::sleep_for(2500);
-
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            frogpilotBackupButton->setButtonsEnabled(true);
-            frogpilotBackupButton->setValue("");
-
-            frogpilotBackupButton->setVisibleButton(1, true);
-            frogpilotBackupButton->setVisibleButton(2, true);
-            frogpilotBackupButton->setVisibleButton(3, true);
-
-            parent->keepScreenOn = false;
-          });
-        }).detach();
+          return success;
+        });
       }
 
     } else if (id == 1) {
@@ -472,79 +457,25 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       if (!selectionFriendly.isEmpty()) {
         QString selection = backupFriendlyMap.value(selectionFriendly);
         if (ConfirmationDialog::confirm(tr("Delete this backup?"), tr("Delete"), this)) {
-          std::thread([=]() {
-            runOnUIThread(frogpilotBackupButton, [=]() {
-              parent->keepScreenOn = true;
-
-              frogpilotBackupButton->setButtonsEnabled(false);
-              frogpilotBackupButton->setValue(tr("Deleting..."));
-
-              frogpilotBackupButton->setVisibleButton(0, false);
-              frogpilotBackupButton->setVisibleButton(2, false);
-              frogpilotBackupButton->setVisibleButton(3, false);
-            });
-
-            bool success;
+          runDataOperation(parent, frogpilotBackupButton, {0, 2, 3}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() {
+            bool success = false;
             if (selection.endsWith(".tar.gz") || selection.endsWith(".tar.zst")) {
               success = QFile::remove(backupDir.filePath(selection));
             } else {
               success = QDir(backupDir.filePath(selection)).removeRecursively();
             }
-
-            runOnUIThread(frogpilotBackupButton, [=]() {
-              frogpilotBackupButton->setValue(success ? tr("Deleted!") : tr("Delete failed..."));
-            });
-
-            util::sleep_for(2500);
-
-            runOnUIThread(frogpilotBackupButton, [=]() {
-              frogpilotBackupButton->setButtonsEnabled(true);
-              frogpilotBackupButton->setValue("");
-
-              frogpilotBackupButton->setVisibleButton(0, true);
-              frogpilotBackupButton->setVisibleButton(2, true);
-              frogpilotBackupButton->setVisibleButton(3, true);
-
-              parent->keepScreenOn = false;
-            });
-          }).detach();
+            return success;
+          });
         }
       }
 
     } else if (id == 2) {
       if (ConfirmationDialog::confirm(tr("Delete all backups? This includes the backups FrogPilot makes automatically."), tr("Delete All"), this)) {
-        std::thread([=]() mutable {
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            parent->keepScreenOn = true;
-
-            frogpilotBackupButton->setButtonsEnabled(false);
-            frogpilotBackupButton->setValue(tr("Deleting..."));
-
-            frogpilotBackupButton->setVisibleButton(0, false);
-            frogpilotBackupButton->setVisibleButton(1, false);
-            frogpilotBackupButton->setVisibleButton(3, false);
-          });
-
+        runDataOperation(parent, frogpilotBackupButton, {0, 1, 3}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() mutable {
           bool success = backupDir.removeRecursively();
           backupDir.mkpath(".");
-
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            frogpilotBackupButton->setValue(success ? tr("Deleted!") : tr("Delete failed..."));
-          });
-
-          util::sleep_for(2500);
-
-          runOnUIThread(frogpilotBackupButton, [=]() {
-            frogpilotBackupButton->setButtonsEnabled(true);
-            frogpilotBackupButton->setValue("");
-
-            frogpilotBackupButton->setVisibleButton(0, true);
-            frogpilotBackupButton->setVisibleButton(1, true);
-            frogpilotBackupButton->setVisibleButton(3, true);
-
-            parent->keepScreenOn = false;
-          });
-        }).detach();
+          return success;
+        });
       }
 
     } else if (id == 3) {
@@ -556,11 +487,20 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       if (!selectionFriendly.isEmpty()) {
         QString selection = backupFriendlyMap.value(selectionFriendly);
         if (ConfirmationDialog::confirm(tr("Restore this backup? The device will reboot on its own once the restore finishes."), tr("Restore"), this)) {
+          if (params.get("UpdaterState") != "idle") {
+            ConfirmationDialog::alert(tr("An update check is running. Wait for it to finish and try again."), this);
+            return;
+          }
+
+          bool createdBackupFlag = !QFile::exists("/cache/on_backup");
+          QFile("/cache/on_backup").open(QIODevice::WriteOnly);
+          frogpilotUIState()->updateToggles();
+
           std::thread([=]() {
             runOnUIThread(frogpilotBackupButton, [=]() {
               parent->keepScreenOn = true;
 
-              frogpilotBackupButton->setButtonsEnabled(false);
+              frogpilotBackupButton->setEnabled(false);
               frogpilotBackupButton->setValue(tr("Restoring..."));
 
               frogpilotBackupButton->setVisibleButton(0, false);
@@ -575,27 +515,29 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
             QDir(extractDirectory).removeRecursively();
             QDir().mkpath(extractDirectory);
 
+            QString restoreDirectory = extractDirectory;
+
             bool success = hasRestoreSpace(sourcePath);
             if (success && selection.endsWith(".tar.gz")) {
               runOnUIThread(frogpilotBackupButton, [=]() {
                 frogpilotBackupButton->setValue(tr("Extracting..."));
               });
 
-              success = runCommand("tar", {"--strip-components=1", "-xzf", sourcePath, "-C", extractDirectory}) == 0;
+              success = runCommand("tar", {"--strip-components=1", "-xpzf", sourcePath, "-C", extractDirectory}) == 0;
             } else if (success && selection.endsWith(".tar.zst")) {
               runOnUIThread(frogpilotBackupButton, [=]() {
                 frogpilotBackupButton->setValue(tr("Extracting..."));
               });
 
-              success = runCommand("tar", {"-I", "zstd", "--strip-components=1", "-xf", sourcePath, "-C", extractDirectory}) == 0;
-            } else if (success) {
-              success = runCommand("rsync", {"-av", sourcePath + "/", extractDirectory + "/"}) == 0;
+              success = runCommand("tar", {"-I", "zstd", "--strip-components=1", "-xpf", sourcePath, "-C", extractDirectory}) == 0;
+            } else {
+              restoreDirectory = sourcePath;
             }
 
             QString sourceRoot;
             if (success) {
-              QDir extracted(extractDirectory);
-              QStringList candidates{extractDirectory, extracted.absoluteFilePath("data/openpilot")};
+              QDir extracted(restoreDirectory);
+              QStringList candidates{restoreDirectory, extracted.absoluteFilePath("data/openpilot")};
               for (const QString &entry : extracted.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
                 candidates << extracted.absoluteFilePath(entry);
               }
@@ -608,10 +550,6 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
                 }
               }
               success = !sourceRoot.isEmpty();
-            }
-
-            if (success) {
-              success = hasRestoreSpace(sourceRoot);
             }
 
             if (success) {
@@ -630,8 +568,6 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
 
               QDir(extractDirectory).removeRecursively();
 
-              QFile("/cache/on_backup").open(QIODevice::WriteOnly);
-
               runOnUIThread(frogpilotBackupButton, [=]() {
                 frogpilotBackupButton->setValue(tr("Restored!"));
               });
@@ -644,18 +580,37 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
 
               util::sleep_for(2500);
 
-              Hardware::reboot();
+              runOnUIThread(frogpilotBackupButton, [=]() {
+                if (uiState()->scene.started) {
+                  frogpilotBackupButton->setValue(tr("Reboots when the car is off"));
+
+                  parent->keepScreenOn = false;
+
+                  QObject::connect(uiState(), &UIState::offroadTransition, [](bool offroad) {
+                    if (offroad) {
+                      Hardware::reboot();
+                    }
+                  });
+                } else {
+                  Hardware::reboot();
+                }
+              });
             } else {
               QDir(extractDirectory).removeRecursively();
 
               runOnUIThread(frogpilotBackupButton, [=]() {
+                if (createdBackupFlag) {
+                  QFile::remove("/cache/on_backup");
+                  frogpilotUIState()->updateToggles();
+                }
+
                 frogpilotBackupButton->setValue(tr("Restore failed..."));
               });
 
               util::sleep_for(2500);
 
               runOnUIThread(frogpilotBackupButton, [=]() {
-                frogpilotBackupButton->setButtonsEnabled(true);
+                frogpilotBackupButton->setEnabled(true);
                 frogpilotBackupButton->setValue("");
 
                 frogpilotBackupButton->setVisibleButton(0, true);
@@ -670,12 +625,12 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       }
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     frogpilotBackupButton->showDescription();
   }
   dataMainList->addItem(frogpilotBackupButton);
 
-  FrogPilotButtonsControl *toggleBackupButton = new FrogPilotButtonsControl(tr("Settings Backups"), tr("<b>Save a copy of your current settings, restore a saved copy, or delete ones you no longer need.</b><br><br>Restoring applies the settings right away with no reboot needed. FrogPilot also saves a copy automatically whenever you change a setting; those show up in the list by date and time, and only the newest few are kept."), "", {tr("BACKUP"), tr("DELETE"), tr("DELETE ALL"), tr("RESTORE")});
+  FrogPilotButtonsControl *toggleBackupButton = new FrogPilotButtonsControl(tr("Settings Backups"), tr("<b>Save a copy of your current settings, restore a saved copy, or delete ones you no longer need.</b><br><br>Restoring applies most settings right away, but a few, such as \"High-Quality Recording\" and \"Use Konik Server\", need a reboot. FrogPilot also saves a copy automatically whenever you change a setting, but it only keeps the newest few and deletes the older ones. Those show up in the list by date and time."), "", {tr("BACKUP"), tr("DELETE"), tr("DELETE ALL"), tr("RESTORE")});
   QObject::connect(toggleBackupButton, &FrogPilotButtonsControl::buttonClicked, [=](int id) {
     QDir backupDir("/data/toggle_backups");
     QStringList backupNames = backupDir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot, QDir::Name).filter(QRegularExpression("^(?!.*_in_progress$).*$"));
@@ -714,25 +669,14 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
           ConfirmationDialog::alert(tr("Name already in use. Please choose a different name."), this);
           return;
         }
-        std::thread([=]() {
-          runOnUIThread(toggleBackupButton, [=]() {
-            parent->keepScreenOn = true;
-
-            toggleBackupButton->setButtonsEnabled(false);
-            toggleBackupButton->setValue(tr("Backing up..."));
-
-            toggleBackupButton->setVisibleButton(1, false);
-            toggleBackupButton->setVisibleButton(2, false);
-            toggleBackupButton->setVisibleButton(3, false);
-          });
-
+        runDataOperation(parent, toggleBackupButton, {1, 2, 3}, tr("Backing up..."), tr("Backup created!"), tr("Backup failed..."), [=]() {
           QString fullBackupPath = backupDir.filePath(nameSelection);
           QString inProgressBackupPath = fullBackupPath + "_in_progress";
 
           bool success = (!QFileInfo::exists(inProgressBackupPath) || QDir(inProgressBackupPath).removeRecursively());
           success &= QDir().mkpath(inProgressBackupPath);
           if (success) {
-            success = runCommand("rsync", QStringList{"-av", "/data/params/d/", inProgressBackupPath + "/"} + protectedParamArgs()) == 0;
+            success = runSettingsRequest("BackupSettings", inProgressBackupPath);
           }
 
           if (success) {
@@ -740,24 +684,8 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
           } else {
             QDir(inProgressBackupPath).removeRecursively();
           }
-
-          runOnUIThread(toggleBackupButton, [=]() {
-            toggleBackupButton->setValue(success ? tr("Backup created!") : tr("Backup failed..."));
-          });
-
-          util::sleep_for(2500);
-
-          runOnUIThread(toggleBackupButton, [=]() {
-            toggleBackupButton->setButtonsEnabled(true);
-            toggleBackupButton->setValue("");
-
-            toggleBackupButton->setVisibleButton(1, true);
-            toggleBackupButton->setVisibleButton(2, true);
-            toggleBackupButton->setVisibleButton(3, true);
-
-            parent->keepScreenOn = false;
-          });
-        }).detach();
+          return success;
+        });
       }
 
     } else if (id == 1) {
@@ -765,74 +693,19 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       if (!selectionFriendly.isEmpty()) {
         QString selection = backupFriendlyMap.value(selectionFriendly);
         if (ConfirmationDialog::confirm(tr("Delete this backup?"), tr("Delete"), this)) {
-          std::thread([=]() {
-            runOnUIThread(toggleBackupButton, [=]() {
-              parent->keepScreenOn = true;
-
-              toggleBackupButton->setButtonsEnabled(false);
-              toggleBackupButton->setValue(tr("Deleting..."));
-
-              toggleBackupButton->setVisibleButton(0, false);
-              toggleBackupButton->setVisibleButton(2, false);
-              toggleBackupButton->setVisibleButton(3, false);
-            });
-
-            bool success = QDir(backupDir.filePath(selection)).removeRecursively();
-
-            runOnUIThread(toggleBackupButton, [=]() {
-              toggleBackupButton->setValue(success ? tr("Deleted!") : tr("Delete failed..."));
-            });
-
-            util::sleep_for(2500);
-
-            runOnUIThread(toggleBackupButton, [=]() {
-              toggleBackupButton->setButtonsEnabled(true);
-              toggleBackupButton->setValue("");
-
-              toggleBackupButton->setVisibleButton(0, true);
-              toggleBackupButton->setVisibleButton(2, true);
-              toggleBackupButton->setVisibleButton(3, true);
-
-              parent->keepScreenOn = false;
-            });
-          }).detach();
+          runDataOperation(parent, toggleBackupButton, {0, 2, 3}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() {
+            return QDir(backupDir.filePath(selection)).removeRecursively();
+          });
         }
       }
 
     } else if (id == 2) {
       if (ConfirmationDialog::confirm(tr("Delete all settings backups? This includes the copies FrogPilot saves automatically."), tr("Delete All"), this)) {
-        std::thread([=]() mutable {
-          runOnUIThread(toggleBackupButton, [=]() {
-            parent->keepScreenOn = true;
-
-            toggleBackupButton->setButtonsEnabled(false);
-            toggleBackupButton->setValue(tr("Deleting..."));
-
-            toggleBackupButton->setVisibleButton(0, false);
-            toggleBackupButton->setVisibleButton(1, false);
-            toggleBackupButton->setVisibleButton(3, false);
-          });
-
+        runDataOperation(parent, toggleBackupButton, {0, 1, 3}, tr("Deleting..."), tr("Deleted!"), tr("Delete failed..."), [=]() mutable {
           bool success = backupDir.removeRecursively();
           backupDir.mkpath(".");
-
-          runOnUIThread(toggleBackupButton, [=]() {
-            toggleBackupButton->setValue(success ? tr("Deleted!") : tr("Delete failed..."));
-          });
-
-          util::sleep_for(2500);
-
-          runOnUIThread(toggleBackupButton, [=]() {
-            toggleBackupButton->setButtonsEnabled(true);
-            toggleBackupButton->setValue("");
-
-            toggleBackupButton->setVisibleButton(0, true);
-            toggleBackupButton->setVisibleButton(1, true);
-            toggleBackupButton->setVisibleButton(3, true);
-
-            parent->keepScreenOn = false;
-          });
-        }).detach();
+          return success;
+        });
       }
 
     } else if (id == 3) {
@@ -844,7 +717,7 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
             runOnUIThread(toggleBackupButton, [=]() {
               parent->keepScreenOn = true;
 
-              toggleBackupButton->setButtonsEnabled(false);
+              toggleBackupButton->setEnabled(false);
               toggleBackupButton->setValue(tr("Restoring..."));
 
               toggleBackupButton->setVisibleButton(0, false);
@@ -852,19 +725,12 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
               toggleBackupButton->setVisibleButton(2, false);
             });
 
-            QString sourcePath = backupDir.filePath(selection);
-            QString targetPath = "/data/params/d";
-
-            QDir().mkpath(targetPath);
-
-            bool success = runCommand("rsync", QStringList{"-av", "-l", sourcePath + "/", targetPath + "/"} + protectedParamArgs()) == 0;
-
-            if (success) {
-              updateFrogPilotToggles();
-            }
+            bool success = runSettingsRequest("RestoreSettings", backupDir.filePath(selection));
 
             runOnUIThread(toggleBackupButton, [=]() {
               if (success) {
+                frogpilotUIState()->updateToggles();
+                parent->updateMetric(params.getBool("IsMetric"), true);
                 parent->updateTuningLevel();
               }
 
@@ -874,7 +740,7 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
             util::sleep_for(2500);
 
             runOnUIThread(toggleBackupButton, [=]() {
-              toggleBackupButton->setButtonsEnabled(true);
+              toggleBackupButton->setEnabled(true);
               toggleBackupButton->setValue("");
 
               toggleBackupButton->setVisibleButton(0, true);
@@ -888,7 +754,7 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       }
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     toggleBackupButton->showDescription();
   }
   dataMainList->addItem(toggleBackupButton);
@@ -902,7 +768,6 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       }
       if (ConfirmationDialog::confirm(tr("Are you sure you want to reset all of your FrogPilot stats?"), tr("Reset"), this)) {
         params.remove("FrogPilotStats");
-        params_cache.remove("FrogPilotStats");
 
         updateStatsLabels(statsLabelsList);
       }
@@ -911,10 +776,39 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
       dataLayout->setCurrentWidget(statsLabelsPanel);
     }
   });
-  if (forceOpenDescriptions) {
+  if (forceOpen) {
     viewStatsButton->showDescription();
   }
   dataMainList->addItem(viewStatsButton);
+
+  accountButton = new FrogPilotButtonsControl(tr("FrogPilot.com Account"), tr("<b>Link this device to your FrogPilot.com account, or delete the data FrogPilot keeps about it.</b><br><br>A linked device's stats and reports show in your account. Both show a code to scan with your phone."), "", {tr("LINK"), tr("DELETE"), tr("UNLINK")});
+  QObject::connect(accountButton, &FrogPilotButtonsControl::buttonClicked, [this](int id) {
+    if (id == 0) {
+      FrogPilotAccountPopup popup("pair", this);
+      popup.exec();
+      frogpilotUIState()->requestAccountLink();
+    } else if (id == 1) {
+      if (ConfirmationDialog::confirm(tr("This shows a code to scan with your phone. On FrogPilot.com you'll see exactly what will be deleted before anything is."), tr("Continue"), this)) {
+        FrogPilotAccountPopup popup("delete", this);
+        popup.exec();
+      }
+    } else if (id == 2) {
+      if (ConfirmationDialog::confirm(tr("Unlink this device from your FrogPilot.com account?"), tr("Unlink"), this)) {
+        accountButton->setEnabled(false);
+        accountButton->setValue(tr("Unlinking..."));
+        frogpilotUIState()->unlinkAccount();
+      }
+    }
+  });
+  accountButton->setVisible(false);
+  if (forceOpen) {
+    accountButton->showDescription();
+  }
+  dataMainList->addItem(accountButton);
+
+  QSizePolicy accountButtonPolicy = accountButton->sizePolicy();
+  accountButtonPolicy.setRetainSizeWhenHidden(true);
+  accountButton->setSizePolicy(accountButtonPolicy);
 
   QObject::connect(parent, &FrogPilotSettingsWindow::closeSubPanel, [dataLayout, dataMainPanel] {
     dataLayout->setCurrentWidget(dataMainPanel);
@@ -923,13 +817,41 @@ FrogPilotDataPanel::FrogPilotDataPanel(FrogPilotSettingsWindow *parent) : FrogPi
     isMetric = metric;
     updateStatsLabels(statsLabelsList);
   });
-  QObject::connect(uiState(), &UIState::offroadTransition, [statsLabelsList, this](bool offroad) {
-    if (offroad) {
-      updateStatsLabels(statsLabelsList);
-    }
+  QObject::connect(frogpilotUIState(), &FrogPilotUIState::statsSaved, this, [statsLabelsList, this] {
+    updateStatsLabels(statsLabelsList);
   });
 
-  updateStatsLabels(statsLabelsList);
+  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotDataPanel::updateState);
+}
+
+void FrogPilotDataPanel::showEvent(QShowEvent *event) {
+  frogpilotUIState()->requestAccountLink();
+}
+
+void FrogPilotDataPanel::updateState(const UIState &s, const FrogPilotUIState &fs) {
+  if (!isVisible() || s.sm->frame % UI_FREQ != 0) {
+    return;
+  }
+
+  const cereal::FrogPilotAccountState::Reader &frogpilotAccountState = (*fs.sm)["frogpilotAccountState"].getFrogpilotAccountState();
+  if (frogpilotAccountState.getLinkRequestTime() < fs.account_link_request_time) {
+    return;
+  }
+
+  QJsonObject accountLink = QJsonDocument::fromJson(frogpilotAccountState.getLink().cStr()).object();
+  bool linked = accountLink.value("linked").toBool();
+
+  accountButton->setEnabled(true);
+  accountButton->setVisible(linked || accountLink.value("available").toBool());
+  accountButton->setVisibleButton(0, !linked);
+  accountButton->setVisibleButton(1, !linked);
+  accountButton->setVisibleButton(2, linked);
+
+  if (linked) {
+    accountButton->setValue(tr("Linked as @%1").arg(accountLink.value("username").toString()));
+  } else {
+    accountButton->setValue("");
+  }
 }
 
 void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
@@ -958,7 +880,6 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
     {"LongitudinalTime", {tr("Time openpilot Controlled the Speed"), "timePercent"}},
     {"MaxAcceleration", {tr("Highest openpilot Acceleration"), "accel"}},
     {"ModelTimes", {tr("Driving Models:"), "parent"}},
-    {"Month", {tr("Month"), "other"}},
     {"NightTime", {tr("Time Driving (Nighttime)"), "timePercent"}},
     {"Overrides", {tr("Total Overrides"), "count"}},
     {"OverrideTime", {tr("Time Driving Manually"), "timePercent"}},
@@ -969,23 +890,31 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
     {"WeatherTimes", {tr("Time Driven (Weather):"), "parent"}}
   };
 
-  static QMap<QString, QString> randomEventsMap = {
-    {"accel30", tr("UwUs")},
-    {"accel35", tr("Loch Ness Encounters")},
-    {"accel40", tr("Visits to 1955")},
-    {"dejaVuCurve", tr("Deja Vu Moments")},
-    {"firefoxSteerSaturated", tr("Internet Explorer Weeeeeeees")},
-    {"hal9000", tr("HAL 9000 Denials")},
-    {"openpilotCrashedRandomEvent", tr("openpilot Crashes")},
-    {"thisIsFineSteerSaturated", tr("This Is Fine Moments")},
-    {"toBeContinued", tr("To Be Continued Moments")},
-    {"vCruise69", tr("Noices")},
-    {"yourFrogTriedToKillMe", tr("Attempted Frog Murders")},
-    {"youveGotMail", tr("Total Mail Received")}
+  static QMap<QString, QString> countNames = {
+    {"AEBEvents", tr("Collision Alerts")},
+    {"Disengages", tr("Disengagements")},
+    {"Engages", tr("Engagements")},
+    {"FrogChirps", tr("Frog Chirps")},
+    {"FrogHops", tr("Frog Hops")},
+    {"FrogPilotDrives", tr("Drives")},
+    {"FrogSqueaks", tr("Frog Squeaks")},
+    {"GoatScreams", tr("Goat Screams")},
+    {"Overrides", tr("Overrides")}
   };
 
-  static QSet<QString> ignoredKeys = {
-    "Month"
+  static QMap<QString, QString> personalityNames = {
+    {"Aggressive", tr("Aggressive")},
+    {"Relaxed", tr("Relaxed")},
+    {"Standard", tr("Standard")}
+  };
+
+  static QMap<QString, QString> weatherNames = {
+    {"clear", tr("Clear")},
+    {"low_visibility", tr("Low Visibility")},
+    {"rain", tr("Rain")},
+    {"rain_storm", tr("Rain Storm")},
+    {"snow", tr("Snow")},
+    {"unknown", tr("Unknown")}
   };
 
   QStringList keys = keyMap.keys();
@@ -997,46 +926,13 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
     return QLocale().toString(number);
   };
 
-  std::function<QString(double)> format_distance = [&](double meters) {
-    int value;
-    QString unit;
-    if (isMetric) {
-      value = qRound(meters / 1000.0);
-      unit = (value == 1) ? tr(" kilometer") : tr(" kilometers");
-    } else {
-      value = qRound(meters * METER_TO_MILE);
-      unit = (value == 1) ? tr(" mile") : tr(" miles");
-    }
-    return format_number(value) + unit;
-  };
-
-  std::function<QString(int)> format_time = [&](int seconds) {
-    static int secondsInDay = 60 * 60 * 24;
-    static int secondsInHour = 60 * 60;
-
-    int days = seconds / secondsInDay;
-    int hours = (seconds % secondsInDay) / secondsInHour;
-    int minutes = (seconds % secondsInHour) / 60;
-
-    QString result;
-    if (days > 0) {
-      result += format_number(days) + (days == 1 ? tr(" day ") : tr(" days "));
-    }
-    if (hours > 0 || days > 0) {
-      result += format_number(hours) + (hours == 1 ? tr(" hour ") : tr(" hours "));
-    }
-    result += format_number(minutes) + (minutes == 1 ? tr(" minute") : tr(" minutes"));
-    return result.trimmed();
-  };
-
   double trackedTime = stats.contains("TrackedTime") ? stats.value("TrackedTime").toDouble() : 0.0;
 
   for (const QString &key : keys) {
-    if (ignoredKeys.contains(key)) {
-      continue;
-    }
-
     QJsonValue value = stats.contains(key) ? stats.value(key) : QJsonValue(0);
+    if (key == "CurrentMonthsMeters" && stats.value("Month").toInt() != QDateTime::currentDateTimeUtc().date().month()) {
+      value = QJsonValue(0);
+    }
     QString labelText = keyMap.value(key).first;
     QString type = keyMap.value(key).second;
 
@@ -1047,12 +943,7 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
     if (key == "AEBEvents") {
       QJsonObject totalEvents = stats.value("TotalEvents").toObject();
 
-      QString trimmedLabel = labelText;
-      QString prefix = tr("Total ");
-      if (trimmedLabel.startsWith(prefix)) {
-        trimmedLabel = trimmedLabel.mid(prefix.length());
-      }
-      QString displayValue = format_number(totalEvents.value("stockAeb").toInt(0) + totalEvents.value("fcw").toInt(0)) + " " + trimmedLabel;
+      QString displayValue = format_number(totalEvents.value("stockAeb").toInt(0) + totalEvents.value("fcw").toInt(0)) + " " + countNames.value(key);
 
       labelsList->addItem(new LabelControl(labelText, displayValue, "", this));
 
@@ -1076,7 +967,7 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
         displaySpeed = QString::number(qRound(bestSpeed.toDouble() * MS_TO_MPH)) + " " + tr("mph");
       }
 
-      labelsList->addItem(new LabelControl(labelText, displaySpeed + " (" + format_time(maxTime) + ")", "", this));
+      labelsList->addItem(new LabelControl(labelText, displaySpeed + " (" + formatDuration(maxTime) + ")", "", this));
     } else if (type == "parent") {
       labelsList->addItem(new LabelControl(labelText, "", "", this));
 
@@ -1084,7 +975,7 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
       QStringList subKeys;
 
       if (key == "RandomEvents") {
-        subKeys = randomEventsMap.keys();
+        subKeys = randomEventNames().keys();
       } else {
         subKeys = subObject.keys();
       }
@@ -1092,8 +983,8 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
       std::sort(subKeys.begin(), subKeys.end(), [&](const QString &a, const QString &b) {
         QString displayA, displayB;
         if (key == "RandomEvents") {
-          displayA = randomEventsMap.value(a, a);
-          displayB = randomEventsMap.value(b, b);
+          displayA = randomEventNames().value(a, a);
+          displayB = randomEventNames().value(b, b);
         } else {
           displayA = a;
           displayB = b;
@@ -1110,22 +1001,18 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
         if (key == "ModelTimes") {
           displaySubKey = processModelName(subkey);
         } else if (key == "RandomEvents") {
-          displaySubKey = randomEventsMap.value(subkey, subkey);
+          displaySubKey = randomEventNames().value(subkey, subkey);
+        } else if (key == "PersonalityTimes") {
+          displaySubKey = personalityNames.value(subkey, subkey);
         } else if (key == "WeatherTimes") {
-          QStringList words = subkey.split('_');
-          for (QString &word : words) {
-            if (!word.isEmpty()) {
-              word[0] = word[0].toUpper();
-            }
-          }
-          displaySubKey = words.join(' ');
+          displaySubKey = weatherNames.value(subkey, subkey);
         } else {
           displaySubKey = subkey;
         }
 
         QString subvalue;
         if (key.endsWith("Times")) {
-          subvalue = format_time(subObject.value(subkey).toDouble());
+          subvalue = formatDuration(subObject.value(subkey).toDouble());
         } else {
           subvalue = format_number(subObject.value(subkey).toInt(0));
         }
@@ -1137,18 +1024,13 @@ void FrogPilotDataPanel::updateStatsLabels(FrogPilotListWidget *labelsList) {
       if (type == "accel") {
         displayValue = QString::number(value.toDouble(), 'f', 2) + " " + tr("m/s²");
       } else if (type == "count") {
-        QString trimmedLabel = labelText;
-        QString prefix = tr("Total ");
-        if (trimmedLabel.startsWith(prefix)) {
-          trimmedLabel = trimmedLabel.mid(prefix.length());
-        }
-        displayValue = format_number(value.toInt()) + " " + trimmedLabel;
+        displayValue = format_number(value.toInt()) + " " + countNames.value(key);
       } else if (type == "distance") {
-        displayValue = format_distance(value.toDouble());
+        displayValue = formatDistance(value.toDouble(), isMetric);
       } else if (type == "speed") {
         displayValue = "--";
       } else if (type == "time" || type == "timePercent") {
-        displayValue = format_time(value.toDouble());
+        displayValue = formatDuration(value.toDouble());
       } else {
         QString stringValue = value.toVariant().toString();
         displayValue = stringValue.isEmpty() ? "0" : stringValue;

@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
-import datetime
 import filecmp
 import json
 import os
 import shutil
 import subprocess
-import tarfile
-import threading
 import time
-import zstandard as zstd
 
-from pathlib import Path
+from multiprocessing import Process
 
-from openpilot.common.basedir import BASEDIR
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.params import Params
 from openpilot.common.time import system_time_valid
@@ -21,46 +16,11 @@ from openpilot.system.hardware import HARDWARE, PC
 
 from openpilot.frogpilot.system.model_manager import ModelManager
 from openpilot.frogpilot.assets.theme_manager import ThemeManager
-from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.common import frogpilot_backups, frogpilot_paths, frogpilot_utilities, frogpilot_variables
 
-def backup_directory(backup, destination, success_message, fail_message, minimum_backup_size=0, compressed=False):
-  in_progress_destination = destination.parent / (destination.name + "_in_progress")
-  in_progress_destination.mkdir(parents=True, exist_ok=True)
-
-  if compressed:
-    destination_compressed = destination.parent / (destination.name + ".tar.zst")
-
-    if frogpilot_utilities.run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], "", fail_message, report=False) is None:
-      frogpilot_utilities.delete_file(in_progress_destination, report=False)
-      return
-
-    compressed_file = destination.parent / (destination.name + "_in_progress.tar.zst")
-    with open(compressed_file, "wb") as f:
-      cctx = zstd.ZstdCompressor(level=2)
-      with cctx.stream_writer(f) as compressor:
-        with tarfile.open(fileobj=compressor, mode="w|") as tar:
-          tar.add(in_progress_destination, arcname=destination.name)
-
-    frogpilot_utilities.delete_file(in_progress_destination, report=False)
-
-    try:
-      compressed_file.rename(destination_compressed)
-    except FileNotFoundError:
-      print(fail_message)
-      return
-    print(f"Backup saved: {destination_compressed}")
-
-    compressed_backup_size = destination_compressed.stat().st_size
-    if minimum_backup_size == 0 or compressed_backup_size < minimum_backup_size:
-      frogpilot_variables.params.put_int("MinimumBackupSize", compressed_backup_size)
-  else:
-    if frogpilot_utilities.run_cmd(["sudo", "rsync", "-avq", f"{backup}/.", in_progress_destination], success_message, fail_message, report=False) is None:
-      frogpilot_utilities.delete_file(in_progress_destination, report=False)
-      return
-
-    if destination.exists():
-      frogpilot_utilities.delete_file(destination, report=False)
-    in_progress_destination.rename(destination)
+def cleanup_error_logs():
+  for error_log in sorted(frogpilot_paths.ERROR_LOGS_PATH.glob("*.log"))[:-frogpilot_variables.MAX_ERROR_LOGS]:
+    error_log.unlink()
 
 def cleanup_screen_recordings(limit_bytes):
   recordings = sorted(frogpilot_paths.SCREEN_RECORDINGS_PATH.glob("*.mp4"), key=lambda recording: recording.stat().st_mtime, reverse=True)
@@ -72,71 +32,39 @@ def cleanup_screen_recordings(limit_bytes):
       continue
 
     for suffix in frogpilot_variables.SCREEN_RECORDING_COMPANION_SUFFIXES:
-      frogpilot_utilities.delete_file(recording.with_suffix(suffix), report=False)
-    frogpilot_utilities.delete_file(recording, report=False)
-
-def cleanup_backups(directory, limit):
-  directory.mkdir(parents=True, exist_ok=True)
-
-  for in_progress in directory.glob("*_in_progress*"):
-    frogpilot_utilities.delete_file(in_progress, report=False)
-
-  backups = sorted(directory.glob("*_auto*"), key=lambda x: x.stat().st_mtime, reverse=True)
-  for oldest_backup in backups[limit:]:
-    frogpilot_utilities.delete_file(oldest_backup, report=False)
-
-def backup_frogpilot(build_metadata):
-  maximum_backups = 3
-  cleanup_backups(frogpilot_paths.FROGPILOT_BACKUPS, maximum_backups)
-
-  directory = Path(BASEDIR)
-  destination_directory = frogpilot_paths.FROGPILOT_BACKUPS / f"{build_metadata.channel}_{build_metadata.openpilot.git_commit_date[12:-16]}_auto"
-  if (frogpilot_paths.FROGPILOT_BACKUPS / (destination_directory.name + ".tar.zst")).exists():
-    print("Backup already exists. Aborting...")
-    return
-
-  du_output = subprocess.run(["sudo", "du", "-sb", directory], capture_output=True, check=True, text=True).stdout
-  install_size = int(du_output.split()[0])
-
-  _, _, free = shutil.disk_usage(frogpilot_paths.FROGPILOT_BACKUPS)
-  minimum_backup_size = frogpilot_variables.params.get_int("MinimumBackupSize")
-  if free >= install_size + minimum_backup_size * maximum_backups:
-    backup_directory(directory, destination_directory, f"Successfully backed up FrogPilot to {destination_directory}", f"Failed to backup FrogPilot to {destination_directory}", minimum_backup_size, compressed=True)
+      frogpilot_utilities.delete_path(recording.with_suffix(suffix), report=False)
+    frogpilot_utilities.delete_path(recording, report=False)
 
 def backup_settings(destination):
-  for key in frogpilot_utilities.settings_backup_keys():
-    (destination / key).write_bytes(frogpilot_variables.params.get(key) or b"")
+  for key in frogpilot_variables.SETTINGS_BACKUP_KEYS:
+    value = frogpilot_variables.params.get(key)
 
-def backup_toggles(params_cache):
-  params_backup = Params(str(frogpilot_paths.PARAMS_BACKUP_PATH))
+    if value is not None:
+      (destination / key).write_bytes(value)
 
-  changes_found = False
-  for key, _, _, _ in frogpilot_variables.frogpilot_default_params:
-    new_value = frogpilot_variables.params.get(key)
-    current_value = params_backup.get(key)
+def boot_backup(build_metadata):
+  while not system_time_valid():
+    time.sleep(1)
 
-    if new_value != current_value:
-      if new_value is not None:
-        params_backup.put(key, new_value)
-        params_cache.put(key, new_value)
-      else:
-        params_backup.remove(key)
+  frogpilot_backups.backup_frogpilot(build_metadata)
 
-      if key not in frogpilot_variables.EXCLUDED_KEYS:
-        changes_found = True
+def convert_guam_maps_selection():
+  maps_selected = frogpilot_variables.params.get("MapsSelected")
+  if maps_selected is not None and b'"GU"' in maps_selected:
+    frogpilot_variables.params.put("MapsSelected", maps_selected.replace(b'"GU"', b'"GM"'))
 
-  maximum_backups = 5
-
-  cleanup_backups(frogpilot_paths.TOGGLE_BACKUPS, maximum_backups)
-
-  existing_backups = list(frogpilot_paths.TOGGLE_BACKUPS.glob("*"))
-  if not changes_found and existing_backups:
-    print("Toggles are identical to the previous backup. Aborting...")
+def convert_model_stop_time():
+  if frogpilot_variables.params.get("CEModelStopTime") is None:
     return
 
-  directory = frogpilot_paths.PARAMS_BACKUP_PATH / "d"
-  destination_directory = frogpilot_paths.TOGGLE_BACKUPS / f"{datetime.datetime.now().strftime('%Y-%m-%d_%I-%M%p').lower()}_auto"
-  backup_directory(directory, destination_directory, f"Successfully backed up toggles to {destination_directory}", f"Failed to backup toggles to {destination_directory}")
+  tuning_level = frogpilot_variables.TUNING_LEVELS["DEVELOPER"]
+  if frogpilot_variables.params.get_bool("TuningLevelConfirmed"):
+    tuning_level = frogpilot_variables.params.get_int("TuningLevel")
+
+  if tuning_level >= frogpilot_variables.TUNING_LEVELS["DEVELOPER"]:
+    frogpilot_variables.params.put_bool("CEStopLights", frogpilot_variables.params.get_int("CEModelStopTime") != 0)
+
+  frogpilot_variables.params.remove("CEModelStopTime")
 
 def convert_params(params_cache):
   print("Starting to convert params")
@@ -152,23 +80,15 @@ def convert_params(params_cache):
       if not isinstance(value, dict):
         param_store.remove("MaxLateralAcceleration")
 
-  for param_store in (frogpilot_variables.params, params_cache, Params(str(frogpilot_paths.PARAMS_BACKUP_PATH))):
+  for param_store in (frogpilot_variables.params, params_cache):
     for old_key, new_key in frogpilot_variables.RENAMED_KEYS.items():
       value = param_store.get(old_key)
       if value is not None:
         param_store.put(new_key, value)
         param_store.remove(old_key)
 
-  stop_time = frogpilot_variables.params.get("CEModelStopTime")
-  if stop_time is not None:
-    tuning_level = frogpilot_variables.TUNING_LEVELS["DEVELOPER"]
-    if frogpilot_variables.params.get_bool("TuningLevelConfirmed"):
-      tuning_level = frogpilot_variables.params.get_int("TuningLevel")
-
-    if tuning_level >= frogpilot_variables.TUNING_LEVELS["DEVELOPER"]:
-      frogpilot_variables.params.put_bool("CEStopLights", stop_time != b"0")
-
-  frogpilot_variables.params.remove("CEModelStopTime")
+  convert_guam_maps_selection()
+  convert_model_stop_time()
 
   if frogpilot_variables.params.get("SpeedLimitFillerShareData") == b"0":
     frogpilot_variables.params.put_bool("SpeedLimitFiller", False)
@@ -205,7 +125,7 @@ def convert_params(params_cache):
 
     frogpilot_variables.params.put("FrogPilotStats", json.dumps(frogpilot_stats))
 
-    frogpilot_utilities.delete_file(frogpilot_paths.TRACKING_PATH)
+    frogpilot_utilities.delete_path(frogpilot_paths.TRACKING_PATH)
 
   print("Param conversion completed")
 
@@ -230,7 +150,7 @@ def frogpilot_boot_functions(build_metadata):
 
   if frogpilot_paths.VIDEO_CACHE_PATH.exists():
     for cached_file in frogpilot_paths.VIDEO_CACHE_PATH.iterdir():
-      frogpilot_utilities.delete_file(cached_file)
+      frogpilot_utilities.delete_path(cached_file)
 
   if frogpilot_utilities.use_konik_server():
     konik_dongle_id = frogpilot_variables.params.get("KonikDongleId", encoding="utf8")
@@ -245,14 +165,9 @@ def frogpilot_boot_functions(build_metadata):
 
   shutil.rmtree(frogpilot_paths.RESTORE_TEMP_PATH, ignore_errors=True)
 
-  def boot_thread():
-    while not system_time_valid():
-      print("Waiting for system time to become valid...")
-      time.sleep(1)
+  frogpilot_utilities.delete_path(frogpilot_paths.LEGACY_PARAMS_BACKUP_PATH)
 
-    backup_frogpilot(build_metadata)
-
-  threading.Thread(target=boot_thread, daemon=True).start()
+  Process(target=boot_backup, args=(build_metadata,), daemon=True).start()
 
 def remove_tailscale_service():
   legacy_unit = [
@@ -290,12 +205,22 @@ def remove_tailscale_service():
                               "Successfully took ownership of Tailscale", "Failed to take ownership of Tailscale")
 
 def restore_settings(source):
-  allowed_keys = frogpilot_utilities.settings_backup_keys()
-
   for backup_file in source.iterdir():
-    key = frogpilot_variables.RENAMED_KEYS.get(backup_file.name, backup_file.name)
-    if key in allowed_keys:
-      frogpilot_variables.params.put(key, backup_file.read_bytes())
+    key = backup_file.name
+    if key in frogpilot_variables.SETTINGS_BACKUP_KEYS or key == "CEModelStopTime":
+      value = backup_file.read_bytes()
+
+      if frogpilot_utilities.is_unset_secret(key, value):
+        continue
+
+      if value:
+        frogpilot_variables.params.put(key, value)
+      else:
+        frogpilot_variables.params.remove(key)
+        frogpilot_variables.params_cache.remove(key)
+
+  convert_guam_maps_selection()
+  convert_model_stop_time()
 
 def setup_frogpilot(build_metadata):
   frogpilot_paths.ERROR_LOGS_PATH.mkdir(parents=True, exist_ok=True)
@@ -305,6 +230,7 @@ def setup_frogpilot(build_metadata):
   frogpilot_paths.SCREEN_RECORDINGS_PATH.mkdir(parents=True, exist_ok=True)
   frogpilot_paths.THEME_SAVE_PATH.mkdir(parents=True, exist_ok=True)
 
+  cleanup_error_logs()
   cleanup_screen_recordings(10 * 1024 * 1024 * 1024)
 
   if frogpilot_paths.UNIT_PATH.is_file():

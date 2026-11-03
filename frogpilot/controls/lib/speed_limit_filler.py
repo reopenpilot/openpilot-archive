@@ -158,10 +158,10 @@ class SpeedLimitFiller:
     self.finished_ways = {}
 
   def update(self, gps_position, map_match, v_ego, sm):
-    if sm["frogpilotCarState"].isParked and not self.parked:
+    if sm["frogpilotCarState"].parked and not self.parked:
       self.finish_way()
 
-    self.parked = sm["frogpilotCarState"].isParked
+    self.parked = sm["frogpilotCarState"].parked
 
     if (self.changed or self.finished_ways) and not frogpilot_utilities.is_thread_alive("write_speed_limits"):
       self.start_write()
@@ -297,7 +297,7 @@ def upload_speed_limits(params, frogpilot_api):
       upload = response.json().get("upload")
       if upload is not None:
         try:
-          frogpilot_api.put_upload(upload, image_data, image_path.name)
+          frogpilot_api.put_upload(upload, image_data, image_path.name, "speed_limit_image")
         except (FrogPilotAPIError, requests.exceptions.RequestException):
           return
 

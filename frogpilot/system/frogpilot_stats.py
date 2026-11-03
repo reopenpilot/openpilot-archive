@@ -119,18 +119,23 @@ def get_model_scores(params):
 
 
 def send_stats(params, frogpilot_toggles, frogpilot_api):
-  if not frogpilot_toggles.frogpilot_telemetry:
+  if not params.get_bool("FrogPilotTelemetryConfirmed"):
     return
 
-  if frogpilot_toggles.car_make == "mock":
+  if frogpilot_toggles.car_make in ("body", "mock"):
     return
 
-  city, country, state = get_location(params.get("LastGPSPosition"))
-
-  response = frogpilot_api.post("/v1/stats", json={
-    "model_scores": get_model_scores(params),
+  payload = {
+    "model_scores": [],
     "stats_schema_version": API_VERSION,
-    "user_stats": {
+    "user_stats": {},
+  }
+
+  if frogpilot_toggles.frogpilot_telemetry:
+    city, country, state = get_location(params.get("LastGPSPosition"))
+
+    payload["model_scores"] = get_model_scores(params)
+    payload["user_stats"] = {
       "calibrated_lateral_acceleration": params.get_float("CalibratedLateralAcceleration"),
       "car_params": get_car_params(params),
       "city": city,
@@ -140,9 +145,11 @@ def send_stats(params, frogpilot_toggles, frogpilot_api):
       "state": state,
       "toggles": vars(frogpilot_toggles),
       "using_default_model": frogpilot_toggles.model == frogpilot_variables.DEFAULT_MODEL,
-    },
-  })
+    }
+  else:
+    params.remove("SpeedLimitFillerUploadedHash")
 
+  response = frogpilot_api.post_gzip("/v1/stats", json.dumps(payload, separators=(",", ":")).encode(), timeout=30)
   if response is None or not 200 <= response.status_code < 300:
     status = "no_response" if response is None else response.status_code
     print(f"Error sending stats (status={status})")

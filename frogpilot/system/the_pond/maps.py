@@ -58,23 +58,27 @@ def get_progress(params):
   return json.loads(params.get("OSMDownloadProgress", encoding="utf-8") or "{}")
 
 
-def get_region_codes():
-  codes = set()
+def get_region_names():
+  names = {}
   for regions in frogpilot_variables.MAP_COUNTRIES.values():
-    codes.update(f"{frogpilot_variables.MAP_COUNTRY_PREFIX}{code}" for code in regions)
+    names.update({f"{frogpilot_variables.MAP_COUNTRY_PREFIX}{code}": name for code, name in regions.items()})
   for regions in frogpilot_variables.MAP_STATES.values():
-    codes.update(f"{frogpilot_variables.MAP_STATE_PREFIX}{code}" for code in regions)
-  return codes
+    names.update({f"{frogpilot_variables.MAP_STATE_PREFIX}{code}": name for code, name in regions.items()})
+  return names
 
 
-def get_selected_regions(params):
-  maps_selected = json.loads(params.get("MapsSelected", encoding="utf-8") or "{}")
+def get_regions(maps_selected):
+  maps_selected = json.loads(maps_selected or "{}")
 
   regions = [f"{frogpilot_variables.MAP_COUNTRY_PREFIX}{code}" for code in maps_selected.get("nations", [])]
   regions += [f"{frogpilot_variables.MAP_STATE_PREFIX}{code}" for code in maps_selected.get("states", [])]
 
-  region_codes = get_region_codes()
-  return [region for region in regions if region in region_codes]
+  region_names = get_region_names()
+  return [region for region in regions if region in region_names]
+
+
+def get_selected_regions(params):
+  return get_regions(params.get("MapsSelected", encoding="utf-8"))
 
 
 def is_downloading():
@@ -156,8 +160,8 @@ async def set_selection(request):
   params = request.app[utilities.THE_POND].params
 
   regions = (await utilities.read_json(request)).get("regions")
-  region_codes = get_region_codes()
-  if not isinstance(regions, list) or any(not isinstance(region, str) or region not in region_codes for region in regions):
+  region_names = get_region_names()
+  if not isinstance(regions, list) or any(not isinstance(region, str) or region not in region_names for region in regions):
     raise web.HTTPBadRequest(text="invalid_regions")
 
   if regions:

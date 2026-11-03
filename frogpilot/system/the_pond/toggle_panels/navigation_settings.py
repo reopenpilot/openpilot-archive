@@ -4,6 +4,18 @@ from openpilot.frogpilot.system.the_pond import utilities
 WIFI_INTERFACES = ("wlan0",)
 
 
+def amap_key_reason(context):
+  if context.params.get_int("SearchInput") == frogpilot_variables.AMAP_SEARCH_INPUT:
+    return None
+  return {"kind": "state", "text": "Shown while \"Destination Search Provider\" is Amap"}
+
+
+def mapbox_setup_reason(context):
+  if context.params.get_int("SearchInput") != frogpilot_variables.AMAP_SEARCH_INPUT:
+    return None
+  return {"kind": "state", "text": "Shown while \"Destination Search Provider\" is Mapbox"}
+
+
 def pairing_changed(context, old_value, new_value):
   params = context.params
   if new_value:
@@ -28,12 +40,36 @@ def settings_address(context):
 
 ROWS = [
   {
+    "description": ("<b>Lets you search for a destination with Amap when \"Destination Search Provider\" is set to Amap.</b><br><br>This is a Web " +
+                    "Service key you make yourself in the console on Amap's website, lbs.amap.com. Add a key to your app there and choose " +
+                    "\"Web Service\" (Web 服务) as its service platform, since other kinds of Amap keys don't work here."),
+    "key": "AMapKey1",
+    "link": "keys",
+    "options": ({"label": "ADD | REMOVE", "value": 0},),
+    "order": 0,
+    "path": ("Maps and Navigation", "NAVIGATION"),
+    "title": "Amap Key",
+    "visible": amap_key_reason,
+    "widget": "buttons"
+  },
+  {
+    "description": ("<b>Chooses who finds the places you search for on the \"Navigation\" page in \"The Pond\".</b><br><br>Mapbox is the default. " +
+                    "Amap is for searching places in China and needs your own \"Amap Key\". The route and the map on your driving screen come from " +
+                    "Mapbox either way, so navigation needs both Mapbox keys with either choice."),
+    "key": "SearchInput",
+    "options": ({"label": "Mapbox", "value": 0}, {"label": "Amap", "value": 1}),
+    "order": 1,
+    "path": ("Maps and Navigation", "NAVIGATION"),
+    "title": "Destination Search Provider",
+    "widget": "select"
+  },
+  {
     "description": ("<b>Open this address in a browser on the same Wi-Fi to reach \"The Pond\", where you manage your drives, recordings, themes, " +
                     "navigation, and more from a phone or computer.</b>"),
     "display": settings_address,
     "id": "ManageYourSettingsAt",
     "key": None,
-    "order": 0,
+    "order": 2,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Manage Your Settings At",
     "widget": "text"
@@ -46,7 +82,7 @@ ROWS = [
                     "browser out, and turning it back on makes a new code."),
     "key": "ThePondPairing",
     "on_change": pairing_changed,
-    "order": 1,
+    "order": 3,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Pairing Code",
     "widget": "toggle"
@@ -58,7 +94,7 @@ ROWS = [
     "key": "MapboxPublicKey",
     "link": "keys",
     "options": ({"label": "ADD | REMOVE", "value": 0}, {"label": "TEST", "value": 1}),
-    "order": 2,
+    "order": 4,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Public Mapbox Key",
     "widget": "buttons"
@@ -66,11 +102,11 @@ ROWS = [
   {
     "description": ("<b>Draws the map itself on your driving screen and gets your navigation route from Mapbox, alongside what the \"Public Mapbox " +
                     "Key\" does for searching.</b><br><br>Keep this one to yourself, since it can be used to run up charges on your Mapbox account. " +
-                    "After you add it you are asked whether to reboot, and the map only appears once the device has actually rebooted."),
+                    "It does not take effect until the device has rebooted."),
     "key": "MapboxSecretKey",
     "link": "keys",
     "options": ({"label": "ADD | REMOVE", "value": 0}, {"label": "TEST", "value": 1}),
-    "order": 3,
+    "order": 5,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Secret Mapbox Key",
     "widget": "buttons"
@@ -78,13 +114,14 @@ ROWS = [
   {
     "children": ("Maps and Navigation", "NAVIGATION", "Mapbox Setup Instructions"),
     "description": ("<b>Walks you through getting your own free Mapbox keys so navigation works without comma's subscription.</b><br><br>The guide " +
-                    "only shows the steps for where you are in setup, so it changes as you add each key. Tap the instructions to come back here."),
+                    "only shows the steps for where you are in setup, so it changes as you add each key."),
     "id": "MapboxSetupInstructions",
     "key": None,
     "link": "keys",
-    "order": 4,
+    "order": 6,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Mapbox Setup Instructions",
+    "visible": mapbox_setup_reason,
     "widget": "action"
   },
   {
@@ -96,7 +133,7 @@ ROWS = [
                     "matched your map are sent to FrogPilot while parked on unmetered Wi-Fi or Ethernet and used to improve speed limits for " +
                     "everyone using FrogPilot."),
     "key": "SpeedLimitFiller",
-    "order": 5,
+    "order": 7,
     "path": ("Maps and Navigation", "NAVIGATION"),
     "title": "Speed Limit Filler",
     "widget": "toggle"

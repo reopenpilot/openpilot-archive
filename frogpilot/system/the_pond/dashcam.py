@@ -6,11 +6,10 @@ import shutil
 import sys
 
 from aiohttp import web
-from pathlib import Path
 
 from openpilot.system import sentry
 from openpilot.system.loggerd.config import SEGMENT_LENGTH
-from openpilot.system.loggerd.deleter import PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE, PRESERVE_COUNT
+from openpilot.system.loggerd.deleter import PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE
 from openpilot.system.loggerd.uploader import UPLOAD_ATTR_NAME, UPLOAD_ATTR_VALUE
 
 from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
@@ -18,7 +17,7 @@ from openpilot.frogpilot.system.the_pond import utilities
 
 CAMERA_FILES = {"driver": "dcamera.hevc", "forward": "fcamera.hevc", "low": "qcamera.ts", "wide": "ecamera.hevc"}
 CAMERA_FPS = 20
-DRIVE_SUMMARY_VERSION = 6
+DRIVE_SUMMARY_VERSION = 7
 LOG_FILES = {"qlog": "qlog", "rlog": "rlog"}
 
 MAX_NAME_LENGTH = 64
@@ -47,8 +46,8 @@ def get_xattr(path, name):
 
 def get_routes(route="*--*"):
   segments = {}
-  for log_root in frogpilot_utilities.get_log_roots():
-    for path in Path(log_root).glob(f"{route}--*"):
+  for log_root in frogpilot_paths.LOG_ROOTS:
+    for path in log_root.glob(f"{route}--*"):
       match = SEGMENT_PATTERN.match(path.name)
       if match is not None and path.is_dir():
         segments.setdefault(match[1], {})[int(match[2])] = path
@@ -71,24 +70,26 @@ def get_route_info(route, segments, recording):
   name = get_xattr(first_segment, NAME_ATTR_NAME)
 
   size = 0
-  video = False
+  file_names = set()
   for path in segments.values():
     for file in path.iterdir():
       size += file.stat().st_size
-      video |= file.name == CAMERA_FILES["low"]
+      file_names.add(file.name)
 
   return {
     "bookmarked": any(is_bookmarked(path) for path in segments.values()),
+    "cameras": [camera for camera, file_name in CAMERA_FILES.items() if file_name in file_names],
     "date": int(first_segment.stat().st_mtime),
+    "logs": [kind for kind, file_name in LOG_FILES.items() if file_name in file_names],
     "name": name.decode() if name is not None else "",
-    "preserved": is_preserved(first_segment),
+    "preserved": frogpilot_utilities.is_route_preserved(first_segment),
     "recording": recording,
     "route": route,
     "segment_length": SEGMENT_LENGTH,
     "segment_numbers": list(segments),
     "segments": len(segments),
     "size": size,
-    "video": video,
+    "video": CAMERA_FILES["low"] in file_names,
   }
 
 
@@ -120,10 +121,6 @@ def get_segment(segments, segment):
 
 def is_bookmarked(path):
   return get_xattr(path, PRESERVE_ATTR_NAME) == PRESERVE_ATTR_VALUE
-
-
-def is_preserved(path):
-  return frogpilot_utilities.has_preserve_attr(path, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE)
 
 
 def is_drive_active(the_pond):
@@ -180,11 +177,15 @@ async def summarize_drive(the_pond, route, qlogs):
   drive_path = frogpilot_paths.THE_POND_DRIVES_PATH / f"{route}.json"
   async with the_pond.file_locks.setdefault(drive_path, asyncio.Lock()):
     drive = load_drive(route, qlogs)
-    if drive is None or drive.get("failed"):
+    if drive is None:
       source = get_drive_source(qlogs)
       qlog_list = json.dumps([[position, str(qlog)] for position, qlog in qlogs.items()])
-      output = await utilities.run_heavy_process(the_pond, [sys.executable, "-m", "openpilot.frogpilot.system.the_pond.drive_summary", qlog_list])
-      drive = {**json.loads(output), "source": source}
+      try:
+        output = await utilities.run_heavy_process(the_pond, [sys.executable, "-m", "openpilot.frogpilot.system.the_pond.drive_summary", qlog_list])
+        drive = {**json.loads(output), "source": source}
+      except RuntimeError as exception:
+        sentry.capture_exception(exception, crash_log=False)
+        drive = {"failed": True, "source": source}
 
       save_drive(route, drive)
   return drive
@@ -219,12 +220,12 @@ def remove_stale_files(all_routes):
 def delete_driving_data(recording_route):
   deleted = True
   deleted_routes = set()
-  for log_root in frogpilot_utilities.get_log_roots():
-    if not Path(log_root).is_dir():
+  for log_root in frogpilot_paths.LOG_ROOTS:
+    if not log_root.is_dir():
       continue
 
-    for path in Path(log_root).iterdir():
-      if not path.is_dir() or is_bookmarked(path) or is_preserved(path):
+    for path in log_root.iterdir():
+      if not path.is_dir() or is_bookmarked(path) or frogpilot_utilities.is_route_preserved(path):
         continue
 
       match = SEGMENT_PATTERN.match(path.name)
@@ -241,6 +242,13 @@ def delete_driving_data(recording_route):
 
   for route in deleted_routes:
     remove_route_files(route)
+
+  if frogpilot_paths.SPEED_LIMIT_CAPTURES_PATH.is_dir():
+    try:
+      shutil.rmtree(frogpilot_paths.SPEED_LIMIT_CAPTURES_PATH)
+    except OSError:
+      deleted = False
+
   return deleted
 
 
@@ -286,7 +294,12 @@ async def create_thumbnail(the_pond, thumbnail_path, source, output_options):
   middle = await get_duration(source) / 2
   cmd = ["ffmpeg", "-loglevel", "error", "-skip_frame", "nokey", "-noaccurate_seek", "-ss", f"{middle:.2f}", "-i", str(source), *output_options,
          "-frames:v", "1", "-q:v", "4", "-f", "image2"]
-  await utilities.create_file(the_pond, thumbnail_path, cmd)
+  try:
+    await utilities.create_file(the_pond, thumbnail_path, cmd)
+  except FileNotFoundError:
+    cmd = ["ffmpeg", "-loglevel", "error", "-skip_frame", "nokey", "-i", str(source), *output_options,
+           "-frames:v", "1", "-q:v", "4", "-f", "image2"]
+    await utilities.create_file(the_pond, thumbnail_path, cmd)
 
 
 async def prepare_preview(the_pond, route, sources):
@@ -415,10 +428,18 @@ async def get_route_details(request):
     audio = bool(output.strip())
     break
 
+  duration = len(segments) * SEGMENT_LENGTH
+  last_low_camera = segments[max(segments)] / CAMERA_FILES["low"]
+  if last_low_camera.is_file():
+    try:
+      duration += await get_duration(last_low_camera) - SEGMENT_LENGTH
+    except (RuntimeError, ValueError):
+      pass
+
   return web.json_response({
     **await asyncio.to_thread(get_route_info, route, segments, recording),
     "audio": audio,
-    "cameras": [camera for camera, file_name in CAMERA_FILES.items() if any((path / file_name).is_file() for path in segments.values())],
+    "duration": duration,
     "route_ids": sorted(await asyncio.to_thread(get_routes), reverse=True),
     "uploaded": uploaded,
   })
@@ -454,7 +475,7 @@ async def download_route(request):
     raise web.HTTPNotFound(text="not_found")
 
   if kind == "low":
-    source = ["-f", "concat", "-safe", "0", "-protocol_whitelist", "file,pipe", "-i", "pipe:0"]
+    source = ["-f", "concat", "-safe", "0", "-protocol_whitelist", "file,pipe", "-i", "pipe:0", "-bsf:a", "aac_adtstoasc"]
     concat_list = "".join(f"file 'file:{file}'\n" for file in files).encode()
   else:
     source = ["-framerate", str(CAMERA_FPS), "-i", f"concat:{'|'.join(files)}", "-tag:v", "hvc1"]
@@ -474,6 +495,8 @@ async def get_drive(request):
     raise web.HTTPNotFound(text="not_found")
 
   drive = await summarize_drive(the_pond, route, qlogs)
+  if drive.get("failed"):
+    raise web.HTTPUnprocessableEntity(text="unreadable_log")
   return web.json_response({key: value for key, value in drive.items() if key != "source"})
 
 
@@ -569,16 +592,8 @@ async def preserve_route(request):
   if is_recording(request.app[utilities.THE_POND], route):
     raise web.HTTPConflict(text="recording")
 
-  preserved_routes = 0
-  for name, route_segments in (await asyncio.to_thread(get_routes)).items():
-    if name != route and is_preserved(next(iter(route_segments.values()))):
-      preserved_routes += 1
-
-  if preserved_routes >= PRESERVE_COUNT:
-    raise web.HTTPConflict(text="too_many_favorites")
-
   for path in segments.values():
-    os.setxattr(path, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME, PRESERVE_ATTR_VALUE)
+    os.setxattr(path, frogpilot_variables.ROUTE_PRESERVE_ATTR_NAME, frogpilot_variables.ROUTE_PRESERVED)
   return web.Response(status=204)
 
 
@@ -586,6 +601,6 @@ async def preserve_route(request):
 async def unpreserve_route(request):
   route, segments = get_route(request)
   for path in segments.values():
-    if get_xattr(path, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME) is not None:
-      os.removexattr(path, frogpilot_variables.PRESERVE_ROUTE_ATTR_NAME)
+    if get_xattr(path, frogpilot_variables.ROUTE_PRESERVE_ATTR_NAME) is not None:
+      os.removexattr(path, frogpilot_variables.ROUTE_PRESERVE_ATTR_NAME)
   return web.Response(status=204)

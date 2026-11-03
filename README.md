@@ -69,7 +69,7 @@ Press cancel, tap the brake, or work the pedals yourself, and it keeps holding y
 
 It's on by default. You can change it under **FrogPilot → Driving Controls → Steering → Always On Lateral**. To customize its behavior, choose the **Standard** tuning level or higher and tap **Manage** beside the toggle.
 
-\*On newer Genesis, Hyundai, and Kia cars with a lane-keeping (LKAS) button on the steering wheel, that button turns it on instead of cruise control. Press it once after you start the car.
+\*On newer Genesis, Hyundai, and Kia cars that use the car's own cruise control and have a lane-keeping (LKAS) button on the steering wheel, that button or engaging openpilot turns it on instead of cruise control.
 
 ---
 
@@ -497,14 +497,15 @@ openpilot logs the road-facing cameras, CAN, GPS, IMU, magnetometer, thermal sen
 If you agree, FrogPilot also sends the following data to its servers.
 
 - Filtered driving logs have no video, GPS coordinates are cleared, and the VIN (your car's ID number) is removed. Your car's raw CAN data (the messages its computers send each other) is kept and, on some cars, includes GPS or the VIN.
+- About 10 seconds of road camera video when a supported car's dashboard shows a new speed limit, when the speed limit sign reader sees a sign it isn't sure of, and for some of the limits it reads, linked to your device. No GPS coordinates or recording time are attached, but the video is uploaded as recorded and can show license plates, people, and identifiable places.
 - Speed limits learned by **"Speed Limit Filler"**, when it's on, each with the map ID of the road, the direction it applies to, the GPS location and heading where the sign was seen, the date, and how far the car drove with it, linked to your device, including limits learned before you agreed. Each one also includes a cropped photo of the sign it was read from, with the GPS location, heading, and time it was taken, and the photo can show part of the road around the sign. Roads where the sign matched your map's limit are sent too, with the limit and the date, to measure how accurate the sign reader is. The road IDs and locations show where the car has been driven. They're used to improve speed limits for everyone using FrogPilot.
 - usage statistics, which are your car's details, your drive totals, your FrogPilot settings, and your nearest city, state, and country, linked to your device.
 
-FrogPilot asks during setup whether you agree, and you can change your answer later with **"Share FrogPilot Data"** under **Settings → Software**. Drives recorded before you agreed are never uploaded to FrogPilot. Driving logs and learned speed limits only upload over Ethernet or Wi-Fi while your car is off.
+FrogPilot asks during setup whether you agree, and you can change your answer later with **"Share FrogPilot Data"** under **Settings → Software**. Drives recorded before you agreed are never uploaded to FrogPilot. Driving logs, road camera clips, and learned speed limits only upload over Ethernet or Wi-Fi while your car is off.
 
 FrogPilot also registers your device with FrogPilot's server (when it first starts and after updates), checks in each time the device starts and after each drive to count active devices (with nothing in it unless you agreed to share), and sends crash reports to Sentry, a crash-reporting service. No setting turns these off. When you turn on **"Weather Condition Offsets"** under **FrogPilot → Driving Controls → Gas / Brake → Quality of Life → Manage** (requires the **Advanced** tuning level or higher), it sends your location to FrogPilot's server to check the weather. To add your own OpenWeatherMap key, open **Weather Condition Offsets → Manage → Set Your Own Key → Add**. Once you've added your key, FrogPilot tries OpenWeatherMap first.
 
-When you send a bug report with **"Report a Bug or an Issue"** under **FrogPilot → System Settings → Utilities**, FrogPilot's server gets what went wrong, your Discord name, your settings, and the end of the most recent error log.
+When you send a bug report with **"Report a Bug or an Issue"** under **FrogPilot → System Settings → Utilities**, or with **"Report an Issue"** in **The Pond**, FrogPilot's server gets what went wrong, your Discord name, your settings, and the end of the most recent error log. In **The Pond**, you can also pick the drive it happened on, and only then are that drive's logs sent with the report, as recorded. They include exact locations and times, your car's data and VIN, driver monitoring, your device's settings and IDs, and road snapshots about every 5 seconds, and FrogPilot keeps them until they're deleted. **"Quick report"** sends the drive's logs from start to finish. **"Full details"** also sends the full logs and low-res road video for the minute you mark, and the video can show license plates and people. These logs start uploading right away on any connection, and on a metered connection The Pond shows their size and asks first.
 
 **"Disable Uploads"** is under **FrogPilot → System Settings → Device Controls → Device Settings → Manage**. It requires the **Advanced** tuning level or higher, selected under **FrogPilot → Tuning Level**, and is hidden on **FrogPilot-Development** and **FrogPilot-Vetting**.
 

@@ -21,7 +21,7 @@ from openpilot.frogpilot.system.the_pond import (backups, dashcam, device, disco
 API_VERSION = 1
 
 ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable"
-ASSET_LINK_PATTERN = re.compile(r'((?:href|src)="/assets/[^"?]+)"')
+ASSET_LINK_PATTERN = re.compile(r'((?:href|src)="/assets/(?!fonts/)[^"?]+)"')
 
 COMPRESSED_EXTENSIONS = (".css", ".js", ".svg")
 
@@ -36,8 +36,11 @@ CONTENT_SECURITY_POLICY = "; ".join((
 
 HOTSPOT_SUBNET = "192.168.43.0/24"
 
+IDLE_CHECK_INTERVAL = 5
 LOCK_CHECK_INTERVAL = 0.5
 MAX_UPLOAD_SIZE = 100 * 1024 * 1024
+
+NAVIGATION_API_PATH = "/api/navigation"
 
 OPEN_PATHS = {"/api/pair", "/api/state"}
 
@@ -88,14 +91,22 @@ async def guard(request, handler):
   if request.method not in ("GET", "HEAD") and origin is not None and origin != f"{request.scheme}://{request.host}":
     raise web.HTTPForbidden(text="cross_origin")
 
-  if request.path.startswith("/api/") and request.path not in OPEN_PATHS:
+  if request.path.startswith("/api/"):
     the_pond = request.app[utilities.THE_POND]
-    if the_pond.locked:
-      raise utilities.HTTPLocked(text="locked")
-    if not is_paired(the_pond, request):
-      raise web.HTTPUnauthorized(text="not_paired")
+    the_pond.update()
 
-    the_pond.connections.add(request.transport)
+    if request.path not in OPEN_PATHS:
+      allowed_while_driving = request.path == NAVIGATION_API_PATH or request.path.startswith(f"{NAVIGATION_API_PATH}/")
+
+      if the_pond.locked and not allowed_while_driving:
+        raise utilities.HTTPLocked(text="locked")
+      if not is_paired(the_pond, request):
+        raise web.HTTPUnauthorized(text="not_paired")
+
+      if allowed_while_driving:
+        the_pond.connections.discard(request.transport)
+      else:
+        the_pond.connections.add(request.transport)
 
   return await handler(request)
 
@@ -117,9 +128,13 @@ async def add_security_headers(request, response):
 
 async def get_state(request):
   the_pond = request.app[utilities.THE_POND]
+  if not the_pond.sm.seen["deviceState"]:
+    raise web.HTTPServiceUnavailable(text="starting")
+
   paired = is_paired(the_pond, request)
   state = {
     "api_version": API_VERSION,
+    "comma_four": utilities.IS_COMMA_FOUR,
     "is_metric": the_pond.params.get_bool("IsMetric"),
     "language": the_pond.params.get("LanguageSetting", encoding="utf-8"),
     "locked": the_pond.locked,
@@ -146,7 +161,7 @@ def get_asset_version():
 
 
 async def index(request):
-  if request.path.startswith("/api/"):
+  if request.path.startswith("/api/") or "." in request.path:
     raise web.HTTPNotFound(text="not_found")
   html = ASSET_LINK_PATTERN.sub(rf'\1?v={get_asset_version()}"', (frogpilot_paths.THE_POND_ASSETS_PATH / "index.html").read_text())
   return web.Response(text=html, content_type="text/html")
@@ -204,7 +219,12 @@ async def watch_lock(app):
     the_pond.update()
     watch_drive(the_pond)
     await tools.close_idle_shell(the_pond)
-    await asyncio.sleep(LOCK_CHECK_INTERVAL)
+
+    jobs_running = any(not task.done() for task, *_ in the_pond.jobs.values())
+    if the_pond.connections or jobs_running or the_pond.shell_used is not None:
+      await asyncio.sleep(LOCK_CHECK_INTERVAL)
+    else:
+      await asyncio.sleep(IDLE_CHECK_INTERVAL)
 
 
 async def background_tasks(app):
@@ -267,7 +287,7 @@ def create_app():
 
 
 def main():
-  frogpilot_utilities.delete_file(frogpilot_paths.THE_POND_VIDEOS_PATH, print_error=False)
+  frogpilot_utilities.delete_path(frogpilot_paths.THE_POND_VIDEOS_PATH)
   for path in frogpilot_paths.THE_POND_THUMBNAILS_PATH.glob(".*"):
     path.unlink()
   dashcam.remove_stale_files(dashcam.get_routes())

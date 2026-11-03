@@ -72,7 +72,8 @@ def personality_reset_actions(personality):
       context.params.put(key, frogpilot_variables.get_default_value(key))
     return True
 
-  confirm = {"cancel": "No", "confirm": "Yes", "text": f"Are you sure you want to completely reset your settings for the <b>{personality}</b> personality?"}
+  confirm = {"cancel": "Cancel", "confirm": "Reset",
+             "text": f"Are you sure you want to completely reset your settings for the <b>{personality}</b> personality?"}
   return {"RESET": {"confirm": confirm, "run": reset}}
 
 
@@ -87,11 +88,13 @@ def slc_mapbox_filler_visible(context):
 
 def start_accel_visible(context):
   human_acceleration = context.params.get_bool("LongitudinalTune") and context.params.get_bool("HumanAcceleration")
-  return context.level_reason("StartAccel") or context.setting_reason(not human_acceleration, "HumanAcceleration", wanted=False)
+  return (context.level_reason("StartAccel") or context.car_reason(context.has_starting_state) or
+          context.setting_reason(not human_acceleration, "HumanAcceleration", wanted=False))
 
 
 def v_ego_starting_visible(context):
-  return context.level_reason("VEgoStarting") or frogs_go_moos_tweak_reason(context)
+  uses_start_speed = context.has_starting_state or context.frogpilot_toggles.old_long_api
+  return context.level_reason("VEgoStarting") or context.car_reason(uses_start_speed) or frogs_go_moos_tweak_reason(context)
 
 
 def without_pcm_cruise_visible(context, key):
@@ -143,9 +146,10 @@ ROWS = [
     "widget": "toggle"
   },
   {
-    "description": ("<b>openpilot follows the car ahead more naturally, reading where that car is headed so it eases off and starts braking earlier " +
-                    "and softer instead of reacting late.</b><br><br>It only works with newer driving models like the default one, and only while " +
-                    "openpilot can clearly see the car ahead."),
+    "description": ("<b>openpilot follows the car ahead more naturally.</b><br><br>With newer driving models like the default one, it reads where that " +
+                    "car is headed so it eases off and starts braking earlier and softer instead of reacting late, as long as it can clearly see that " +
+                    "car. On older driving models it needs radar, closing gaps behind faster cars for quicker takeoffs and braking more gently behind " +
+                    "slower ones."),
     "key": "HumanFollowing",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Acceleration and Braking"),
@@ -178,7 +182,7 @@ ROWS = [
   {
     "description": ("<b>openpilot slows down more for left and right turns, using the trick comma built for their 2022 \"Taco Bell Run\" " +
                     "drive.</b><br><br>It does nothing while \"Curve Speed Controller\" is on. Otherwise it never switches off, so it is still " +
-                    "working on fast highway curves. What stops at about 45 mph is the ramp: openpilot allows more cornering force the faster you " +
+                    "working on fast highway curves. What stops at about 45 mph is the ramp. openpilot allows more cornering force the faster you " +
                     "go, up to that speed, then holds it flat. That makes the slowdown most noticeable in slow, tight turns."),
     "key": "TacoTune",
     "order": 6,
@@ -196,6 +200,7 @@ ROWS = [
     "widget": "manage"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "LongitudinalActuatorDelay", context.longitudinal_actuator_delay),
     "default": lambda context: context.longitudinal_actuator_delay,
     "description": ("<b>How long your car takes to respond after openpilot presses the gas or brake.</b><br><br>Raise it if your car feels slow to " +
                     "react. Lower it if it feels too eager or overshoots."),
@@ -217,9 +222,10 @@ ROWS = [
     "widget": "value"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "StartAccel", context.start_accel),
     "default": lambda context: context.start_accel,
     "description": ("<b>How hard openpilot pulls away in the first moment after a stop.</b><br><br>Raise it for quicker takeoffs. Lower it for " +
-                    "gentler ones. Only some cars use a fixed launch push like this, so on most cars this row does nothing."),
+                    "gentler ones."),
     "key": "StartAccel",
     "order": 2,
     "path": ("Driving Controls", "GAS / BRAKE", "Advanced Longitudinal Tuning"),
@@ -229,11 +235,11 @@ ROWS = [
     "widget": "value"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "VEgoStarting", context.v_ego_starting),
     "default": lambda context: context.v_ego_starting,
     "description": ("<b>The speed that marks the end of pulling away from a stop, which sets how long openpilot holds its takeoff " +
                     "acceleration.</b><br><br>Raise it to keep that takeoff push going up to a higher speed. Lower it to hand back to normal gas and " +
-                    "brake control almost as soon as the wheels turn, which makes the start softer. Only some cars have a separate takeoff stage at " +
-                    "all, so on most cars this row does nothing."),
+                    "brake control almost as soon as the wheels turn, which makes the start softer."),
     "key": "VEgoStarting",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Advanced Longitudinal Tuning"),
@@ -243,6 +249,7 @@ ROWS = [
     "widget": "value"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "StopAccel", context.stop_accel),
     "default": lambda context: context.stop_accel,
     "description": ("<b>How hard openpilot holds the brakes as your car finishes stopping and while it sits still.</b><br><br>The number is negative " +
                     "because it is braking, so -2.00 holds harder than -0.50. Go more negative if your car creeps or rolls back on a hill, and " +
@@ -255,6 +262,7 @@ ROWS = [
     "widget": "value"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "StoppingDecelRate", context.stopping_decel_rate),
     "default": lambda context: context.stopping_decel_rate,
     "description": ("<b>How quickly openpilot builds up brake pressure as it comes to a stop.</b><br><br>Raise it for shorter, firmer stops. Lower " +
                     "it for longer, smoother ones."),
@@ -267,6 +275,7 @@ ROWS = [
     "widget": "value"
   },
   {
+    "current": lambda context: rows.tuning_value(context, "VEgoStopping", context.v_ego_stopping),
     "default": lambda context: context.v_ego_stopping,
     "description": ("<b>When the speed openpilot plans to be doing over the next second drops below this, it treats your car as stopped and switches " +
                     "to holding the brakes.</b><br><br>Raise it to settle into the stop earlier and more smoothly. Lower it to keep normal braking " +
@@ -363,10 +372,10 @@ ROWS = [
     "widget": "button_toggle"
   },
   {
-    "description": ("<b>Switch to \"Experimental Mode\" when you signal below the set speed. Turn on \"Not For Detected Lanes\" to suppress this " +
-                    "when an adjacent lane is detected as you start signaling.</b><br><br>With the button off, any signal below the set speed can " +
+    "description": ("<b>Switch to \"Experimental Mode\" when you signal below the speed set here. Turn on \"Not For Detected Lanes\" to suppress " +
+                    "this when an adjacent lane is detected as you start signaling.</b><br><br>With the button off, any signal below that speed can " +
                     "trigger it. With it on, the space beside you must be narrower than the \"Minimum Lane Width\" under \"Lane Changes\" in the " +
-                    "\"STEERING\" panel when you start signaling, or you must be below the \"Minimum Lane Change Speed\". That width starts at " +
+                    "\"Steering\" panel when you start signaling, or you must be below the \"Minimum Lane Change Speed\". That width starts at " +
                     "zero, so raise it to use lane detection. Lane estimates can miss an adjacent lane."),
     "key": "CESignalSpeed",
     "order": 5,
@@ -440,7 +449,7 @@ ROWS = [
   {
     "actions": {
       "RESET": {
-        "confirm": {"cancel": "No", "confirm": "Yes", "text": "Are you sure you want to completely reset your curve data?"},
+        "confirm": {"cancel": "Cancel", "confirm": "Reset", "text": "Are you sure you want to completely reset your curve data?"},
         "guard": car_on_guard,
         "messages": {"car_on": "Curve data can't be reset while the car is on. Turn the car off and try again."},
         "run": reset_curve_data
@@ -798,14 +807,14 @@ ROWS = [
     "key": "IncreasedStoppedDistance",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life"),
-    "title": "Increase Stopped Distance by:",
+    "title": "Increase Stopped Distance by",
     "value": rows.number(0, 10, labels=rows.unit_labels(0, 10, 0.1, " foot", " feet", zero="Off"), decimals=1,
                          metric=rows.number(0, 3, labels=rows.unit_labels(0, 3, 0.1, " meter", " meters", zero="Off"), decimals=1)),
     "widget": "value"
   },
   {
     "description": ("<b>Lets your car's \"Eco\" and \"Sport\" gear modes take over how openpilot speeds up, how it slows down, or " +
-                    "both.</b><br><br>Pick \"Acceleration\", \"Deceleration\" or both with the buttons on this row, since neither starts on and " +
+                    "both.</b><br><br>Pick \"Acceleration\", \"Deceleration\", or both with the buttons on this row, since neither starts on and " +
                     "nothing changes until you do.<br><br>\"Eco\" gear makes openpilot accelerate gently and \"Sport\" gear makes it accelerate " +
                     "firmly. For braking, \"Eco\" gear halves how hard openpilot can brake and \"Sport\" gear uses openpilot's normal braking. The braking " +
                     "change only applies when there is no car ahead."),
@@ -825,7 +834,7 @@ ROWS = [
     "key": "SetSpeedOffset",
     "order": 5,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life"),
-    "title": "Offset Set Speed by:",
+    "title": "Offset Set Speed by",
     "value": rows.number(0, 99, unit=" mph", labels={0: "Off"},
                          metric=rows.number(0, 150, unit=" km/h", labels={0: "Off"})),
     "visible": lambda context: without_pcm_cruise_visible(context, "SetSpeedOffset"),
@@ -871,7 +880,7 @@ ROWS = [
     "key": "IncreaseFollowingLowVisibility",
     "order": 0,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Low Visibility"),
-    "title": "Increase Following Distance by:",
+    "title": "Increase Following Distance by",
     "value": rows.number(0, 3, 0.01, labels=rows.unit_labels(0, 3, 0.01, " second", " seconds"), fast=True),
     "widget": "value"
   },
@@ -881,7 +890,7 @@ ROWS = [
     "key": "IncreasedStoppedDistanceLowVisibility",
     "order": 1,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Low Visibility"),
-    "title": "Increase Stopped Distance by:",
+    "title": "Increase Stopped Distance by",
     "value": rows.number(0, 10, labels=rows.unit_labels(0, 10, 0.1, " foot", " feet", zero="Off"), decimals=1,
                          metric=rows.number(0, 3, labels=rows.unit_labels(0, 3, 0.1, " meter", " meters", zero="Off"), decimals=1)),
     "widget": "value"
@@ -892,7 +901,7 @@ ROWS = [
     "key": "ReduceAccelerationLowVisibility",
     "order": 2,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Low Visibility"),
-    "title": "Reduce Acceleration by:",
+    "title": "Reduce Acceleration by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -903,7 +912,7 @@ ROWS = [
     "key": "ReduceLateralAccelerationLowVisibility",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Low Visibility"),
-    "title": "Reduce Cornering Force by:",
+    "title": "Reduce Cornering Force by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -923,7 +932,7 @@ ROWS = [
     "key": "IncreaseFollowingRain",
     "order": 0,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rain"),
-    "title": "Increase Following Distance by:",
+    "title": "Increase Following Distance by",
     "value": rows.number(0, 3, 0.01, labels=rows.unit_labels(0, 3, 0.01, " second", " seconds"), fast=True),
     "widget": "value"
   },
@@ -933,7 +942,7 @@ ROWS = [
     "key": "IncreasedStoppedDistanceRain",
     "order": 1,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rain"),
-    "title": "Increase Stopped Distance by:",
+    "title": "Increase Stopped Distance by",
     "value": rows.number(0, 10, labels=rows.unit_labels(0, 10, 0.1, " foot", " feet", zero="Off"), decimals=1,
                          metric=rows.number(0, 3, labels=rows.unit_labels(0, 3, 0.1, " meter", " meters", zero="Off"), decimals=1)),
     "widget": "value"
@@ -944,7 +953,7 @@ ROWS = [
     "key": "ReduceAccelerationRain",
     "order": 2,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rain"),
-    "title": "Reduce Acceleration by:",
+    "title": "Reduce Acceleration by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -955,7 +964,7 @@ ROWS = [
     "key": "ReduceLateralAccelerationRain",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rain"),
-    "title": "Reduce Cornering Force by:",
+    "title": "Reduce Cornering Force by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -975,7 +984,7 @@ ROWS = [
     "key": "IncreaseFollowingRainStorm",
     "order": 0,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rainstorms"),
-    "title": "Increase Following Distance by:",
+    "title": "Increase Following Distance by",
     "value": rows.number(0, 3, 0.01, labels=rows.unit_labels(0, 3, 0.01, " second", " seconds"), fast=True),
     "widget": "value"
   },
@@ -985,7 +994,7 @@ ROWS = [
     "key": "IncreasedStoppedDistanceRainStorm",
     "order": 1,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rainstorms"),
-    "title": "Increase Stopped Distance by:",
+    "title": "Increase Stopped Distance by",
     "value": rows.number(0, 10, labels=rows.unit_labels(0, 10, 0.1, " foot", " feet", zero="Off"), decimals=1,
                          metric=rows.number(0, 3, labels=rows.unit_labels(0, 3, 0.1, " meter", " meters", zero="Off"), decimals=1)),
     "widget": "value"
@@ -996,7 +1005,7 @@ ROWS = [
     "key": "ReduceAccelerationRainStorm",
     "order": 2,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rainstorms"),
-    "title": "Reduce Acceleration by:",
+    "title": "Reduce Acceleration by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -1007,7 +1016,7 @@ ROWS = [
     "key": "ReduceLateralAccelerationRainStorm",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Rainstorms"),
-    "title": "Reduce Cornering Force by:",
+    "title": "Reduce Cornering Force by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -1027,7 +1036,7 @@ ROWS = [
     "key": "IncreaseFollowingSnow",
     "order": 0,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Snow"),
-    "title": "Increase Following Distance by:",
+    "title": "Increase Following Distance by",
     "value": rows.number(0, 3, 0.01, labels=rows.unit_labels(0, 3, 0.01, " second", " seconds"), fast=True),
     "widget": "value"
   },
@@ -1037,7 +1046,7 @@ ROWS = [
     "key": "IncreasedStoppedDistanceSnow",
     "order": 1,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Snow"),
-    "title": "Increase Stopped Distance by:",
+    "title": "Increase Stopped Distance by",
     "value": rows.number(0, 10, labels=rows.unit_labels(0, 10, 0.1, " foot", " feet", zero="Off"), decimals=1,
                          metric=rows.number(0, 3, labels=rows.unit_labels(0, 3, 0.1, " meter", " meters", zero="Off"), decimals=1)),
     "widget": "value"
@@ -1048,7 +1057,7 @@ ROWS = [
     "key": "ReduceAccelerationSnow",
     "order": 2,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Snow"),
-    "title": "Reduce Acceleration by:",
+    "title": "Reduce Acceleration by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },
@@ -1059,7 +1068,7 @@ ROWS = [
     "key": "ReduceLateralAccelerationSnow",
     "order": 3,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life", "Weather Condition Offsets", "Snow"),
-    "title": "Reduce Cornering Force by:",
+    "title": "Reduce Cornering Force by",
     "value": rows.number(0, 99, unit="%"),
     "widget": "value"
   },

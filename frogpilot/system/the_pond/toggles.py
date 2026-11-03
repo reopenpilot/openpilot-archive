@@ -5,9 +5,9 @@ from aiohttp import web
 from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
 from openpilot.frogpilot.system import frogpilot_stats
 from openpilot.frogpilot.system.the_pond import utilities
-from openpilot.frogpilot.system.the_pond.toggle_panels import (data_settings, device_settings, frogpilot_settings, lateral_settings, longitudinal_settings,
-                                                               maps_settings, model_settings, navigation_settings, sounds_settings, theme_settings,
-                                                               utilities_settings, vehicle_settings, visual_settings, wheel_settings)
+from openpilot.frogpilot.system.the_pond.toggle_panels import (account_settings, data_settings, device_settings, frogpilot_settings, lateral_settings,
+                                                               longitudinal_settings, maps_settings, model_settings, navigation_settings, sounds_settings,
+                                                               theme_settings, utilities_settings, vehicle_settings, visual_settings, wheel_settings)
 
 EPSILON = 1e-6
 
@@ -19,8 +19,9 @@ OPTION_WIDGETS = ("select",)
 STATE_FIELDS = ("changed", "current", "default", "disabled", "display", "hidden", "locked", "manage_visible", "reboot", "sub_toggles")
 WRITABLE_WIDGETS = ("button_toggle", "manage", "select", "toggle", "value", "value_buttons")
 
-SERVED_PANELS = (data_settings, device_settings, frogpilot_settings, lateral_settings, longitudinal_settings, maps_settings, model_settings,
-                 navigation_settings, sounds_settings, theme_settings, utilities_settings, vehicle_settings, visual_settings, wheel_settings)
+SERVED_PANELS = (account_settings, data_settings, device_settings, frogpilot_settings, lateral_settings, longitudinal_settings, maps_settings,
+                 model_settings, navigation_settings, sounds_settings, theme_settings, utilities_settings, vehicle_settings, visual_settings,
+                 wheel_settings)
 
 routes = web.RouteTableDef()
 
@@ -221,7 +222,6 @@ class Context:
     self.request = request
     self.the_pond = the_pond
     self.frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles(sm)
-    self.level = params.get_int("TuningLevel")
     self.metric = params.get_bool("IsMetric")
     self.online = frogpilot_utilities.is_online(sm["deviceState"])
     self.started = sm["deviceState"].started
@@ -229,6 +229,11 @@ class Context:
     git_branch = params.get("GitBranch", encoding="utf-8")
     self.development_branch = git_branch == frogpilot_variables.DEVELOPMENT_BRANCH
     self.vetting_branch = git_branch == frogpilot_variables.VETTING_BRANCH
+
+    if params.get_bool("TuningLevelConfirmed"):
+      self.level = params.get_int("TuningLevel")
+    else:
+      self.level, _ = frogpilot_settings.first_open(params)
 
     self.can_disable_openpilot_long = True
     self.can_map_gears = True
@@ -240,6 +245,7 @@ class Context:
     self.has_auto_tune = True
     self.has_bsm = True
     self.has_dash_speed_limits = True
+    self.has_distance_button = True
     self.has_lkas_button = True
     self.has_nnff_log = True
     self.has_openpilot_longitudinal = True
@@ -248,6 +254,7 @@ class Context:
     self.has_radar = True
     self.has_sdsu = False
     self.has_sng = False
+    self.has_starting_state = True
     self.has_zss = False
     self.is_angle_car = False
     self.is_gm = True
@@ -277,18 +284,19 @@ class Context:
     car_params = frogpilot_stats.get_car_params(params)
     frogpilot_car_params = frogpilot_stats.get_frogpilot_car_params(params)
     if car_params:
-      self.read_car_params(car_params, frogpilot_car_params)
+      self.read_car_params(car_params)
 
     if frogpilot_car_params:
       self.can_use_pedal = frogpilot_car_params.get("canUsePedal", False)
       self.can_use_sdsu = frogpilot_car_params.get("canUseSDSU", False)
+      self.has_dash_speed_limits = frogpilot_car_params.get("hasDashboardSpeedLimit", False)
       self.openpilot_longitudinal_control_disabled = frogpilot_car_params.get("openpilotLongitudinalControlDisabled", False)
 
     self.cookies = []
     self.notice = None
     self.reasons = {}
 
-  def read_car_params(self, car_params, frogpilot_car_params):
+  def read_car_params(self, car_params):
     frogpilot_toggles = self.frogpilot_toggles
     torque = car_params.get("lateralTuning", {}).get("torque")
     safety_configs = car_params.get("safetyConfigs", [])
@@ -298,21 +306,22 @@ class Context:
     self.car_fingerprint = car_params["carFingerprint"]
     self.is_torque_car = torque is not None
 
-    self.can_disable_openpilot_long = not car_params["experimentalLongitudinalAvailable"] and car_make != "gm" and not frogpilot_toggles.is_honda_nidec
-    self.can_disable_openpilot_long &= not car_params["enableDsu"] or frogpilot_car_params.get("openpilotLongitudinalControlDisabled", False)
+    self.can_disable_openpilot_long = frogpilot_toggles.can_disable_openpilot_long
     self.can_map_gears = frogpilot_toggles.can_map_gears
     self.can_use_dsu_bypass = frogpilot_toggles.can_use_dsu_bypass
     self.has_auto_tune = frogpilot_toggles.has_auto_tune
     self.has_bsm = car_params["enableBsm"]
-    self.has_dash_speed_limits = car_make in frogpilot_variables.DASHBOARD_SPEED_LIMIT_BRANDS
+    self.has_dash_speed_limits = False
     self.has_lkas_button = frogpilot_toggles.has_lkas_button
     self.has_nnff_log = frogpilot_toggles.has_nnff
     self.has_openpilot_longitudinal = frogpilot_utilities.has_openpilot_longitudinal(self.params, car_params)
+    self.has_distance_button = frogpilot_toggles.has_distance_button or self.has_openpilot_longitudinal
     self.has_pcm_cruise = car_params["pcmCruise"]
     self.has_pedal = car_params["enableGasInterceptor"]
     self.has_radar = not car_params["radarUnavailable"]
     self.has_sdsu = frogpilot_toggles.has_sdsu
     self.has_sng = car_params["autoResumeSng"]
+    self.has_starting_state = car_params["startingState"]
     self.has_zss = frogpilot_toggles.has_zss
     self.is_angle_car = car_params["steerControlType"] == "angle"
     self.is_gm = car_make == "gm"
@@ -585,7 +594,7 @@ def serialize_row(row, context, reboot_required):
     for label, action in row["actions"].items():
       blocked = action["guard"](context) if "guard" in action else None
       data["actions"].append({"blocked": blocked, "confirm": action.get("confirm"), "label": label, "messages": action.get("messages", {}),
-                              "restart": action.get("restart", False), "status": action.get("status")})
+                              "opens": action.get("opens", False), "restart": action.get("restart", False), "status": action.get("status")})
 
   if "buttons" in row:
     data["buttons"] = row["buttons"]
@@ -697,7 +706,9 @@ def get_state(the_pond):
 
 @routes.get("/api/toggles")
 async def get_toggles(request):
-  return web.json_response(get_payload(request.app[utilities.THE_POND]))
+  the_pond = request.app[utilities.THE_POND]
+  the_pond.send_request("accountLink")
+  return web.json_response(get_payload(the_pond))
 
 
 @routes.get("/api/toggles/state")
@@ -758,9 +769,13 @@ async def run_action(request):
     if error is not None:
       raise web.HTTPConflict(text=error)
 
-  succeeded = await action["run"](context, body)
+  result = await action["run"](context, body)
   the_pond.send_request("updateToggles")
-  return web.json_response({**get_state(the_pond), "succeeded": succeeded})
+
+  response = {**get_state(the_pond), "succeeded": bool(result)}
+  if action.get("opens"):
+    response["open"] = result
+  return web.json_response(response)
 
 
 @routes.put("/api/toggles/{key}")

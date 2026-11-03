@@ -1,14 +1,45 @@
 #include "frogpilot/ui/qt/offroad/visual_settings.h"
 
-FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : FrogPilotListWidget(parent), parent(parent) {
-  QJsonObject shownDescriptions = QJsonDocument::fromJson(QString::fromStdString(params.get("ShownToggleDescriptions")).toUtf8()).object();
-  QString className = this->metaObject()->className();
+QMap<int, QString> FrogPilotVisualsPanel::developerMetricOptions() {
+  return {
+    {0, tr("None")},
+    {1, tr("Acceleration: Current")},
+    {2, tr("Acceleration: Max")},
+    {3, tr("Auto Tune: Actuator Delay")},
+    {4, tr("Auto Tune: Friction")},
+    {5, tr("Auto Tune: Lateral Acceleration")},
+    {6, tr("Auto Tune: Steer Ratio")},
+    {7, tr("Auto Tune: Stiffness Factor")},
+    {8, tr("Engagement %: Lateral")},
+    {9, tr("Engagement %: Longitudinal")},
+    {10, tr("Lateral Control: Steering Angle")},
+    {11, tr("Lateral Control: Torque % Used")},
+    {12, tr("Longitudinal Control: Actuator Acceleration Output")},
+    {13, tr("Longitudinal MPC Jerk: Acceleration")},
+    {14, tr("Longitudinal MPC Jerk: Danger Zone")},
+    {15, tr("Longitudinal MPC Jerk: Speed Control")},
+  };
+}
 
-  if (!shownDescriptions.value(className).toBool(false)) {
-    forceOpenDescriptions = true;
-    shownDescriptions.insert(className, true);
-    params.put("ShownToggleDescriptions", QJsonDocument(shownDescriptions).toJson(QJsonDocument::Compact).toStdString());
-  }
+QMap<int, QString> FrogPilotVisualsPanel::mapStyleOptions() {
+  return {
+    {0, tr("Stock openpilot")},
+    {1, tr("FrogPilot")},
+    {2, tr("Mapbox Streets")},
+    {3, tr("Mapbox Outdoors")},
+    {4, tr("Mapbox Light")},
+    {5, tr("Mapbox Dark")},
+    {6, tr("Mapbox Navigation Day")},
+    {7, tr("Mapbox Navigation Night")},
+    {8, tr("Mapbox Satellite")},
+    {9, tr("Mapbox Satellite Streets")},
+    {10, tr("Mapbox Traffic Night")},
+    {11, tr("Mike's Personalized Style")}
+  };
+}
+
+FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent, bool forceOpen) : FrogPilotListWidget(parent), parent(parent) {
+  forceOpenDescriptions = forceOpen;
 
   QStackedLayout *visualsLayout = new QStackedLayout();
   addItem(visualsLayout);
@@ -50,7 +81,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
   visualsLayout->addWidget(qualityOfLifePanel);
 
   const std::vector<std::tuple<QString, QString, QString, QString>> visualToggles {
-    {"AdvancedCustomUI", tr("Advanced UI Controls"), tr("<b>Fine-tune how the driving screen looks, beyond what the everyday settings cover.</b><br><br>None of these change how the car drives."), "../../frogpilot/assets/toggle_icons/icon_advanced_device.png"},
+    {"AdvancedCustomUI", tr("Advanced UI Controls"), tr("<b>Fine-tune how the driving screen looks, beyond what the everyday settings cover.</b><br><br>None of these change how the car drives."), "../../frogpilot/assets/toggle_icons/icon_advanced_ui.svg"},
     {"HideSpeed", tr("Hide Current Speed"), tr("<b>Take your current speed off the driving screen.</b><br><br>Your dashboard still shows it."), ""},
     {"HideLeadMarker", tr("Hide Lead Marker"), tr("<b>Take the marker off the car in front of you on the driving screen.</b><br><br>openpilot still tracks that car and still follows it.<br><br>\"Lead Info\" and \"Adjacent Leads Tracking\" have nothing left to attach to, so they disappear too."), ""},
     {"HideMapIcon", tr("Hide Map Settings Button"), tr("<b>Take the map button off the driving screen.</b><br><br>Tapping the driving screen still opens the map. Switching on \"Hide Map\" as well stops that too, but that also takes away your turn-by-turn directions."), ""},
@@ -61,15 +92,15 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
 
     {"DeveloperUI", tr("Developer UI"), tr("<b>Put openpilot's internal numbers on screen, so you can see what it is thinking while it drives.</b><br><br>None of it changes how the car behaves. It is for working out why openpilot did something, and it is worth turning back off once you are done."), "../assets/offroad/icon_shell.png"},
     {"DeveloperMetrics", tr("Developer Metrics"), tr("<b>Show readouts of what openpilot's sensors and hardware are doing while you drive.</b>"), ""},
-    {"AdjacentPathMetrics", tr("Adjacent Path Metrics"), tr("<b>Print how wide the lanes either side of you are, right on their paths.</b><br><br>It draws the adjacent lane paths itself, so there is something to print onto, even with \"Adjacent Lanes\" switched off."), ""},
-    {"BorderMetrics", tr("Border Metrics"), tr("<b>Colour the edge of the driving screen to show what openpilot is reacting to.</b><br><br>You can switch on the blind spot, steering effort and turn signal borders separately. The blind spot one needs a car with factory blind spot monitoring, and stays dark without it."), ""},
+    {"AdjacentPathMetrics", tr("Adjacent Lane Metrics"), tr("<b>Print how wide the lanes either side of you are, right on their paths.</b><br><br>It draws the adjacent lane paths itself, so there is something to print onto, even with \"Adjacent Lanes\" switched off."), ""},
+    {"BorderMetrics", tr("Border Metrics"), tr("<b>Color the edge of the driving screen to show what openpilot is reacting to.</b><br><br>You can switch on the blind spot, steering effort, and turn signal borders separately. The blind spot one only appears on cars with factory blind spot monitoring, and the steering effort one only appears on cars where openpilot sends a steering effort rather than a steering angle."), ""},
     {"FPSCounter", tr("FPS Display"), tr("<b>Show how many frames a second the driving screen is drawing, along the bottom.</b><br><br>It also tracks the lowest and highest it has seen."), ""},
-    {"LeadInfo", tr("Lead Info"), tr("<b>Print how far away the car ahead is and how fast it is going, underneath its marker.</b><br><br>It also shows the gap openpilot is aiming for, so you can see it closing in on the distance you asked for."), ""},
+    {"LeadInfo", tr("Lead Info"), tr("<b>Print how far away the car ahead is and how fast it is going, underneath its marker.</b><br><br>On cars where openpilot handles the gas and brake, it also shows the gap openpilot is aiming for, so you can see it closing in on the distance you asked for."), ""},
     {"NumericalTemp", tr("Numerical Temperature Gauge"), tr("<b>Show the device temperature as a number in the sidebar instead of a word like \"GOOD\".</b><br><br>Useful for spotting the device getting hot before it slows itself down."), ""},
-    {"SidebarMetrics", tr("Sidebar Metrics"), tr("<b>Fill the sidebar with how hard the device is working, how much storage is left and its IP address.</b><br><br>They take the place of the vehicle, connection and signal indicators normally shown there.<br><br>CPU and GPU cannot both be on, and RAM, SSD Left and SSD Used are one at a time, so picking one clears the other."), ""},
+    {"SidebarMetrics", tr("Sidebar Metrics"), tr("<b>Fill the sidebar with how hard the device is working, how much storage is left, and its IP address.</b><br><br>They take the place of the vehicle, connection, and signal indicators normally shown there.<br><br>CPU and GPU cannot both be on, and RAM, SSD Left, and SSD Used are one at a time, so picking one clears the other."), ""},
     {"UseSI", tr("Use International System of Units"), tr("<b>Show the developer readouts in plain scientific units instead of the friendlier ones.</b><br><br>This only affects the developer numbers, not the speed or distances you drive by."), ""},
-    {"DeveloperSidebar", tr("Developer Sidebar"), tr("<b>Add a second sidebar down the right-hand side, holding up to seven readouts you pick yourself.</b><br><br>It sits over part of the camera view, so it is worth turning off when you are not using it. Setting all seven to \"None\" leaves the bar there but empty."), ""},
-    {"DeveloperSidebarMetric1", tr("Metric #1"), tr("<b>Choose what the first slot in the developer sidebar shows.</b><br><br>The list covers steering, acceleration, engagement and auto-tune readouts. Every slot starts already filled in, and picking \"None\" closes the gap rather than leaving a hole."), ""},
+    {"DeveloperSidebar", tr("Developer Sidebar"), tr("<b>Add a second sidebar down the right-hand side, holding up to seven readouts you pick yourself.</b><br><br>It makes the camera view narrower, so it is worth turning off when you are not using it. Setting all seven to \"None\" leaves the bar there but empty."), ""},
+    {"DeveloperSidebarMetric1", tr("Metric #1"), tr("<b>Choose what the first slot in the developer sidebar shows.</b><br><br>The list covers steering, acceleration, engagement, and auto-tune readouts. Every slot starts already filled in, and picking \"None\" closes the gap rather than leaving a hole."), ""},
     {"DeveloperSidebarMetric2", tr("Metric #2"), tr("<b>Choose what the second slot in the developer sidebar shows.</b>"), ""},
     {"DeveloperSidebarMetric3", tr("Metric #3"), tr("<b>Choose what the third slot in the developer sidebar shows.</b>"), ""},
     {"DeveloperSidebarMetric4", tr("Metric #4"), tr("<b>Choose what the fourth slot in the developer sidebar shows.</b>"), ""},
@@ -78,42 +109,41 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
     {"DeveloperSidebarMetric7", tr("Metric #7"), tr("<b>Choose what the seventh slot in the developer sidebar shows.</b>"), ""},
     {"DeveloperWidgets", tr("Developer Widgets"), tr("<b>Draw what openpilot's model and radar are seeing straight onto the driving screen.</b><br><br>Your car needs radar for two of these, and openpilot handling the gas and brake for the third, so this menu can come up almost empty."), ""},
     {"AdjacentLeadsUI", tr("Adjacent Leads Tracking"), tr("<b>Mark the cars your radar sees in the lanes either side of you.</b><br><br>Your car needs radar for these to appear, and they hang off the same marker \"Hide Lead Marker\" removes."), ""},
-    {"ShowStoppingPoint", tr("Model Stopping Point"), tr("<b>Drop a stop sign on the road where openpilot is planning to come to a stop.</b><br><br>It only marks stops openpilot works out for itself, so it stays away when openpilot is slowing for a car ahead, and \"Traffic Mode\" switches it off entirely."), ""},
-    {"RadarTracksUI", tr("Radar Tracks"), tr("<b>Show every object your car's radar is returning, not just the car you are following.</b><br><br>Expect a lot of dots, including signs, barriers and parked cars."), ""},
+    {"ShowStoppingPoint", tr("Model Stopping Point"), tr("<b>Drop a stop sign on the road where openpilot is planning to come to a stop.</b><br><br>It only marks stops openpilot works out for itself, so it stays away when openpilot is slowing for a car ahead, and \"Traffic Mode\" switches it off entirely. \"Show Distance\" also prints how far away that stop is."), ""},
+    {"RadarTracksUI", tr("Radar Tracks"), tr("<b>Show every object your car's radar is returning, not just the car you are following.</b><br><br>Expect a lot of dots, including signs, barriers, and parked cars."), ""},
 
-    {"CustomUI", tr("Driving Screen Widgets"), tr("<b>Add extra things to the driving screen that stock openpilot does not show.</b><br><br>One of these does change how the car drives: the \"Driving Personality Button\" switches your following distance."), "../assets/offroad/icon_road.png"},
-    {"AccelerationPath", tr("Acceleration Path"), tr("<b>Colour the driving path green when openpilot is speeding up and red when it is slowing down.</b><br><br>Handy for seeing a slowdown coming before you feel it."), ""},
-    {"AdjacentPath", tr("Adjacent Lanes"), tr("<b>Draw the paths of the lanes either side of you, so you can see where openpilot thinks they run.</b><br><br>They only appear above about 20 mph, and only where the lane beside you measures wide enough to be a real lane."), ""},
-    {"BlindSpotPath", tr("Blind Spot Path"), tr("<b>Turn the lane beside you red whenever your car's sensors see something in that blind spot.</b><br><br>It only shows up above about 20 mph, so it stays away in slow traffic and car parks. Keep checking your mirrors regardless."), ""},
-    {"Compass", tr("Compass"), tr("<b>Add a compass to the driving screen showing which way you are heading.</b><br><br>Without a GPS fix it freezes pointing north rather than disappearing, so treat a compass that never moves as no reading at all."), ""},
-    {"OnroadDistanceButton", tr("Driving Personality Button"), tr("<b>Add a button to the driving screen that switches your following distance between Aggressive, Standard and Relaxed without going into the menus.</b><br><br>This changes how the car actually drives, not just what you see. It also shows which one is active."), ""},
-    {"PedalsOnUI", tr("Gas / Brake Pedal Indicators"), tr("<b>Show gas and brake indicators on the driving screen so you can see what openpilot is doing with the pedals.</b><br><br>\"Dynamic\" fades them in and out with how hard it is pressing. \"Static\" shows them fully lit when active and dim when not."), ""},
+    {"CustomUI", tr("Driving Screen Widgets"), tr("<b>Add extra things to the driving screen that stock openpilot does not show.</b><br><br>One of these does change how the car drives. The \"Driving Personality Button\" switches your following distance."), "../assets/offroad/icon_road.png"},
+    {"AccelerationPath", tr("Acceleration Path"), tr("<b>Color the driving path green when openpilot is speeding up and red when it is slowing down.</b><br><br>Handy for seeing a slowdown coming before you feel it."), ""},
+    {"AdjacentPath", tr("Adjacent Lanes"), tr("<b>Draw the paths of the lanes either side of you, so you can see where openpilot thinks they run.</b><br><br>They only appear above your \"Minimum Lane Change Speed\" (20 mph or 32 km/h by default), and only where openpilot sees a lane between you and the road edge."), ""},
+    {"BlindSpotPath", tr("Blind Spot Path"), tr("<b>Turn the lane beside you red whenever your car's sensors see something in that blind spot.</b><br><br>It only shows up above your \"Minimum Lane Change Speed\" (20 mph or 32 km/h by default), so it stays away in slow traffic and parking lots. Keep checking your mirrors regardless."), ""},
+    {"Compass", tr("Compass"), tr("<b>Add a compass to the driving screen showing which way you are heading.</b><br><br>Without a GPS fix it freezes on the last heading it knew rather than disappearing, so treat a compass that never moves as no reading at all."), ""},
+    {"OnroadDistanceButton", tr("Driving Personality Button"), tr("<b>Add a button to the driving screen that switches your following distance between Aggressive, Standard, and Relaxed without going into the menus.</b><br><br>It works as a second \"Distance\" button, so holding it, or changing what that button does under \"WHEEL BUTTONS\", gives you those actions instead. This changes how the car actually drives, not just what you see. It also shows which one is active."), ""},
+    {"PedalsOnUI", tr("Gas / Brake Pedal Indicators"), tr("<b>Show gas and brake indicators on the driving screen that light up as the car speeds up or slows down, whether openpilot or you are driving.</b><br><br>\"Dynamic\" fades them in and out with how hard the car is accelerating or braking. \"Static\" shows them fully lit when active and dim when not."), ""},
     {"RotatingWheel", tr("Rotating Steering Wheel"), tr("<b>Turn the steering wheel picture on screen in time with your real steering wheel.</b>"), ""},
 
-    {"ModelUI", tr("Model UI"), tr("<b>Change how openpilot draws the road ahead, including the driving path, the lane lines and the road edges.</b><br><br>Turning this off falls back to stock openpilot's sizes, though the coloured path edges go away with it."), "../../frogpilot/assets/toggle_icons/icon_road.png"},
-    {"DynamicPathWidth", tr("Dynamic Path Width"), tr("<b>Make the driving path narrower when openpilot is doing less of the driving, so you can tell at a glance how much control it has.</b><br><br>Full width while openpilot is driving, three quarters while it is only steering for you, and half the rest of the time."), ""},
+    {"ModelUI", tr("Model UI"), tr("<b>Change how openpilot draws the road ahead, including the driving path, the lane lines, and the road edges.</b><br><br>Turning this off falls back to stock openpilot's sizes, though the colored path edges go away with it."), "../../frogpilot/assets/toggle_icons/icon_road.svg"},
+    {"DynamicPathWidth", tr("Dynamic Path Width"), tr("<b>Make the driving path narrower when openpilot is doing less of the driving, so you can tell at a glance how much control it has.</b><br><br>Full width while openpilot is driving, three quarters while \"Always On Lateral\" is steering for you, and half the rest of the time."), ""},
     {"LaneLinesWidth", tr("Lane Lines Width"), tr("<b>Set how thick the lane lines are drawn on the driving screen.</b><br><br>The default matches the 4 inch lines actually painted on US roads. This only changes the picture, never where openpilot steers."), ""},
-    {"PathEdgeWidth", tr("Path Edges Width"), tr("<b>Set how thick the coloured stripe down each side of the driving path is, which is what tells you which mode openpilot is in.</b><br><br>The default is a fifth of the path width. Set it to zero to hide the stripe entirely.<br><br>Blue means navigation is steering, light blue means openpilot is only steering for you, green is normal driving, orange is Experimental Mode, red is Traffic Mode, and yellow means you have overridden Conditional Experimental Mode."), ""},
+    {"PathEdgeWidth", tr("Path Edges Width"), tr("<b>Set how thick the colored stripe down each side of the driving path is, which is what tells you which mode openpilot is in.</b><br><br>By default the two stripes together take up a fifth of the path width. Set it to zero to hide the stripe entirely.<br><br>Blue means a navigation turn is coming up, light blue means \"Always On Lateral\" is steering for you, green is normal driving, orange is Experimental Mode, red is Traffic Mode, and yellow means you have overridden Conditional Experimental Mode to keep Experimental Mode off."), ""},
     {"PathWidth", tr("Path Width"), tr("<b>Set how wide the driving path is drawn ahead of your car.</b><br><br>The default of 6.1 feet is roughly the width of a real car."), ""},
     {"RoadEdgesWidth", tr("Road Edges Width"), tr("<b>Set how thick the road edges are drawn on the driving screen.</b><br><br>The default is half a lane line."), ""},
-    {"UnlimitedLength", tr("\"Unlimited\" Road UI"), tr("<b>Draw the path, lane lines and road edges as far ahead as the model can see, instead of stopping short.</b><br><br>The far end is the model's best guess, so it wanders more the further out it goes."), ""},
 
-    {"NavigationUI", tr("Navigation Widgets"), tr("<b>Change what navigation shows on the driving screen, from the map itself to speed limit signs.</b><br><br>Some of these need map data downloaded under \"Maps and Navigation\" before they show anything."), "../../frogpilot/assets/toggle_icons/icon_map.png"},
-    {"BigMap", tr("Larger Map Display"), tr("<b>Make the map on the driving screen bigger so it is easier to read at a glance.</b>"), ""},
+    {"NavigationUI", tr("Navigation Widgets"), tr("<b>Change what navigation shows on the driving screen, from the map itself to speed limit signs.</b><br><br>Some of these need map data downloaded under \"Maps and Navigation\" before they show anything."), "../../frogpilot/assets/toggle_icons/icon_map.svg"},
+    {"BigMap", tr("Larger Map Display"), tr("<b>Make the map on the driving screen bigger so it is easier to read at a glance.</b><br><br>\"Full Map\" goes further and fills the whole driving screen with the map in place of the camera view."), ""},
     {"MapStyle", tr("Map Style"), tr("<b>Choose how the navigation map looks, from plain streets to satellite imagery.</b><br><br><b>Stock openpilot</b>: Default comma.ai style<br><b>FrogPilot</b>: Official FrogPilot map style<br><b>Mapbox Streets</b>: Standard street-focused view<br><b>Mapbox Outdoors</b>: Emphasizes outdoor and terrain features<br><b>Mapbox Light</b>: Minimalist, bright theme<br><b>Mapbox Dark</b>: Minimalist, dark theme<br><b>Mapbox Navigation Day</b>: Optimized for daytime navigation<br><b>Mapbox Navigation Night</b>: Optimized for nighttime navigation<br><b>Mapbox Satellite</b>: Satellite imagery only<br><b>Mapbox Satellite Streets</b>: Hybrid satellite imagery with street labels<br><b>Mapbox Traffic Night</b>: Dark theme emphasizing traffic conditions<br><b>Mike's Personalized Style</b>: Customized hybrid satellite view"), ""},
     {"RoadNameUI", tr("Road Name"), tr("<b>Show the name of the road you are on along the bottom of the driving screen.</b><br><br>It comes from downloaded map data, so it stays blank on roads you have not downloaded."), ""},
-    {"ShowSpeedLimits", tr("Show Speed Limits"), tr("<b>Show the posted speed limit as a sign in the top-left corner of the driving screen.</b><br><br>The limit comes from your car's dashboard where it can read one, and from your downloaded map data otherwise."), ""},
-    {"SLCMapboxFiller", tr("Show Speed Limits from Mapbox"), tr("<b>Fall back to Mapbox for the speed limit when neither your dashboard nor your downloaded maps know one.</b><br><br>Needs your Public Mapbox Key set up under \"Maps and Navigation\" and a working internet connection."), ""},
+    {"ShowSpeedLimits", tr("Show Speed Limits"), tr("<b>Show the posted speed limit as a sign in the top-left corner of the driving screen.</b><br><br>The limit comes from your navigation route while one is active, then from your downloaded map data, and then from your car's dashboard where it can read one."), ""},
+    {"SLCMapboxFiller", tr("Show Speed Limits from Mapbox"), tr("<b>Fall back to Mapbox for the speed limit when none of your navigation route, your downloaded maps, or your dashboard know one.</b><br><br>Needs your Public Mapbox Key set up under \"Maps and Navigation\" and a working internet connection. It sends your location to Mapbox to look up the limit."), ""},
     {"UseVienna", tr("Use Vienna-Style Speed Signs"), tr("<b>Draw speed limit signs in the round European style instead of the rectangular American one.</b><br><br>Needs \"Show Speed Limits\" or \"Speed Limit Controller\" switched on, or the sign disappears instead of changing shape. It never changes the limit openpilot reads."), ""},
 
-    {"QOLVisuals", tr("Quality of Life"), tr("<b>Pick which camera you watch, and a couple of smaller driving screen touches that did not fit anywhere else.</b>"), "../../frogpilot/assets/toggle_icons/icon_quality_of_life.png"},
+    {"QOLVisuals", tr("Quality of Life"), tr("<b>Pick which camera you watch, and a couple of smaller driving screen touches that did not fit anywhere else.</b>"), "../../frogpilot/assets/toggle_icons/icon_quality_of_life.svg"},
     {"CameraView", tr("Camera View"), tr("<b>Choose which camera the driving screen shows, from the wide one to the driver-facing one.</b><br><br>openpilot keeps using every camera to drive no matter which one you put on screen."), ""},
     {"DriverCamera", tr("Show Driver Camera When In Reverse"), tr("<b>Switch the driving screen to the driver camera whenever you put the car in reverse.</b><br><br>This is not a backup camera. It faces you, not the road behind."), ""},
-    {"StoppedTimer", tr("Stopped Timer"), tr("<b>Replace your speed with a running timer once you come to a complete stop, so you can see how long you have been waiting.</b>"), ""}
+    {"StoppedTimer", tr("Stopped Timer"), tr("<b>Replace your speed with a running timer once you come to a complete stop, so you can see how long you have been waiting.</b><br><br>It stays off for the first minute of a drive."), ""}
   };
 
   for (const auto &[param, title, desc, icon] : visualToggles) {
-    AbstractControl *visualToggle;
+    AbstractControl *visualToggle = nullptr;
 
     if (param == "AdvancedCustomUI") {
       FrogPilotManageControl *advancedCustomUIToggle = new FrogPilotManageControl(param, title, desc, icon);
@@ -197,24 +227,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
       });
       visualToggle = developerSidebarToggle;
     } else if (developerSidebarKeys.contains(param)) {
-      QMap<int, QString> developerSidebarMetricOptions {
-        {0, tr("None")},
-        {1, tr("Acceleration: Current")},
-        {2, tr("Acceleration: Max")},
-        {3, tr("Auto Tune: Actuator Delay")},
-        {4, tr("Auto Tune: Friction")},
-        {5, tr("Auto Tune: Lateral Acceleration")},
-        {6, tr("Auto Tune: Steer Ratio")},
-        {7, tr("Auto Tune: Stiffness Factor")},
-        {8, tr("Engagement %: Lateral")},
-        {9, tr("Engagement %: Longitudinal")},
-        {10, tr("Lateral Control: Steering Angle")},
-        {11, tr("Lateral Control: Torque % Used")},
-        {12, tr("Longitudinal Control: Actuator Acceleration Output")},
-        {13, tr("Longitudinal MPC Jerk: Acceleration")},
-        {14, tr("Longitudinal MPC Jerk: Danger Zone")},
-        {15, tr("Longitudinal MPC Jerk: Speed Control")},
-      };
+      QMap<int, QString> developerSidebarMetricOptions = developerMetricOptions();
 
       ButtonControl *metricToggle = new ButtonControl(title, tr("SELECT"), desc);
       QObject::connect(metricToggle, &ButtonControl::clicked, [metricToggle, key = param, developerSidebarMetricOptions, this]() mutable {
@@ -229,7 +242,6 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
           metricToggle->setValue(selection);
         }
       });
-      metricToggle->setValue(developerSidebarMetricOptions.value(params.getInt(param.toStdString()), tr("None")));
       visualToggle = metricToggle;
     } else if (param == "DeveloperWidgets") {
       FrogPilotManageControl *developerWidgetsToggle = new FrogPilotManageControl(param, title, desc, icon);
@@ -274,11 +286,8 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
     } else if (param == "LaneLinesWidth" || param == "RoadEdgesWidth") {
       visualToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 24, tr(" inches"));
     } else if (param == "PathEdgeWidth") {
-      std::map<float, QString> pathEdgeLabels;
-      for (int i = 0; i <= 100; ++i) {
-        pathEdgeLabels[i] = i == 0 ? tr("Off") : QString::number(i) + "%";
-      }
-      visualToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 100, QString(), pathEdgeLabels);
+      std::map<float, QString> pathEdgeLabels{{0, tr("Off")}};
+      visualToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 100, "%", pathEdgeLabels);
     } else if (param == "PathWidth") {
       visualToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 10, tr(" feet"), std::map<float, QString>(), 0.1);
 
@@ -293,20 +302,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
       std::vector<QString> mapToggleNames{tr("Full Map")};
       visualToggle = new FrogPilotButtonToggleControl(param, title, desc, icon, mapToggles, mapToggleNames);
     } else if (param == "MapStyle") {
-      QMap<int, QString> styleMap {
-        {0, tr("Stock openpilot")},
-        {1, tr("FrogPilot")},
-        {2, tr("Mapbox Streets")},
-        {3, tr("Mapbox Outdoors")},
-        {4, tr("Mapbox Light")},
-        {5, tr("Mapbox Dark")},
-        {6, tr("Mapbox Navigation Day")},
-        {7, tr("Mapbox Navigation Night")},
-        {8, tr("Mapbox Satellite")},
-        {9, tr("Mapbox Satellite Streets")},
-        {10, tr("Mapbox Traffic Night")},
-        {11, tr("Mike's Personalized Style")}
-      };
+      QMap<int, QString> styleMap = mapStyleOptions();
 
       ButtonControl *mapStyleButton = new ButtonControl(title, tr("SELECT"), desc);
       QObject::connect(mapStyleButton, &ButtonControl::clicked, [mapStyleButton, styleMap, this]() {
@@ -319,8 +315,6 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
           mapStyleButton->setValue(selection);
         }
       });
-      int currentStyle = params.getInt("MapStyle");
-      mapStyleButton->setValue(styleMap[currentStyle]);
 
       visualToggle = mapStyleButton;
 
@@ -380,7 +374,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
     });
   }
 
-  QSet<QString> forceUpdateKeys = {"AdvancedCustomUI", "HideLeadMarker", "ShowSpeedLimits"};
+  QSet<QString> forceUpdateKeys = {"AdvancedCustomUI", "HideLeadMarker", "LeadInfo", "ShowSpeedLimits"};
   for (const QString &key : forceUpdateKeys) {
     QObject::connect(static_cast<ToggleControl*>(toggles[key]), &ToggleControl::toggleFlipped, this, &FrogPilotVisualsPanel::updateToggles);
   }
@@ -404,7 +398,11 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
 }
 
 void FrogPilotVisualsPanel::showEvent(QShowEvent *event) {
-  frogpilotToggleLevels = parent->frogpilotToggleLevels;
+  const QMap<int, QString> metricOptions = developerMetricOptions();
+  for (const QString &key : developerSidebarKeys) {
+    static_cast<ButtonControl*>(toggles[key])->setValue(metricOptions.value(params.getInt(key.toStdString()), tr("None")));
+  }
+  static_cast<ButtonControl*>(toggles["MapStyle"])->setValue(mapStyleOptions().value(params.getInt("MapStyle")));
 
   sidebarMetricsToggle->clearCheckedButtons();
   for (int i = 0; i < sidebarMetricsToggles.size(); ++i) {
@@ -417,7 +415,7 @@ void FrogPilotVisualsPanel::showEvent(QShowEvent *event) {
 }
 
 void FrogPilotVisualsPanel::updateMetric(bool metric, bool bootRun) {
-  static bool previousMetric;
+  static bool previousMetric = false;
   if (metric != previousMetric && !bootRun) {
     double distanceConversion = metric ? FOOT_TO_METER : METER_TO_FOOT;
     double smallDistanceConversion = metric ? INCH_TO_CM : CM_TO_INCH;
@@ -453,7 +451,7 @@ void FrogPilotVisualsPanel::updateMetric(bool metric, bool bootRun) {
     }
 
     for (int i = 0; i <= 60; ++i) {
-      metricSmallDistanceLabels[i] = i == 0 ? tr("Off") : i == 1 ? QString::number(i) + tr(" cm") : QString::number(i) + tr(" cm");
+      metricSmallDistanceLabels[i] = i == 0 ? tr("Off") : QString::number(i) + tr(" cm");
     }
 
     labelsInitialized = true;
@@ -480,11 +478,13 @@ void FrogPilotVisualsPanel::updateMetric(bool metric, bool bootRun) {
     laneLinesWidthToggle->updateControl(0, 24, imperialSmallDistanceLabels);
     roadEdgesWidthToggle->updateControl(0, 24, imperialSmallDistanceLabels);
 
-    pathWidthToggle->updateControl(0, 10, imperialDistanceLabels);
+    pathWidthToggle->updateControl(0, 10, imperialDistanceLabels, tr(" feet"));
   }
 }
 
 void FrogPilotVisualsPanel::updateToggles() {
+  bool hideLeadMarker = parent->hasOpenpilotLongitudinal && params.getBool("AdvancedCustomUI") && params.getBool("HideLeadMarker") && !params.getBool("DebugMode");
+
   for (auto &[key, toggle] : toggles) {
     if (parentKeys.contains(key)) {
       toggle->setVisible(false);
@@ -496,18 +496,22 @@ void FrogPilotVisualsPanel::updateToggles() {
       continue;
     }
 
-    bool setVisible = parent->tuningLevel >= frogpilotToggleLevels[key].toDouble();
+    bool setVisible = parent->tuningLevel >= parent->frogpilotToggleLevels.value(key).toDouble();
 
     if (key == "AccelerationPath") {
       setVisible &= parent->hasOpenpilotLongitudinal;
     }
 
     else if (key == "AdjacentLeadsUI") {
-      setVisible &= parent->hasRadar && !(params.getBool("AdvancedCustomUI") && params.getBool("HideLeadMarker"));
+      setVisible &= parent->hasRadar && !hideLeadMarker && (parent->hasOpenpilotLongitudinal || params.getBool("LeadInfo"));
     }
 
     else if (key == "BlindSpotPath") {
       setVisible &= parent->hasBSM;
+    }
+
+    else if (key == "DeveloperWidgets") {
+      setVisible &= parent->hasRadar || parent->hasOpenpilotLongitudinal;
     }
 
     else if (key == "HideLeadMarker") {
@@ -515,7 +519,7 @@ void FrogPilotVisualsPanel::updateToggles() {
     }
 
     else if (key == "LeadInfo") {
-      setVisible &= parent->hasOpenpilotLongitudinal && !(params.getBool("AdvancedCustomUI") && params.getBool("HideLeadMarker"));
+      setVisible &= !hideLeadMarker;
     }
 
     else if (key == "OnroadDistanceButton") {
@@ -569,6 +573,7 @@ void FrogPilotVisualsPanel::updateToggles() {
   }
 
   borderMetricsButton->setVisibleButton(0, parent->hasBSM);
+  borderMetricsButton->setVisibleButton(1, !parent->isAngleCar);
 
   openDescriptions(forceOpenDescriptions, toggles);
 

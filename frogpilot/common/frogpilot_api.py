@@ -1,5 +1,6 @@
 import dataclasses
 import fcntl
+import gzip
 import hashlib
 import json
 import jwt
@@ -8,17 +9,22 @@ import requests
 import secrets
 import threading
 import time
+import xml.etree.ElementTree as ET
 
 from contextlib import contextmanager
 from email.utils import parsedate_to_datetime
 
 from openpilot.common.api import get_key_pair
 from openpilot.common.time import system_time_valid
+from openpilot.system import sentry
 from openpilot.system.hardware import HARDWARE
+from openpilot.system.version import get_build_metadata
 
 API_VERSION = 1
 
 FROGPILOT_API = "https://api.frogpilot.com"
+
+ACCOUNT_URLS = {"delete": "https://frogpilot.com/delete/#d=", "pair": "https://frogpilot.com/account/devices/pair/#t="}
 
 
 class FrogPilotAPIError(RuntimeError):
@@ -44,6 +50,32 @@ class FrogPilotAPI:
   def get_token(self):
     return self.params.get("FrogPilotApiToken", encoding="utf-8")
 
+  def account_link(self):
+    response = self.get("/v1/account-link")
+    if not self.succeeded(response):
+      return {}
+    return response.json()
+
+  def account_url(self, purpose):
+    algorithm, private_key, _ = get_key_pair()
+    device_id = self.params.get("FrogPilotDongleId", encoding="utf-8")
+    if not private_key or not device_id:
+      return ""
+
+    now = int(time.time())
+    token = jwt.encode({
+      "aud": f"frogpilot.com/{purpose}",
+      "device_id": device_id,
+      "exp": now + 5 * 60,
+      "iat": now,
+      "jti": secrets.token_urlsafe(16),
+      purpose: True,
+    }, private_key, algorithm=algorithm)
+    return ACCOUNT_URLS[purpose] + token
+
+  def unlink_account(self):
+    return self.succeeded(self.post("/v1/account-link/unlink", json={}))
+
   def regenerate_token(self, failed_token, session=requests):
     with self.credential_lock():
       current_token = self.get_token()
@@ -58,6 +90,11 @@ class FrogPilotAPI:
         return api_token
 
       self.params.remove("FrogPilotRegistration")
+
+      if response is not None and response.status_code == 403:
+        self.params.remove("FrogPilotApiToken")
+        self.register_device(get_build_metadata())
+
       return None
 
   def register_device(self, build_metadata):
@@ -66,8 +103,9 @@ class FrogPilotAPI:
         "build_metadata": dataclasses.asdict(build_metadata),
         "device_type": HARDWARE.get_device_type(),
         "os_version": HARDWARE.get_os_version(),
-        "profile_schema_version": API_VERSION,
       }
+
+      digest = self.body_digest(profile)
 
       save_failed = False
       while True:
@@ -75,16 +113,12 @@ class FrogPilotAPI:
           time.sleep(1)
 
         with self.credential_lock():
-          api_token = self.get_token()
-          if api_token and not save_failed:
-            payload = {**profile, "api_token_hash": hashlib.sha256(api_token.encode()).hexdigest()}
-            digest = self.body_digest(payload)
+          if self.get_token() and not save_failed:
             if self.params.get("FrogPilotDongleId", encoding="utf-8") and self.params.get("FrogPilotRegistration", encoding="utf-8") == digest:
               return
 
           api_token = self.generate_token()
           payload = {**profile, "api_token_hash": hashlib.sha256(api_token.encode()).hexdigest()}
-          digest = self.body_digest(payload)
 
           response = self.signed_post("/v1/register", payload)
           if response is not None:
@@ -114,6 +148,10 @@ class FrogPilotAPI:
 
   def post(self, path, headers=None, session=requests, **kwargs):
     return self.request("POST", path, headers=headers, session=session, **kwargs)
+
+  def post_gzip(self, path, body, timeout):
+    headers = {"Content-Encoding": "gzip", "Content-Type": "application/json"}
+    return self.post(path, data=gzip.compress(body, compresslevel=9, mtime=0), headers=headers, timeout=timeout)
 
   def request(self, method, path, headers=None, session=requests, **kwargs):
     def send(token):
@@ -182,8 +220,24 @@ class FrogPilotAPI:
 
     return send(int(server_time + time.monotonic() - received_at))
 
-  def put_upload(self, upload, data, description, session=requests):
+  def put_upload(self, upload, data, description, upload_kind, session=requests):
     response = session.put(upload["url"], data=data, headers=upload.get("headers"), timeout=60, allow_redirects=False)
 
     if not 200 <= response.status_code < 300:
+      try:
+        error = ET.fromstring(response.content)
+      except ET.ParseError:
+        error = ET.Element("Error")
+
+      code = error.findtext("Code")
+
+      sentry.capture_message(f"B2 upload PUT failed ({response.status_code} {code})", level="error",
+                             fingerprint=[str(response.status_code), str(code)],
+                             extras={"message": error.findtext("Message")},
+                             tags={"upload_kind": upload_kind})
+
       raise FrogPilotAPIError(f"{description} upload failed ({response.status_code})")
+
+  @staticmethod
+  def succeeded(response):
+    return response is not None and 200 <= response.status_code < 300
