@@ -168,21 +168,31 @@ def get_changes(the_pond, backup_path):
 
   params = the_pond.params
   context = toggles.Context(the_pond)
+  settings = frogpilot_backups.read_settings_backup(backup_path)
+
+  model_stop_time = settings.pop("CEModelStopTime", None)
+  if model_stop_time:
+    tuning_level = frogpilot_variables.TUNING_LEVELS["DEVELOPER"]
+
+    if params.get_bool("TuningLevelConfirmed"):
+      tuning_level = int(settings.get("TuningLevel", params.get("TuningLevel")) or b"0")
+
+    if tuning_level >= frogpilot_variables.TUNING_LEVELS["DEVELOPER"]:
+      if int(model_stop_time) != 0:
+        settings["CEStopLights"] = b"1"
+      else:
+        settings["CEStopLights"] = b"0"
+
+  if "MapsSelected" in settings:
+    settings["MapsSelected"] = settings["MapsSelected"].replace(b'"GU"', b'"GM"')
 
   metric = params.get_bool("IsMetric")
-  backup_metric = metric
-  metric_path = backup_path / "IsMetric"
-  if metric_path.is_file() and metric_path.stat().st_size > 0:
-    backup_metric = metric_path.read_bytes() == b"1"
+  backup_metric = settings.get("IsMetric", params.get("IsMetric")) == b"1"
 
   changes = []
-  for path in sorted(backup_path.iterdir()):
-    key = path.name
-    if not path.is_file() or key not in frogpilot_variables.SETTINGS_BACKUP_KEYS:
-      continue
-
+  for key, raw_value in sorted(settings.items()):
     raw_current = params.get(key) or b""
-    raw_value = path.read_bytes()
+
     if raw_value != raw_current and not frogpilot_utilities.is_unset_secret(key, raw_value):
       current = read_setting(context, key, raw_current)
       value = read_setting(context, key, raw_value)
@@ -206,29 +216,61 @@ def read_settings_archive(the_pond, file):
   try:
     backup_zip = zipfile.ZipFile(file)
   except zipfile.BadZipFile:
-    raise web.HTTPBadRequest(text="invalid_file") from None
+    file.seek(0)
 
-  context = toggles.Context(the_pond)
+    try:
+      backup = json.load(file)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+      raise web.HTTPBadRequest(text="invalid_file") from None
 
-  settings = {}
-  with backup_zip:
-    for member in backup_zip.infolist():
-      if member.file_size > MAX_SETTING_SIZE:
-        raise web.HTTPBadRequest(text="invalid_file")
-      if member.is_dir() or member.filename not in frogpilot_variables.SETTINGS_BACKUP_KEYS:
-        continue
+    if not isinstance(backup, dict) or not isinstance(backup.get("data"), dict):
+      raise web.HTTPBadRequest(text="invalid_file") from None
 
-      try:
-        value = backup_zip.read(member)
-      except (NotImplementedError, RuntimeError, zipfile.BadZipFile, zlib.error):
+    settings = {}
+
+    for key, value in backup["data"].items():
+      if not isinstance(value, str):
         raise web.HTTPBadRequest(text="invalid_file") from None
 
-      try:
-        read_setting(context, member.filename, value)
-      except ValueError:
-        continue
-      settings[member.filename] = value
-  return settings
+      value = value.encode("utf-8")
+
+      if len(value) > MAX_SETTING_SIZE:
+        raise web.HTTPBadRequest(text="invalid_file") from None
+
+      settings[key] = value
+
+    settings = frogpilot_backups.normalize_settings(settings)
+  else:
+    settings = {}
+
+    with backup_zip:
+      members = {}
+
+      for member in backup_zip.infolist():
+        if member.file_size > MAX_SETTING_SIZE:
+          raise web.HTTPBadRequest(text="invalid_file")
+
+        if not member.is_dir():
+          members[member.filename] = member
+
+      for key, member in frogpilot_backups.normalize_settings(members).items():
+        try:
+          settings[key] = backup_zip.read(member)
+        except (NotImplementedError, RuntimeError, zipfile.BadZipFile, zlib.error):
+          raise web.HTTPBadRequest(text="invalid_file") from None
+
+  context = toggles.Context(the_pond)
+  validated_settings = {}
+
+  for key, value in settings.items():
+    try:
+      read_setting(context, key, value)
+    except ValueError:
+      continue
+
+    validated_settings[key] = value
+
+  return validated_settings
 
 
 async def reset_settings(the_pond, stock):
@@ -481,12 +523,13 @@ async def get_settings_backup_changes(request):
 @routes.get("/api/settings_backups/{name}/download")
 async def download_settings_backup(request):
   path = get_settings_backup(request.match_info["name"])
+  settings = frogpilot_backups.read_settings_backup(path)
 
   archive = io.BytesIO()
   with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as backup_zip:
-    for file in sorted(path.iterdir()):
-      if file.is_file() and file.name in frogpilot_variables.SETTINGS_BACKUP_KEYS and file.name not in frogpilot_variables.SECRET_KEYS:
-        backup_zip.write(file, file.name)
+    for key, value in sorted(settings.items()):
+      if key not in frogpilot_variables.SECRET_KEYS:
+        backup_zip.writestr(key, value)
 
   return web.Response(body=archive.getvalue(), content_type="application/zip",
                       headers={"Content-Disposition": f'attachment; filename="{path.name}.zip"'})

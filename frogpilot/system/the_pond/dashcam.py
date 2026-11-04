@@ -311,7 +311,7 @@ async def prepare_preview(the_pond, route, sources):
       except (RuntimeError, ValueError):
         readable = [source for source in sources if await is_readable(source)]
         if not readable:
-          raise
+          return None
         await create_route_preview(the_pond, preview_path, readable)
   return preview_path
 
@@ -328,6 +328,9 @@ async def prepare_thumbnail(the_pond, route, sources):
           break
         except (RuntimeError, ValueError):
           if position == positions[-1]:
+            readable = [source for source in sources if await is_readable(source)]
+            if not readable:
+              return None
             raise
   return thumbnail_path
 
@@ -511,7 +514,10 @@ async def get_preview(request):
   if is_recording(the_pond, route):
     raise web.HTTPConflict(text="recording")
 
-  return web.FileResponse(await prepare_preview(the_pond, route, sources))
+  preview_path = await prepare_preview(the_pond, route, sources)
+  if preview_path is None:
+    raise web.HTTPNotFound(text="not_found")
+  return web.FileResponse(preview_path)
 
 
 @routes.get("/api/routes/{route}/thumbnail")
@@ -525,7 +531,10 @@ async def get_thumbnail(request):
   if not sources:
     raise web.HTTPNotFound(text="not_found")
 
-  return web.FileResponse(await prepare_thumbnail(the_pond, route, sources))
+  thumbnail_path = await prepare_thumbnail(the_pond, route, sources)
+  if thumbnail_path is None:
+    raise web.HTTPNotFound(text="not_found")
+  return web.FileResponse(thumbnail_path)
 
 
 @routes.get("/api/routes/{route}/{segment:\\d+}/{camera}")

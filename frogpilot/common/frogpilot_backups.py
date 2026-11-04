@@ -122,6 +122,28 @@ def create_settings_backup(params, name):
   in_progress_destination.rename(destination)
 
 
+def normalize_settings(settings):
+  normalized_settings = {}
+
+  for key, value in settings.items():
+    current_key = frogpilot_variables.RENAMED_KEYS.get(key, key)
+
+    if current_key not in frogpilot_variables.SETTINGS_BACKUP_KEYS and current_key != "CEModelStopTime":
+      continue
+
+    if key == current_key or current_key not in settings:
+      normalized_settings[current_key] = value
+
+  return normalized_settings
+
+
+def read_settings_backup(source):
+  files = {path.name: path for path in source.iterdir() if path.is_file()}
+  settings = normalize_settings(files)
+
+  return {key: path.read_bytes() for key, path in settings.items()}
+
+
 def remove_oldest_backups(directory, limit):
   backups = sorted(directory.glob(f"*{frogpilot_variables.AUTOMATIC_BACKUP_SUFFIX}*"), key=lambda backup: backup.stat().st_mtime, reverse=True)
 

@@ -155,11 +155,9 @@ def frogpilot_boot_functions(build_metadata):
   if frogpilot_utilities.use_konik_server():
     konik_dongle_id = frogpilot_variables.params.get("KonikDongleId", encoding="utf8")
     if konik_dongle_id in (None, UNREGISTERED_DONGLE_ID):
-      konik_dongle_id = register(show_spinner=True, register_konik=True)
-
-    if konik_dongle_id != UNREGISTERED_DONGLE_ID:
-      frogpilot_variables.params.put("KonikDongleId", konik_dongle_id)
-    frogpilot_variables.params.put("DongleId", konik_dongle_id)
+      Process(target=register_konik, daemon=True).start()
+    else:
+      frogpilot_variables.params.put("DongleId", konik_dongle_id)
   elif frogpilot_variables.params.get("DongleId", encoding="utf8") == frogpilot_variables.params.get("KonikDongleId", encoding="utf8"):
     frogpilot_variables.params.remove("DongleId")
 
@@ -168,6 +166,9 @@ def frogpilot_boot_functions(build_metadata):
   frogpilot_utilities.delete_path(frogpilot_paths.LEGACY_PARAMS_BACKUP_PATH)
 
   Process(target=boot_backup, args=(build_metadata,), daemon=True).start()
+
+def register_konik():
+  frogpilot_variables.params.put("KonikDongleId", register(register_konik=True))
 
 def remove_tailscale_service():
   legacy_unit = [
@@ -205,19 +206,17 @@ def remove_tailscale_service():
                               "Successfully took ownership of Tailscale", "Failed to take ownership of Tailscale")
 
 def restore_settings(source):
-  for backup_file in source.iterdir():
-    key = backup_file.name
-    if key in frogpilot_variables.SETTINGS_BACKUP_KEYS or key == "CEModelStopTime":
-      value = backup_file.read_bytes()
+  settings = frogpilot_backups.read_settings_backup(source)
 
-      if frogpilot_utilities.is_unset_secret(key, value):
-        continue
+  for key, value in settings.items():
+    if frogpilot_utilities.is_unset_secret(key, value):
+      continue
 
-      if value:
-        frogpilot_variables.params.put(key, value)
-      else:
-        frogpilot_variables.params.remove(key)
-        frogpilot_variables.params_cache.remove(key)
+    if value:
+      frogpilot_variables.params.put(key, value)
+    else:
+      frogpilot_variables.params.remove(key)
+      frogpilot_variables.params_cache.remove(key)
 
   convert_guam_maps_selection()
   convert_model_stop_time()

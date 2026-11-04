@@ -348,11 +348,8 @@ class FrogPilotTelemetry:
   def upload(self, log_path, drive_id):
     data = log_path.read_bytes()
 
-    try:
-      git_commit = next(log.Event.read_multiple_bytes(data)).initData.gitCommit
-      schema = self.schema(git_commit)
-    except (OSError, StopIteration, capnp.KjException):
-      return
+    git_commit = next(log.Event.read_multiple_bytes(data)).initData.gitCommit
+    schema = self.schema(git_commit)
 
     filtered_data, car_fingerprint = filter_log(data, schema, frogpilot_variables.get_frogpilot_toggles().car_make)
     data = self.compressor.compress(filtered_data)
@@ -417,10 +414,6 @@ class FrogPilotTelemetry:
 
       if not self.can_upload():
         return
-
-    for schema_path in frogpilot_paths.TELEMETRY_SCHEMAS_PATH.iterdir():
-      if schema_path.name != self.git_commit:
-        shutil.rmtree(schema_path)
 
     self.schemas = {self.git_commit: log}
 
