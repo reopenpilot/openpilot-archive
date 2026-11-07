@@ -104,7 +104,7 @@ def manager_init() -> None:
   params.put_bool("IsReleaseBranch", build_metadata.release_channel)
 
   # set dongle id
-  reg_res = register(show_spinner=True)
+  reg_res = register(background=True)
   if reg_res:
     dongle_id = reg_res
   else:

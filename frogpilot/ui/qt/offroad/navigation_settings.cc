@@ -175,7 +175,7 @@ FrogPilotNavigationPanel::FrogPilotNavigationPanel(FrogPilotSettingsWindow *pare
   speedLimitFillerToggle = new ParamControl("SpeedLimitFiller", tr("Speed Limit Filler"),
                                             tr("<b>Learns speed limits from the signs the camera reads on roads where your downloaded maps have no limit or the wrong one.</b><br><br>"
                                                "Each learned limit is saved for that road and direction and used in place of the map's limit the next time you drive there, "
-                                               "and it is forgotten once the map matches the signs. It also keeps a cropped photo of the sign each learned limit came from. "
+                                               "and it is forgotten once the map matches the signs. "
                                                "Roads with conditional limits, such as ones that change with the time of day or the weather, are skipped. Needs downloaded maps.<br><br>"
                                                "With \"Share FrogPilot Data\" on, the learned limits, their sign photos, and the roads where the signs matched your map are sent to FrogPilot while parked on unmetered "
                                                "Wi-Fi or Ethernet and used to improve speed limits for everyone using FrogPilot."),

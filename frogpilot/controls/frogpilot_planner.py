@@ -128,7 +128,7 @@ class FrogPilotPlanner:
         map_match = {}
 
     if frogpilot_toggles.speed_limit_filler:
-      self.speed_limit_filler.update(gps_position, map_match, v_ego, sm)
+      self.speed_limit_filler.update(gps_position, map_match, v_ego, sm, frogpilot_toggles)
 
     if v_ego >= frogpilot_toggles.minimum_lane_change_speed:
       lane_widths, road_edge_distances = frogpilot_utilities.calculate_lane_widths(sm["modelV2"])

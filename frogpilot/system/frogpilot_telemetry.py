@@ -30,10 +30,18 @@ LEGACY_UPLOAD_ATTR_VALUE = b"1"
 SCHEMA_FILES = ("car.capnp", "custom.capnp", "include/c++.capnp", "legacy.capnp", "log.capnp")
 
 EXCLUDED_CAN_ADDRESSES = {
-  "ford": frozenset((0x462, 0x465)),
-  "gm": frozenset((0x32A, 0x4E1, 0x514)),
-  "tesla": frozenset((0x3D8,)),
-  "toyota": frozenset((0x580, 0x581, 0x582)),
+  "chrysler": frozenset((0x3E0, 0x4D3)),
+  "ford": frozenset((0x5, 0x6, 0x84, 0x21E, 0x306, 0x3F3, 0x3F4, 0x40A, 0x454, 0x462, 0x463, 0x464, 0x465, 0x466, 0x467, 0x473, 0x47E)),
+  "gm": frozenset((0x137, 0x260, 0x261, 0x262, 0x264, 0x32A, 0x4E1, 0x514, 0x741, 0x743)),
+  "honda": frozenset((0x40C, 0x651)),
+  "hyundai": frozenset((0x2D2, 0x332, 0x333, 0x374)),
+  "mazda": frozenset((0x40A, 0x439)),
+  "psa": frozenset((0x492, 0x4B2)),
+  "rivian": frozenset((0x342, 0x349)),
+  "subaru": frozenset((0x6A1, 0x6BC)),
+  "tesla": frozenset((0x4F, 0x309, 0x324, 0x3B9, 0x3D8, 0x405, 0x528, 0x718)),
+  "toyota": frozenset((0x3D2, 0x413, 0x580, 0x581, 0x582, 0x675, 0x676)),
+  "volkswagen": frozenset((0x36F, 0x374, 0x378, 0x37B, 0x486, 0x5D2, 0x6B2, 0x6B4, 0x7D0, 0x1A5555B8, 0x1A555628)),
 }
 
 EXCLUDED_MESSAGE_TYPES = frozenset((
@@ -146,6 +154,8 @@ WHITELIST_FIELDS = {
   "initData": ("gitCommit", "version"),
 }
 
+WHITELIST_PARAMS = ("Model", "ModelRandomizer", "RandomizedModel")
+
 def get_car_make(data, schema, default_car_make):
   try:
     for event in schema.Event.read_multiple_bytes(data):
@@ -227,6 +237,9 @@ def filter_log(data, schema, default_car_make):
         for field in WHITELIST_FIELDS[which]:
           setattr(kept, field, getattr(source, field))
 
+        if which == "initData":
+          kept.params.entries = [{"key": entry.key, "value": entry.value} for entry in source.params.entries if entry.key in WHITELIST_PARAMS]
+
       filtered_data.extend(builder.to_bytes())
   except capnp.KjException:
     pass
@@ -241,7 +254,7 @@ class FrogPilotTelemetry:
 
     self.frogpilot_api = frogpilot_api.FrogPilotAPI(self.params)
 
-    self.private_key = get_key_pair()[1].encode()
+    self.private_key = get_key_pair()[1]
 
     self.git_commit = self.params.get("GitCommit", encoding="utf-8")
     self.schemas = {self.git_commit: log}
@@ -348,11 +361,8 @@ class FrogPilotTelemetry:
   def upload(self, log_path, drive_id):
     data = log_path.read_bytes()
 
-    try:
-      git_commit = next(log.Event.read_multiple_bytes(data)).initData.gitCommit
-      schema = self.schema(git_commit)
-    except (OSError, StopIteration, capnp.KjException):
-      return
+    git_commit = next(log.Event.read_multiple_bytes(data)).initData.gitCommit
+    schema = self.schema(git_commit)
 
     filtered_data, car_fingerprint = filter_log(data, schema, frogpilot_variables.get_frogpilot_toggles().car_make)
     data = self.compressor.compress(filtered_data)
@@ -389,7 +399,7 @@ class FrogPilotTelemetry:
       self.frogpilot_api.put_upload(upload, data, capture_path.name, "capture", self.session)
 
   def upload_id(self, name):
-    return hmac.new(self.private_key, name.encode(), "sha256").hexdigest()[:32]
+    return hmac.new(self.private_key.encode(), name.encode(), "sha256").hexdigest()[:32]
 
   def can_upload(self):
     self.sm.update(0)
@@ -412,17 +422,18 @@ class FrogPilotTelemetry:
       except (frogpilot_api.FrogPilotAPIError, requests.exceptions.RequestException):
         self.retry_at = time.monotonic() + 60 * 60
         return
+      except FileNotFoundError:
+        pass
       except Exception as error:
         sentry.capture_exception(error, crash_log=False)
 
       if not self.can_upload():
         return
 
-    for schema_path in frogpilot_paths.TELEMETRY_SCHEMAS_PATH.iterdir():
-      if schema_path.name != self.git_commit:
-        shutil.rmtree(schema_path)
-
     self.schemas = {self.git_commit: log}
+
+    if not self.private_key:
+      return
 
     for capture_path in self.pending_captures():
       try:

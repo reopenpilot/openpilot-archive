@@ -12,6 +12,7 @@ import time
 
 from aiohttp import web
 
+from openpilot.system import sentry
 from openpilot.system.hardware import HARDWARE, PC
 
 from openpilot.frogpilot.common import frogpilot_paths, frogpilot_utilities, frogpilot_variables
@@ -38,6 +39,7 @@ HOTSPOT_SUBNET = "192.168.43.0/24"
 
 IDLE_CHECK_INTERVAL = 5
 LOCK_CHECK_INTERVAL = 0.5
+MAX_ERROR_DETAIL_LENGTH = 200
 MAX_UPLOAD_SIZE = 100 * 1024 * 1024
 
 NAVIGATION_API_PATH = "/api/navigation"
@@ -80,6 +82,17 @@ def is_paired(the_pond, request):
 
   token_hash = hashlib.sha256(token.encode()).hexdigest()
   return any(hmac.compare_digest(browser["hash"], token_hash) for browser in json.loads(the_pond.params.get("ThePondPairedBrowsers") or "[]"))
+
+
+@web.middleware
+async def report_errors(request, handler):
+  try:
+    return await handler(request)
+  except web.HTTPException:
+    raise
+  except Exception as exception:
+    sentry.capture_exception(exception, crash_log=False)
+    raise web.HTTPInternalServerError(text=f"{type(exception).__name__}: {exception}"[:MAX_ERROR_DETAIL_LENGTH]) from exception
 
 
 @web.middleware
@@ -252,7 +265,7 @@ async def port_redirect(app):
 
 
 def create_app():
-  app = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[guard, compress_responses])
+  app = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[report_errors, guard, compress_responses])
   app[utilities.THE_POND] = utilities.ThePond()
 
   app.cleanup_ctx.append(background_tasks)

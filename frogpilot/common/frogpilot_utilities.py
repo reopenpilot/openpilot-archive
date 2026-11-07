@@ -407,7 +407,7 @@ def is_tuning_value_set(params, key):
   return params.get_float(key) != 0
 
 def is_unset_secret(key, value):
-  return key in frogpilot_variables.SECRET_KEYS and value in (b"", b"[]")
+  return key in frogpilot_variables.SECRET_KEYS and value in (b"", b"[]", b"0")
 
 def is_url_pingable(url, session=requests):
   headers = {"Accept": "*/*", "User-Agent": "frogpilot-ping-test/1.0 (https://github.com/FrogAi/FrogPilot)"}

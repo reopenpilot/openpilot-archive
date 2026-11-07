@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import datetime
 import functools
 import json
 import math
@@ -45,9 +46,9 @@ def capture_sign(buffer, state, outputs, last_position, map_match, best_confiden
 
   frogpilot_utilities.update_json_file(image_path.with_suffix(".json"), {
     "bearing": last_position["bearing"] % 360,
-    "captured_at": int(time.time() * 1000),
     "latitude": last_position["latitude"],
     "longitude": last_position["longitude"],
+    "month": datetime.datetime.now(datetime.UTC).strftime("%Y-%m"),
   })
 
 def load_model(folder):
@@ -125,7 +126,11 @@ def main():
   outputs = {name: index for index, name in enumerate(inputs["outputs"])}
   reading_fields = [(name, index) for name, index in outputs.items() if name in custom.FrogPilotSignReading.schema.fieldnames]
 
-  capture = all(name in outputs for name in SIGN_OUTPUTS) and frogpilot_variables.get_frogpilot_toggles().speed_limit_filler
+  frogpilot_toggles = frogpilot_variables.get_frogpilot_toggles()
+
+  sharing = frogpilot_toggles.frogpilot_telemetry and not frogpilot_toggles.uploads_disabled
+
+  capture = all(name in outputs for name in SIGN_OUTPUTS) and frogpilot_toggles.speed_limit_filler and sharing
   if capture:
     frogpilot_paths.SPEED_LIMIT_FILLER_PENDING_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
     for path in frogpilot_paths.SPEED_LIMIT_FILLER_PENDING_IMAGES_PATH.iterdir():
