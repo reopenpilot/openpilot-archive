@@ -20,7 +20,7 @@ def number(minimum, maximum, step=1, unit="", labels=None, fast=False, decimals=
 
 def tuning_value(context, key, car_value):
   if frogpilot_utilities.is_tuning_value_set(context.params, key):
-    return context.params.get(key)
+    return context.params.get_float(key)
   return car_value
 
 

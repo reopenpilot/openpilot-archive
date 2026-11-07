@@ -72,6 +72,7 @@ CLASSIC_MODEL_VERSIONS = {"v1", "v2", "v3", "v4"}
 CURRENT_SPEED_STOP_MODELS = {"cd210-model", "pop-model"}
 DISTANCE_BUTTON_BRANDS = {"chrysler", "ford", "gm", "honda", "hyundai", "mazda", "nissan", "volkswagen"}
 LKAS_BUTTON_BRANDS = {"chrysler", "ford", "gm", "honda", "mazda", "nissan", "subaru"}
+LKAS_STATUS_BRANDS = {"mazda", "nissan", "subaru"}
 MAP_GEARS_BRANDS = {"gm", "toyota"}
 MIN_STABLE_DELAY_MODELS = {"cd210-model"}
 THNEED_MODEL_VERSIONS = CLASSIC_MODEL_VERSIONS | {"v5", "v6"}

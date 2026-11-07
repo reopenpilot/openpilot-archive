@@ -7,6 +7,7 @@ import sys
 
 from aiohttp import web
 
+from openpilot.common.time import min_date
 from openpilot.system import sentry
 from openpilot.system.loggerd.config import SEGMENT_LENGTH
 from openpilot.system.loggerd.deleter import PRESERVE_ATTR_NAME, PRESERVE_ATTR_VALUE
@@ -68,18 +69,32 @@ def get_route(request):
 def get_route_info(route, segments, recording):
   first_segment = next(iter(segments.values()))
   name = get_xattr(first_segment, NAME_ATTR_NAME)
+  valid_time = min_date().timestamp()
 
+  date = None
   size = 0
   file_names = set()
-  for path in segments.values():
+  for number, path in segments.items():
+    last_write = 0
     for file in path.iterdir():
-      size += file.stat().st_size
+      stat = file.stat()
+      size += stat.st_size
       file_names.add(file.name)
+      last_write = max(last_write, stat.st_mtime)
+
+    if date is None and last_write > valid_time:
+      date = int(last_write) - (number + 1) * SEGMENT_LENGTH
+
+  drive = frogpilot_utilities.load_json_file(frogpilot_paths.THE_POND_DRIVES_PATH / f"{route}.json")
+  if "date" in drive:
+    date = drive["date"]
+  elif date is not None and not recording:
+    save_drive(route, {**drive, "date": date})
 
   return {
     "bookmarked": any(is_bookmarked(path) for path in segments.values()),
     "cameras": [camera for camera, file_name in CAMERA_FILES.items() if file_name in file_names],
-    "date": int(first_segment.stat().st_mtime),
+    "date": date,
     "logs": [kind for kind, file_name in LOG_FILES.items() if file_name in file_names],
     "name": name.decode() if name is not None else "",
     "preserved": frogpilot_utilities.is_route_preserved(first_segment),
@@ -169,6 +184,10 @@ def load_drive(route, qlogs):
 
 def save_drive(route, drive):
   drive_path = frogpilot_paths.THE_POND_DRIVES_PATH / f"{route}.json"
+  saved_drive = frogpilot_utilities.load_json_file(drive_path)
+  if "date" in saved_drive:
+    drive = {**drive, "date": saved_drive["date"]}
+
   drive_path.parent.mkdir(parents=True, exist_ok=True)
   frogpilot_utilities.update_json_file(drive_path, drive)
 
@@ -193,12 +212,14 @@ async def summarize_drive(the_pond, route, qlogs):
 
 async def summarize_drives(the_pond, drives):
   for route, qlogs in sorted(drives.items(), reverse=True):
-    if load_drive(route, qlogs) is None:
-      try:
+    try:
+      if load_drive(route, qlogs) is None:
         await summarize_drive(the_pond, route, qlogs)
-      except Exception as exception:
-        sentry.capture_exception(exception, crash_log=False)
-        save_drive(route, {"failed": True, "source": get_drive_source(qlogs)})
+    except FileNotFoundError:
+      continue
+    except Exception as exception:
+      sentry.capture_exception(exception, crash_log=False)
+      save_drive(route, {"failed": True, "source": get_drive_source(qlogs)})
 
 
 def remove_route_files(route):
@@ -311,7 +332,7 @@ async def prepare_preview(the_pond, route, sources):
       except (RuntimeError, ValueError):
         readable = [source for source in sources if await is_readable(source)]
         if not readable:
-          raise
+          return None
         await create_route_preview(the_pond, preview_path, readable)
   return preview_path
 
@@ -328,6 +349,9 @@ async def prepare_thumbnail(the_pond, route, sources):
           break
         except (RuntimeError, ValueError):
           if position == positions[-1]:
+            readable = [source for source in sources if await is_readable(source)]
+            if not readable:
+              return None
             raise
   return thumbnail_path
 
@@ -511,7 +535,10 @@ async def get_preview(request):
   if is_recording(the_pond, route):
     raise web.HTTPConflict(text="recording")
 
-  return web.FileResponse(await prepare_preview(the_pond, route, sources))
+  preview_path = await prepare_preview(the_pond, route, sources)
+  if preview_path is None:
+    raise web.HTTPNotFound(text="not_found")
+  return web.FileResponse(preview_path)
 
 
 @routes.get("/api/routes/{route}/thumbnail")
@@ -525,7 +552,10 @@ async def get_thumbnail(request):
   if not sources:
     raise web.HTTPNotFound(text="not_found")
 
-  return web.FileResponse(await prepare_thumbnail(the_pond, route, sources))
+  thumbnail_path = await prepare_thumbnail(the_pond, route, sources)
+  if thumbnail_path is None:
+    raise web.HTTPNotFound(text="not_found")
+  return web.FileResponse(thumbnail_path)
 
 
 @routes.get("/api/routes/{route}/{segment:\\d+}/{camera}")

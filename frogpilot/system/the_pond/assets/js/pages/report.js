@@ -73,6 +73,10 @@ function momentField() {
 
 function momentLabel(route, seconds) {
   const minute = Math.floor(seconds / route.segment_length) + 1;
+  if (route.date === null) {
+    return `Minute ${minute} of ${route.segments}`;
+  }
+
   return `${P.timeLabel(route.date + seconds)} · minute ${minute} of ${route.segments}`;
 }
 
@@ -224,9 +228,6 @@ P.page("report", {
         routes.push(route);
       }
     }
-    routes.sort((a, b) => {
-      return b.date - a.date;
-    });
 
     let picked = null;
     for (const route of routes) {

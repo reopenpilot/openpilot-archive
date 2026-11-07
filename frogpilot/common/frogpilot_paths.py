@@ -27,6 +27,7 @@ STOCK_BOOT_LOGO_PATH = Path(__file__).parents[1] / "assets/other_images/stock_bg
 
 BORDERS_PATH = Path(BASEDIR) / "frogpilot/assets/borders.json"
 CITIES_PATH = Path(BASEDIR) / "frogpilot/assets/cities.json"
+STATS_DICTIONARY_PATH = Path(BASEDIR) / "frogpilot/assets/stats_dictionary.txt"
 
 CLASSIC_MODEL_PATH = Path(BASEDIR) / "frogpilot/selfdrive/modeld/classic/models"
 

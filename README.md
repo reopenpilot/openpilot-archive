@@ -204,7 +204,7 @@ In the example, the downloaded maps are first in your source priority order, so 
 
 It reads speed limit signs with the road camera and, on supported Ford, Genesis, Hyundai, Kia, Lexus, and Toyota models, your car's dashboard. It also uses maps from **["OpenStreetMap"](https://www.openstreetmap.org)** and the speed limits along your **"Navigate on openpilot"** route, and, with your own **["Mapbox"](https://www.mapbox.com)** key, fills gaps with Mapbox's online data. To download maps, open **FrogPilot → Maps and Navigation → Map Data** and pick your countries or states in **Map Sources**. Go back, then tap **Download** beside **Download Maps** while parked and online. They update automatically every month. Add your **Public Mapbox Key** under **FrogPilot → Maps and Navigation → Navigation** to make **Use Mapbox as Fallback** available.
 
-**"Speed Limit Filler"** fixes roads where your downloaded maps have no limit or the wrong one. It's on by default, under **FrogPilot → Maps and Navigation → Navigation**. It learns the limit from the signs the camera reads, saves it for that road and direction, and uses it in place of the map's limit the next time you drive there, until the map matches the signs. It also keeps a cropped photo of the sign each learned limit came from. Roads with conditional limits, such as ones that change with the time of day or the weather, are skipped. With **"Share FrogPilot Data"** on, the learned limits and their sign photos are sent to FrogPilot while parked on unmetered Wi-Fi or Ethernet and used to improve speed limits for everyone using FrogPilot.
+**"Speed Limit Filler"** fixes roads where your downloaded maps have no limit or the wrong one. It's on by default, under **FrogPilot → Maps and Navigation → Navigation**. It learns the limit from the signs the camera reads, saves it for that road and direction, and uses it in place of the map's limit the next time you drive there, until the map matches the signs. Roads with conditional limits, such as ones that change with the time of day or the weather, are skipped. With **"Share FrogPilot Data"** on, the learned limits and their sign photos are sent to FrogPilot while parked on unmetered Wi-Fi or Ethernet and used to improve speed limits for everyone using FrogPilot.
 
 To choose how it handles limits, open **FrogPilot → Driving Controls → Gas / Brake → Speed Limit Controller → Manage**. The settings below note any submenus and tuning-level requirements.
 
@@ -360,7 +360,7 @@ Then:
 1. Connect the harness and mount the device by following [comma's setup guide](https://comma.ai/setup) (written for the **comma four**).
 2. When the device asks what software to install, choose **Custom Software** and enter the URL below.
    ```
-   frogpilot.download
+   FrogPilot.download
    ```
 3. Go for a drive!
 
@@ -377,9 +377,9 @@ A branch is a version of **FrogPilot** you can install. They differ in how new a
 
 | Branch                     | Install&nbsp;URL          | Description | Recommended&nbsp;For     |
 |----------------------------|---------------------------|-------------|--------------------------|
-| FrogPilot                  | frogpilot.download        | The release branch. Updated the Saturday after comma's official openpilot release, once it's been through Staging. | Everyone                 |
-| FrogPilot&#8209;Staging    | staging.frogpilot.download| FrogPilot on comma's upcoming openpilot release, updated as soon as comma starts testing it. Usually gets one to three weeks of testing before it becomes the release. | Early&nbsp;Adopters      |
-| FrogPilot&#8209;Testing    | testing.frogpilot.download| The newest features, as soon as they're finished. The least tested, so expect bugs! | Advanced&nbsp;Testers    |
+| FrogPilot                  | FrogPilot.download        | The release branch. Updated the Saturday after comma's official openpilot release, once it's been through Staging. | Everyone                 |
+| FrogPilot&#8209;Staging    | staging.FrogPilot.download| FrogPilot on comma's upcoming openpilot release, updated as soon as comma starts testing it. Usually gets one to three weeks of testing before it becomes the release. | Early&nbsp;Adopters      |
+| FrogPilot&#8209;Testing    | testing.FrogPilot.download| The newest features, as soon as they're finished. The least tested, so expect bugs! | Advanced&nbsp;Testers    |
 | MAKE&#8209;PRS&#8209;HERE  | No :)                     | Workspace for pull requests. Do not install! | Contributors             |
 
 ⚠️ Safety
@@ -497,8 +497,8 @@ openpilot logs the road-facing cameras, CAN, GPS, IMU, magnetometer, thermal sen
 If you agree, FrogPilot also sends the following data to its servers.
 
 - Filtered driving logs have no video, GPS coordinates are cleared, and the VIN (your car's ID number) is removed. Your car's raw CAN data (the messages its computers send each other) is kept and, on some cars, includes GPS or the VIN.
-- About 10 seconds of road camera video when a supported car's dashboard shows a new speed limit, when the speed limit sign reader sees a sign it isn't sure of, and for some of the limits it reads, linked to your device. No GPS coordinates or recording time are attached, but the video is uploaded as recorded and can show license plates, people, and identifiable places.
-- Speed limits learned by **"Speed Limit Filler"**, when it's on, each with the map ID of the road, the direction it applies to, the GPS location and heading where the sign was seen, the date, and how far the car drove with it, linked to your device, including limits learned before you agreed. Each one also includes a cropped photo of the sign it was read from, with the GPS location, heading, and time it was taken, and the photo can show part of the road around the sign. Roads where the sign matched your map's limit are sent too, with the limit and the date, to measure how accurate the sign reader is. The road IDs and locations show where the car has been driven. They're used to improve speed limits for everyone using FrogPilot.
+- About 15 seconds of road camera video when a supported car's dashboard shows a new speed limit, when the speed limit sign reader sees a sign it isn't sure of, and for some of the limits it reads, linked to your device. No GPS coordinates or recording time are attached, but the video is uploaded as recorded and can show license plates, people, and identifiable places.
+- Speed limits learned by **"Speed Limit Filler"**, when it's on, each with the map ID of the road, the direction it applies to, the GPS location and heading where the sign was seen, the month, and how far the car drove with it, linked to your device. Limits learned while sharing is off aren't included. Each one also includes a cropped photo of the sign it was read from, with the GPS location, heading, and month it was taken, and the photo can show part of the road around the sign. Roads where the sign matched your map's limit are sent too, with the limit and the month, to measure how accurate the sign reader is. The road IDs and locations show where the car has been driven. They're used to improve speed limits for everyone using FrogPilot.
 - usage statistics, which are your car's details, your drive totals, your FrogPilot settings, and your nearest city, state, and country, linked to your device.
 
 FrogPilot asks during setup whether you agree, and you can change your answer later with **"Share FrogPilot Data"** under **Settings → Software**. Drives recorded before you agreed are never uploaded to FrogPilot. Driving logs, road camera clips, and learned speed limits only upload over Ethernet or Wi-Fi while your car is off.

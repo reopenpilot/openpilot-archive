@@ -243,6 +243,9 @@ class Panda:
 
   FLAG_NISSAN_ALT_EPS_BUS = 1
 
+  # FrogPilot variables
+  FLAG_NISSAN_PRO_PILOT = 2
+
   FLAG_GM_HW_CAM = 1
   FLAG_GM_HW_CAM_LONG = 2
   FLAG_GM_HW_SDGM = 4

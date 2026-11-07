@@ -128,7 +128,7 @@ class FrogPilotTracking:
 
       self.previous_state = sm["controlsState"].state
 
-    if sm["controlsState"].experimentalMode:
+    if sm["controlsState"].experimentalMode and sm["carControl"].longActive:
       self.frogpilot_stats["ExperimentalModeTime"] = self.frogpilot_stats.get("ExperimentalModeTime", 0) + DT_MDL
 
     blinker_on = sm["carState"].leftBlinker or sm["carState"].rightBlinker

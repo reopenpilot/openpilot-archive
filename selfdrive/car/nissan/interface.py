@@ -26,6 +26,10 @@ class CarInterface(CarInterfaceBase):
       # Altima has EPS on C-CAN unlike the others that have it on V-CAN
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_NISSAN_ALT_EPS_BUS
 
+    # FrogPilot variables
+    if candidate in (CAR.NISSAN_ROGUE, CAR.NISSAN_XTRAIL, CAR.NISSAN_ALTIMA):
+      ret.safetyConfigs[0].safetyParam |= Panda.FLAG_NISSAN_PRO_PILOT
+
     return ret
 
   # returns a car.CarState
