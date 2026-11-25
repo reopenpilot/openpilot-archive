@@ -11329,98 +11329,6 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > >
 > > #### fp-FrogPilot-Staging-20260911-2007
 > >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260911-2007
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260911-2007
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260912-1621</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260912-1621
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260912-1621
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260912-1621
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260913-0227</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260913-0227
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260913-0227
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260913-0227
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260913-1916</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260913-1916
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260913-1916
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260913-1916
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260914-1005</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260914-1005
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260914-1005
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260914-1005
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260919-0648</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260919-0648
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260919-0648
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260919-0648
-> > ```
-> >
-> > </details>
-> >
-> 
-> > <details><summary>20260919-1900</summary>
-> >
-> > #### fp-FrogPilot-Staging-20260919-1900
-> >
-> > ```
-> > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20260919-1900
-> > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20260919-1900
-> > ```
-> >
-> > </details>
 > >
 > 
 > > <details><summary>20260926-0115</summary>
@@ -11472,13 +11380,6 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 > > ```
 > > https://smiskol.com/fork/reopenpilot/fp-FrogPilot-Staging-20261003-1900
 > > ```
-> > ```
-> > curl -fsSL https://bit.ly/reopenpilot | bash -s fp-FrogPilot-Staging-20261003-1900
-> > ```
-> >
-> > </details>
-> >
-> 
 > > <details><summary>20261029-2245</summary>
 > >
 > > #### fp-FrogPilot-Staging-20261029-2245
@@ -11581,21 +11482,6 @@ curl -fsSL https://bit.ly/reopenpilot | bash -s 'fp/FrogPilot-Staging'
 
 
 
-### [< Sunnypilot dev-c3 >](https://github.com/reopenpilot/openpilot-archive/commits/sp-dev-c3-20250902-1405/)
-```
-https://smiskol.com/fork/sp/dev-c3
-```
-```
-curl -fsSL https://bit.ly/reopenpilot | bash -s 'sp/dev-c3'
-```
-
-> <details><summary>Show older versions</summary>
->
-> <br>
-> 
-> 
-> > <details><summary>20240729-2010</summary>
-> >
 > > #### sp-dev-c3-20240729-2010
 > >
 > > ```
